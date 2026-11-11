@@ -156,6 +156,16 @@ def _registrar_fallo(item, evaluacion, etapa):
         registro_log.warning('Registro sin evaluar: ítem %s, %s, causa %s', item.codigo, etapa, evaluacion.causa_fallo)
 
 
+def _cerrar_repreguntas(sesion, progreso_id, salvo_item_id=None):
+    """La repregunta solo se responde en el momento: `responder` sobre otro ítem cierra la de los demás vigentes de la
+    actividad, y `entregar`, la de todos. La pista no cambia."""
+    condicion = [RespuestaRegistro.progreso_id == progreso_id, RespuestaRegistro.vigente.is_(True),
+                 RespuestaRegistro.repregunta_cerrada.is_(False)]
+    if salvo_item_id is not None:
+        condicion.append(RespuestaRegistro.item_registro_id != salvo_item_id)
+    sesion.execute(update(RespuestaRegistro.__table__).where(*condicion).values(repregunta_cerrada=True))
+
+
 def _actualizar(sesion, respuesta_id, valores):
     sesion.execute(update(RespuestaRegistro.__table__).where(RespuestaRegistro.id == respuesta_id).values(
         actualizada_en=marca_actualizacion(), **valores))
@@ -225,6 +235,7 @@ def _guardar_respuesta(sesion, entrada):
     respuesta_id = guardar_intento(sesion, progreso.id, item.id, dict(
         opciones_elegidas=elegidas, valores_contexto=valores, primera_respuesta=texto, estado=estado),
         fecha_accion(entrada))
+    _cerrar_repreguntas(sesion, progreso.id, salvo_item_id=item.id)
     if sin_llm:
         return item, None
     respuesta = sesion.get(RespuestaRegistro, respuesta_id)
@@ -254,7 +265,7 @@ def _vigente(sesion, entrada, disponible=True):
 def _guardar_seguimiento(sesion, entrada):
     item, respuesta = _vigente(sesion, entrada)
     if (respuesta is None or respuesta.repregunta is None or respuesta.segunda_respuesta is not None
-            or respuesta.estado == EstadoRespuestaRegistro.SIN_EVALUAR):
+            or respuesta.estado == EstadoRespuestaRegistro.SIN_EVALUAR or respuesta.repregunta_cerrada):
         raise ErrorAccion('Este ítem no tiene una repregunta pendiente')
     texto = _texto(entrada.texto)
     _actualizar(sesion, respuesta.id, dict(segunda_respuesta=texto))
@@ -304,6 +315,8 @@ def terminar(sesion, entrada):
     from app.schemas.registro import RespuestaRegistroAccion
     cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta, disponible=True)
     registro = leer_registro(sesion, cuenta, actividad)
+    if registro.progreso is not None:
+        _cerrar_repreguntas(sesion, registro.progreso.id)
     eventos = []
     if registro.progreso is None or registro.progreso.estado != EstadoProgreso.COMPLETADA:
         faltantes = [item.codigo for item in items if item.obligatorio and item.id not in registro.vigentes]

@@ -143,8 +143,9 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     # `investigacion.sugerencias_vigentes`. Ajuste resultados-intereses: 18, con `instrumento.guia_abierta` y
     # `ocupacion.en_test`.
     # Ajuste registros: `sensible` (respuesta y evaluación) y `requiere_atencion` (respuesta). Ajuste registros llm
-    # (lote 2): la `respuesta_registro` de 0050 suma `sensible`, `seguimiento_sin_evaluar` y `eco_cambiado`.
-    assert sql.count('BOOLEAN DEFAULT false') == 24
+    # (lote 2): la `respuesta_registro` de 0050 suma `sensible`, `seguimiento_sin_evaluar` y `eco_cambiado`. Ajuste
+    # front de registros (lote 1): 25, con `respuesta_registro.repregunta_cerrada` (0052).
+    assert sql.count('BOOLEAN DEFAULT false') == 25
     assert 'BOOLEAN DEFAULT 0' not in sql and 'BOOLEAN DEFAULT 1' not in sql
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:

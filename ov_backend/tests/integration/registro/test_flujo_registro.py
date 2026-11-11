@@ -192,6 +192,57 @@ def test_avanzar_sin_responder_la_repregunta(cliente, llm, sesion_contenido):
     assert leido['pista'] == '¿Qué hacías exactamente con esos castillos?' and not leido['reenviable']
 
 
+# --- Cierre de la repregunta (ajuste front de registros, lote 1) -------------------------------
+
+REPREGUNTA = '¿Qué hacías exactamente con esos castillos?'
+
+
+def test_responder_otro_item_cierra_la_repregunta_y_la_pista_no_cambia(cliente, llm, sesion_contenido):
+    llm.encolar(salida('general', REPREGUNTA))
+    gustos(cliente)
+    logro(cliente)
+    seguir(cliente, 'b1-1', 'b1-1-gustos', esperado=409)
+    intento = vigente(sesion_contenido, 'b1-1-gustos')
+    assert (intento.repregunta_cerrada, intento.pista, intento.segunda_respuesta) == (True, REPREGUNTA, None)
+    assert not vigente(sesion_contenido, 'b1-1-logro').repregunta_cerrada
+
+
+def test_entregar_cierra_la_repregunta(cliente, llm, sesion_contenido):
+    gustos(cliente)
+    logro(cliente)
+    llm.encolar(salida('general', REPREGUNTA))
+    responder_item(cliente, 'b1-1', 'b1-1-dificultad', [], TEXTO)
+    terminar(cliente, 'b1-1')
+    seguir(cliente, 'b1-1', 'b1-1-dificultad', esperado=409)
+    assert vigente(sesion_contenido, 'b1-1-dificultad').pista == REPREGUNTA
+
+
+def test_antes_de_cerrarse_la_repregunta_se_responde_y_una_edicion_nace_abierta(cliente, llm, sesion_contenido):
+    llm.encolar(salida('general', REPREGUNTA))
+    gustos(cliente)
+    logro(cliente)
+    # Editar el ítem crea un intento nuevo, con su repregunta abierta, y no cierra la de él mismo.
+    llm.encolar(salida('general', REPREGUNTA))
+    gustos(cliente, 'DATO DE PRUEBA: hacía casas de cartón')
+    assert not vigente(sesion_contenido, 'b1-1-gustos').repregunta_cerrada
+    assert seguir(cliente, 'b1-1', 'b1-1-gustos')['paso'] == 'SIGUIENTE'
+
+
+def test_reenviar_el_seguimiento_no_mira_el_cierre(cliente, llm, sesion_contenido):
+    llm.encolar(salida('general'), fallo(), 'propio')
+    gustos(cliente)
+    seguir(cliente, 'b1-1', 'b1-1-gustos', 'DATO DE PRUEBA: con torres')
+    logro(cliente)
+    assert vigente(sesion_contenido, 'b1-1-gustos').repregunta_cerrada
+    assert reenviar(cliente, 'b1-1', 'b1-1-gustos')['paso'] == 'SIGUIENTE'
+
+
+def test_texto_de_lumi_sin_evaluar(cliente, llm):
+    llm.encolar(fallo())
+    assert gustos(cliente)['mensaje'] == ('Esta vez no llegué a escucharte bien. Tu respuesta quedó guardada; más '
+                                          'adelante puedes volver a enviarla, por si tengo algo que decirte.')
+
+
 # --- Reenvío -----------------------------------------------------------------------------------
 
 def test_reenvio_de_la_primera_puede_traer_repregunta_y_no_crea_intento(cliente, llm, sesion_contenido):

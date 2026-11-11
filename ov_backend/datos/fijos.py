@@ -58,8 +58,8 @@ TEXTOS_FIJOS = (
     # Ajuste registros llm (lote 3): los mensajes de Lumi tras una respuesta `emocional` o que no se pudo evaluar.
     ('LUMI_EMOCIONAL', 'Gracias por contármelo. Se nota que esto te importa, y está bien que sea así. No hace falta '
                        'que escribas más ahora.'),
-    ('LUMI_SIN_EVALUAR', 'Tu respuesta quedó guardada, pero esta vez no pude leerla con calma. Más adelante puedes '
-                         'volver y reenviarla, por si tengo algo que decirte.'),
+    ('LUMI_SIN_EVALUAR', 'Esta vez no llegué a escucharte bien. Tu respuesta quedó guardada; más adelante puedes '
+                         'volver a enviarla, por si tengo algo que decirte.'),
     # Ajuste registros llm (lote 2), §4: las piezas que arma `app/services/registro/contexto.py`. Los grupos; el
     # origen que se muestra (`_MOSTRAR`) y el que va al LLM (`_LLM`, el que validó el runner en v7.8 y v7.12); y la
     # frase de cada dimensión de los tres tests (`PIEZA_FRASE_<dimensión>`), que es el texto de su pieza.

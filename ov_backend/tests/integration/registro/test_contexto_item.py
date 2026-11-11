@@ -5,6 +5,7 @@ intentos vigentes, con el estado que calcula la capa del lote 1), sus planes, su
 inicial y su check-in. DATO DE PRUEBA: todos los textos.
 """
 
+import dataclasses
 import importlib.util
 import json
 import re
@@ -636,3 +637,48 @@ def test_la_entrada_coincide_con_la_del_runner(ana, caso):
     esperado = armar(_runner().entrada_de(caso, caso['texto']))
     contexto = ana.contexto(caso['item'])
     assert armar(entrada_llm(contexto, _elegidas(contexto, caso), caso['texto'])) == esperado
+
+
+# Ajuste front de registros (lote 1, §1.3): el diálogo y la pregunta de elección que pasaron del front al backend no
+# entran en la `Entrada`; el mensaje al LLM de esos ítems queda idéntico.
+ITEMS_CON_DIALOGO_NUEVO = {'b1-1-gustos', 'b1-1-logro', 'b1-1-dificultad', 'b1-3-voz', 'b1-3-mia', 'b1-3-contraste',
+                           'b1-6-mito', 'b2-3-valores', 'b2-4-bien', 'b4-1-respalda'}
+CASOS_DIALOGO_NUEVO = list({c['item']: c for c in reversed(CASOS_RUNNER) if c['item'] in ITEMS_CON_DIALOGO_NUEVO}
+                           .values())
+
+
+# Los que el runner no tiene: se arma la `Entrada` con la primera opción que va al LLM y se compara igual.
+SIN_CASO_RUNNER = sorted(ITEMS_CON_DIALOGO_NUEVO - {c['item'] for c in CASOS_DIALOGO_NUEVO})
+
+
+def test_los_items_sin_caso_del_runner_son_los_esperados():
+    # b2-4-cuesta y ma8-respuesta no pasan por el LLM (sin tarjeta).
+    assert SIN_CASO_RUNNER == ['b1-1-dificultad', 'b1-1-logro', 'b1-3-mia', 'b1-3-voz', 'b2-4-bien']
+
+
+@pytest.mark.parametrize('item', SIN_CASO_RUNNER)
+def test_el_dialogo_no_cambia_el_mensaje_sin_caso_del_runner(ana, item):
+    contexto = ana.contexto(item)
+    assert contexto.dialogo
+    elegibles = [o for o in contexto.opciones if not o.sin_llm and not o.exclusiva]
+    elegidas = [{'codigo': o.codigo, 'texto': o.texto} for o in elegibles[:max(1, 3 if contexto.ordenada else 1)]]
+    sin_consigna = dataclasses.replace(contexto, dialogo=None, pregunta_eleccion=None)
+    texto = 'DATO DE PRUEBA: lo cuento con un ejemplo.'
+    mensaje = armar(entrada_llm(contexto, elegidas, texto))
+    assert mensaje == armar(entrada_llm(sin_consigna, elegidas, texto))
+    assert contexto.dialogo not in mensaje
+    if contexto.pregunta_eleccion:
+        assert contexto.pregunta_eleccion not in mensaje
+
+
+@pytest.mark.parametrize('caso', CASOS_DIALOGO_NUEVO, ids=[c['item'] for c in CASOS_DIALOGO_NUEVO])
+def test_el_dialogo_y_la_pregunta_de_eleccion_no_cambian_el_mensaje(ana, caso):
+    _sembrar_para(ana, caso)
+    contexto = ana.contexto(caso['item'])
+    assert contexto.dialogo
+    sin_consigna = dataclasses.replace(contexto, dialogo=None, pregunta_eleccion=None)
+    elegidas = _elegidas(contexto, caso)
+    mensaje = armar(entrada_llm(contexto, elegidas, caso['texto']))
+    assert mensaje == armar(entrada_llm(sin_consigna, elegidas, caso['texto']))
+    assert mensaje == armar(_runner().entrada_de(caso, caso['texto']))
+    assert contexto.dialogo not in mensaje

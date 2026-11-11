@@ -141,6 +141,8 @@ class RespuestaRegistro(Base):
     estado: Mapped[EstadoRespuestaRegistro] = mapped_column(enumerado(EstadoRespuestaRegistro))
     sensible: Mapped[bool] = mapped_column(default=False, server_default=false())
     seguimiento_sin_evaluar: Mapped[bool] = mapped_column(default=False, server_default=false())
+    # La repregunta ya no se puede responder: llegó `responder` sobre otro ítem o `entregar` (ajuste front de registros).
+    repregunta_cerrada: Mapped[bool] = mapped_column(default=False, server_default=false())
     pista: Mapped[str | None] = mapped_column(Text, default=None)
     linea_registro: Mapped[str | None] = mapped_column(Text, default=None)
     # Lo que se puede citar en otras actividades: 0 a 2 líneas (`llm/estado.py`).

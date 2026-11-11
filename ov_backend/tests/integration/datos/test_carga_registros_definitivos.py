@@ -156,6 +156,41 @@ def test_consignas_marcadores_y_ecos(items):
     assert items['b5-3-cambio'].ecos_llm is None
 
 
+# Ajuste front de registros (lote 1, §1.3): la consigna entera viene del backend.
+DIALOGOS_FRONT = {
+    'b1-1-gustos': 'Todo mapa empieza por donde uno ya estuvo.',
+    'b1-1-logro': 'En todo mapa hay lugares a los que llegaste por tu cuenta.',
+    'b1-1-dificultad': 'Y también hubo algo que no salió a la primera.',
+    'b1-3-voz': 'Casi siempre alguien cercano tiene una idea de lo que deberías hacer al salir del colegio.',
+    'b1-3-mia': 'Ahora tu voz.',
+    'b1-3-contraste': 'Pongamos las dos voces juntas.',
+    'b1-6-mito': 'Ya cruzaste el puente. Pero algunos mitos uno los trae de casa.',
+    'b2-3-valores': 'En la brigada cada quien valora algo distinto del trabajo.',
+    'b2-4-bien': 'Separemos lo que te gusta de lo que te sale.',
+    'b2-4-cuesta': 'Y lo que cuesta también cuenta.',
+    'b4-1-respalda': 'Mira tu perfil junto a tu Plan A. Nada aquí mide si puedes: muestra cómo eres.',
+    'ma8-respuesta': 'Ahora respóndele.',
+}
+PREGUNTAS_ELECCION_FRONT = {
+    'b1-3-voz': '¿Quién te lo ha dicho con más fuerza?',
+    'b1-3-mia': 'Y tú, ¿qué quieres hacer al terminar?',
+    'b1-3-contraste': '¿Coinciden, coinciden en parte o chocan?',
+    'b1-6-mito': '¿Cuál de estos has escuchado o creído más?',
+    'b2-3-valores': 'De estos, ¿cuáles son tus tres más importantes? Ordénalos.',
+    'b2-4-cuesta': '¿Qué te cuesta aunque le pongas ganas?',
+}
+
+
+def test_dialogos_y_preguntas_de_eleccion_que_venian_del_front(items):
+    assert {c: items[c].dialogo for c in DIALOGOS_FRONT} == DIALOGOS_FRONT
+    assert {c: items[c].pregunta_eleccion for c in PREGUNTAS_ELECCION_FRONT} == PREGUNTAS_ELECCION_FRONT
+    # Los que ya tenían pregunta de elección la conservan.
+    assert items['b1-1-logro'].pregunta_eleccion.startswith('Piensa en un logro tuyo')
+    assert items['ma8-respuesta'].pregunta_eleccion.startswith('Sobre estudiar {carrera}')
+    # Sin diálogo, a propósito.
+    assert all(items[c].dialogo is None for c in ('b2-4-cruce', 'b3-4-quien', 'ma3-hoy', 'ma4-modelo', 'b3-a-comparo'))
+
+
 def test_cero_cartas_personalizadas_y_ninguna_regla_r_c(sesion_contenido):
     preguntas = {p.codigo: p for p in sesion_contenido.scalars(select(m.PreguntaDiario))}
     assert not {'C1', 'C2', 'C3', 'C4', 'C5', 'C6'} & set(preguntas)

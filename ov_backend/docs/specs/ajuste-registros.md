@@ -3161,3 +3161,439 @@ Va a `ov_frontend/docs/pendientes-interfaz.md`:
 - Informe de la orientadora, con tipo, `motivo` e histórico de intentos.
 - Pasada final para la tesis: revisión de repreguntas y de la línea del seguimiento por registro.
 - Gemini en el diario, las sugerencias de pasos y el guion.
+
+## Ajuste · front de registros (lote 1)
+
+### Contexto
+
+El backend de la rama ya tiene el flujo ítem por ítem con el LLM (lote 3), pero el front sigue en el contrato de antes del lote 2 (`types/servidorRegistro.ts` con `conversacion`, `posicion` y borradores; servicios `guardar-borrador`, `editar` y `continuar-sin-responder`, que ya dan 404). Este ajuste vuelve a conectar el front de punta a punta: cada ítem se envía solo, pasa por la pantalla de Lumi y puede traer una repregunta. La presentación queda básica (el lote 2 hace las piezas, el podio y los ecos). El texto de observaciones es `ajuste-front-registros-lote1.md` (11 nov) y manda en todo lo que decide.
+
+- Spec en curso: `ov_backend/docs/specs/ajuste-registros.md`. Este plan se agrega al final como `## Ajuste · front de registros (lote 1)`, con el texto de observaciones como anexo.
+- Rama: se sigue en `ajuste/registros-llm`, como pide el texto. La skill diría crear una desde `main`.
+
+### Lo que el código dice distinto del texto (se reporta, no se corrige en silencio)
+
+1. **`eco_cambiado` es un booleano** (`contexto.eco_cambiado`). Decisión del usuario: el aviso va sin `{eco}`, con el texto «Esto lo respondiste antes de que cambiara algo de lo que habías dicho. Puede que hoy lo veas distinto.» No se anota como pendiente: la consigna y los ecos de la pantalla ya muestran el valor de hoy.
+2. **Ítem con `disponible: false`:** viene sin `consigna`, opciones ni ecos, y `responder` da 409. El texto dice que se ignore. Propuesta: el front lo muestra igual, con lo que traiga (el personaje sin pregunta), y al enviar muestra el mensaje del 409 del servidor. No agrego texto propio.
+3. **Ítems de `ruta` sin tarjeta:** todos van sin LLM, así que los fixtures de `ruta` nunca traen `REPREGUNTA`, `MENSAJE`, `pista` ni `reenviable`. Para esos casos, el exportador suma fixtures del conjunto `contenido` (ver «Datos»).
+4. **El modo local no usa los 19 registros de `plataforma/`.** Decisión del usuario: quedan fuera del modo local. Revisado: ya lo están.
+   - `data/activities/content.ts` arma el modo local solo con sus propios JSON: `mision_bienvenida`, `registro_huellas`, `registro_horizonte`, `registro_mochila`, `registro_siguiente_paso`, `registro_linea_tiempo`, `registro_mis_pregones`, etc.
+   - `contenidoPorClave` (por donde pasa `plataforma/`) solo se usa desde `lib/servidor/` y `features/adventure/lib/puntosServidor.ts` y `detallesRuta.ts` (api).
+   - Ninguna actividad local tiene como requisito uno de los 19, así que el mapa local no se traba. La única prueba local que los toca, `tests/local/actividades/contenidos.test.mjs`, revisa solo que existan y tengan `mapa`, y eso no cambia.
+   - Interpretación de §9 «modo local de los registros»: sale todo lo que el código del registro del servidor hace distinto según `modoApi` (por ejemplo, `puedeEditarRegistro = modoApi && consulta`), porque los registros solo corren contra el servidor. Los registros locales `registro_*`, con `SubmissionNode`, `FollowUp` y `followUpStore`, son «el resto del modo local» y no se tocan. Si §9 quería retirarlos también, dímelo al aprobar: cambiaría el modo local congelado y `tests/local`.
+5. **`tests/servidor/registro/`** (14 archivos, unas 2.500 líneas) prueba la conversación, los borradores, el premarcado, «por ampliar», el destino y la consulta, que salen por §9. Las pruebas de lo que sale se retiran; las demás se rehacen sobre el contrato nuevo. Cada caso queda anotado en `decisiones.md`.
+
+### Qué cambia (hoy → pasará a)
+
+**Backend (§1)**
+- **Cierre de la repregunta** (`flujo._guardar_respuesta` y `flujo.terminar`). Hoy `responder-seguimiento` vale mientras haya repregunta y no haya segunda respuesta. Pasará a: `responder` sobre otro ítem y `entregar` cierran las repreguntas pendientes de esa actividad. Después, `_guardar_seguimiento` da 409. La pista no cambia y `reenviar` no cambia. Se guarda con `repregunta_cerrada` (ver «Modelo de datos»).
+- **`LUMI_SIN_EVALUAR`** (`datos/fijos.py`): pasa a tener el texto nuevo.
+- **§1.3** (`datos/contenido.py`, `ITEMS_REGISTRO`, con `_c(..., dialogo=, pregunta_eleccion=)`): se cargan los 12 diálogos y las 6 preguntas de la tabla. No se toca lo que ya existe.
+
+**Front**
+- **Contrato.**
+  - `types/servidorRegistro.ts` se rehace desde `app/schemas/registro.py`: `RegistroConsultado` (`estado`, `item_actual`, `items`), `ItemRegistroCuenta`, `ConsignaItem`, `EleccionItem`, `OpcionOfrecida` (con `lineas`), `RespuestaVigente`, `PasoRegistro` y las entradas `ResponderItemEntrada` y `ResponderSeguimientoEntrada`.
+  - Salen los tipos de borrador, conversación, edición por lotes y `ItemRegistroPublico`. El front deja de pedir `items-registro`, porque el registro ya trae la consigna.
+- **`services/api/registro.ts`:** quedan `obtenerRegistro`, `responderItem`, `responderSeguimiento`, `reenviarItem` y `entregarRegistro`. Salen `enviarBorrador`, `enviarEdicion`, `enviarContinuarSinResponder` y `obtenerItemsRegistro`.
+- **`store/servidor/registro.ts`:** expone las mismas funciones. Solo `entregar` usa `accionConRefresco` (es la que emite eventos y desbloqueos); responder, seguir y reenviar devuelven el `PasoRegistro` tal cual.
+- **`lib/servidor/adaptadoresRegistro.ts`** se rehace. Sus funciones son puras y solo importan tipos:
+  - `itemDe(registro, codigo)`;
+  - `consignaVigente(item, opcionesMarcadas)`: si la opción marcada trae `pregunta` y `arranque`, reemplazan a los del ítem;
+  - `avisoDe(respuesta)`: `reenviable` > `eco_cambiado` > pista;
+  - `cajaEdicion(respuesta)`: la primera respuesta y, en la línea siguiente, la línea del seguimiento;
+  - `desenlace(paso, etapa, indice)`: qué dice Lumi;
+  - `requiereTexto(item, opciones)`.
+  - Salen `premadoDe`, `conGuardadas`, `anterioresDe`, `ecoDeReferencias` y el resto de lo de §9.
+- **`lib/servidor/contenidos.ts` `registroServidor`:** cada consigna del JSON se casa con su ítem del registro por `item`, sin `premisa`. Si un `item` no existe, la actividad no se muestra, como hoy.
+- **Textos (§7):** un solo módulo, `features/activities/lib/textosRegistro.ts`, con las 5 frases que rotan (por índice del ítem en la sesión), los rótulos, los avisos, el pie, los botones y los errores de selección comunes («Elige una opción para continuar.» y «Escribe cuál es tu otra opción.»).
+- **Hook `useRegistroServidor.ts`, que se rehace.**
+  - Lleva una máquina por ítem: `por_responder` | `lectura` | `edicion` | `lumi`. A su vez, `lumi` pasa por `esperando` → `repregunta` | `desenlace`.
+  - El ítem en curso se conserva en memoria por código de ítem, para que «Anterior» no pierda lo escrito y al cambiar de opción se conserve el texto.
+  - Mientras hay una petición en curso, el botón queda bloqueado.
+  - Los errores muestran `detail.mensaje` del servidor y se pueden reintentar.
+  - «Seguir sin responder» no llama a ningún servicio. «Continuar» tras el último ítem llama a `entregar` y muestra el cierre (`FinishScreen` actual, sin destino).
+- **`useActivityPlayer.ts`: posición inicial.**
+  - Completada: `nodes[0]`, con apertura y diapositivas. Ya no se salta a los ítems.
+  - A medias: el nodo cuyo `item` es `item_actual`.
+  - Todos los ítems respondidos y la actividad sin terminar (`item_actual` nulo, `estado` no COMPLETADA): cae en el último ítem, en lectura. «Continuar» llama a `entregar`. Tiene su prueba.
+  - En los dos casos «Anterior» recorre los ítems anteriores, que se ven en lectura. Sale `posicion`.
+- **Componentes** (`features/activities/components/nodes/`, cada uno bajo 300 líneas):
+  - `RegistroItemNode`: por responder y en edición. Lleva el personaje (`hablanteId`) con el diálogo y la pregunta de elección.
+    - La elección **reutiliza la presentación de `RegistroPodioNode` y `RegistroEleccionNode`** (podio y fichas), adaptada al contrato nuevo: opciones de `item.opciones`, con su origen si lo trae, según `minima`, `maxima` y `ordenada` (el podio cuando es ordenada). Se les quitan los mensajes de reacción, el premarcado y «la vez pasada».
+    - Lo nuevo del lote 2 es solo el selector de piezas, las varias «Otra» y los ecos. En este lote las piezas van como lista simple y los ecos como texto simple.
+    - La «Otra» (si `permite_otra`) se envía con el código que espera el backend: `OTRA` en los ítems de una opción (`maxima` 1) y `OTRA-1` en los de varias, con un solo campo.
+    - La opción exclusiva va separada del resto y, al marcarla, desmarca las demás. Debajo, la pregunta de texto y la caja con el arranque. En edición lleva el rótulo «Modificando tu respuesta» y la pista arriba («Podrías contar más sobre esto»).
+  - `RegistroLecturaNode`: la elección como texto, la primera respuesta, la línea del seguimiento, «Modificar» junto a la respuesta y un solo aviso. Solo el de sin evaluar tiene botón, «Volver a enviar».
+  - `PantallaLumi`: arriba «Tu respuesta», recortada a 3 líneas con «ver completa». Debajo, Lumi con los tres puntos animados, la repregunta y su campo, o el desenlace. No tiene «Anterior».
+  - El pie «Lo ven tú y tu orientadora» va en las tres.
+  - Se reutilizan `RegistroPersonaje`, `RegistroLumi` y `RegistroGuiado`.
+  - `NodeRenderer` elige entre los tres según el estado del hook.
+- **Sale (§9):**
+  - componentes: `RegistroSeguimiento`, `RegistroPorAmpliar`, `RegistroConsignaNode` (lo reemplaza `RegistroItemNode`), `ChoiceReveal` en registro e `IrAlDestino` si solo lo usa el registro. `RegistroPodioNode` y `RegistroEleccionNode` se conservan y se adaptan como piezas de `RegistroItemNode`;
+  - hooks: `useRegistroPorAmpliar`;
+  - libs: `porAmpliar.ts`, `edicionRegistro.ts` (consulta y cambios acumulados), `destinoRegistro.ts` y los mensajes de `eleccionGuiada.ts`;
+  - en `CaminoScreen` y `CiudadScreen`, `renderPorAmpliar`;
+  - en `types/activities.ts`, los campos de `NodoConsigna` y `Actividad` que salen del JSON.
+- **JSON (§8):**
+  - en los 19 registros, cada consigna queda con `id`, `tipo`, `hablanteId`, `expresion` e `item`;
+  - salen `destinos` y `destino_por_defecto`;
+  - se borran las 26 consignas;
+  - se agregan los 11 nodos de la tabla, en el orden de los ítems del backend;
+  - no se tocan la apertura, los diálogos ni las diapositivas.
+- **Coherencia (§8):** `test_carga_registros_definitivos.py::test_coherencia_con_los_json_del_front_fuera_de_los_registros` deja de excluir los 19 registros (pasa a `test_coherencia_con_los_json_del_front`). `scripts/verificar_contenido_front.py` suma la regla: cada `item` existe y cada ítem del backend tiene su nodo, si no la tiene ya.
+
+### Qué no cambia
+
+- La capa `llm/`, `contexto.py`, la lectura del registro y los demás endpoints. Solo se agregan el cierre y los textos.
+- Lo que va al LLM: el diálogo y la pregunta de elección no entran en la `Entrada` (lo prueba la prueba de §10).
+- La apertura de los registros, la pantalla de cierre (salvo el destino), el diario, las cartas, la vista de la orientadora y Gemini.
+- El resto del modo local (incluidos los registros locales `registro_*`), `tests/local/` y los demás tipos de actividad que usan `NodeRenderer`.
+
+### Modelo de datos
+
+Decisión del usuario: `respuesta_registro.repregunta_cerrada` (booleano, `server_default=false()`), migración `0052`.
+- Se marca en los intentos vigentes de los **otros** ítems de la actividad cuando llega `responder` sobre un ítem, y en **todos** los vigentes de la actividad cuando llega `entregar`.
+- Un intento nuevo (una edición) nace en falso.
+- `responder-seguimiento` da 409 si está marcada. `reenviar` no la mira. La pista no cambia.
+- Se cumple todo `/cambio-modelo`: `registro.md`, la prueba de migraciones y `alembic heads` con uno solo.
+
+### Backend: pruebas
+
+- En `tests/integration/registro/test_flujo_registro.py`, pruebas nuevas:
+  - 409 tras responder otro ítem y tras `entregar`;
+  - antes, el seguimiento vale;
+  - editar el mismo ítem crea un intento nuevo con su repregunta abierta;
+  - `reenviar` con `seguimiento_sin_evaluar` sigue valiendo;
+  - la pista no cambia.
+- El texto nuevo de `LUMI_SIN_EVALUAR`, en la prueba que ya lo verifica.
+- §1.3: una prueba de carga con los 12 diálogos y las 6 preguntas, y otra que compara el mensaje al LLM de esos ítems con el de antes. Se arma con `armar` sobre la ficha sin `dialogo` y `pregunta_eleccion` frente a la cargada.
+
+### Datos y fixtures
+
+- `scripts/exportar_fixtures_front.py` sigue escribiendo `ruta/ruta-*.json` con el contrato nuevo.
+- Además suma unos pocos fixtures `contenido/contenido-registro-*.json`: un registro de `contenido` con tarjeta (b1-1), recorrido con `ClientePrueba` en cola para dar `REPREGUNTA`, seguimiento con y sin pista, `MENSAJE` (sensible), sin evaluar → `reenviable`, `reenviar` y el GET a medias y completado. Usa los mismos servicios y la base temporal que `tests/llm/corrida_flujo.py`, sin red. Se actualiza `test_exportar_fixtures_front.py`.
+- Los fixtures se regeneran con `uv run python scripts/exportar_fixtures_front.py --destino ../ov_frontend/tests/fixtures/servidor`.
+
+### Fases (commit `Ajuste front registros · lote 1 F<n>: …`)
+
+1. **F1 · Backend §1:** cierre de la repregunta (migración 0052, con `/cambio-modelo`), `LUMI_SIN_EVALUAR`, diálogos y preguntas, y sus pruebas. Pruebas: registro, registros, migraciones, datos y escenarios.
+2. **F2 · Contrato del front:**
+   - en el backend, el exportador con los fixtures de `contenido`;
+   - en el front, tipos, servicios, store, adaptadores y fixtures regenerados;
+   - las pruebas de contrato (`tests/servidor/registro/contrato`).
+   Pruebas: `contrato` del backend y `npm run test:servidor`. Las pruebas viejas de flujo que rompa se retiran aquí, cada una anotada.
+3. **F3 · Flujo y pantallas:**
+   - el hook, `useActivityPlayer`, los tres componentes, los textos y la salida de §9;
+   - las pruebas del front de §10: pasos, desenlaces, sin LLM, seguir sin responder, lectura, avisos, edición, reenvío, entrar a medias o rehacer, cambio de opción y «Anterior».
+   Pruebas: `tests/servidor/registro`, `tests/servidor/actividades` y `tests/local/actividades`.
+4. **F4 · JSON:**
+   - los 19 registros según §8;
+   - `verificar_contenido_front.py` y la prueba de coherencia sin exclusión;
+   - la prueba del front de la coherencia de los JSON.
+   Pruebas: `tests/integration/datos` y la suite del front de actividades.
+5. **F5 · Cierre:**
+   - documentos: `pendientes-interfaz.md` (cerrar lo que resuelve este lote; `{eco}` no se anota, no es un pendiente), `registro.md`, `integracion.md` y `decisiones.md`;
+   - suites completas: `uv run pytest -n auto -q`, `npm test`, `build`, `lint` y `check:estructura`, y `alembic heads` con uno solo.
+   La spec queda en curso.
+
+### Verificación
+
+- El subagente `pruebas` corre las carpetas de impacto por fase, y `escenarios` o `test:servidor` al cerrar cada una.
+- En F3, si lo pides, una revisión manual en el navegador contra `uv run uvicorn` con `ruta`. Sin clave de Anthropic, así que los ítems con tarjeta quedarían sin evaluar.
+- En F5, las dos suites completas en verde.
+
+### Decisiones del usuario al planear
+
+1. Aviso de eco cambiado sin `{eco}`, con el texto del punto 1 de arriba (reemplaza al de §4 y §7 del texto). No es un pendiente.
+2. Los 19 registros de `plataforma/` quedan fuera del modo local, que ya no los carga. No hay actividades locales trabadas.
+3. Cierre de la repregunta con `repregunta_cerrada` (migración 0052), con las reglas de «Modelo de datos».
+4. Al aprobar:
+   - `RegistroPodioNode` y `RegistroEleccionNode` no se borran: `RegistroItemNode` reutiliza su presentación;
+   - la «Otra» va como `OTRA` u `OTRA-1`;
+   - la exclusiva va aparte y desmarca el resto;
+   - el reingreso con todo respondido y sin terminar cae en el último ítem en lectura, y «Continuar» entrega;
+   - el ítem con `disponible: false` queda como se propone.
+
+# Anexo · Observaciones del ajuste front de registros, lote 1 (texto completo)
+
+## Ajuste · front de registros: contrato y flujo (lote 1 de 3)
+
+Observaciones para `/ajuste`, 11 nov 2026. Rama de trabajo: `ajuste/registros-llm`, la misma de los tres lotes del backend (último commit `2d7603f`).
+
+**Estado:** por revisar por el usuario antes de pasarla a Claude Code.
+
+**Qué es.** El front de registros no funciona contra el backend de esta rama. Este lote lo vuelve a hacer funcionar de punta a punta con el flujo nuevo: cada ítem se envía solo, pasa por la pantalla de Lumi y puede traer una repregunta. La presentación queda básica; los componentes nuevos (selector de piezas, formas de eco, varias «Otra») son del lote 2.
+
+**Qué manda.**
+- Este documento es autosuficiente: trae los textos que se cargan y los que muestra el front.
+- Manda sobre `ov_frontend/docs/pendientes-interfaz.md` donde choquen. Tres puntos de ese archivo cambiaron: la pista se muestra siempre en el ítem respondido (no solo al volver a una actividad completada), la repregunta saltada no se puede responder después, y no existe el ítem no disponible.
+- El contrato del backend es el implementado en el lote 3 (entradas «Ajuste registros llm (lote 2)» y «(lote 3)» de `pendientes-interfaz.md`). Si el código difiere de lo que aquí se describe, se reporta al usuario; no se corrige en silencio.
+
+## Los tres lotes del front
+
+1. **Lote 1 (este): contrato y flujo.**
+2. **Lote 2: presentación de los ítems.** Selector de piezas, podio y lista con varias «Otra», formas de eco y vista de lectura cuidada.
+3. **Lote 3: contenido.** Apertura de cada registro (diálogos y diapositivas) y pantalla de cierre con sus mensajes.
+
+## Alcance
+
+**Entra:**
+- tres cambios chicos de backend (§1);
+- tipos y servicios del contrato nuevo, y fixtures regenerados (§2);
+- el flujo ítem por ítem con la pantalla de Lumi (§3);
+- el ítem respondido, la edición y el reenvío (§4);
+- los botones (§5);
+- entrar a medias y rehacer (§6);
+- los JSON alineados con el backend (§8);
+- la limpieza de lo que ya no existe (§9);
+- pruebas (§10).
+
+**No entra:**
+- selector de piezas, varias «Otra» por ítem y formas de eco (lote 2). En este lote las piezas se muestran como una lista simple con su origen, y los ecos como texto simple;
+- la apertura de los registros y la pantalla de cierre (lote 3). El cierre queda como está, sin botón de destino sugerido;
+- la vista de la orientadora, las cartas del diario y Gemini.
+
+## 1. Cambios de backend
+
+### 1.1 Cerrar la repregunta
+
+**Hoy:** `responder-seguimiento` vale en cualquier momento mientras el intento vigente tenga una repregunta mostrada y no tenga segunda respuesta.
+
+**Pasa a:** la repregunta solo se puede responder en el momento. Se cierra cuando:
+- llega `responder` sobre otro ítem de la misma actividad, o
+- se llama a `entregar`.
+
+Desde ahí, `responder-seguimiento` sobre ese ítem responde 409. La pista no cambia: sigue siendo la repregunta que vio. Para responder, el estudiante edita el ítem.
+
+- `reenviar` no cambia: un intento con `seguimiento_sin_evaluar` ya tiene su segunda respuesta y se sigue pudiendo reenviar.
+- No se agrega un endpoint ni un aviso del front al saltar la repregunta.
+- La forma de guardarlo (una marca en el intento u otra) es decisión de diseño a aprobar en el plan.
+
+### 1.2 Texto de `LUMI_SIN_EVALUAR`
+
+En la narrativa, Lumi no lee lo que el estudiante escribe: escucha lo que le responde al personaje.
+
+- **Hoy:** «Tu respuesta quedó guardada, pero esta vez no pude leerla con calma. Más adelante puedes volver y reenviarla, por si tengo algo que decirte.»
+- **Pasa a:** «Esta vez no llegué a escucharte bien. Tu respuesta quedó guardada; más adelante puedes volver a enviarla, por si tengo algo que decirte.»
+
+### 1.3 Diálogos y preguntas de elección que faltan
+
+Toda la consigna debe venir del backend. Hoy doce ítems tienen su diálogo, y seis su pregunta de elección, solo en los JSON del front. Se cargan en `ITEMS_REGISTRO`:
+
+| Ítem | Diálogo | Pregunta de elección |
+|---|---|---|
+| b1-1-gustos | Todo mapa empieza por donde uno ya estuvo. | — |
+| b1-1-logro | En todo mapa hay lugares a los que llegaste por tu cuenta. | (ya la tiene) |
+| b1-1-dificultad | Y también hubo algo que no salió a la primera. | — |
+| b1-3-voz | Casi siempre alguien cercano tiene una idea de lo que deberías hacer al salir del colegio. | ¿Quién te lo ha dicho con más fuerza? |
+| b1-3-mia | Ahora tu voz. | Y tú, ¿qué quieres hacer al terminar? |
+| b1-3-contraste | Pongamos las dos voces juntas. | ¿Coinciden, coinciden en parte o chocan? |
+| b1-6-mito | Ya cruzaste el puente. Pero algunos mitos uno los trae de casa. | ¿Cuál de estos has escuchado o creído más? |
+| b2-3-valores | En la brigada cada quien valora algo distinto del trabajo. | De estos, ¿cuáles son tus tres más importantes? Ordénalos. |
+| b2-4-bien | Separemos lo que te gusta de lo que te sale. | (ya la tiene) |
+| b2-4-cuesta | Y lo que cuesta también cuenta. | ¿Qué te cuesta aunque le pongas ganas? |
+| b4-1-respalda | Mira tu perfil junto a tu Plan A. Nada aquí mide si puedes: muestra cómo eres. | (ya la tiene) |
+| ma8-respuesta | Ahora respóndele. | (ya la tiene) |
+
+- **No toca lo validado:** al LLM va solo la pregunta de texto (`pregunta_para`), la opción marcada, los ecos y las respuestas. El diálogo y la pregunta de elección no entran en la `Entrada`. Una prueba debe confirmar que el mensaje al LLM de estos ítems queda idéntico.
+- Donde el backend ya tiene diálogo o pregunta de elección, no se toca: los del JSON son anteriores al lote 2.
+- Quedan sin diálogo, a propósito: b2-4-cruce, b3-4-quien, ma3-hoy, ma4-modelo y b3-a-comparo.
+
+## 2. Contrato
+
+Es el del lote 3. Lo que usa el front:
+
+| Acción | Ruta | Devuelve |
+|---|---|---|
+| Responder o editar un ítem | `POST /acciones/registro/responder` (`item`, `opciones`, `texto`) | `PasoRegistro` |
+| Responder la repregunta | `POST /acciones/registro/responder-seguimiento` (`item`, `texto`) | `PasoRegistro` |
+| Reenviar lo no evaluado | `POST /acciones/registro/reenviar` (`item`) | `PasoRegistro` |
+| Terminar el registro | `POST /acciones/registro/entregar` | El registro, con eventos |
+| Leer el registro | `GET /cuentas/{c}/actividades/{a}/registro` | `estado`, `item_actual` e `items` |
+
+- `PasoRegistro`: `paso` (`SIGUIENTE`, `REPREGUNTA` o `MENSAJE`), `repregunta`, `mensaje` y el `registro` completo.
+- Cada ítem de la lectura trae su consigna resuelta, `eleccion`, `opciones`, `ecos` y la `respuesta` vigente (`opciones_elegidas`, `primera_respuesta`, `linea_seguimiento`, `pista`, `reenviable`, `eco_cambiado`).
+- **El front nunca recibe el tipo.** Si necesita saber si quedó pista, mira `respuesta.pista` del ítem en el registro que devuelve el paso.
+- **`disponible` y `marcador_faltante` se ignoran:** si la actividad está disponible, sus ítems se responden.
+- Salen del front los servicios de borrador, edición por lotes y continuar sin responder.
+- Los tipos de `src/types/servidor.ts` se rehacen según `app/schemas/registro.py`.
+- Los fixtures de `tests/fixtures/servidor` se regeneran.
+
+## 3. Flujo de un ítem
+
+1. El estudiante marca la elección, escribe y toca «Enviar». El texto solo se exige no vacío, salvo que la opción marcada vaya sin LLM. No hay mínimo de caracteres.
+2. Se abre la **pantalla de Lumi**: arriba, «Tu respuesta» (la elección y el texto, recortado a 3 líneas con «ver completa»); debajo, Lumi con tres puntos animados mientras responde el backend. Sin texto de espera. El botón queda bloqueado. La evaluación puede tardar hasta 12 segundos.
+3. Según el paso:
+
+| Paso | Qué muestra Lumi | Botones |
+|---|---|---|
+| `SIGUIENTE` | Una frase de confirmación (§7) | «Continuar» |
+| `REPREGUNTA` | La repregunta, y un campo corto | «Responder» (apagado con el campo vacío) y el enlace «Seguir sin responder» |
+| `MENSAJE` | El texto que viene del backend, sin campo | «Continuar» |
+
+4. **Si responde la repregunta:** vuelven los puntos y luego:
+   - `MENSAJE`: el texto del backend;
+   - `SIGUIENTE` y el ítem quedó sin pista: una frase de confirmación;
+   - `SIGUIENTE` y el ítem quedó con pista: «Quedó guardado. Aún tengo algo que preguntarte sobre esto; puedes volver más adelante.»
+   No hay segunda repregunta.
+5. **Si sigue sin responder:** no se llama a nada. La repregunta ya quedó guardada como pista.
+6. «Continuar» lleva al nodo siguiente. Tras el último ítem, el front llama a `entregar` y muestra el cierre.
+
+**Reglas.**
+- **Ítem u opción sin LLM:** misma pantalla de Lumi, sin puntos, con la frase de confirmación.
+- **La repregunta existe solo en esta pantalla.** Nunca se vuelve a abrir: ni al retroceder, ni al reingresar, ni desde el ítem respondido.
+- **La pantalla es idéntica en todos los casos:** sin íconos ni colores que distingan una respuesta de otra. El avance de la actividad suma al guardar el ítem, no según el paso.
+- **La pantalla de Lumi no tiene «Anterior».**
+- **Salen los mensajes de reacción a la elección** («Anotado. Ahora cuéntame.» y similares).
+- **Quién habla:** la consigna la da el personaje del nodo (`hablanteId`), con su avatar. La pantalla de Lumi es siempre de Lumi.
+- **La opción elegida cambia la consigna:** si la opción marcada trae `pregunta` y `arranque`, reemplazan a los del ítem. Al cambiar de opción, lo ya escrito en la caja se conserva.
+- **Dos peticiones seguidas** sobre el mismo ítem serían una edición: el botón se bloquea mientras hay una en curso.
+- **Error de red o del servidor:** se muestra el mensaje del servidor y se puede reintentar. Si la edición número 11 se rechaza (409), se muestra ese mismo mensaje; no hay texto propio para ese caso.
+- **Ítem en curso:** el front lo conserva localmente mientras no se envía. No hay borradores en el backend.
+
+## 4. Ítem respondido, edición y reenvío
+
+Un ítem con respuesta vigente se muestra en **lectura**, igual al retroceder en una actividad a medias que al volver a una completada.
+
+**Lectura.**
+- Muestra la elección, la primera respuesta y, debajo, la línea del seguimiento.
+- **Nada se puede mover:** la elección se muestra como texto. Sin tocar «Modificar» no hay opciones sueltas, arrastre ni campos.
+- **Pista:** si `pista` viene, va debajo de la respuesta con el rótulo «Lumi aún quiere saber». Es solo texto, sin botón.
+- **Un solo aviso por ítem,** con esta prioridad:
+  1. `reenviable`: «Lumi no llegó a escuchar esta respuesta.», con el botón «Volver a enviar» dentro del aviso;
+  2. `eco_cambiado`: «Esto lo respondiste cuando {eco} era otro. Puede que hoy lo veas distinto.», sin botón. `{eco}` es el nombre del dato que cambió (por ejemplo, «tu Plan A»); si no se puede determinar, «algo de lo que dijiste antes»;
+  3. la pista.
+
+**Edición.**
+- «Modificar» abre el ítem con la elección editable y la caja prellenada con la primera respuesta y, en la línea siguiente, la línea del seguimiento. Todo es editable.
+- La pista va arriba de la caja, con el rótulo «Podrías contar más sobre esto».
+- «Enviar» llama a `responder` y pasa a la pantalla de Lumi: se evalúa de nuevo, con su repregunta.
+- «Cancelar» vuelve a la lectura sin cambios.
+
+**Reenvío.**
+- «Volver a enviar» llama a `reenviar` y abre la pantalla de Lumi con los puntos. Puede traer `REPREGUNTA`, `MENSAJE` o `SIGUIENTE`, y se trata igual que en §3.
+
+## 5. Botones
+
+Abajo solo se navega; «Modificar» va junto a la respuesta.
+
+| Pantalla | Arriba, junto a la respuesta | Pie izquierdo | Pie derecho |
+|---|---|---|---|
+| Ítem por responder | — | Anterior | Enviar |
+| Ítem respondido (lectura) | Modificar | Anterior | Continuar |
+| Ítem en edición | «Modificando tu respuesta» | Cancelar | Enviar |
+| Pantalla de Lumi | — | — | Continuar, o Responder y «Seguir sin responder» |
+
+- En edición no hay «Anterior» ni «Continuar».
+- En el ítem por responder, «Anterior» conserva lo escrito.
+- El pie «Lo ven tú y tu orientadora» va en todas estas pantallas, también en la de Lumi.
+
+## 6. Entrar a la actividad
+
+- **Primera vez:** la apertura y luego los ítems en orden.
+- **A medias:** cae en `item_actual`, el primer ítem sin respuesta. Puede retroceder: los ítems anteriores se ven en lectura.
+- **Completada (rehacer):** empieza desde el inicio, con sus diálogos y diapositivas. Ya no se salta a los ítems. Al llegar a cada ítem aparece en lectura. Al final se llama otra vez a `entregar`, que es repetible.
+- Si cerró la plataforma con una repregunta en pantalla, al volver ve el ítem en lectura con su pista.
+
+## 7. Textos del front
+
+Van en un solo lugar del código, no en los JSON de cada actividad.
+
+**Frases de confirmación,** que rotan:
+1. «Listo, quedó en tu registro.»
+2. «Anotado en tu registro.»
+3. «Ya está guardado. Sigamos.»
+4. «Queda en tu registro, tal como lo dijiste.»
+5. «Guardado. Vamos con lo que sigue.»
+
+**Otros:**
+- Quedó con pista: «Quedó guardado. Aún tengo algo que preguntarte sobre esto; puedes volver más adelante.»
+- Rótulo de la pista en lectura: «Lumi aún quiere saber».
+- Rótulo de la pista en edición: «Podrías contar más sobre esto».
+- Aviso sin evaluar: «Lumi no llegó a escuchar esta respuesta.» · botón «Volver a enviar».
+- Aviso de eco cambiado: «Esto lo respondiste cuando {eco} era otro. Puede que hoy lo veas distinto.»
+- Pie: «Lo ven tú y tu orientadora».
+- Botones: Anterior, Enviar, Continuar, Modificar, Cancelar, Responder, «Seguir sin responder».
+- Ningún texto dice que Lumi «lee» ni «Enviar a Lumi».
+
+Los mensajes de sensible, emocional y fallo, y la repregunta, vienen del backend.
+
+## 8. Los JSON
+
+En el JSON queda solo lo que el backend no entrega.
+
+**Cada nodo de consigna queda con:** `id`, `tipo`, `hablanteId`, `expresion` (si la tiene) e `item`.
+
+**Salen de cada consigna:** `dialogo`, `preguntaEleccion`, `preguntaTexto`, `entrada`, `premisa`, `entregable`, `obligatoria`, `visibilidad`, `eleccion` (con sus mensajes y errores), `eco`, `podio` y `orden`. Salen de la actividad los `destinos` y `destino_por_defecto`.
+
+**Sobran 26 consignas,** de ítems que ya no existen en el backend. Se eliminan:
+
+b2-4-antes · b3-4-dato · b3-4-cambia · b3-a-testimonio · b3-a-identifico · b4-1-familia · b4-2-criterios · b4-2-linea-roja · b4-5-orden · b4-5-debil · b4-5-plan-b · b5-1-decision · b5-1-senal · b5-1-apoyo · b5-3-inicial · b5-3-explorar · h1-habilidad · h1-accion · h2-no-refleja · h3-sorprende · h3-descarto · ma3-pasos · ma3-falta · ma4-probe · ma4-sigo · ma8-motivos
+
+**Faltan 11 nodos,** que se agregan en el orden de los ítems del backend, con el personaje de su registro:
+
+| Ítem | Personaje (`hablanteId`) |
+|---|---|
+| ma3-hoy | guardian |
+| b2-4-cruce | companero |
+| h1-reto | dora |
+| h3-curiosidad | bibliotecaria |
+| ma4-modelo | dora |
+| b3-4-necesito, b3-4-quien | companero |
+| b3-a-comparo | companero |
+| b4-5-moneda | ivan |
+| b5-1-seguridad | vigia |
+| b5-3-cambio | companero |
+
+- «companero» es Lumi.
+- La apertura de cada registro (diálogos, diapositivas, elecciones sin registro) no se toca en este lote, aunque prometa cosas que ya no existen: se corrige en el lote 3.
+- `scripts/verificar_contenido_front.py` debe volver a incluir los 19 registros y pasar: cada `item` de un JSON existe en el backend y cada ítem del backend tiene su nodo.
+- Los errores de selección («Elige una opción para continuar.», «Escribe cuál es tu otra opción.») pasan a textos comunes.
+
+## 9. Lo que sale del front
+
+- El registro como conversación (`conversacion`, turnos, borradores) y el seguimiento posterior a la entrega.
+- La consulta con cambios acumulados que se entregaban juntos al final.
+- El premarcado y «lo elegido la vez pasada».
+- El destino sugerido al cerrar.
+- **El modo local de los registros:** los registros funcionan solo contra el servidor. El resto del modo local no se toca.
+
+## 10. Pruebas
+
+**Backend:**
+- cierre de la repregunta: 409 tras responder otro ítem y tras `entregar`; sigue valiendo antes; `reenviar` con `seguimiento_sin_evaluar` sigue valiendo; la pista no cambia;
+- carga de los diálogos y preguntas de §1.3, y el mensaje al LLM de esos ítems idéntico al de antes;
+- el texto nuevo de `LUMI_SIN_EVALUAR`.
+
+**Front,** con los fixtures regenerados:
+- los tres pasos de la primera respuesta y los tres desenlaces tras la repregunta (mensaje, confirmación, «aún tengo algo que preguntarte»);
+- ítem y opción sin LLM: pantalla de Lumi sin espera;
+- seguir sin responder no llama a ningún servicio;
+- lectura: nada editable sin «Modificar»; prioridad de los avisos; pista visible;
+- edición: caja prellenada con las dos líneas, pista arriba, cancelar no cambia nada;
+- reenvío con cada paso posible;
+- entrar a medias en `item_actual`; rehacer desde el inicio y volver a terminar;
+- la opción elegida cambia la pregunta y conserva lo escrito;
+- «Anterior» conserva lo escrito;
+- la coherencia de los JSON con el backend.
+
+Cierran el lote las dos suites completas en verde, con build y lint.
+
+## 11. Decisiones de esta spec
+
+1. Cada respuesta pasa por la pantalla de Lumi, también las que no llevan LLM.
+2. Repregunta no respondida, pista. No se puede responder después; el backend la cierra al llegar otra respuesta o al terminar.
+3. La pista se ve siempre en el ítem respondido y arriba de la caja de edición.
+4. En lectura nada se puede mover.
+5. Abajo solo se navega; «Modificar» va junto a la respuesta.
+6. Un solo aviso por ítem; solo el de sin evaluar tiene botón.
+7. Toda la consigna viene del backend; el JSON guarda el ítem, quién habla y su expresión.
+8. Los registros dejan de correr en el modo local.
+9. No existe el ítem no disponible.
+10. No hay mensaje propio para el tope de intentos.
+11. Lumi escucha, no lee.
+
+## 12. Después de este lote
+
+- Lote 2: selector de piezas, varias «Otra» en lista y podio, las seis formas de eco y la lectura cuidada. Referencia: `claude/items-front-registros.md` y el lienzo de bocetos.
+- Lote 3: apertura de los 19 registros y pantalla de cierre con sus mensajes.
