@@ -22,10 +22,10 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, ActividadItem, AplicacionActividad, Bloque, Carrera, Cuenta, Entrevista, EstadoInvestigacion, FamiliaCarrera,
     EstadoProgreso, IngresoFamilia, Testimonio, TipoObjetivo, Favorito, Institucion, Investigacion, ItemRegistro, MotivoTarjeta, Ocupacion, OpcionEscala, OpcionLista, PasoTarjeta,
-    ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
+    CheckIn, ProgresoActividad, RespuestaItem, RespuestaRegistro, ResultadoInstrumento, Rol, TarjetaCarrera, TipoFavorito,
 )
 from app.models.enums import EstadoReferencia, TipoReferencia
-from app.schemas.referencias import OpcionReferida, ReferenciaResuelta, ReferenciasConsultadas
+from app.schemas.referencias import OpcionReferida, PlanReferido, ReferenciaResuelta, ReferenciasConsultadas
 from app.services.comun import buscar_por_codigo
 from app.services.instrumentos.consultas import cargar_representaciones, representar_resultado
 
@@ -136,19 +136,33 @@ def _leer_planes(sesion, cuenta, tipos):
 
     datos = {}
     if planes:
-        datos[TipoReferencia.PLANES] = dict(opciones=[OpcionReferida(codigo=c, texto=n) for _, c, n in planes])
+        # Ajuste registros llm (lote 2): institución, camino, motivos, relato e idea de cada plan, en dos lecturas.
+        motivos = {}
+        for m in sesion.scalars(select(MotivoTarjeta).where(MotivoTarjeta.tarjeta_id.in_([p.id for p, _, _ in planes]))
+                                .order_by(MotivoTarjeta.posicion)):
+            motivos.setdefault(m.tarjeta_id, []).append(opcion(m.opcion_id, m.texto_otro))
+        ids_institucion = {p.institucion_id for p, _, _ in planes if p.institucion_id is not None}
+        instituciones = dict(sesion.execute(select(Institucion.id, Institucion.nombre).where(
+            Institucion.id.in_(ids_institucion))).all()) if ids_institucion else {}
+        detalle = [PlanReferido(
+            prioridad=p.prioridad, codigo=c, carrera=n, institucion=instituciones.get(p.institucion_id),
+            camino=(definiciones.obtener(OpcionLista, p.camino_opcion_id).texto if p.camino_opcion_id is not None
+                    else p.camino_otro),
+            idea_origen=None if p.idea_origen is None else p.idea_origen.value, motivos=motivos.get(p.id, []),
+            relato=p.relato) for p, c, n in planes]
+        datos[TipoReferencia.PLANES] = dict(opciones=[OpcionReferida(codigo=c, texto=n) for _, c, n in planes],
+                                            planes=detalle)
         plan_a, _, nombre_a = planes[0]
         if TipoReferencia.PLAN in tipos:
-            motivos = sesion.scalars(select(MotivoTarjeta).where(MotivoTarjeta.tarjeta_id == plan_a.id).order_by(
-                MotivoTarjeta.posicion))
-            datos[TipoReferencia.PLAN] = dict(texto=nombre_a, cita=plan_a.relato,
-                                              opciones=[opcion(m.opcion_id, m.texto_otro) for m in motivos])
+            datos[TipoReferencia.PLAN] = dict(texto=nombre_a, cita=plan_a.relato, opciones=motivos.get(plan_a.id, []),
+                                              planes=detalle[:1])
         if TipoReferencia.PASOS_PLAN_A in tipos:
             pasos = sesion.scalars(select(PasoTarjeta).where(PasoTarjeta.tarjeta_id == plan_a.id).order_by(
                 PasoTarjeta.posicion)).all()
             if pasos:
                 datos[TipoReferencia.PASOS_PLAN_A] = dict(
-                    opciones=[opcion(p.tipo_opcion_id, texto=p.texto) for p in pasos])
+                    opciones=[opcion(p.tipo_opcion_id, texto=p.texto).model_copy(update={'estado': p.estado.value})
+                              for p in pasos])
     if TipoReferencia.OPCION_INICIAL in tipos and cuenta.opcion_inicial_id is not None:
         datos[TipoReferencia.OPCION_INICIAL] = dict(texto=sesion.scalar(select(Carrera.nombre).where(
             Carrera.id == cuenta.opcion_inicial_id)))
@@ -210,7 +224,15 @@ def _leer_datos_carrera(sesion, cuenta):
     return dict(texto=fila.nombre, opciones=opciones)
 
 
-EN_VIVO = (TipoReferencia.FAMILIAS_RECOMENDADAS, TipoReferencia.TESTIMONIOS, TipoReferencia.DATOS_CARRERA_PLAN_A)
+def _leer_check_in(sesion, cuenta):
+    """El primer check-in de la cuenta (ajuste registros llm, lote 2): «2 de 5». El check-in no es requisito."""
+    nivel = sesion.scalar(select(CheckIn.nivel_seguridad).where(CheckIn.cuenta_id == cuenta.id).order_by(
+        CheckIn.fecha, CheckIn.id).limit(1))
+    return None if nivel is None else dict(texto=f'{nivel} de 5')
+
+
+EN_VIVO = (TipoReferencia.FAMILIAS_RECOMENDADAS, TipoReferencia.TESTIMONIOS, TipoReferencia.DATOS_CARRERA_PLAN_A,
+           TipoReferencia.CHECK_IN_PRIMERO)
 
 
 def resolver(sesion, cuenta, referencias):
@@ -238,6 +260,8 @@ def resolver(sesion, cuenta, referencias):
         en_vivo[TipoReferencia.TESTIMONIOS] = dict(opciones=testimonios) if testimonios else None
     if TipoReferencia.DATOS_CARRERA_PLAN_A in tipos:
         en_vivo[TipoReferencia.DATOS_CARRERA_PLAN_A] = _leer_datos_carrera(sesion, cuenta)
+    if TipoReferencia.CHECK_IN_PRIMERO in tipos:
+        en_vivo[TipoReferencia.CHECK_IN_PRIMERO] = _leer_check_in(sesion, cuenta)
     resueltas = {}
     for referencia in referencias:
         base = dict(codigo=referencia.codigo, tipo=referencia.tipo)

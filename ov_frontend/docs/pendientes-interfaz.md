@@ -683,3 +683,9 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dato:** el backend cambió los contratos de registro y el front actual no funciona contra la rama `ajuste/registros-llm` (el texto del lote 2 lo deja fuera de alcance). `items-registro` trae `dialogo`, `pregunta_eleccion`, `pregunta_texto`, `arranque`, `con_llm` y, en la elección, `etiqueta_otra` y las propias con `pregunta`, `arranque` y `sin_llm` (sale `consigna` y `sin_seguimiento`). El registro trae por ítem `estado`, `opciones_elegidas` (`{codigo, texto}`) y `texto` (salen la conversación, `items_por_ampliar` e `items_abiertos`). `entregar` lleva los ítems en el cuerpo; borrador, seguimiento, edición y continuar sin responder responden 501. Las fuentes PIEZAS_* y la «Otra» múltiple (`OTRA-1`…) son nuevas. Los fixtures de `tests/fixtures/servidor` no se regeneraron.
 - **Dónde se ve:** las vistas de registro del Camino y la Ciudad (diálogos, mensajes de cierre, diapositivas, piezas y ecos, podio con varias «Otra»), y los JSON de `contenidos/plataforma/` de los 19 registros (`scripts/verificar_contenido_front.py` reporta sus diferencias). El check-in de b5-1 llega como número («2 de 5») sin etiqueta.
 - **Estado:** pendiente del ajuste del front de registros, después del lote 3.
+
+## 2026-11-11 · Ajuste registros llm (lote 2) · Datos nuevos en las referencias de planes
+
+- **Dato:** la consulta de referencias suma en PLANES y PLAN el campo `planes` (cada plan con `prioridad`, `codigo`, `carrera`, `institucion`, `camino`, `idea_origen`, `motivos` y `relato`), en PASOS_PLAN_A el `estado` de cada paso, y el tipo nuevo `CHECK_IN_PRIMERO` («N de 5», sin etiqueta). Son aditivos: el front actual los ignora.
+- **Dónde se vería:** los ecos de b4-1 (cabecera del Plan A), b4-5 (Plan A y B), b5-1 (proyecto, pasos y primera señal) y la columna «Hoy» de b5-3, cuando el front de registros se ajuste.
+- **Estado:** pendiente del ajuste del front de registros.

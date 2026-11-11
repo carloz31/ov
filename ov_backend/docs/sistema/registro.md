@@ -56,6 +56,18 @@ Todas exigen actividad disponible y cuenta de estudiante (apoderado u orientador
 
 Apoderados y cuentas o actividades inexistentes: 404. Completar una actividad de registro exige un intento vigente en cada ítem obligatorio (`motor.md`).
 
+## Contexto de un ítem (`contexto.py`, lote 2)
+
+`resolver_contexto(sesion, cuenta, codigo_item)` devuelve, sin escribir nada, lo que se le ofrece a la cuenta en un ítem: las opciones (las de su fuente, las piezas armadas con lo suyo y las propias, cada una con su pregunta y su arranque), los valores de los marcadores, la consigna ya armada, los ecos que se muestran (estructurados) y los que van al LLM (líneas). Si falta el valor de un marcador (p. ej., no hay Plan B), levanta `MarcadorSinValor` con su nombre. `entrada_llm(contexto, elegidas, respuesta, anterior?, repregunta?)` arma la `Entrada` de `llm/` con la tarjeta de la opción marcada o la del ítem (`OpcionSinLLM` si va sin LLM), la pregunta mostrada, lo marcado en el formato del runner y las líneas de ecos; una prueba comprueba que coincide con la del runner en un caso de cada registro requerido. Lo usan el lote 3 (el ítem servido, la capa del LLM y el eco cambiado).
+
+**Reglas de referencia** (§3), siempre sobre el intento vigente: una elección se muestra siempre; un texto, solo si es citable (`texto_citable`: vacío en un ítem sin LLM o `sin_evaluar`; con el seguimiento sin evaluar, solo la primera respuesta); lo escrito en «¿Cuál?» va como pieza si el ítem quedó `propio` o `general`, y siempre si va sin LLM; de un ítem `sensible` o `emocional` no va nada, ni la elección; los marcadores se resuelven siempre; en una pieza, lo escrito por el estudiante va entre comillas.
+
+**Marcadores:** `{carrera}` y `{plan_a}` (la carrera del Plan A), `{plan_b}`, `{primera}` (el 1.º de b2-4-bien en minúscula; una «Otra», tal cual), `{valor 1}` (el 1.º de b2-3-valores) y `{habilidad}` (lo marcado en h1-reto); `{opción}` lo resuelve la tarjeta.
+
+**Piezas del perfil** (b4-1-respalda; en b4-1-menos, con «Lo que te cuesta» primero): `INT-<letra>` (las tres del código RIASEC, con la descripción de la dimensión y su nombre como origen), `INTEL-<dim>` y `HAB-<dim>` (las más altas de inteligencias y de habilidades sociales, todas si hay empate; solo con el resultado revelado), `BIEN-1`, `VAL-1`, `LOGRO-HAB` (ninguna con `NINGUNO`), `GUSTO` (citable) y `CUESTA-<opción>` (sin NADA). **Piezas del inicio** (b5-3-cambio): `INI-OPCION`, `INI-RUTA`, `INI-DIA`, `INI-FRENO` y `INI-MITO` (un mito de la lista aunque su texto no sea citable; la «Otra», con la regla de arriba; con «Ninguno me suena», nada). Al LLM, una pieza va con su origen entre paréntesis.
+
+**Ecos al LLM** (`ecos_llm` y su `forma`): b1-3-contraste, «Nombre: elección. «texto»» por ítem; `primera`, «Nombre: el 1.º»; un texto, «Nombre: texto»; `carrera`, «Tu Plan A: carrera»; `plan_a_b`, «Plan A: carrera · lo que te mueve: motivos · «relato»» y la del B; `carrera_institucion`, «Tu proyecto: carrera · institución». Los que se muestran llevan la cabecera del Plan A, los dos primeros planes, el proyecto con sus pasos pendientes y hechos, el primer check-in, la columna «Hoy» de b5-3 y las referencias de las opcionales.
+
 ## Asistentes con Gemini
 
 El cliente Gemini de `gemini.py` (`EvaluadorGemini`) y el evaluador falso de `evaluacion.py` (`EvaluadorFalso`) ya no evalúan registros: sirven al diario, a las cartas, a las sugerencias de pasos y al guion (`app.state.evaluador_respuestas`), con `TEMPERATURA_ASISTENTES` y `NIVEL_RAZONAMIENTO_ASISTENTES`. `pregunta_valida` (un solo «?» al final, sin códigos ni `PALABRAS_EVALUATIVAS`) valida sus preguntas.
