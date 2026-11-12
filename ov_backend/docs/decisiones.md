@@ -52,6 +52,44 @@ Anotado para otros ajustes (de las observaciones, sin tocar):
 - Banco de b1-5: con los textos tal cual, la correcta es la más larga en 3 de 18 (p10, p13 y p15; en p10 por un carácter), no en 2 como decía el texto de observaciones. No se tocaron los textos.
 - Fuentes de las fichas: Habermas y Bluck (2000), Savickas (2005), Bandura (1977), Low y otros (2005), Oettingen (2014) y Gollwitzer (1999) se citaron sin verificarlas en línea; los datos nuevos de F05 vienen de notas de prensa que citan la fuente original.
 
+## Ajuste coherencia-bloque2
+
+Decididas por el usuario en el texto de observaciones:
+
+- b2-1 y la ficha F08 trabajan las cinco habilidades sociales que mide la página del libro (asertividad, empatía, expresión de sentimientos, resolución de problemas y liderazgo). Convivencia y comunicación quedan en una nota de la ficha.
+- El tema de los cuestionarios entra en b2-1 por la historia de Rosa y una sola pregunta; el detalle queda en F07.
+- La propuesta de Gardner no se presenta como un hecho: se dice que él propuso mirar la inteligencia de esa forma, sin nota sobre la discusión entre investigadores.
+- Salen las personas famosas de la lámina de inteligencias y de F09; la ficha lleva tareas donde se usa cada inteligencia.
+- En b2-3 sale la comparación que ponía «interés y propósito» por encima de «salario, estatus o presión»: no hay valores mejores que otros.
+- En b2-4 los ítems los pide Nico, y la lámina trabaja «lo que te sale» y «lo que te gusta» sin los términos «aptitud» y «capacidad». A Nico le cuesta una parte de lo que quiere, no la carrera entera.
+- En los registros, el personaje de la escena cuenta algo propio que muestra cómo se responde cada ítem, y es quien los pide.
+- En las informativas, las láminas van después de que el estudiante resuelve algo y las presenta el personaje de la escena o nadie; Lumi no explica la teoría.
+- Quien guarda las preguntas de cada página lo dice Rosa: Dora en b2-1, Bruno en b2-2 y Sol en b2-5. Ningún texto anuncia h1, h2 ni h3.
+- El guardián de b2-5 calza con b1-7: la aguja se detiene y vuelve a moverse cuando el viajero dice qué entendió de sí en el bosque; no dice «tramo», no adelanta lo que viene y no nombra a la orientadora.
+- Ningún texto dice que una carrera tiene un código RIASEC ni que se buscan carreras por letras; las ocupaciones sí tienen código y el filtro por letras se nombra solo para ellas.
+- Salen del bloque «brújula» (b2-3), «bitácora», «tarjeta» para una lámina, los diálogos de Lumi «Esto lo lee tu orientadora…» y los adjetivos con género dirigidos al estudiante.
+
+Tomadas en el ajuste:
+
+- Sin cambios de código: la pregunta dentro de un registro y los pasos de cierre ya existían desde coherencia-bloque1, y los JSON nuevos solo usan nodos, bloques y expresiones ya admitidos.
+- Los contenidos de F07–F10 se copiaron con un script desde los bloques markdown de las observaciones y se comprobó que el texto cargado es idéntico carácter por carácter (pedido por el usuario al aprobar).
+- Ninguna prueba ni fixture contenía los textos cambiados; no se adaptó ninguna prueba.
+- Revisión en navegador (base aparte con `contenido`): b2-1 a b2-5 completos, «Anterior» ida y vuelta en b2-1 y b2-4, preguntas con pista, registros con pregunta y pasos de cierre, salida y reingreso de b2-4 durante el cierre (vuelve al último ítem en lectura), tablas a 375 px, F07–F10 y lo que abre cada cierre. Las frases nuevas de Dora (visita 4) y Sol (visita 6) se comprobaron en el JSON, no en pantalla.
+
+Vistos en la revisión, sin tocar (el ajuste no cambia código):
+
+- `ResourceText.tsx` no quita el escape de «O\*NET»: la barra se ve en F07 y F10 (y ya se veía en F07 y F12 en `main`).
+- `b2-4-cruce` no tiene `dialogo`, así que esa consigna no muestra a Nico (`RegistroPersonaje` no pinta nada sin texto); las otras dos sí.
+- Un registro ya entregado se abre desde el inicio para rehacerlo («Ver o modificar mis respuestas»), como dice `useActivityPlayer`; solo uno respondido y sin entregar se abre en el último ítem. Las observaciones esperaban el último ítem también para los entregados.
+- En la lámina `b2-5-08`, a unos 1024 px, la primera columna corta palabras («Investigad|or», «Emprende|dor»). A 375 px se ve bien.
+
+Anotado para otros ajustes (de las observaciones, sin tocar):
+
+- Código RIASEC por carrera: revisar la lámina de b4-1, las preguntas de la batalla b4-4 con la regla «si solo calza con el código…», F19, h3 («las cinco familias que salieron de tus intereses») y las conversaciones familiares.
+- h1 (Mi reto): su diálogo 02 dice «Esto lo lee tu orientadora…», y su cierre, «plan de práctica» y «bitácora». Se ve con h2 y h3.
+- b2-6 figura en los documentos de diseño como opcional y no existe en el repo.
+- Fuentes: el dato del MTPE (F08 y `b2-1-14`) viene de una nota de Andina, ambigua en el «más del 80 %»; confirmarlo en el informe de la Encuesta de Demanda Ocupacional 2022. Caballo (2007) y Lent, Brown y Hackett (1994) sin verificar en línea; Durlak y otros (2011) y Su, Rounds y Armstrong (2009) verificadas por su resumen. No se comprobó que el Anexo 4.1 liste siete habilidades. La columna «Tareas donde se usa» de F09 es criterio de orientador.
+
 ## Merge de llm-sugerencias en main
 
 - Al juntar llm-sugerencias (guion y pasos del plan a Claude Haiku) con cartas-diario (diario y cartas sin LLM), Gemini quedó sin ningún asistente. Decidido por el usuario: se retira en el mismo merge `gemini.py`, `evaluacion.py` (`EvaluadorFalso`), `app.state.evaluador_respuestas`, las variables `EVALUADOR` y `GEMINI_*`, sus parámetros (`MODELO_LLM_REGISTRO`, `TEMPERATURA_ASISTENTES`, `NIVEL_RAZONAMIENTO_ASISTENTES`, `PAUSA_CASOS_GEMINI_SEGUNDOS`, `TIEMPO_MAXIMO_EVALUACION_SEGUNDOS`) y la dependencia `google-genai`.
