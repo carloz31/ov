@@ -219,7 +219,8 @@ export type Escenario = 'muelle' | 'bosque' | 'cabana' | 'nevado' | 'ciudad' | '
 
 export const NODOS_PERMITIDOS: Record<TipoActividad, Nodo['tipo'][]> = {
   encuentro: ['dialogo', 'eleccion', 'diapositiva', 'pregunta'],
-  registro: ['dialogo', 'eleccion', 'diapositiva', 'consigna'],
+  // Ajuste coherencia-bloque1: una pregunta con respuesta correcta antes de los ítems (b1-1, b1-3, b1-7).
+  registro: ['dialogo', 'eleccion', 'diapositiva', 'pregunta', 'consigna'],
   // Ajuste coherencia-bloque0: una lámina dentro de un cuestionario (b0-3).
   instrumento: ['dialogo', 'eleccion', 'diapositiva', 'item', 'resultado'],
 }

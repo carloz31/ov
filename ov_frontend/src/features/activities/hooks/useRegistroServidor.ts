@@ -56,8 +56,8 @@ const errorDe = (respuesta: PasoConRefresco) =>
 
 // Ajuste front de registros (lote 1): el flujo ítem por ítem de un registro del servidor. Cada ítem se envía solo
 // y pasa por la pantalla de Lumi, que puede traer una repregunta; un ítem respondido se ve en lectura y se edita con
-// «Modificar». Lo escrito y no enviado vive aquí (no hay borradores en el servidor). Tras el último ítem, «Continuar»
-// llama a `entregar` (repetible) y muestra el cierre.
+// «Modificar». Lo escrito y no enviado vive aquí (no hay borradores en el servidor). Tras el último ítem y sus pasos de
+// cierre, si los hay, «Continuar» llama a `entregar` (repetible) y muestra el cierre.
 export function useRegistroServidor({
   actividad,
   registroServidor,
@@ -82,7 +82,6 @@ export function useRegistroServidor({
   const enCurso = useRef(false)
   const confirmaciones = useRef(0)
   const entrega = useRef<RespuestaRegistroAccion | undefined>(undefined)
-  const ultimaConsigna = nodes.findLast((n) => n.tipo === 'consigna')
 
   const item = (nodo: Nodo | undefined) =>
     nodo?.tipo === 'consigna' ? itemDe(registro, nodo.item) : undefined
@@ -184,22 +183,32 @@ export function useRegistroServidor({
     setLumi((l) => l && { ...l, estado: frase(paso, !!vigente.linea_seguimiento) })
   }
 
+  // Terminar el registro (`entregar`, repetible) y mostrar el cierre. Devuelve el mensaje si falla; quien la llama
+  // decide dónde mostrarlo (el ítem o el aviso del reproductor, tras los pasos de cierre).
+  async function entregar(): Promise<string | undefined> {
+    const confirmada = entrega.current
+    const respuesta: AccionRegistro | undefined = await pedir(() => entregarRegistro(actividad, confirmada))
+    if (!respuesta || !montado.current) return undefined
+    if (respuesta.tipo === 'ok') {
+      entrega.current = undefined
+      terminar(respuesta.datos)
+      return undefined
+    }
+    if (respuesta.tipo === 'guardado_sin_refrescar') entrega.current = respuesta.datos
+    return mensajeErrorServidor(respuesta.tipo === 'guardado_sin_refrescar' ? respuesta.error : respuesta)
+  }
+
   // «Continuar» (lectura o pantalla de Lumi) y «Seguir sin responder», que no llama a nada: la repregunta ya quedó
-  // como pista. Tras la última consigna, terminar el registro.
+  // como pista. Lleva al nodo siguiente; desde el ajuste coherencia-bloque1, tras la última consigna pueden venir
+  // pasos de cierre, y el registro se entrega al continuar el último (`useActivityPlayer`). Sin ellos, aquí.
   async function continuar(nodo: Nodo) {
     if (enCurso.current) return
     setLumi(undefined)
     setError('')
-    if (nodo.id !== ultimaConsigna?.id) return avanzar(nodes[nodes.indexOf(nodo) + 1])
-    const confirmada = entrega.current
-    const respuesta: AccionRegistro | undefined = await pedir(() => entregarRegistro(actividad, confirmada))
-    if (!respuesta || !montado.current) return
-    if (respuesta.tipo === 'ok') {
-      entrega.current = undefined
-      return terminar(respuesta.datos)
-    }
-    if (respuesta.tipo === 'guardado_sin_refrescar') entrega.current = respuesta.datos
-    setError(mensajeErrorServidor(respuesta.tipo === 'guardado_sin_refrescar' ? respuesta.error : respuesta))
+    const siguiente = nodes[nodes.indexOf(nodo) + 1]
+    if (siguiente) return avanzar(siguiente)
+    const fallo = await entregar()
+    if (fallo) setError(fallo)
   }
 
   function modificar(nodo: Nodo) {
@@ -230,6 +239,7 @@ export function useRegistroServidor({
     responderRepregunta: (texto: string) => void responderRepregunta(texto),
     reenviar: (nodo: Nodo) => void reenviar(nodo),
     continuar: (nodo: Nodo) => void continuar(nodo),
+    entregar,
     modificar,
     cancelar,
     limpiarError: () => setError(''),

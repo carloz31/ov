@@ -42,6 +42,22 @@ test('un registro admite diapositivas: t-valores la valida y la muestra antes de
   )
 })
 
+test('un registro admite una pregunta antes de sus ítems y pasos después del último (b1-1, b1-3, b1-6, b1-7)', () => {
+  // Ajuste coherencia-bloque1.
+  const app = fixtureServidor()
+  const { NODOS_PERMITIDOS } = app.load('src/types/activities.ts')
+  const { validateActivity } = app.load('src/lib/activities/validation.ts')
+  assert.ok(NODOS_PERMITIDOS.registro.includes('pregunta'))
+  const cierres = { b1_1: 5, b1_3: 7, b1_6: 3, b1_7: 4 }
+  for (const [clave, cierre] of Object.entries(cierres)) {
+    const registro = contenido(app, clave)
+    assert.doesNotThrow(() => validateActivity(registro), clave)
+    const tipos = registro.nodos.map((n) => n.tipo)
+    assert.equal(tipos.length - 1 - tipos.lastIndexOf('consigna'), cierre, clave)
+    if (clave !== 'b1_6') assert.ok(tipos.indexOf('pregunta') < tipos.indexOf('consigna'), clave)
+  }
+})
+
 test('un diálogo cita cada referencia de su lista en orden; las sin dato se omiten', () => {
   const app = fixtureServidor()
   const { encuentroConEco, conEcoEncuentro } = app.load('src/lib/servidor/contenidos.ts')

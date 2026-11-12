@@ -168,7 +168,23 @@ export function useActivityPlayer({
     setReactions,
   })
   function move(...args: Parameters<typeof completion.move>) {
+    // Ajuste coherencia-bloque1: un registro del servidor con pasos de cierre se entrega al continuar el último (o
+    // con «Reintentar»), con el cargador y el aviso del reproductor; `completar-actividad` rechaza los registros.
+    if (modoApi && registroServidor && !args[0]) return void entregarRegistro()
     return completion.move(...args)
+  }
+  async function entregarRegistro() {
+    if (enviando.current) return
+    enviando.current = true
+    setGuardando(true)
+    setErrorServidor('')
+    try {
+      const fallo = await registro.entregar()
+      if (fallo && montado.current) setErrorServidor(fallo)
+    } finally {
+      enviando.current = false
+      if (montado.current) setGuardando(false)
+    }
   }
   // «Anterior» (F01): las elecciones solo agregan reacciones, así que el camino recorrido es el orden de
   // los nodos y el paso anterior es nodes[index - 1], también al retomar. Desde el ajuste coherencia-bloque0

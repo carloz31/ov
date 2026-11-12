@@ -34,11 +34,31 @@ function recorrerApertura(player) {
     const [dialogo] = elementos(tree, (e) => e.type?.name === 'DialogueBox')
     const [eleccion] = elementos(tree, (e) => e.type?.name === 'ChoiceNode')
     const [diapositiva] = elementos(tree, (e) => e.type?.name === 'SlideNode')
+    // Ajuste coherencia-bloque1: b1-1 trae una pregunta antes de los ítems.
+    const [pregunta] = elementos(tree, (e) => e.type?.name === 'QuestionNode')
     if (dialogo) dialogo.props.onContinue()
     else if (eleccion) eleccion.props.onChoose(eleccion.props.node.opciones[0])
     else if (diapositiva) diapositiva.props.onContinue()
+    else if (pregunta) pregunta.props.onContinue()
   }
   assert.ok(itemEnPantalla(player), 'llega al primer ítem')
+}
+// Ajuste coherencia-bloque1: tras el último ítem, los pasos de cierre de b1-1 (sus diálogos, en orden). Devuelve sus
+// textos; el último «Continuar» entrega.
+const dialogo = (player) => elementos(player.render(), (e) => e.type?.name === 'DialogueBox')[0]
+async function recorrerCierre(player, pasos = 10) {
+  const cierre = []
+  for (let paso = dialogo(player); paso && cierre.length < pasos; paso = dialogo(player)) {
+    cierre.push(paso.props.text)
+    paso.props.onContinue()
+    await esperar()
+  }
+  return cierre
+}
+// Los textos de los pasos de cierre de b1-1, del contenido.
+const pasosCierre = (app) => {
+  const nodos = app.load('src/data/activities/contenidos.ts').contenidoPorClave('b1_1').nodos
+  return nodos.slice(nodos.findLastIndex((n) => n.tipo === 'consigna') + 1).map((n) => n.texto)
 }
 const lumi = (player) => {
   const actual = itemEnPantalla(player)
@@ -173,7 +193,9 @@ test('«Anterior» conserva lo escrito: el ítem respondido se ve en lectura y a
   player.unmount()
 })
 
-test('con todo respondido y sin terminar cae en el último ítem en lectura; «Continuar» entrega', async () => {
+// Ajuste coherencia-bloque1 (adaptada): tras el último ítem vienen los pasos de cierre y se entrega al continuar el
+// último. Es también lo que ve quien salió durante los pasos de cierre: entra al último ítem, en lectura.
+test('con todo respondido y sin terminar cae en el último ítem en lectura; sigue por los pasos de cierre y entrega', async () => {
   const { app } = await iniciar({
     actividad: 'b1-1',
     registro: contenido('registro-b1-1-sin-terminar'),
@@ -185,8 +207,50 @@ test('con todo respondido y sin terminar cae en el último ítem en lectura; «C
   assert.equal(actual.vista, 'lectura')
   actual.registro.continuar(actual.node)
   await esperar()
-  assert.equal(peticiones(app, 'entregar').length, 1)
+  assert.equal(peticiones(app, 'entregar').length, 0)
   assert.equal(itemEnPantalla(player), undefined)
+  const cierre = pasosCierre(app)
+  assert.equal(cierre.length, 5)
+  assert.deepEqual(await recorrerCierre(player), cierre)
+  assert.equal(peticiones(app, 'entregar').length, 1)
+  assert.ok(elementos(player.render(), (e) => e.type?.name === 'FinishScreen').length)
+  player.unmount()
+})
+
+test('«Anterior» desde el primer paso de cierre vuelve al último ítem en lectura, sin entregar', async () => {
+  const { app } = await iniciar({ actividad: 'b1-1', registro: contenido('registro-b1-1-sin-terminar') })
+  const player = await abrir(app, 'b1-1')
+  const actual = itemEnPantalla(player)
+  actual.registro.continuar(actual.node)
+  await esperar()
+  const primero = dialogo(player)
+  assert.equal(primero.props.text, pasosCierre(app)[0])
+  primero.props.onAnterior()
+  const vuelta = itemEnPantalla(player)
+  assert.equal(vuelta.node.item, 'b1-1-dificultad')
+  assert.equal(vuelta.vista, 'lectura')
+  assert.equal(peticiones(app, 'entregar').length, 0)
+  player.unmount()
+})
+
+test('si `entregar` falla tras los pasos de cierre, el aviso del reproductor la reintenta', async () => {
+  const { app } = await iniciar({
+    actividad: 'b1-1',
+    registro: contenido('registro-b1-1-sin-terminar'),
+    acciones: { entregar: [{ status: 500, body: { detail: { mensaje: 'Falló el servidor' } } }, contenido('entregar-b1-1')] },
+  })
+  const player = await abrir(app, 'b1-1')
+  const actual = itemEnPantalla(player)
+  actual.registro.continuar(actual.node)
+  await esperar()
+  await recorrerCierre(player, pasosCierre(app).length)
+  assert.equal(peticiones(app, 'entregar').length, 1)
+  const aviso = elementos(player.render(), (e) => e.props?.className === 'sx-player-error')[0]
+  assert.ok(aviso, 'muestra el aviso del reproductor')
+  assert.ok(!elementos(player.render(), (e) => e.type?.name === 'FinishScreen').length)
+  elementos(aviso, (e) => e.type === 'button')[0].props.onClick()
+  await esperar()
+  assert.equal(peticiones(app, 'entregar').length, 2)
   assert.ok(elementos(player.render(), (e) => e.type?.name === 'FinishScreen').length)
   player.unmount()
 })
@@ -207,6 +271,9 @@ test('rehacer: empieza desde el inicio, cada ítem en lectura y al final vuelve 
     await esperar()
   }
   assert.deepEqual(vistos, [['b1-1-gustos', 'lectura'], ['b1-1-logro', 'lectura'], ['b1-1-dificultad', 'lectura']])
+  // Ajuste coherencia-bloque1 (adaptada): entrega al continuar el último paso de cierre.
+  assert.equal(peticiones(app, 'entregar').length, 0)
+  await recorrerCierre(player)
   assert.equal(peticiones(app, 'entregar').length, 1)
   player.unmount()
 })
