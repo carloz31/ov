@@ -9,48 +9,110 @@
   "orden": 35,
   "obligatoria": false,
   "requisitos": [
-    "b4-2"
+    "b4-5"
   ],
-  "ubicacion": "Discutir contra uno mismo",
-  "duracionEstimadaMin": 8,
+  "ubicacion": "Acantilado, el borde",
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "eco",
     "companero"
   ],
   "nodos": [
     {
-      "id": "eco-ma8-01",
+      "id": "ma8-01",
       "tipo": "dialogo",
-      "hablanteId": "eco",
-      "texto": "¿Tus criterios? Lindos. Pero ¿y si te digo que tu plan principal no se sostiene? A ver si puedes discutirlo tú, sin mí.",
-      "expresion": "neutral"
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "El Eco volvió. Antes repetía lo que trajeron otros viajeros. Ahora repite otra cosa."
     },
     {
       "id": "ma8-02",
       "tipo": "dialogo",
+      "hablanteId": "eco",
+      "expresion": "neutral",
+      "texto": "«Es muy difícil entrar.» «No va a alcanzar la plata.» «Con eso no se consigue trabajo.» «No es para ti.» «En tu casa esperan otra cosa.»"
+    },
+    {
+      "id": "ma8-03",
+      "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esta vez el Eco tiene razón en algo: el mejor momento para encontrarle los huecos a tu plan es ahora, no en segundo ciclo. Esto lo lee tu orientadora.",
-      "eco": "ma8-ref-plan"
+      "texto": "Son las que se oyen cuando uno ya tiene un plan. A Vera, una viajera que quería ser arquitecta, le repetía una sola: «No va a alcanzar la plata». No le gritó de vuelta. Bajó al puerto a averiguar."
+    },
+    {
+      "id": "ma8-04",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Con cuál de estas respuestas volvió Vera?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«Sí va a alcanzar. Ya se verá cómo más adelante.»",
+          "correcta": false,
+          "retroalimentacion": "Eso es desearlo. El Eco lo repite igual al día siguiente."
+        },
+        {
+          "id": "b",
+          "texto": "«La plata no importa si una quiere de verdad.»",
+          "correcta": false,
+          "retroalimentacion": "Importa. Negar la objeción no la responde."
+        },
+        {
+          "id": "c",
+          "texto": "«En la pública no hay pensión. Lo demás lo sumé.»",
+          "correcta": true,
+          "retroalimentacion": "Eso. Volvió con algo que averiguó, no con ganas de tener razón."
+        }
+      ],
+      "explicacion": "Una objeción se responde con algo que averiguaste o con lo que harías. Negarla o esperar a que pase no la responde.",
+      "pistas": [
+        {
+          "id": "ma8-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Vera bajó a averiguar. Busca la respuesta que trae un dato."
+        }
+      ]
+    },
+    {
+      "id": "ma8-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Después el Eco probó con otra: «Es muy difícil entrar». A esa, Vera le dijo que todavía no sabía qué responder, porque no había visto cuántos ingresan cada año. También vale: ya sabía qué le faltaba averiguar."
+    },
+    {
+      "id": "ma8-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ahora las tuyas. Alguna te la han dicho, o te la has dicho tú."
     },
     {
       "id": "ma8-respuesta",
       "tipo": "consigna",
-      "hablanteId": "eco",
+      "hablanteId": "companero",
       "item": "ma8-respuesta"
+    },
+    {
+      "id": "ma8-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "No hacía falta ganarle. Si ya tienes qué responderle, pesa menos. Y si todavía no, ya sabes qué te falta averiguar."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un plan que resiste tus propios argumentos resiste casi cualquiera."
+    "mensajeFin": "Una objeción con respuesta pesa menos. Y si todavía no la tienes, ya sabes qué averiguar."
   },
   "mapa": {
     "x": 0,
     "y": 0,
     "icono": "registro",
-    "origen": "b4-2",
+    "origen": "b4-5",
     "adicional": true
   },
   "plantilla": {
     "tipo": "secuencial"
-  },
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido."
+  }
 }

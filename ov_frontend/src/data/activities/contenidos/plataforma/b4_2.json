@@ -1,10 +1,9 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b4-2",
   "codigo": "b4-2",
   "tipo": "registro",
-  "titulo": "Mis criterios para decidir",
-  "subtitulo": "Las reglas con las que vas a elegir",
+  "titulo": "Cómo decido",
+  "subtitulo": "Donde el viento devuelve frases",
   "escenario": "acantilado",
   "bloque": 4,
   "orden": 2,
@@ -26,55 +25,152 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Desde el borde del acantilado se escucha algo raro: el viento devuelve frases. «Estudia lo que da plata.» «Tus amigos van a estar ahí.» «Esa carrera es respetada.» Son las voces que trae cada viajero; aquí rebotan. Antes de enfrentarlas, necesitas tus propias reglas."
+      "texto": "Acércate al borde, pero no mucho. ¿Oyes? El viento devuelve frases: «Estudia lo que da plata». «Tus amigos van a estar ahí». Son cosas que cada viajero trajo de su casa. Aquí rebotan."
     },
     {
       "id": "b4-2-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Me acordé de Tadeo, un viajero que pasó por aquí. Tenía que elegir en qué barco salir del puerto, y compró el pasaje del primero que vio, sin preguntar a dónde iba. Se pasó la travesía dudando."
+    },
+    {
+      "id": "b4-2-03",
+      "tipo": "eleccion",
+      "enunciado": "¿Qué le dices a Lumi?",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b4-2-03a",
+          "texto": "A mí me pasa al revés: le doy mil vueltas.",
+          "reaccion": [
+            {
+              "id": "b4-2-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "También es una forma. Tadeo no se trababa nunca; tú no te saltas nada."
+            }
+          ]
+        },
+        {
+          "id": "b4-2-03b",
+          "texto": "Yo también decido rápido a veces.",
+          "reaccion": [
+            {
+              "id": "b4-2-03br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Tiene lo suyo: Tadeo nunca se quedó en el muelle. Le faltó una pregunta."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-2-04",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Si Tadeo contara cómo decide, ¿cuál de estas frases lo muestra mejor?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«Yo siempre decido rápido, así soy.»",
+          "correcta": false,
+          "retroalimentacion": "Dice cómo es, pero no cuenta ninguna vez."
+        },
+        {
+          "id": "b",
+          "texto": "«Ese viaje me salió bastante mal al final.»",
+          "correcta": false,
+          "retroalimentacion": "Cuenta cómo le fue, no cómo decidió."
+        },
+        {
+          "id": "c",
+          "texto": "«Compré el primer pasaje sin preguntar el destino.»",
+          "correcta": true,
+          "retroalimentacion": "Eso: qué tenía que decidir y qué hizo."
+        }
+      ],
+      "explicacion": "Una forma de decidir se ve en una vez concreta: qué había que decidir y qué hiciste. Cómo te fue después es otra historia.",
+      "pistas": [
+        {
+          "id": "b4-2-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca la frase que cuenta algo que Tadeo hizo, una vez."
+        }
+      ]
+    },
+    {
+      "id": "b4-2-05",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Qué es un criterio",
+      "etiqueta": "En el borde del acantilado",
+      "titulo": "Formas de decidir",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Decidir sin criterios es elegir por impulso y justificarlo después. Un criterio es una regla que fijas antes de mirar las opciones, para que todas se midan igual. No hay que usar todos: hay que elegir los que pesan para ti y ponerlos en orden, porque dos opciones rara vez ganan en todos."
+          "texto": "No hay una forma correcta de decidir. Cada una ayuda en algo y puede jugar en contra en algo:"
         },
         {
-          "tipo": "lista",
-          "titulo": "Criterios que la gente usa",
-          "items": [
-            "Interés: ¿me atrae lo que haría cada día?",
-            "Capacidad: ¿puedo con lo que exige estudiarla e ingresar?",
-            "Valores: ¿me permite vivir como quiero?",
-            "Ingresos: ¿qué rango es realista al inicio y a diez años?",
-            "Empleo: ¿hay trabajo, formal, en mi ciudad o en la que iría?",
-            "Costo: ¿puedo pagar todo el camino, con qué financiamiento?",
-            "Tiempo: ¿cuántos años y en qué horario?",
-            "Cercanía: ¿existe en mi región o tendría que mudarme?",
-            "Apoyo: ¿cuento con mi familia para esta opción?"
+          "tipo": "tabla",
+          "columnas": [
+            "Forma",
+            "En qué ayuda",
+            "En qué puede jugar en contra"
+          ],
+          "filas": [
+            [
+              "Decidir rápido",
+              "No te quedas sin avanzar",
+              "Te saltas una pregunta que importaba"
+            ],
+            [
+              "Pensarlo con calma y comparar",
+              "Miras cada opción con el mismo cuidado",
+              "Se pasa la fecha mientras comparas"
+            ],
+            [
+              "Preguntar a varias personas",
+              "Ves cosas que no habías visto",
+              "Terminas con la decisión de otro"
+            ]
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Una forma rápida de revisar tu orden: ¿los dos primeros hablan de la actividad en sí (interés, capacidad, valores) o solo de lo que viene después (dinero, prestigio, aprobación)? Las decisiones que se sostienen tienen al menos un criterio intrínseco arriba."
+          "texto": "Saber cómo decides no es para cambiarte: es para saber qué cuidar."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Adaptado de Scott y Bruce (1995) y de Gati y otros (2010)."
         }
       ]
-    },
-    {
-      "id": "b4-2-03",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora y manda sobre lo que sigue: con estos criterios vas a comparar tus planes. Te voy a recordar tu primer valor del volcán, lo que espera tu familia y lo que dijiste de los mitos en el desierto."
     },
     {
       "id": "b4-2-estilo",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b4-2-estilo"
+    },
+    {
+      "id": "b4-2-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Tadeo sigue decidiendo rápido. Ahora, antes de pagar, pregunta a dónde va el barco."
+    },
+    {
+      "id": "b4-2-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo de las formas de decidir te lo dejé en la mochila: «Cómo decides y con qué razones»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tus reglas están escritas antes de mirar las opciones. Se abrieron las acciones de preparación en tu tarjeta."
+    "mensajeFin": "No hay una forma correcta de decidir. Saber cuál es la tuya te dice qué cuidar cuando toque elegir."
   },
   "mapa": {
     "x": 90,

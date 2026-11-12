@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b4-1",
   "codigo": "b4-1",
   "tipo": "registro",
@@ -27,42 +26,42 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "El acantilado. Desde aquí se ve el mar de un lado y, del otro, todo lo que caminamos: el puerto, el volcán, el desierto, la ciudad. Y hay alguien sentada en el mirador de piedra con un libro en las rodillas."
+      "texto": "El acantilado. De un lado, el mar; del otro, todo lo que caminamos: el puerto, el volcán, el desierto, la ciudad. Y hay alguien en el mirador de piedra, con un libro en las rodillas."
     },
     {
       "id": "b4-1-02",
       "tipo": "dialogo",
       "hablanteId": "helena",
       "expresion": "neutral",
-      "texto": "Subo aquí cuando un viajero llega con las páginas abiertas. Ya tienes tu historia, lo que valoras, lo que se te da bien, y lo que dijeron Dora, Bruno y Sol. Ahora toca ponerlo frente a tus opciones. No para que el libro decida: para ver dónde coincide y dónde hay fricción."
+      "texto": "Subo aquí cuando ya no aguanto la mesa. Veo que tu libro ya no está en blanco. ¿El pergamino? Desde este mirador se ve casi toda la isla, y yo sigo sin verlo. Lo que sí veo es que llegas con un plan."
     },
     {
       "id": "b4-1-03",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le preguntas?",
       "registrar": false,
       "opciones": [
         {
           "id": "b4-1-03a",
-          "texto": "¿Y si mi perfil no coincide con lo que quiero?",
+          "texto": "¿Y si mis páginas no van con mi plan?",
           "reaccion": [
             {
               "id": "b4-1-03ar",
               "tipo": "dialogo",
               "hablanteId": "helena",
-              "texto": "Entonces sabrás que tendrás que esforzarte en algo, o que te gusta por razones que ningún cuestionario mide. Las dos cosas son información, no sentencias."
+              "texto": "Entonces sabrás en qué te va a tocar esforzarte, o que la quieres por razones que ninguna página mide. Las dos cosas sirven."
             }
           ]
         },
         {
           "id": "b4-1-03b",
-          "texto": "¿Y si coincide perfectamente?",
+          "texto": "¿Y si van perfecto con mi plan?",
           "reaccion": [
             {
               "id": "b4-1-03br",
               "tipo": "dialogo",
               "hablanteId": "helena",
-              "texto": "Tampoco garantiza nada. Dice que el ambiente te sería cómodo; ingresar, pagar y terminar siguen en pie. Por eso el cruce no elige: muestra."
+              "texto": "Tampoco asegura nada. Ingresar, pagar y terminar siguen en pie."
             }
           ]
         }
@@ -70,95 +69,94 @@
     },
     {
       "id": "b4-1-04",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
       "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "helena",
-      "titulo": "El cuadro de afinidad",
-      "bloques": [
+      "texto": "Te cuento cómo me fue a mí con mi oficio. A mí me nace preguntar, desde chica. Y un libro como el tuyo se hace así: preguntando, y escuchando lo que la gente responde."
+    },
+    {
+      "id": "b4-1-05",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Lo que va menos conmigo: no sé estar quieta. Y coser las páginas son semanas de mesa. No dejé de hacer libros por eso. Coso un rato y subo aquí."
+    },
+    {
+      "id": "b4-1-06",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Cuál de estas frases dice qué tiene que ver Helena con su oficio?",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "columnas": [
-            "Aspecto del perfil",
-            "De dónde sale",
-            "Qué buscar en una opción"
-          ],
-          "filas": [
-            [
-              "Intereses",
-              "Tu historia y tu código de intereses",
-              "¿Las tareas del día a día se parecen a lo que te atrae?"
-            ],
-            [
-              "Habilidades sociales",
-              "Tu resultado y la habilidad que elegiste trabajar",
-              "¿Cuánto contacto, liderazgo o negociación exige?"
-            ],
-            [
-              "Inteligencias",
-              "Tus inteligencias más desarrolladas",
-              "¿Qué tipo de problemas resuelve esa ocupación?"
-            ],
-            [
-              "Lo que se te da bien",
-              "Tus cursos y actividades fuertes",
-              "¿Qué cursos pesan en la carrera?"
-            ],
-            [
-              "Rasgos",
-              "Cómo te describes en distintos contextos",
-              "¿Qué ambiente de trabajo tendría?"
-            ]
-          ],
-          "nota": "El cuadro del programa del MINEDU (actividad 14). Para cada fila, una opción de mayor afinidad y una de menor, con una razón corta."
+          "id": "a",
+          "texto": "Hacer libros siempre fue lo suyo.",
+          "correcta": false,
+          "retroalimentacion": "Dice que le gusta, pero no qué parte de ella va con qué del oficio."
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "La razón es lo importante: «me gusta» no es una razón; «pasaría el día analizando datos, y eso es lo que más disfruto» sí."
+          "id": "b",
+          "texto": "Le nace preguntar, y un libro se hace preguntando.",
+          "correcta": true,
+          "retroalimentacion": "Eso: una parte suya y algo que se hace en el oficio."
+        },
+        {
+          "id": "c",
+          "texto": "En todo oficio hace falta tener paciencia.",
+          "correcta": false,
+          "retroalimentacion": "Vale para cualquier oficio. No dice nada de este."
+        }
+      ],
+      "explicacion": "Para ver si algo tuyo va con una carrera hacen falta las dos mitades: una parte de ti y algo concreto que se hace, se estudia o se vive en ella.",
+      "pistas": [
+        {
+          "id": "b4-1-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca la frase donde aparecen las dos cosas: algo de Helena y algo que se hace al hacer un libro."
         }
       ]
     },
     {
-      "id": "b4-1-05",
+      "id": "b4-1-07",
       "tipo": "diapositiva",
       "presentadorId": "helena",
-      "titulo": "Tres reglas para cruzar sin engañarte",
+      "titulo": "Cruzar sin engañarte",
       "bloques": [
         {
           "tipo": "pasos",
           "pasos": [
             {
-              "titulo": "Coincidencia en dos aspectos, no en uno",
-              "texto": "Una opción que calza solo con tu código pero choca con lo que se te da bien y con tus valores no es afín: es atractiva."
+              "titulo": "Una parte tuya y algo de la carrera",
+              "texto": "Una tarea, un curso, un lugar o una condición del trabajo. «Me gusta» todavía no es una relación."
             },
             {
-              "titulo": "La menor afinidad también enseña",
-              "texto": "Justificar por qué una opción no te calza aclara qué sí buscas. A veces descubre que la descartaste por un prejuicio."
+              "titulo": "Lo que va menos no decide",
+              "texto": "Se entrena, se comprueba o se compensa con otra parte."
             },
             {
-              "titulo": "Anota lo que el perfil no resuelve",
-              "texto": "Costos, distancia, oferta en tu ciudad, lo que piensa tu familia: nada de eso sale del cruce, y todo pesa. Ese vacío es la agenda de lo que sigue."
+              "titulo": "Lo que el cruce no dice",
+              "texto": "Cuánto cuesta, cómo se ingresa, dónde se estudia: eso se averigua aparte."
             }
           ]
         },
         {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "El cruce no elige por ti. Muestra qué va contigo, qué va menos y qué falta averiguar."
+        },
+        {
           "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, actividad 14, cuadro «Mi perfil personal y carreras afines»."
+          "texto": "MINEDU (2013), cartilla, actividad 14, «Mi perfil personal y carreras afines»."
         }
       ]
     },
     {
-      "id": "b4-1-06",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Cada fila llega con tu resultado y con lo que escribiste antes, solo para leer; tú pones las opciones, de tus favoritos o del catálogo, y la razón. Esto lo lee tu orientadora y vuelve cuando compares tus planes.",
-      "eco": "b4-1-ref-plan"
-    },
-    {
-      "id": "b4-1-principio",
+      "id": "b4-1-08",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Una parte que hoy no te respalda no decide por ti: se entrena, se comprueba o se compensa con otra."
+      "texto": "Ahora tú. Aquí están partes tuyas que fuiste dejando en el camino. Ponlas junto a tu plan."
     },
     {
       "id": "b4-1-respalda",
@@ -171,10 +169,23 @@
       "tipo": "consigna",
       "hablanteId": "helena",
       "item": "b4-1-menos"
+    },
+    {
+      "id": "b4-1-09",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "nuevoMomento": true,
+      "texto": "Yo sigo sin saber estar quieta, y sigo haciendo libros. Lo que marcaste que va menos, míralo de cerca antes de darlo por perdido."
+    },
+    {
+      "id": "b4-1-10",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo de cruzar tus páginas con tu plan te lo dejé en la mochila: «Cruzar tu perfil con tus opciones»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El cruce no elige por ti: muestra coincidencia, fricción y lo que falta averiguar. Se abrieron fortalezas, debilidades, obstáculos y oportunidades en tu tarjeta."
+    "mensajeFin": "El cruce no elige por ti: muestra qué va contigo, qué va menos y qué falta averiguar."
   },
   "mapa": {
     "x": 140,

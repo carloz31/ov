@@ -1,10 +1,9 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b4-5",
   "codigo": "b4-5",
   "tipo": "registro",
   "titulo": "Pongo a prueba mi orden",
-  "subtitulo": "Poner las rutas sobre la mesa",
+  "subtitulo": "La moneda de Iván",
   "escenario": "acantilado",
   "bloque": 4,
   "orden": 5,
@@ -27,38 +26,143 @@
       "id": "b4-5-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "El Eco se calló. Y el artefacto, como en cada tramo, se detuvo. Pero esta vez el guardián no está solo: Iván lo acompaña en la mesa de mapas."
+      "expresion": "pensativo",
+      "texto": "El Eco se calló. Y la aguja se quedó quieta otra vez. Mira quiénes están en la mesa de mapas."
     },
     {
       "id": "b4-5-02",
       "tipo": "dialogo",
       "hablanteId": "guardian",
       "expresion": "neutral",
-      "texto": "Cuarto tramo. Hasta aquí exploraste; desde aquí tomas posición. No te pido una decisión definitiva: te pido que pongas tus planes contra tus propias reglas y digas cuál queda primero, sabiendo que siempre puedes tener otro en mente."
+      "texto": "Miraste hacia adentro, miraste hacia afuera, y aquí pusiste las dos cosas juntas: tus planes. Pero la aguja no se mueve con planes escritos. Se mueve cuando sabes qué te importa de ellos. Iván tiene con qué averiguarlo."
     },
     {
       "id": "b4-5-03",
       "tipo": "dialogo",
       "hablanteId": "ivan",
-      "texto": "Así funciona la mesa: cada plan, contra cada criterio tuyo. Lo cumple, en parte o no. Sin «me gusta más»: con los criterios que tú mismo escribiste. Y una línea por plan."
+      "nuevoMomento": true,
+      "texto": "Una moneda. No te rías, que a mí me sirvió. Cuando ya llevaba un tiempo en la ciudad, la tiré: cara, me quedaba en el taller; sello, volvía a buscar el pergamino. Salió sello."
     },
     {
       "id": "b4-5-04",
       "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Y lo primero que sentí fue un nudo. Me iba a hacer falta que la gente tocara mi puerta con algo roto en la mano. Ahí supe qué me importaba. La moneda no decidió nada: me mostró lo que yo ya sentía."
+    },
+    {
+      "id": "b4-5-05",
+      "tipo": "pregunta",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora y es la base de tu proyecto. Al cerrar te voy a recordar lo que justificaste en el cuadro de afinidad para el plan que quede primero, o lo que dijiste que tu perfil no resuelve.",
-      "eco": "b4-5-ref-planes"
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Para qué le sirvió la moneda a Iván?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Para decidir por él: salió sello y era sello.",
+          "correcta": false,
+          "retroalimentacion": "No le hizo caso. Se quedó en el taller."
+        },
+        {
+          "id": "b",
+          "texto": "Para ver qué le haría falta si se iba.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Lo supo en cuanto la moneda cayó."
+        },
+        {
+          "id": "c",
+          "texto": "Para nada: fue suerte, y la suerte no enseña.",
+          "correcta": false,
+          "retroalimentacion": "El resultado fue suerte. Lo que sintió al verlo, no."
+        }
+      ],
+      "explicacion": "La moneda no elige. Sirve para notar qué sientes cuando una opción parece decidida, y qué te haría falta de la otra.",
+      "pistas": [
+        {
+          "id": "b4-5-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en qué hizo Iván después de que saliera sello."
+        }
+      ]
+    },
+    {
+      "id": "b4-5-06",
+      "tipo": "diapositiva",
+      "presentadorId": "ivan",
+      "titulo": "La moneda no decide",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Imagina que ya salió",
+              "texto": "No «qué pasaría si»: ya está, te tocó esa."
+            },
+            {
+              "titulo": "Fíjate en lo primero que sientes",
+              "texto": "Alivio, desánimo, las dos cosas, nada claro. Todo vale."
+            },
+            {
+              "titulo": "Ponle nombre a lo que te haría falta",
+              "texto": "Algo concreto de la otra opción: una tarea, un tema, un lugar, la gente, el horario."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La moneda no te hace elegir mejor ni te obliga a cambiar el orden. Vuelve más clara una reacción que ya tenías."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Jaffé, Reutner y Greifeneder (2019), Catalyzing decisions: how a coin flip strengthens affective reactions, PLoS ONE, 14(8).",
+          "url": "https://doi.org/10.1371/journal.pone.0220736"
+        }
+      ]
+    },
+    {
+      "id": "b4-5-07",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Ahora con los tuyos: tus dos primeros planes."
     },
     {
       "id": "b4-5-moneda",
       "tipo": "consigna",
       "hablanteId": "ivan",
       "item": "b4-5-moneda"
+    },
+    {
+      "id": "b4-5-08",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "nuevoMomento": true,
+      "texto": "A veces la moneda confirma el orden y a veces lo mueve. Las dos cosas sirven. Si te movió algo, tus planes siguen en «Mis planes»."
+    },
+    {
+      "id": "b4-5-09",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "¡Gira! Apunta hacia la luz del faro."
+    },
+    {
+      "id": "b4-5-10",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Lo que le respondiste a la moneda no te lo dictó nadie. Con eso se camina. Buen camino."
+    },
+    {
+      "id": "b4-5-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Y se abrió algo en tu plan: «Mis próximos pasos»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tomaste posición por un plan, sabiendo que no es definitivo. El artefacto apunta al faro."
+    "mensajeFin": "Pusiste tu orden a prueba. Si la moneda te movió algo, puedes revisarlo en «Mis planes». El artefacto apunta al faro."
   },
   "mapa": {
     "x": 420,

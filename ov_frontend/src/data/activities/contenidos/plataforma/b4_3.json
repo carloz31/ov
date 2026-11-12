@@ -8,107 +8,104 @@
   "bloque": 4,
   "orden": 3,
   "obligatoria": true,
-  "requisitos": ["b4-2"],
+  "requisitos": [
+    "b4-2"
+  ],
   "ubicacion": "Acantilado, la mesa de mapas",
   "duracionEstimadaMin": 8,
-  "personajeIds": ["ivan", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué campo de su tarjeta de plan responde a qué información recogida en el camino, por qué conviene un Plan B en otra área y cómo la tarjeta lo avisa; sale a completar sus tarjetas en Planes.",
+  "personajeIds": [
+    "ivan",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué se anota en cada parte de su plan y de dónde sale cada dato, entiende que un Plan B responde a lo que podría fallar del Plan A (y que por eso puede ser la misma carrera por otro camino u otra carrera) y sabe que sus planes están en «Mis planes».",
   "nodos": [
     {
       "id": "b4-3-01",
       "tipo": "dialogo",
       "hablanteId": "ivan",
       "expresion": "animado",
-      "texto": "¡Los alcancé! Subí desde la ciudad con la mesa de mapas. El artefacto me avisó que ya tenían todo lo que hace falta para armar sus rutas. Vamos a ponerlas sobre la mesa."
+      "texto": "¡Los alcancé! Subí la mesa de mapas desde la ciudad. ¿Que por qué cargué una mesa hasta aquí arriba? No lo sé, ja. Pero desde allá se veía por dónde iba tu aguja, y aquí es donde conviene extender las rutas."
     },
     {
       "id": "b4-3-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Desde la piedra de los caminos, tu tarjeta de plan solo tenía nombre y motivación. Mira todo lo que el camino le fue abriendo."
+      "hablanteId": "ivan",
+      "texto": "Yo vine a la isla con un solo plan: el pergamino. El otro me cayó encima el día que se malogró la bomba de agua. Tuve suerte. Prefiero que tú lo tengas pensado antes."
     },
     {
       "id": "b4-3-03",
-      "tipo": "diapositiva",
-      "presentadorId": "ivan",
-      "titulo": "Lo que el camino le dio a tu tarjeta",
-      "bloques": [
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Iván pregunta: «¿Cuántos planes tienes hoy?»",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "columnas": ["Campo de la tarjeta", "De dónde salió la información"],
-          "filas": [
-            ["Trayecto previsto: postular directo, prepararte, estudiar y trabajar o empezar por una técnica", "Los cinco embarcaderos de Ulises y la feria del malecón"],
-            ["Institución y presupuesto (todos los rubros, primer año y toda la carrera, cómo pagarlo)", "La caseta de Clotilde y la web de cada institución"],
-            ["Fortalezas, debilidades, obstáculos y oportunidades", "El cuadro de afinidad con Helena"],
-            ["Acciones de preparación", "Tus criterios para decidir"]
-          ],
-          "nota": "La completitud de cada tarjeta es el porcentaje de campos abiertos que están llenos."
+          "id": "b4-3-03a",
+          "texto": "Uno solo: mi Plan A.",
+          "reaccion": [
+            {
+              "id": "b4-3-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Con uno se camina. Con dos se puede corregir. Mira tus favoritos, o usa «Llévame a un lugar inesperado» en el catálogo."
+            }
+          ]
+        },
+        {
+          "id": "b4-3-03b",
+          "texto": "Dos o tres planes.",
+          "reaccion": [
+            {
+              "id": "b4-3-03br",
+              "tipo": "dialogo",
+              "hablanteId": "ivan",
+              "texto": "Bien. Vamos a ver si cada uno sabe para qué está."
+            }
+          ]
         }
       ]
     },
     {
       "id": "b4-3-04",
-      "tipo": "diapositiva",
-      "presentadorId": "ivan",
-      "titulo": "Por qué un Plan B en otra área",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "Puedes tener hasta tres planes: A, B y C. El B no es falta de compromiso con el A: es la diferencia entre poder corregir y quedarte sin opciones. Y conviene que esté en otra área: si no ingresas a la primera, si el presupuesto no cierra o si descubres que no era lo tuyo, un B casi igual al A choca con el mismo muro."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Si dos de tus planes caen en la misma familia de carreras o el mismo tipo de interés, la tarjeta te avisa: «considera abordar áreas distintas en tus planes». No te lo prohíbe; te lo señala."
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "Para comparar tus planes en la siguiente parada necesitas el Plan A con al menos la mitad de sus campos llenos y el Plan B iniciado. Completarlos es libre y se hace en Planes; Lumi te dirá en el mapa si falta algo."
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "nuevoMomento": true,
+      "texto": "Ayúdame con los mapas de otros viajeros. Cada uno trajo algo y no sabe dónde ponerlo."
     },
     {
       "id": "b4-3-05",
-      "tipo": "eleccion",
-      "registrar": false,
-      "enunciado": "Iván pregunta: «¿Cuántos planes tienes hoy sobre la mesa?»",
-      "nota": "No se guarda.",
+      "tipo": "pregunta",
+      "hablanteId": "ivan",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera averiguó que su carrera solo se estudia en otra ciudad. ¿En qué parte de su plan va eso?",
       "opciones": [
         {
-          "id": "b4-3-05a",
-          "texto": "Uno.",
-          "reaccion": [
-            {
-              "id": "b4-3-05ar",
-              "tipo": "dialogo",
-              "hablanteId": "ivan",
-              "texto": "Entonces el B es tu tarea. Busca en tus favoritos uno de otra área; si no lo tienes, el catálogo tiene un botón que te lleva a un lugar inesperado."
-            }
-          ]
+          "id": "a",
+          "texto": "En «Por qué la elijo».",
+          "correcta": false,
+          "retroalimentacion": "Ahí van sus motivos. Esto es otra cosa: dónde tendría que estudiar."
         },
         {
-          "id": "b4-3-05b",
-          "texto": "Dos o tres.",
-          "reaccion": [
-            {
-              "id": "b4-3-05br",
-              "tipo": "dialogo",
-              "hablanteId": "ivan",
-              "texto": "Bien. Revisa que no sean casi iguales: la tarjeta te avisa si lo son."
-            }
-          ]
+          "id": "b",
+          "texto": "En «Qué tanto la conozco».",
+          "correcta": false,
+          "retroalimentacion": "Ahí va lo que sabe de la carrera: qué se hace, qué cursos lleva. Dónde se estudia va en otra parte."
         },
         {
-          "id": "b4-3-05c",
-          "texto": "Ninguno todavía.",
-          "reaccion": [
-            {
-              "id": "b4-3-05cr",
-              "tipo": "dialogo",
-              "hablanteId": "ivan",
-              "texto": "Es momento de armar el primero: desde una carrera favorita, con nombre y motivación. Lo demás ya tienes con qué llenarlo."
-            }
-          ]
+          "id": "c",
+          "texto": "En «Cómo lo haría realidad».",
+          "correcta": true,
+          "retroalimentacion": "Sí. Ahí está «Dónde estudiaría», junto con cómo llegaría, cuánto costaría y cómo lo pagaría."
+        }
+      ],
+      "explicacion": "Cada parte del plan responde una pregunta distinta: por qué esa carrera, cuánto sabes de ella y cómo la harías posible.",
+      "pistas": [
+        {
+          "id": "b4-3-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mudarse a otra ciudad no es un motivo ni un dato de la carrera: es parte de cómo lo haría."
         }
       ]
     },
@@ -119,34 +116,34 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una viajera quiere llenar el presupuesto de su tarjeta y no sabe dónde conseguir los costos exactos. ¿Qué le dices?",
+      "enunciado": "Un viajero quiere anotar cuánto cuesta su carrera. ¿De dónde saca los montos?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Que los busque en la página web de la institución; el catálogo da rutas, ingresos y licencia, pero no costos.",
-          "correcta": true,
-          "retroalimentacion": "Sí. Los rubros son los de la caseta de Clotilde; los montos, de la fuente oficial de cada institución."
+          "texto": "Del promedio de ingresos que da el catálogo.",
+          "correcta": false,
+          "retroalimentacion": "Eso es lo que ganan los egresados, no lo que cuesta estudiar."
         },
         {
           "id": "b",
-          "texto": "Que ponga el promedio de ingresos del catálogo como costo.",
-          "correcta": false,
-          "retroalimentacion": "Ingresos y costos son cosas distintas. El catálogo tiene lo primero, no lo segundo."
+          "texto": "De la página oficial de la institución.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Los costos cambian cada año y cada institución publica los suyos."
         },
         {
           "id": "c",
-          "texto": "Que deje el presupuesto vacío hasta ingresar.",
+          "texto": "De lo que pagó un primo hace unos años.",
           "correcta": false,
-          "retroalimentacion": "Sin presupuesto no hay con qué comparar planes ni financiamiento que pedir. Se llena antes, con montos de referencia."
+          "retroalimentacion": "Sirve para tener una idea, pero los montos cambian cada año y con cada institución."
         }
       ],
-      "explicacion": "Cada campo tiene su fuente: trayecto (rutas e instituciones), presupuesto (rubros de la ficha de costos y montos de la web de la institución), FODA (cuadro de afinidad), acciones (criterios).",
+      "explicacion": "El catálogo no trae costos. Los rubros son los que viste en la caseta de Clotilde; los montos, los de la página de cada institución.",
       "pistas": [
         {
           "id": "b4-3-06p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "En la tabla, la fila del presupuesto dice de dónde sale cada parte."
+          "texto": "Acuérdate de la caseta de Clotilde: ¿quién publica lo que cobra cada institución?"
         }
       ]
     },
@@ -157,55 +154,183 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un viajero tiene Plan A: Ingeniería de Sistemas, y Plan B: Ingeniería de Software. La tarjeta le muestra un aviso. ¿Por qué?",
+      "enunciado": "El Plan A de un viajero es Administración en una universidad pública muy pedida. Lo que le preocupa es no ingresar. ¿Qué Plan B responde a eso?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Porque dos planes en la misma familia chocan con el mismo muro: si uno falla por ingreso, costo o gusto, el otro también.",
+          "texto": "Administración en otra institución.",
           "correcta": true,
-          "retroalimentacion": "Exacto. El aviso no prohíbe: señala que le conviene un B en otra área."
+          "retroalimentacion": "Sí. La carrera no es el problema: lo es la puerta. El B busca otra puerta."
         },
         {
           "id": "b",
-          "texto": "Porque no se puede tener dos planes de ingeniería.",
+          "texto": "Una carrera que nunca miró, por si acaso.",
           "correcta": false,
-          "retroalimentacion": "Se puede. El aviso es una señal sobre la diversidad, no una regla que impida guardarlos."
+          "retroalimentacion": "Un B que no conoce no responde a nada. Y él no duda de la carrera."
         },
         {
           "id": "c",
-          "texto": "Porque el Plan B debe ser siempre una carrera técnica.",
+          "texto": "Ninguno: tener un B es dudar del A.",
           "correcta": false,
-          "retroalimentacion": "No hay una regla así. «Otra área» puede ser cualquier familia o tipo de interés distinto."
+          "retroalimentacion": "Tener un B no es dudar: es saber qué haría si no ingresa."
         }
       ],
-      "explicacion": "Un Plan B sirve si corrige lo que el A no puede: otra familia, otro tipo, a veces otra ruta. Si cae en la misma área, la tarjeta avisa para que lo pienses.",
+      "explicacion": "Si lo que preocupa es el ingreso o el costo, el B puede ser la misma carrera por otro camino: otra institución, otra modalidad de admisión, estudiar y trabajar.",
       "pistas": [
         {
           "id": "b4-3-07p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Relee la tarjeta de «Por qué un Plan B en otra área»: ¿qué pasa cuando el B es casi igual al A?"
+          "texto": "Fíjate en qué le preocupa: ¿la carrera, o entrar a esa universidad?"
         }
       ]
     },
     {
       "id": "b4-3-08",
-      "nuevoMomento": true,
-      "tipo": "dialogo",
+      "tipo": "pregunta",
       "hablanteId": "ivan",
-      "expresion": "neutral",
-      "texto": "Te dejo la mesa. Una advertencia: en el borde del acantilado vive algo que se alimenta de las voces que los viajeros traen de casa. Lo llaman el Eco. No ataca con fuerza; ataca con frases conocidas. Vas a necesitar criterios para callarlo."
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El Plan A de una viajera es Derecho. Su duda es si le va a gustar el trabajo de cada día. ¿Qué Plan B responde a eso?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Derecho, pero en otra universidad.",
+          "correcta": false,
+          "retroalimentacion": "El trabajo de cada día sería el mismo. Ese B responde a otra preocupación."
+        },
+        {
+          "id": "b",
+          "texto": "La carrera que le recomiende su familia.",
+          "correcta": false,
+          "retroalimentacion": "Puede coincidir, y vale escucharla. Pero el B es de ella: tiene que atraerle a ella."
+        },
+        {
+          "id": "c",
+          "texto": "Otra carrera que también le atraiga.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Si la duda es el trabajo mismo, el B tiene que llevar a un trabajo distinto."
+        }
+      ],
+      "explicacion": "Si la duda es si la carrera va contigo, el B conviene que sea otra carrera. El B depende de qué podría fallar del A.",
+      "pistas": [
+        {
+          "id": "b4-3-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Su duda no es entrar ni pagar: es el trabajo. ¿Qué opción cambia el trabajo?"
+        }
+      ]
     },
     {
       "id": "b4-3-09",
+      "tipo": "diapositiva",
+      "nuevoMomento": true,
+      "presentadorId": "ivan",
+      "titulo": "Lo que el camino le abrió a tu plan",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Parte del plan",
+            "Qué anotas",
+            "Dónde se abrió"
+          ],
+          "filas": [
+            [
+              "Por qué la elijo",
+              "Tus motivos y lo que viviste que te hizo pensar en ella",
+              "La piedra de los caminos"
+            ],
+            [
+              "Qué tanto la conozco",
+              "Lo que sabes de la carrera y «Mis dudas»",
+              "La sala del atlas"
+            ],
+            [
+              "Cómo lo haría realidad",
+              "«Cómo llegaría», «Dónde estudiaría», «Cuánto costaría» y «Cómo lo pagaría»",
+              "La caseta de Clotilde"
+            ],
+            [
+              "Mis próximos pasos",
+              "Lo que harías primero",
+              "Todavía cerrada"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b4-3-10",
+      "tipo": "diapositiva",
+      "presentadorId": "ivan",
+      "titulo": "Para qué sirve un Plan B",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un Plan B responde a una pregunta: ¿y si el A no sale? Por eso depende de qué podría fallar."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Lo que te preocupa del A",
+            "Un B que responde"
+          ],
+          "filas": [
+            [
+              "No ingresar",
+              "La misma carrera en otra institución o por otra modalidad"
+            ],
+            [
+              "No poder pagarla",
+              "La misma carrera en una pública, o estudiando y trabajando"
+            ],
+            [
+              "No saber si me gustará el trabajo",
+              "Otra carrera que también te atraiga"
+            ]
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Puedes tener hasta tres planes, y tú decides cuál va primero."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Un Plan B no es dudar del A. Es saber qué harías si no sale."
+        }
+      ]
+    },
+    {
+      "id": "b4-3-11",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "nuevoMomento": true,
+      "expresion": "neutral",
+      "texto": "Yo, para elegir entre dos cosas, necesito tenerlas las dos escritas, cada una con su porqué. Te dejo la mesa."
+    },
+    {
+      "id": "b4-3-12",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Y no te acerques mucho al borde. Ahí vive el Eco: repite lo que cada viajero trajo de casa."
+    },
+    {
+      "id": "b4-3-13",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "Ve a Planes cuando quieras y completa tus tarjetas. Y cuando estés listo, vamos al borde."
+      "texto": "Tus planes están en «Mis planes». Ábrelos cuando quieras."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tus tarjetas tienen con qué llenarse. Completarlas es libre; compararlas las necesita. El Eco espera en el borde."
+    "mensajeFin": "Un Plan B no es dudar del A: es saber qué harías si no sale. Tus planes están en «Mis planes»."
   },
-  "mapa": { "x": 200, "y": 350, "icono": "informativa" }
+  "mapa": {
+    "x": 200,
+    "y": 350,
+    "icono": "informativa"
+  }
 }
