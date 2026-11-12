@@ -8,106 +8,154 @@
   "bloque": 0,
   "orden": 3,
   "obligatoria": true,
-  "requisitos": ["b0-2"],
+  "requisitos": [
+    "b0-2"
+  ],
   "ubicacion": "Cabaña de Helena",
   "duracionEstimadaMin": 10,
-  "personajeIds": ["helena", "companero"],
+  "personajeIds": [
+    "helena",
+    "companero"
+  ],
   "presentacion": "narrativa",
   "nodos": [
     {
       "id": "b0-3-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Helena recibe a todos los que llegan buscando el pergamino. Dicen que estuvo ahí cuando lo escribieron. Pero nunca dice dónde está."
+      "texto": "Llegamos. Helena recibe a todos los que vienen por el pergamino. Dicen que sabe de él más de lo que cuenta."
     },
     {
       "id": "b0-3-02",
       "tipo": "dialogo",
       "hablanteId": "helena",
       "expresion": "neutral",
-      "texto": "Pasa. Lumi, hacía tiempo que no traías a nadie. Siéntate, viajero. Antes de que preguntes por el pergamino: no te voy a decir dónde está. La travesía es parte de lo que permite entender lo que dice."
+      "texto": "Pasa. Lumi, hacía tiempo que no traías a nadie. ¿El pergamino? Todos preguntan por él. Yo solo sé que muchos salieron a buscarlo y pocos siguieron: unos se cansaron, otros se quedaron con lo primero que les dijeron, otros lo dejaron para después."
     },
     {
       "id": "b0-3-03",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Lo que sí te doy es esto: un libro de autoconocimiento. Lo fabrico yo. Sus capítulos están sellados; se restauran respondiendo preguntas. Sirve aunque abandones la búsqueda."
+      "texto": "Lo que sí puedo darte es esto: un libro. Está casi en blanco porque habla de ti, y todavía no has respondido nada. Mira cómo funciona. Sirve aunque dejes la búsqueda."
     },
     {
       "id": "b0-3-04",
+      "tipo": "diapositiva",
+      "etiqueta": "El libro de Helena",
+      "titulo": "Cómo funciona el libro",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Cada página trata de algo tuyo",
+              "texto": "Cómo llegas a la isla, qué te interesa, cómo te llevas con los demás, de qué formas eres inteligente."
+            },
+            {
+              "titulo": "Se restaura respondiendo",
+              "texto": "Cada página tiene sus propias preguntas. Cuando las respondes todas, queda lista. Algunas se responden en varias visitas."
+            },
+            {
+              "titulo": "Tú rompes el sello",
+              "texto": "La página lista espera sellada hasta que decidas verla."
+            },
+            {
+              "titulo": "Lo que vas a leer",
+              "texto": "Varios aspectos de ese tema: cuáles destacan hoy en ti y cuáles menos. Sale de tus propias respuestas, así que es cómo te ves tú hoy. No te define, y puede cambiar."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Tu libro lo ven tú y tu orientadora, que así puede acompañarte mejor. Tu familia solo ve las páginas que tu orientadora habilite."
+        }
+      ]
+    },
+    {
+      "id": "b0-3-05",
       "tipo": "eleccion",
       "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
-          "id": "b0-3-04a",
-          "texto": "¿Y cómo se abre el primer capítulo?",
+          "id": "b0-3-05a",
+          "texto": "¿Y cómo se restaura una página?",
           "reaccion": [
             {
-              "id": "b0-3-04ar",
+              "id": "b0-3-05ar",
               "tipo": "dialogo",
               "hablanteId": "helena",
-              "texto": "Con las preguntas que te voy a hacer ahora. Son tu punto de partida, no un examen."
+              "texto": "Respondiendo. Empiezo yo, con la primera."
             }
           ]
         },
         {
-          "id": "b0-3-04b",
-          "texto": "¿Qué pasa si respondo mal?",
+          "id": "b0-3-05b",
+          "texto": "¿Y si respondo mal?",
           "reaccion": [
             {
-              "id": "b0-3-04br",
+              "id": "b0-3-05br",
               "tipo": "dialogo",
               "hablanteId": "helena",
-              "texto": "No hay respuestas malas. Son frases sobre ti, hoy. Marca cuánto te describe cada una: bastante, regular, poco o nada."
+              "texto": "No hay respuestas malas: no es un examen."
+            }
+          ]
+        },
+        {
+          "id": "b0-3-05c",
+          "texto": "Yo solo vine por el pergamino.",
+          "reaccion": [
+            {
+              "id": "b0-3-05cr",
+              "tipo": "dialogo",
+              "hablanteId": "helena",
+              "texto": "Lo sé. Empieza por aquí igual: quien no sabe de dónde parte, tampoco sabe cuánto avanzó."
             }
           ]
         }
       ]
     },
     {
-      "id": "b0-3-05",
+      "id": "b0-3-06",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Si todavía no tienes una opción en mente, responde igual: marcar «nada» es información útil, no un error. Y no te apures: una página respondida en dos minutos no dice nada de ti."
+      "texto": "Tengo unas preguntas cortas para ti: son frases sobre cómo ves hoy tu futuro. Marca qué tan de acuerdo estás con cada una, de «Nada de acuerdo» a «Muy de acuerdo». Con eso se restaura la primera página: la de cómo llegas. Si todavía no tienes nada claro, responde igual; eso también dice algo."
     },
     {
-      "id": "b0-3-06",
+      "id": "b0-3-07",
       "tipo": "item",
       "instrumentoId": "TEST-PARTIDA-LLEGADA",
       "itemId": "plantilla",
       "hablanteId": "helena",
-      "etiqueta": "Marca cuánto te describe hoy:"
-    },
-    {
-      "id": "b0-3-07",
-      "nuevoMomento": true,
-      "tipo": "dialogo",
-      "hablanteId": "helena",
-      "texto": "Gracias. El primer capítulo ya tiene con qué abrirse: lo encontrarás en el libro, en tu perfil, cuando quieras revelarlo. No muestra puntajes: muestra en palabras dónde estás y dónde este viaje te va a servir más."
+      "etiqueta": "¿Qué tan de acuerdo estás hoy?"
     },
     {
       "id": "b0-3-08",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Los demás capítulos los restauran otras personas de la isla, que conservan sus preguntas y disfrutan conversar con recién llegados. Las encontrarás en la ciudad."
+      "nuevoMomento": true,
+      "texto": "Gracias. Tu primera página ya está lista. Mira cinco cosas: qué tan claro tienes lo que quieres, cuánto te conoces, cuánto conoces las opciones, qué tan tuya sientes la decisión y cuánta confianza te tienes. El libro queda en tu perfil: rompe el sello cuando quieras verla."
     },
     {
       "id": "b0-3-09",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Allá vive mi primo Iván. Él puede ayudarte con el mapa. Pero el camino a la ciudad no es corto, y lo que pase en él importa tanto como llegar."
+      "texto": "Las demás páginas no las restauro yo. En la ciudad hay gente que guarda otras preguntas, de las buenas, y le gusta conversar con quien recién llega."
     },
     {
       "id": "b0-3-10",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "Al final del viaje volveremos a estas mismas preguntas. Ya verás por qué."
+      "hablanteId": "helena",
+      "texto": "Y si de verdad vas a buscar ese pergamino, allá vive mi primo Iván. Anda con un aparato que, según él, ayuda a ubicarlo: puede estar en cualquier parte de la isla. El camino a la ciudad no es corto. Fíjate en lo que pase en él."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu punto de partida quedó registrado. Revélalo en el libro de Helena cuando quieras."
+    "mensajeFin": "Tu punto de partida quedó guardado en el libro de Helena. Rompe su sello cuando quieras verlo."
   },
-  "mapa": { "x": 350, "y": 160, "icono": "test" }
+  "mapa": {
+    "x": 350,
+    "y": 160,
+    "icono": "test"
+  }
 }

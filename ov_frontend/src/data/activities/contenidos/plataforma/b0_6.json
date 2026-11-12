@@ -8,17 +8,22 @@
   "bloque": 0,
   "orden": 6,
   "obligatoria": true,
-  "requisitos": ["b0-5"],
+  "requisitos": [
+    "b0-5"
+  ],
   "ubicacion": "Bosque, donde empieza la subida al nevado",
-  "duracionEstimadaMin": 8,
-  "personajeIds": ["nico", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante entiende la indecisión como una fase normal, sabe ubicar de dónde viene una duda (preparación, información o conflicto), distingue la presión que moviliza de la ansiedad que bloquea y conoce el check-in diario de seguridad.",
+  "duracionEstimadaMin": 9,
+  "personajeIds": [
+    "nico",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante entiende que no haber decidido todavía es una fase normal, sabe ubicar de dónde viene una duda (falta de preparación, falta de información o voces que chocan) y qué resuelve cada una, distingue la presión que mueve de la ansiedad que bloquea, y conoce su señal de hoy y cómo se relaciona con su diario.",
   "nodos": [
     {
       "id": "b0-6-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Antes de subir al nevado hay un campamento. Es de Nico. Lleva… bastante tiempo aquí."
+      "texto": "Antes de la subida al nevado hay un campamento. Es de Nico. Lleva… bastante tiempo aquí."
     },
     {
       "id": "b0-6-02",
@@ -66,192 +71,175 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Nico, no estás esperando a saber. Estás esperando a que la duda desaparezca sola. Y eso no pasa. Déjame mostrarte algo que a mí me habría ayudado hace tiempo."
+      "texto": "Nico, creo que no estás esperando a saber. Estás esperando a que la duda se vaya sola. Yo esperé así mucho tiempo, y no se va."
     },
     {
       "id": "b0-6-05",
+      "tipo": "dialogo",
+      "hablanteId": "nico",
+      "expresion": "dudoso",
+      "texto": "¿Y qué hago? Tengo tantas que ya no sé por dónde empezar. Miren, las fui anotando en la lona de la carpa."
+    },
+    {
+      "id": "b0-6-06",
       "nuevoMomento": true,
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "La indecisión es una fase, no un problema",
+      "etiqueta": "La carpa de Nico",
+      "titulo": "Las dudas que no lo dejan subir",
       "bloques": [
         {
-          "tipo": "parrafo",
-          "texto": "El programa del MINEDU es claro: la indecisión es una fase normal del proceso de decidir, incluso necesaria, porque es cuando uno explora. Un estudio reciente con estudiantes de secundaria distingue dos cosas que suelen confundirse:"
+          "tipo": "lista",
+          "items": [
+            "«Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.»",
+            "«Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.»",
+            "«Capaz si espero lo suficiente, algo me va a decir qué estudiar.»"
+          ]
         },
         {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Indecisión evolutiva",
-            "texto": "No haber decidido todavía porque falta explorar. Es la situación de la mayoría a tu edad y se resuelve con información y tiempo."
-          },
-          "derecha": {
-            "titulo": "Indecisión compleja",
-            "texto": "La que se mantiene aunque haya información, porque la bloquean la ansiedad, el miedo a equivocarse o la presión. Esa sí pide ayuda de un adulto o un profesional."
-          }
-        },
-        {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, parte 2. Mata-Correas, Hernández-Franco y Prieto-Ursúa (2025), Educación XX1.",
-          "url": "https://revistas.uned.es/index.php/educacionXX1/article/view/42209"
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Nico las ve todas iguales: un solo bulto que se llama «no sé». Pero no vienen del mismo lugar."
         }
       ]
     },
     {
-      "id": "b0-6-06",
+      "id": "b0-6-07",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Empecemos por la primera: «Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.» ¿Qué le falta a Nico para resolverla?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Ganas: todavía no quiere pensar en eso.",
+          "correcta": false,
+          "retroalimentacion": "Sí quiere pensarlo; de hecho ya tiene una opción. Lo que le falta es otra cosa."
+        },
+        {
+          "id": "b",
+          "texto": "Datos: no ha averiguado qué hace un veterinario ni si hay trabajo.",
+          "correcta": true,
+          "retroalimentacion": "Exacto. Y es la duda más fácil de trabajar: se resuelve averiguando."
+        },
+        {
+          "id": "c",
+          "texto": "Ponerse de acuerdo con alguien que piensa distinto.",
+          "correcta": false,
+          "retroalimentacion": "Aquí nadie le lleva la contra. Hay un vacío: todavía no buscó."
+        }
+      ],
+      "explicacion": "Una duda por falta de información no se resuelve pensando más: se resuelve averiguando. Nico lleva siete meses pensando algo que se responde con una ficha del catálogo y una conversación con un veterinario.",
+      "pistas": [
+        {
+          "id": "b0-6-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en cuántas veces dice «no tengo idea». ¿Qué le falta: ganas, datos o acuerdo?"
+        }
+      ]
+    },
+    {
+      "id": "b0-6-08",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Ahora la segunda: «Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.» ¿Qué conviene hacer con esta?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Esperar a que el papá cambie de opinión.",
+          "correcta": false,
+          "retroalimentacion": "Esperar es lo que Nico lleva siete meses haciendo. Dos voces que chocan no se ponen de acuerdo solas."
+        },
+        {
+          "id": "b",
+          "texto": "Ver qué pesa para cada uno y conversarlo.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Aquí no faltan datos: hay dos voces que chocan. Se trabaja nombrando qué le importa a cada uno y conversándolo, no evitándolo."
+        },
+        {
+          "id": "c",
+          "texto": "Buscar más información sobre Veterinaria.",
+          "correcta": false,
+          "retroalimentacion": "Eso le sirve para la primera duda. Esta no es un vacío de datos: es un desacuerdo, y los datos solos no lo conversan."
+        }
+      ],
+      "explicacion": "Cuando lo que te atrae y lo que espera tu familia chocan, la salida es entender qué pesa para cada uno y conversar. Averiguar más ayuda a llegar con argumentos, pero la conversación sigue pendiente.",
+      "pistas": [
+        {
+          "id": "b0-6-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "A Nico no le falta saber algo. ¿Con quién tiene pendiente hablar?"
+        }
+      ]
+    },
+    {
+      "id": "b0-6-09",
       "tipo": "diapositiva",
       "presentadorId": "companero",
       "titulo": "De dónde viene una duda",
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Grupo", "Suena como", "Qué la resuelve"],
-          "filas": [
-            ["Falta de preparación", "«Todavía no quiero pensar en eso», «un test me lo dirá»", "Entender cómo se decide y qué creencias estorban"],
-            ["Falta de información", "«No sé qué hace un ingeniero ambiental», «no sé cuánto cuesta»", "Buscar datos concretos"],
-            ["Información en conflicto", "«Me gusta A, pero mis papás quieren B»", "Comparar criterios y conversar"]
+          "columnas": [
+            "De dónde viene",
+            "En la carpa de Nico",
+            "Qué la resuelve"
           ],
-          "nota": "Clasificación de Gati, Krausz y Osipow (1996). Sirve para ubicar la tuya."
-        }
-      ]
-    },
-    {
-      "id": "b0-6-07",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Presión que mueve y ansiedad que bloquea",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "Un poco de presión te hace buscar información y hablar con gente: esa sirve. Cuando se vuelve «ya deberías saber», aparece la ansiedad: pensar en el tema cansa, lo evitas y las dudas crecen solas."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "dato",
-          "texto": "En el Perú la ansiedad es el motivo más frecuente de atención en salud mental (28,8 % de las atenciones del Minsa en 2022), y uno de cada siete atendidos es adolescente. No estás solo en esto, y no es un signo de debilidad."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "alerta",
-          "texto": "Si durante varias semanas la decisión te quita el sueño o el apetito, te cuesta concentrarte en clases o sientes que no puedes con nada, eso ya no es una duda vocacional: conversa con tu orientadora o con un psicólogo."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "El Peruano (2022), atenciones de salud mental del Minsa.",
-          "url": "https://www.elperuano.pe/noticia/192010-minsa-pone-la-lupa-en-la-ansiedad"
-        }
-      ]
-    },
-    {
-      "id": "b0-6-08",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Cuatro cosas que sí puedes hacer con una duda",
-      "bloques": [
-        {
-          "tipo": "pasos",
-          "pasos": [
-            { "titulo": "Ponerle nombre", "texto": "«No sé si me alcanza el dinero» se puede trabajar; «estoy perdido» no." },
-            { "titulo": "Escribirla", "texto": "Lo escrito se puede mirar de nuevo; lo que da vueltas en la cabeza no. Para eso está tu diario." },
-            { "titulo": "Contársela a alguien de confianza", "texto": "No para que decida por ti, sino para escucharte decirla en voz alta." },
-            { "titulo": "Partirla en pasos pequeños", "texto": "«Elegir carrera» no es un paso; «averiguar qué hace un día normal un diseñador» sí." }
+          "filas": [
+            [
+              "Falta de preparación",
+              "«Si espero lo suficiente, algo me lo va a decir»",
+              "Entender cómo se decide y soltar la idea de que la respuesta llega sola"
+            ],
+            [
+              "Falta de información",
+              "«No sé qué hace un veterinario ni si hay trabajo»",
+              "Averiguar datos concretos"
+            ],
+            [
+              "Voces que chocan",
+              "«Mi papá dice Derecho y no sé cómo decirle que no»",
+              "Ver qué pesa para cada uno y conversar"
+            ]
           ]
         },
         {
           "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Una duda con nombre ya es un avance. Una duda sin nombre es solo peso."
+          "variante": "alerta",
+          "texto": "Si durante varias semanas la decisión te quita el sueño o el apetito, te cuesta concentrarte en clases o sientes que no puedes con nada, eso ya no es una duda sobre tu futuro: conversa con tu orientadora o con un psicólogo."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Gati, Krausz y Osipow (1996), A taxonomy of difficulties in career decision making. Mata-Correas, Hernández-Franco y Prieto-Ursúa (2025), Educación XX1.",
+          "url": "https://revistas.uned.es/index.php/educacionXX1/article/view/42209"
         }
       ]
-    },
-    {
-      "id": "b0-6-09",
-      "tipo": "dialogo",
-      "hablanteId": "nico",
-      "expresion": "dudoso",
-      "texto": "A ver, pruébenlo conmigo. Yo tengo tres dudas que no me dejan subir. Díganme de dónde viene cada una, porque yo las veo todas iguales."
     },
     {
       "id": "b0-6-10",
-      "tipo": "pregunta",
+      "tipo": "dialogo",
       "hablanteId": "nico",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "«Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.» ¿De qué grupo es esta duda?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Falta de preparación: todavía no quiere pensar en eso.",
-          "correcta": false,
-          "retroalimentacion": "Sí quiere pensarlo; de hecho ya tiene una opción. Lo que le falta es otra cosa."
-        },
-        {
-          "id": "b",
-          "texto": "Falta de información: no sabe qué hace ni si hay trabajo.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Y esa es la duda más fácil de trabajar: se resuelve buscando datos concretos, que es justamente lo que hay en el catálogo y en la ciudad."
-        },
-        {
-          "id": "c",
-          "texto": "Información en conflicto: dos fuentes dicen cosas distintas.",
-          "correcta": false,
-          "retroalimentacion": "No hay dos fuentes chocando. Hay un vacío: todavía no buscó."
-        }
-      ],
-      "explicacion": "Una duda por falta de información no se resuelve pensando más: se resuelve averiguando. Nico lleva siete meses pensando algo que se responde con una ficha y una conversación con un veterinario.",
-      "pistas": [
-        {
-          "id": "b0-6-10p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Fíjate en cuántas veces dice «no sé» o «no tengo idea». ¿Qué le falta: ganas, datos o acuerdo?"
-        }
-      ]
+      "expresion": "dudoso",
+      "nuevoMomento": true,
+      "texto": "O sea que llevo siete meses pensando algo que se resuelve preguntándole a un veterinario. Es que todos dicen «ya deberías saber», y mientras más lo pienso, más me cansa."
     },
     {
       "id": "b0-6-11",
-      "tipo": "pregunta",
-      "hablanteId": "nico",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "«A mí me atrae Veterinaria, pero mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.» ¿Qué conviene hacer con esta duda?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Esperar a que el papá cambie de opinión.",
-          "correcta": false,
-          "retroalimentacion": "Esperar es lo que Nico lleva siete meses haciendo. Un conflicto no se resuelve solo."
-        },
-        {
-          "id": "b",
-          "texto": "Ponerle nombre, compararla con criterios propios y conversarla.",
-          "correcta": true,
-          "retroalimentacion": "Sí. Es una duda por información en conflicto: dos voces que chocan. Se trabaja nombrando qué pesa para cada uno y conversándolo, no evitándolo."
-        },
-        {
-          "id": "c",
-          "texto": "Hacer un test para que decida por él.",
-          "correcta": false,
-          "retroalimentacion": "Un test no resuelve un conflicto entre lo que él quiere y lo que su familia espera. Puede dar información, pero la conversación sigue pendiente."
-        }
-      ],
-      "explicacion": "Cuando dos fuentes chocan (lo que te atrae y lo que espera tu familia), la salida es comparar criterios y conversar. Más adelante el camino tiene un registro para poner lado a lado lo que esperan de ti y lo que esperas tú.",
-      "pistas": [
-        {
-          "id": "b0-6-11p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Mira la tercera fila de la tabla: ¿qué resuelve una información en conflicto?"
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "No saber todavía es lo normal a tu edad: es la parte en la que uno explora. Un poco de presión hasta ayuda, te hace averiguar. Pero cuando se vuelve «ya deberías saber», pensar cansa, lo evitas, y la duda crece sola."
     },
     {
       "id": "b0-6-12",
       "tipo": "eleccion",
       "registrar": false,
-      "enunciado": "Nico pregunta: «¿Y tú? ¿De cuál grupo es la duda que más traes?»",
+      "enunciado": "Nico te mira: «¿Y tú? ¿De dónde viene la duda que más traes?»",
       "nota": "No se guarda. Es solo para que la ubiques.",
       "opciones": [
         {
@@ -262,7 +250,7 @@
               "id": "b0-6-12ar",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Es la más común en el Bloque 0. Por eso el camino empieza enseñando cómo se decide antes de pedirte decidir nada."
+              "texto": "Pasa mucho al empezar. Nadie te pide decidir hoy; basta con no quedarse acampando."
             }
           ]
         },
@@ -274,7 +262,7 @@
               "id": "b0-6-12br",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Buena noticia: el camino está lleno de datos, y el catálogo y la ciudad tienen más. Esa duda se encoge sola conforme avances."
+              "texto": "Es la más fácil de trabajar: se resuelve averiguando, y el catálogo ya lo llevas contigo."
             }
           ]
         },
@@ -286,7 +274,7 @@
               "id": "b0-6-12cr",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Entonces las conversaciones que vendrán con tu familia van a ser importantes. Y el registro donde pones lado a lado lo que esperan de ti y lo que esperas tú."
+              "texto": "Esa no se arregla sola ni callando. Se conversa, y conviene llegar sabiendo qué te importa a ti."
             }
           ]
         },
@@ -306,47 +294,85 @@
     },
     {
       "id": "b0-6-13",
-      "nuevoMomento": true,
       "tipo": "dialogo",
-      "hablanteId": "nico",
-      "expresion": "contento",
-      "texto": "Siete meses pensando una duda que se resuelve preguntándole a un veterinario. Voy a desarmar la carpa. Nos vemos en la subida."
+      "hablanteId": "companero",
+      "texto": "Fíjate en lo que acabas de hacer, Nico: les pusiste nombre, las escribiste, nos las contaste y sacaste un primer paso. No hay mucho más que se pueda hacer con una duda."
     },
     {
       "id": "b0-6-14",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Tu señal de cada día",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "Desde ahora, cada vez que entres a la plataforma te voy a preguntar qué tan seguro te sientes hoy respecto a tu futuro, en una escala corta. Es el check-in."
-        },
-        {
-          "tipo": "lista",
-          "items": [
-            "Va a subir y bajar. Eso es lo normal, no una falla.",
-            "Tu orientadora sí ve la tendencia (no lo que escribes en el diario), para saber cuándo conviene conversar.",
-            "Lo que sientes va al diario; lo que piensas y decides, a tus registros."
-          ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Casi nadie termina el colegio con una respuesta cerrada. Lo que sí se puede tener es una forma de avanzar mientras la respuesta se arma."
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "nico",
+      "expresion": "contento",
+      "texto": "Entonces mi primer paso no es «decidir». Es subir y buscar a alguien que trabaje con animales. Voy a desarmar la carpa. Y llévense la lona: ya le anoté al lado qué resuelve cada una."
     },
     {
       "id": "b0-6-15",
       "tipo": "dialogo",
       "hablanteId": "companero",
+      "texto": "Una cosa antes de que te vayas. Hoy, ¿qué tan seguro te sientes de tu próximo paso? Del uno al cinco."
+    },
+    {
+      "id": "b0-6-16",
+      "tipo": "dialogo",
+      "hablanteId": "nico",
+      "expresion": "contento",
+      "texto": "Hoy… un tres. Ayer te habría dicho uno. Nos vemos en la subida."
+    },
+    {
+      "id": "b0-6-17",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Tu señal de hoy",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Esa misma pregunta te espera desde hoy junto al mapa: una vez al día puedes marcar, del 1 al 5, qué tan seguro te sientes de tu próximo paso."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "No mide si ya decidiste. Mide si te sientes capaz de dar el paso que sigue.",
+            "Va a subir y bajar. Eso es lo normal, no una falla.",
+            "Con los días se arma tu historial: ahí puedes ver qué te da seguridad y qué te la quita."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Sentirse capaz de decidir cuenta tanto como tener la información. Y esa confianza no llega esperando: se arma con pasos pequeños que salen bien."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Tu orientadora ve esta señal y su tendencia, nunca el texto de tu diario."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Taylor y Betz (1983), Applications of self-efficacy theory to the understanding and treatment of career indecision, Journal of Vocational Behavior."
+        }
+      ]
+    },
+    {
+      "id": "b0-6-18",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Y el día que marques bajo, escríbeme por qué. Para eso está tu diario: una señal dice cuánto; una carta dice qué pasó."
+    },
+    {
+      "id": "b0-6-19",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Con esto cerramos el primer tramo. Arriba está el nevado, y después de él, la ciudad."
+      "texto": "Ya estamos cerca del nevado. Solo eso nos separa de la ciudad."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Una duda con nombre ya es un avance. El check-in te acompaña desde hoy."
+    "mensajeFin": "Una duda con nombre ya es un avance. Tu señal de hoy te espera junto al mapa."
   },
-  "mapa": { "x": 590, "y": 200, "icono": "informativa" }
+  "mapa": {
+    "x": 590,
+    "y": 200,
+    "icono": "informativa"
+  }
 }

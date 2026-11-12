@@ -8,17 +8,21 @@
   "bloque": 0,
   "orden": 2,
   "obligatoria": true,
-  "requisitos": ["b0-1"],
+  "requisitos": [
+    "b0-1"
+  ],
   "ubicacion": "Bosque, camino a la cabaña",
-  "duracionEstimadaMin": 5,
-  "personajeIds": ["companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe que sentir ilusión, miedo, alivio o confusión al terminar el colegio es normal y que todas valen; conoce el diario como espacio privado sin respuestas correctas, donde escribir es hablarle a Lumi.",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe que sentir ilusión, miedo, alivio o confusión al terminar el colegio es normal y que todas valen; conoce el diario como espacio privado sin respuestas correctas, donde escribir es hablarle a Lumi, y sabe que ponerle palabras a lo que siente ayuda a ordenarlo.",
   "nodos": [
     {
       "id": "b0-2-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Este bosque tiene una costumbre: los que suben hacia la cabaña van dejando frases talladas en los troncos. Mira este árbol."
+      "texto": "Por aquí se sube a la cabaña de Helena. Este bosque tiene una costumbre: los que pasan van dejando frases talladas en los troncos. Mira este árbol."
     },
     {
       "id": "b0-2-02",
@@ -101,7 +105,7 @@
         },
         {
           "id": "b0-2-03e",
-          "texto": "Las dos cosas a la vez.",
+          "texto": "Ilusión y miedo a la vez.",
           "reaccion": [
             {
               "id": "b0-2-03er",
@@ -110,55 +114,90 @@
               "texto": "Ilusión y miedo juntos es, de hecho, lo más frecuente. Significa que te importa."
             }
           ]
+        },
+        {
+          "id": "b0-2-03f",
+          "texto": "Ninguna: todavía no sé qué siento.",
+          "reaccion": [
+            {
+              "id": "b0-2-03fr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "También vale. A veces lo que uno siente tarda en tener nombre."
+            }
+          ]
         }
       ]
     },
     {
       "id": "b0-2-04",
-      "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "companero",
+      "nuevoMomento": true,
       "expresion": "pensativo",
-      "texto": "Yo también tallé una frase, hace tiempo. Llegué a esta isla desde otro lugar, y cuando dejé el mío sentí que me había bajado de mi propio cielo sin saber a dónde iba."
+      "texto": "Yo también tallé una frase, hace mucho. No te voy a decir cuál. Todavía."
     },
     {
       "id": "b0-2-05",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "No le conté a nadie. Me lo guardé tanto tiempo que terminé quedándome aquí, sin decidir nada. Por eso te quiero proponer algo que a mí me faltó."
+      "texto": "Lo que sí te cuento es que no se la dije a nadie. Me la guardé tanto tiempo que se me hizo un nudo, y con un nudo así cuesta decidir cualquier cosa."
     },
     {
       "id": "b0-2-06",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Tu diario: cartas para Lumi",
-      "bloques": [
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Y tú, cuando algo te da vueltas en la cabeza, ¿qué haces?",
+      "nota": "No se guarda.",
+      "opciones": [
         {
-          "tipo": "parrafo",
-          "texto": "En este viaje vas a tener un diario. Escribir ahí es hablarme a mí: yo leo y no juzgo. No tiene respuestas correctas, no hay mínimo de palabras y nadie más lo lee: ni tu orientadora, ni tu familia, ni los personajes de la isla."
-        },
-        {
-          "tipo": "pasos",
-          "titulo": "Cómo funciona",
-          "pasos": [
+          "id": "b0-2-06a",
+          "texto": "Se lo cuento a alguien.",
+          "reaccion": [
             {
-              "titulo": "Entradas que se abren",
-              "texto": "Algunas actividades del camino abren una pregunta nueva en tu diario. La escribes cuando quieras, o no la escribes."
-            },
-            {
-              "titulo": "Entradas libres",
-              "texto": "Puedes escribir lo que quieras, cuando quieras, sin pregunta."
-            },
-            {
-              "titulo": "Lo que siento y lo que pienso",
-              "texto": "Lo que sientes va al diario. Lo que piensas o decides sobre tu futuro va a tus registros, que sí lee tu orientadora: así cuando conversen no empiezan de cero."
+              "id": "b0-2-06ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Eso ayuda mucho. Y para lo que todavía no sabes cómo decir en voz alta, hay otra forma."
             }
           ]
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Escribir sobre lo que uno siente ayuda a ordenarlo. Lo que da vueltas en la cabeza no se puede mirar; lo escrito, sí."
+          "id": "b0-2-06b",
+          "texto": "Me lo guardo.",
+          "reaccion": [
+            {
+              "id": "b0-2-06br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Como yo. Te entiendo, y por eso quiero mostrarte otra forma."
+            }
+          ]
+        },
+        {
+          "id": "b0-2-06c",
+          "texto": "Lo escribo.",
+          "reaccion": [
+            {
+              "id": "b0-2-06cr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "expresion": "animado",
+              "texto": "Entonces esto te va a gustar."
+            }
+          ]
+        },
+        {
+          "id": "b0-2-06d",
+          "texto": "Me distraigo hasta que pase.",
+          "reaccion": [
+            {
+              "id": "b0-2-06dr",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "A veces pasa. Y a veces vuelve de noche, más grande. Para esas veces hay otra forma."
+            }
+          ]
         }
       ]
     },
@@ -166,18 +205,99 @@
       "id": "b0-2-07",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Cada carta que me escribas me ayuda a mí también. Con el tiempo te iré contando mi historia, un pedazo a la vez."
+      "texto": "Toma. Es un diario. Lo tenía guardado para alguien que subiera por aquí con la misma cara que traía yo. Escribir ahí es escribirme a mí: son cartas."
     },
     {
       "id": "b0-2-08",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "Por qué escribir ayuda",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Ponerle nombre a lo que sientes lo vuelve más manejable: cuando nombras una emoción, la parte del cerebro que da la alarma se calma un poco."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Escribirlo, además, ayuda a ordenarlo. En estudiantes de tu edad, escribir sobre lo que sienten trae mejoras pequeñas pero reales. No hace magia: ayuda un poco, y a algunos más que a otros."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Decidir tu futuro no es solo pensar: también se siente. Lo que da vueltas en la cabeza no se puede mirar; lo escrito, sí."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Lieberman et al. (2007), Putting feelings into words, Psychological Science, 18(5). Travagin, Margola y Revenson (2015), How effective are expressive writing interventions for adolescents?, Clinical Psychology Review, 36."
+        }
+      ]
+    },
+    {
+      "id": "b0-2-09",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Funciona así: de vez en cuando te voy a dejar una carta con una pregunta, y cada día hay una distinta esperándote. Respondes cuando quieras, o no respondes. Y si un día quieres escribir sin que yo pregunte, también se puede."
+    },
+    {
+      "id": "b0-2-10",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Y esto es importante: lo que escribas ahí lo leo solo yo. Nadie más, ni en la isla ni fuera de ella. No hay respuestas correctas ni mínimo de palabras."
+    },
+    {
+      "id": "b0-2-11",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "verdadero_falso",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Verdadero o falso? «Lo que escribo en mi diario lo puede leer alguien más».",
+      "opciones": [
+        {
+          "id": "v",
+          "texto": "Verdadero",
+          "correcta": false,
+          "retroalimentacion": "No. Lo que escribes en tu diario no lo lee nadie más."
+        },
+        {
+          "id": "f",
+          "texto": "Falso",
+          "correcta": true,
+          "retroalimentacion": "Así es. Tu diario queda entre Lumi y tú."
+        }
+      ],
+      "explicacion": "Tu diario no lo lee tu orientadora ni tu familia: queda entre Lumi y tú.",
+      "pistas": [
+        {
+          "id": "b0-2-11p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de lo que acabo de decirte: ¿quién lee las cartas?"
+        }
+      ]
+    },
+    {
+      "id": "b0-2-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Cada carta que me escribas me ayuda a mí también: nos vamos conociendo. Y a cambio te iré contando mi historia en la isla, un pedazo a la vez."
+    },
+    {
+      "id": "b0-2-13",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Al terminar este tramo vas a encontrar tu primera carta lista: «Cómo llego». No hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca."
+      "texto": "Ya te dejé la primera carta adentro. No hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu diario está abierto. Lo que sientes va ahí; lo que piensas, a tus registros."
+    "mensajeFin": "Tu diario está abierto. Lo que escribas ahí queda entre Lumi y tú."
   },
-  "mapa": { "x": 290, "y": 120, "icono": "informativa" }
+  "mapa": {
+    "x": 290,
+    "y": 120,
+    "icono": "informativa"
+  }
 }

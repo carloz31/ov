@@ -11,8 +11,11 @@
   "requisitos": [],
   "ubicacion": "Muelle",
   "duracionEstimadaMin": 5,
-  "personajeIds": ["capitan", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante distingue vocación, profesión y ocupación, y sabe que la vocación no es innata ni la revela un test: se construye conociéndose y conociendo el entorno.",
+  "personajeIds": [
+    "capitan",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante distingue vocación, carrera y ocupación, y sabe que la vocación no es innata ni la revela un test: se construye conociéndose y conociendo el entorno.",
   "nodos": [
     {
       "id": "b0-1-01",
@@ -45,7 +48,7 @@
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Cuatro frases, cuatro formas de buscar lo mismo. Ninguna está mal, pero todas suponen que la respuesta ya existe en algún lugar y solo hay que encontrarla."
+          "texto": "Cuatro formas de buscar lo mismo. Ninguna está mal, pero todas suponen que la respuesta ya existe en algún lugar."
         }
       ]
     },
@@ -54,7 +57,7 @@
       "tipo": "eleccion",
       "registrar": false,
       "enunciado": "¿Cuál de las frases se parece más a lo que tú escribirías?",
-      "nota": "No se guarda. Es solo para saber con qué idea llegas.",
+      "nota": "No se guarda. Es solo para que notes con qué idea llegas.",
       "opciones": [
         {
           "id": "b0-1-04a",
@@ -131,27 +134,43 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Pero antes de subir hay algo que conviene aclarar, porque en el tablón todos usan la palabra «vocación» como si fuera una cosa escondida bajo una piedra. Y no lo es."
+      "texto": "Yo creo que se rindieron porque buscaban la «vocación» como una cosa escondida bajo una piedra. Mira, hay una frase en el tablón que lo deja ver. Léela conmigo."
     },
     {
       "id": "b0-1-09",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Tres palabras que se confunden",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero escribió: «Quiero ayudar a que la gente se sienta mejor. Por eso voy a estudiar Enfermería y trabajar como enfermero de emergencias». ¿Qué parte de la frase es su vocación?",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "columnas": ["Palabra", "Qué es", "Ejemplo"],
-          "filas": [
-            ["Vocación", "El conjunto de motivos e intereses que te orientan hacia lo que quieres ser y hacer", "Querer ayudar a que la gente se sienta mejor"],
-            ["Profesión", "Una actividad laboral que se ejerce después de un periodo de formación", "Enfermería, psicología, fisioterapia"],
-            ["Ocupación", "La actividad concreta que realiza una persona para trabajar", "Enfermero de emergencias, psicóloga escolar"]
-          ]
+          "id": "a",
+          "texto": "Ayudar a que la gente se sienta mejor.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Es lo que lo mueve, y seguiría siendo cierto aunque cambiara de carrera o de trabajo."
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Una misma vocación puede expresarse en varias profesiones, y una profesión lleva a muchas ocupaciones. Por eso «¿qué quiero estudiar?» llega después de una pregunta más grande: «¿qué quiero hacer en la vida y por qué?»."
+          "id": "b",
+          "texto": "Estudiar Enfermería.",
+          "correcta": false,
+          "retroalimentacion": "Esa es la carrera: lo que se estudia. Podría haber elegido Psicología o Fisioterapia y su motivo sería el mismo."
+        },
+        {
+          "id": "c",
+          "texto": "Trabajar como enfermero de emergencias.",
+          "correcta": false,
+          "retroalimentacion": "Esa es la ocupación: el trabajo concreto. Con la misma carrera podría trabajar en un colegio o en una posta."
+        }
+      ],
+      "explicacion": "En una sola frase hay tres cosas: una vocación (ayudar), una carrera (Enfermería) y una ocupación (enfermero de emergencias).",
+      "pistas": [
+        {
+          "id": "b0-1-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca la parte que seguiría siendo cierta aunque cambiara de carrera o de trabajo."
         }
       ]
     },
@@ -159,28 +178,37 @@
       "id": "b0-1-10",
       "tipo": "diapositiva",
       "presentadorId": "companero",
-      "titulo": "La vocación no nace contigo",
+      "titulo": "Tres palabras que se confunden",
       "bloques": [
         {
-          "tipo": "parrafo",
-          "texto": "El programa de orientación vocacional del MINEDU lo dice sin rodeos: la vocación no es un aspecto innato ni predeterminado, ni algo que se decide en un momento puntual. Se forma a lo largo de la vida, reconociendo habilidades y resolviendo situaciones."
-        },
-        {
-          "tipo": "lista",
-          "titulo": "Tres consecuencias prácticas",
-          "items": [
-            "Nadie puede «no tener vocación». Lo que puede faltar es información sobre uno mismo o sobre las opciones.",
-            "Ningún test te la revela. Un test ordena información que ya tienes; no agrega lo que no has vivido.",
-            "Cambia con el tiempo. Lo que te atrae a los 17 puede ampliarse o girar a los 25, y eso no es un error."
+          "tipo": "tabla",
+          "columnas": [
+            "Palabra",
+            "Qué es",
+            "En la frase del viajero"
+          ],
+          "filas": [
+            [
+              "Vocación",
+              "Los motivos e intereses que te orientan hacia lo que quieres ser y hacer",
+              "Ayudar a que la gente se sienta mejor"
+            ],
+            [
+              "Carrera",
+              "Lo que se estudia para ejercer una profesión",
+              "Enfermería"
+            ],
+            [
+              "Ocupación",
+              "El trabajo concreto que hace una persona",
+              "Enfermero de emergencias"
+            ]
           ]
         },
         {
-          "tipo": "parrafo",
-          "texto": "Y toda ocupación puede profesionalizarse: quien empieza atendiendo un negocio, reparando equipos o cocinando puede, con cursos, un instituto o una carrera, ir especializando lo que hace. La profesionalización no exige entrar a la universidad al día siguiente de terminar el colegio."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Ministerio de Educación (2013), Orientación vocacional: cartilla para tutores, parte 1."
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Una misma vocación cabe en varias carreras, y una carrera lleva a muchas ocupaciones. Por eso «¿qué quiero estudiar?» viene después de «¿qué quiero hacer y por qué?»."
         }
       ]
     },
@@ -188,48 +216,10 @@
       "id": "b0-1-11",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Mira: hay cuatro frases del tablón con la palabra «vocación» mal puesta o bien puesta. Antes de subir, revisemos dos. Si las lees con calma, ya vas a entender mejor a qué viniste."
+      "texto": "Y hay otra idea que casi todo el tablón da por hecha: que la vocación ya está en algún lugar, esperando."
     },
     {
       "id": "b0-1-12",
-      "tipo": "pregunta",
-      "hablanteId": "companero",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un viajero escribió: «Mi vocación es ser enfermero de emergencias». ¿Qué palabra está usando en realidad?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Vocación: ser enfermero de emergencias es un conjunto de motivos.",
-          "correcta": false,
-          "retroalimentacion": "«Enfermero de emergencias» no es un motivo: es el trabajo concreto que haría. Los motivos serían, por ejemplo, querer atender a gente en el peor momento de su día."
-        },
-        {
-          "id": "b",
-          "texto": "Profesión: es lo que se estudia para ejercer.",
-          "correcta": false,
-          "retroalimentacion": "Cerca. La profesión sería Enfermería, lo que se estudia. «De emergencias» ya describe un puesto concreto."
-        },
-        {
-          "id": "c",
-          "texto": "Ocupación: es la actividad concreta con la que se trabaja.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Su vocación podría ser atender a personas en situaciones críticas; su profesión, Enfermería; y su ocupación, enfermero de emergencias."
-        }
-      ],
-      "explicacion": "Una vocación (ayudar en momentos críticos) puede expresarse en varias profesiones (Enfermería, Medicina, Psicología) y cada profesión lleva a muchas ocupaciones (enfermero de emergencias, enfermera de cuidados intensivos, enfermero escolar).",
-      "pistas": [
-        {
-          "id": "b0-1-12p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Fíjate en lo concreta que es la frase: dice un puesto específico, no un motivo ni una carrera."
-        }
-      ]
-    },
-    {
-      "id": "b0-1-13",
       "tipo": "pregunta",
       "hablanteId": "companero",
       "formato": "verdadero_falso",
@@ -253,10 +243,36 @@
       "explicacion": "Nadie nace con una vocación lista. Se forma a lo largo de la vida y cambia; por eso este viaje no busca «encontrarla», sino construirla con información sobre ti y sobre lo que existe afuera.",
       "pistas": [
         {
-          "id": "b0-1-13p1",
+          "id": "b0-1-12p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Acuérdate de la tarjeta de hace un momento: ¿la vocación nace contigo o se forma?"
+          "texto": "Piensa en lo que te gustaba a los diez años y en lo que te gusta ahora. ¿Es lo mismo?"
+        }
+      ]
+    },
+    {
+      "id": "b0-1-13",
+      "tipo": "diapositiva",
+      "presentadorId": "companero",
+      "titulo": "La vocación se construye",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La vocación no es innata ni se decide en un momento: se forma a lo largo de la vida, con lo que haces y lo que vas conociendo."
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Tres consecuencias prácticas",
+          "items": [
+            "Nadie puede «no tener vocación». Lo que puede faltar es información sobre uno mismo o sobre las opciones.",
+            "Ningún test te la revela. Un test ordena información que ya tienes; no agrega lo que no has vivido.",
+            "Cambia con el tiempo. Lo que te atrae a los 17 puede ampliarse o girar a los 25, y eso no es un error."
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ministerio de Educación (2013), Orientación vocacional: cartilla para tutores, parte 1."
         }
       ]
     },
@@ -272,11 +288,21 @@
       "id": "b0-1-15",
       "tipo": "dialogo",
       "hablanteId": "companero",
+      "texto": "Y por si en el camino se te vuelven a mezclar las palabras, te guardé algo en la mochila: una ficha con lo que acabamos de ver. Sácala cuando quieras."
+    },
+    {
+      "id": "b0-1-16",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
       "texto": "Lo primero: hay alguien que recibe a todos los que llegan, en una cabaña subiendo por el bosque. Se llama Helena. Vamos."
     }
   ],
   "recompensa": {
     "mensajeFin": "La vocación no se encuentra: se construye conociéndote y conociendo lo que existe afuera."
   },
-  "mapa": { "x": 125, "y": 120, "icono": "informativa" }
+  "mapa": {
+    "x": 125,
+    "y": 120,
+    "icono": "informativa"
+  }
 }

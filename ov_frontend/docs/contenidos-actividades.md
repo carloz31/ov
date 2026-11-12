@@ -10,7 +10,7 @@ Toda actividad, de cualquier rol, es el mismo objeto: metadatos, una lista orden
 |---|---|---|
 | `encuentro` | INFORMATIVA | `dialogo`, `eleccion`, `diapositiva`, `pregunta` |
 | `registro` | REGISTRO | `dialogo`, `eleccion`, `diapositiva`, `consigna` |
-| `instrumento` | CUESTIONARIO | `dialogo`, `eleccion`, `item`, `resultado` |
+| `instrumento` | CUESTIONARIO | `dialogo`, `eleccion`, `diapositiva`, `item`, `resultado` |
 
 - `audiencia`: `estudiante` (inmersivo, por defecto) o `apoderado` (sobrio). El apoderado solo admite `encuentro`.
 - **Contenido solo de posición:** un JSON con `nodos: []` dibuja el punto en el mapa («Contenido pendiente» si está disponible), pero no se puede abrir. En el portal del apoderado, la actividad se lista sin poder iniciarse.

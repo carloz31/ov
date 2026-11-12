@@ -8,67 +8,110 @@
   "bloque": 0,
   "orden": 5,
   "obligatoria": true,
-  "requisitos": ["b0-4"],
+  "requisitos": [
+    "b0-4"
+  ],
   "ubicacion": "Molino, al borde del bosque",
   "duracionEstimadaMin": 8,
-  "personajeIds": ["mara", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante distingue los factores internos y externos de una decisión vocacional, reconoce las señales de una decisión apurada y entiende que el camino revisa esos factores en orden.",
+  "personajeIds": [
+    "mara",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante distingue lo que viene de él y lo que viene de afuera en una decisión vocacional (factores internos y externos), reconoce en un caso las señales de una decisión apurada y entiende que ninguno de los dos lados basta por sí solo.",
   "nodos": [
     {
       "id": "b0-5-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esa es Mara. Tiene el molino más viejo de la isla y conoce a todos los que pasan. Y hoy parece preocupada."
+      "texto": "Ese es el molino de Mara. Conoce a todos los que pasan camino a la ciudad. Y hoy tiene mala cara."
     },
     {
       "id": "b0-5-02",
       "tipo": "dialogo",
       "hablanteId": "mara",
       "expresion": "neutral",
-      "texto": "Lumi, qué bueno verte. Perdona la cara: acabo de recibir carta de mi sobrina Alejandra. Entró a Contabilidad este año y ya quiere dejarlo. Y no le faltaba cabeza, ¿ah? Era de las mejores de su promoción."
+      "texto": "Lumi, qué bueno verte, y con compañía. Perdonen la cara: me llegó carta de mi sobrina Alejandra. Entró a Contabilidad este año y ya quiere dejarlo. Y cabeza no le faltaba, ¿ah? Era de las mejores de su promoción."
     },
     {
       "id": "b0-5-03",
-      "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
-      "registrar": false,
-      "opciones": [
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Léanla ustedes. A ver si entienden lo que yo no."
+    },
+    {
+      "id": "b0-5-04",
+      "tipo": "diapositiva",
+      "etiqueta": "La carta de Alejandra",
+      "titulo": "«Tía: no sé cómo decírselo a mis papás»",
+      "bloques": [
         {
-          "id": "b0-5-03a",
-          "texto": "¿Por qué eligió Contabilidad?",
-          "reaccion": [
-            {
-              "id": "b0-5-03ar",
-              "tipo": "dialogo",
-              "hablanteId": "mara",
-              "texto": "Porque sus amigas le dijeron que era fácil conseguir trabajo. Eso fue todo. En el primer ciclo se aburría, bajaron sus notas, y ahora escribe que no sabe qué hacer."
-            }
-          ]
+          "tipo": "parrafo",
+          "texto": "Elegí Contabilidad porque mis amigas decían que ahí hay trabajo seguro, y en casa todos se alegraron. Nunca averigüé qué hace un contador en un día normal."
         },
         {
-          "id": "b0-5-03b",
-          "texto": "¿Y qué le gustaba a ella?",
-          "reaccion": [
-            {
-              "id": "b0-5-03br",
-              "tipo": "dialogo",
-              "hablanteId": "mara",
-              "texto": "Eso es lo triste: nadie se lo preguntó, ni ella misma. Eligió por lo que decían sus amigas, que había trabajo. En el primer ciclo se aburría y las notas se le vinieron abajo."
-            }
-          ]
+          "tipo": "parrafo",
+          "texto": "Las clases me aburren, bajé mis notas y ya no sé si el problema es la carrera o soy yo."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Lo que me gustaba era organizar las ferias del colegio, pero eso nunca me pareció una carrera de verdad. ¿Qué hago?"
         }
       ]
     },
     {
-      "id": "b0-5-04",
+      "id": "b0-5-05",
+      "tipo": "pregunta",
+      "hablanteId": "mara",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿En qué se apoyó Alejandra para elegir Contabilidad?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "En lo que decían sus amigas y en que había trabajo.",
+          "correcta": true,
+          "retroalimentacion": "Eso dice la carta. Y fíjate que las dos cosas vienen de afuera."
+        },
+        {
+          "id": "b",
+          "texto": "En lo que a ella le gustaba hacer.",
+          "correcta": false,
+          "retroalimentacion": "Lo que le gustaba eran las ferias, y lo dejó fuera porque no le parecía una carrera."
+        },
+        {
+          "id": "c",
+          "texto": "En lo que averiguó sobre la carrera.",
+          "correcta": false,
+          "retroalimentacion": "Ella misma dice que nunca averiguó qué hace un contador en un día normal."
+        }
+      ],
+      "explicacion": "Alejandra eligió por lo que decían sus amigas y porque había trabajo. De lo que a ella le gustaba, y de cómo es la carrera por dentro, no miró nada.",
+      "pistas": [
+        {
+          "id": "b0-5-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Vuelve a la primera línea de la carta: ¿quién dijo qué?"
+        }
+      ]
+    },
+    {
+      "id": "b0-5-06",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "No le faltó capacidad. Le faltó considerar casi todo lo demás. Mara, ¿me dejas usar la historia de Alejandra? Es el ejemplo perfecto de lo que quería explicar antes de llegar a la ciudad."
+      "nuevoMomento": true,
+      "texto": "Mara, no fue falta de cabeza. Mira la carta: todo lo que pesó venía de afuera. Sus amigas, el trabajo, la alegría de la casa. De ella misma no puso nada."
     },
     {
-      "id": "b0-5-05",
-      "nuevoMomento": true,
+      "id": "b0-5-07",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "¿Y eso está mal? Que haya trabajo importa."
+    },
+    {
+      "id": "b0-5-08",
       "tipo": "diapositiva",
       "presentadorId": "companero",
       "titulo": "Lo que viene de ti y lo que viene de afuera",
@@ -76,131 +119,101 @@
         {
           "tipo": "comparacion",
           "izquierda": {
-            "titulo": "Factores internos",
-            "texto": "Identidad, autoconcepto y autoestima. Tu personalidad: cómo actúas y decides. Tus aptitudes, capacidades e intereses. Tus valores: qué te importa de verdad."
+            "titulo": "De ti",
+            "texto": "Quién eres y cómo te ves. Cómo actúas y decides. Lo que se te da bien y lo que te interesa. Lo que valoras."
           },
           "derecha": {
-            "titulo": "Factores externos",
-            "texto": "Relaciones sociales: familia, amigos, docentes. Contexto sociocultural: qué se valora en tu entorno. Estereotipos de género. Información sobre el mercado laboral y la oferta educativa."
+            "titulo": "De afuera",
+            "texto": "Tu familia, tus amigos, tus profesores. Lo que se valora donde vives. Las ideas sobre qué es «de hombres» o «de mujeres». La información sobre el trabajo y sobre dónde estudiar."
           }
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Ninguno de los dos lados es «el malo». Decidir solo con los internos (me gusta) ignora si existe trabajo o dónde se estudia. Decidir solo con los externos (hay trabajo, lo dicen mis amigas) es lo que le pasó a Alejandra."
-        }
-      ]
-    },
-    {
-      "id": "b0-5-06",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Motivación que empuja y motivación que arrastra",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "En psicología se distingue la motivación intrínseca (eliges porque la actividad en sí te interesa y te reta) de la extrínseca (eliges por lo que viene después: dinero, estatus, aprobación). Las dos existen en toda decisión. El problema aparece cuando solo hay extrínseca: la carrera se vuelve un medio que se abandona en cuanto el premio tarda en llegar."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "dato",
-          "texto": "Según un estudio reciente, menos de la mitad de los egresados en el Perú trabaja en algo vinculado a lo que estudió. Parte es el mercado; parte son decisiones tomadas con poca información."
+          "texto": "Ninguno de los dos lados es el malo. Decidir solo con lo tuyo ignora si hay trabajo o dónde se estudia. Decidir solo con lo de afuera es lo que le pasó a Alejandra."
         },
         {
           "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, parte 1 y actividad 2. Cano Celestino (2008), Motivación y elección de carrera. Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú.",
-          "url": "https://andina.pe/agencia/noticia-jovenes-estan-escogiendo-mejor-sus-carreras-que-favorecera-adecuacion-ocupacional-1032314.aspx"
+          "texto": "Ministerio de Educación (2013), Orientación vocacional: cartilla para tutores, parte 1 y actividad 2."
         }
       ]
-    },
-    {
-      "id": "b0-5-07",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Cinco señales de una decisión apurada",
-      "bloques": [
-        {
-          "tipo": "lista",
-          "ordenada": true,
-          "items": [
-            "La razón principal es lo que otros dicen («mis papás quieren», «mis amigos van a estudiar eso»).",
-            "Solo conoces el nombre de la carrera, no qué se hace en ella día a día.",
-            "Eliges por el sueldo o el prestigio sin saber si el trabajo te va a gustar.",
-            "Descartas una opción por un prejuicio («eso es de hombres», «eso no da plata») sin un dato.",
-            "No sabes cuánto cuesta ni dónde se estudia."
-          ]
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "Cada señal apunta a un factor que faltó. Y hay una fuente nueva que pesa: los influencers de carreras y los videos de «un día en la vida de…» sirven para descubrir que una ocupación existe, pero muestran la parte vistosa y rara vez el sueldo del primer año o la rutina. Son una pista que hay que verificar, no una prueba."
-        }
-      ]
-    },
-    {
-      "id": "b0-5-08",
-      "tipo": "dialogo",
-      "hablanteId": "mara",
-      "expresion": "sonrie",
-      "texto": "Ojalá alguien le hubiera mostrado eso a Alejandra. Mira, por el molino pasan muchos jóvenes contándome sus planes. Te cuento tres y me dices qué les faltó, a ver si aprendiste más rápido que mi sobrina."
     },
     {
       "id": "b0-5-09",
-      "tipo": "pregunta",
-      "hablanteId": "mara",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Tomás va a estudiar Ingeniería de Minas «porque es donde más se gana». Nunca ha hablado con un ingeniero de minas ni sabe qué hace uno en un día normal. ¿Qué factor le faltó considerar?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Un factor externo: la información sobre el mercado laboral.",
-          "correcta": false,
-          "retroalimentacion": "Esa parte la tiene (al menos la del sueldo). Lo que no revisó es si el trabajo le va a gustar a él."
-        },
-        {
-          "id": "b",
-          "texto": "Un factor interno: sus intereses y qué le atrae del trabajo diario.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Tiene un dato externo (el sueldo) y ningún dato interno: es la señal 3, elegir por el dinero sin saber si le gustará."
-        },
-        {
-          "id": "c",
-          "texto": "Un factor externo: lo que piensa su familia.",
-          "correcta": false,
-          "retroalimentacion": "Nada en la historia dice que su familia opine. El hueco está en lo que él mismo sabe de sí y del trabajo."
-        }
-      ],
-      "explicacion": "Tomás decidió solo con un factor externo (el ingreso). Le falta el lado interno: si las tareas de un ingeniero de minas se parecen a lo que a él le gusta hacer. Eso solo se averigua conociendo la ocupación y conociéndose.",
-      "pistas": [
-        {
-          "id": "b0-5-09p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "El sueldo es un dato de afuera. ¿Qué dato de adentro, sobre él mismo, no aparece en la historia?"
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Importa, claro. Pero cuando lo único que te mueve es lo que viene después, la carrera se suelta apenas el premio tarda. Y una decisión así deja señales. Mira la carta otra vez."
     },
     {
       "id": "b0-5-10",
       "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Cuáles de estas señales de una decisión apurada están en la carta? Marca todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "La razón principal es lo que otros dicen.",
+          "correcta": true,
+          "retroalimentacion": "Está: eligió por sus amigas, y pesó la alegría de la casa."
+        },
+        {
+          "id": "b",
+          "texto": "Solo conoce el nombre de la carrera, no qué se hace día a día.",
+          "correcta": true,
+          "retroalimentacion": "Está: nunca averiguó qué hace un contador en un día normal."
+        },
+        {
+          "id": "c",
+          "texto": "Descartó una opción por un prejuicio, sin un dato.",
+          "correcta": true,
+          "retroalimentacion": "Está: lo de las ferias «no era una carrera de verdad», y nunca lo comprobó."
+        },
+        {
+          "id": "d",
+          "texto": "No sabe cuánto cuesta ni dónde se estudia.",
+          "correcta": false,
+          "retroalimentacion": "De eso la carta no dice nada. Es una señal de otras decisiones, no de esta."
+        }
+      ],
+      "explicacion": "En la carta hay tres señales: decidió por lo que otros decían, no conocía la carrera por dentro y descartó lo que le gustaba sin un dato. Cada señal apunta a algo que faltó mirar.",
+      "pistas": [
+        {
+          "id": "b0-5-10p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca cada señal en la carta. Si no encuentras la frase que la muestra, no la marques."
+        }
+      ]
+    },
+    {
+      "id": "b0-5-11",
+      "tipo": "dialogo",
+      "hablanteId": "mara",
+      "texto": "Por aquí pasó hace poco otra chica, Valeria. Era al revés que mi sobrina."
+    },
+    {
+      "id": "b0-5-12",
+      "tipo": "pregunta",
       "hablanteId": "mara",
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Valeria ama dibujar y quiere estudiar Diseño Gráfico. Ya tiene su portafolio. Pero no sabe cuánto cuesta, dónde se estudia en su ciudad ni en qué trabaja un diseñador después. ¿Qué le faltó?",
+      "enunciado": "Valeria ama dibujar y quiere estudiar Diseño Gráfico. Ya tiene su portafolio. Pero no sabe cuánto cuesta, dónde se estudia en su ciudad ni en qué trabaja un diseñador después. ¿Qué le faltó mirar?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Factores internos: no sabe si de verdad le gusta.",
+          "texto": "Lo que viene de ella: no sabe si de verdad le gusta.",
           "correcta": false,
-          "retroalimentacion": "Al revés: lo interno lo tiene clarísimo. Dibuja, tiene portafolio, le gusta."
+          "retroalimentacion": "Al revés: lo suyo lo tiene clarísimo. Dibuja, tiene portafolio, le gusta."
         },
         {
           "id": "b",
-          "texto": "Factores externos: oferta educativa, costos y mercado.",
+          "texto": "Lo que viene de afuera: dónde se estudia, cuánto cuesta y en qué se trabaja.",
           "correcta": true,
-          "retroalimentacion": "Sí. Es la señal 5: no sabe cuánto cuesta ni dónde se estudia. Su decisión puede ser buena, pero todavía no está informada."
+          "retroalimentacion": "Sí. Su decisión puede ser buena, pero todavía no está informada."
         },
         {
           "id": "c",
@@ -209,10 +222,10 @@
           "retroalimentacion": "Que le guste es necesario, pero no suficiente. Sin saber costos, oferta y mercado, puede chocar en el primer ciclo con algo que pudo prever."
         }
       ],
-      "explicacion": "Valeria tiene los factores internos resueltos y le faltan los externos. No tiene que cambiar de opción: tiene que completar la información. Por eso el camino revisa los dos lados.",
+      "explicacion": "Valeria tiene claro lo que viene de ella y le falta lo de afuera. No tiene que cambiar de opción: tiene que completar la información.",
       "pistas": [
         {
-          "id": "b0-5-10p1",
+          "id": "b0-5-12p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
           "texto": "Fíjate en lo que sí sabe (de ella) y en lo que no sabe (del mundo)."
@@ -220,75 +233,27 @@
       ]
     },
     {
-      "id": "b0-5-11",
-      "tipo": "pregunta",
-      "hablanteId": "mara",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Daniela quería Mecánica Automotriz, pero la descartó: «eso es de hombres», le dijeron en casa, y ella lo aceptó sin buscar un solo dato. ¿Qué señal de decisión apurada es?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Descartar una opción por un prejuicio, sin un dato.",
-          "correcta": true,
-          "retroalimentacion": "Esa es. Un estereotipo de género es un factor externo que pesa mucho y suele pasar por «sentido común». El único requisito para ejercer una profesión son las habilidades, los conocimientos y el interés."
-        },
-        {
-          "id": "b",
-          "texto": "Elegir por el sueldo sin saber si le gustará.",
-          "correcta": false,
-          "retroalimentacion": "Aquí no hay sueldo de por medio. Lo que la frenó fue una idea sobre quién «debe» hacer ese trabajo."
-        },
-        {
-          "id": "c",
-          "texto": "Conocer solo el nombre de la carrera.",
-          "correcta": false,
-          "retroalimentacion": "Ella sí sabía lo que quería. El problema es la razón por la que lo descartó."
-        }
-      ],
-      "explicacion": "Los estereotipos de género son un factor externo que descarta opciones antes de mirarlas. Que una frase se repita en casa no la convierte en un dato: en el Perú hay cada vez más mujeres en mecánica, aunque sigan siendo pocas, y nada en la ocupación exige un sexo.",
-      "pistas": [
-        {
-          "id": "b0-5-11p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "¿Daniela buscó algún dato antes de descartar? Esa es la pista."
-        }
-      ]
-    },
-    {
-      "id": "b0-5-12",
-      "nuevoMomento": true,
+      "id": "b0-5-13",
       "tipo": "dialogo",
       "hablanteId": "mara",
       "expresion": "sonrie",
-      "texto": "Aprendes rápido. Le voy a escribir a Alejandra que no está sola y que todavía puede corregir. Cuídense en el camino."
+      "nuevoMomento": true,
+      "texto": "Le voy a escribir a Alejandra que no está sola y que todavía puede corregir. Y tú llévate esto: fui anotando lo que decía Lumi. A ella le mando una copia."
     },
     {
-      "id": "b0-5-13",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "El mapa es el orden de los factores",
-      "bloques": [
-        {
-          "tipo": "pasos",
-          "pasos": [
-            { "titulo": "Primero, los internos", "texto": "Tu historia, tus deseos, lo que valoras, lo que se te da bien y lo que miden los cuestionarios de Helena." },
-            { "titulo": "Luego, los externos", "texto": "Las rutas después del colegio, el mercado, las instituciones y lo que cuesta estudiar." },
-            { "titulo": "Al final, el cruce", "texto": "Tus opciones frente a tu perfil, con criterios tuyos, y un proyecto con pasos." }
-          ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Una buena decisión no es la que acierta: es la que consideró los factores que importaban."
-        }
-      ]
+      "id": "b0-5-14",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "No sabía que me estaban tomando apuntes. Vamos, que el camino sigue."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Los factores de una decisión ya tienen nombre. El camino los revisa en orden."
+    "mensajeFin": "Lo que pesa en una decisión ya tiene nombre: lo que viene de ti y lo que viene de afuera."
   },
-  "mapa": { "x": 520, "y": 190, "icono": "informativa" }
+  "mapa": {
+    "x": 520,
+    "y": 190,
+    "icono": "informativa"
+  }
 }
