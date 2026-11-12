@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { copia, elementos, esperar, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
+import { cargarAlmacen, copia, elementos, esperar, jsonServidor } from '../../soporte/servidor-ayudas.mjs'
 import { abrir, contenido, iniciar, itemEnPantalla, peticiones } from '../../soporte/servidor-registro-ayudas.mjs'
 
 // Ajuste front de registros (lote 1): el flujo ítem por ítem con la pantalla de Lumi (§3), el ítem respondido, la
@@ -154,6 +154,22 @@ test('«Seguir sin responder» no llama a ningún servicio y lleva al nodo sigui
   assert.equal(app.requests.filter((r) => r.url.includes('/acciones/')).length,
     app.requests.slice(0, antes).filter((r) => r.url.includes('/acciones/')).length)
   assert.equal(itemEnPantalla(player).node.item, 'b1-1-dificultad')
+  player.unmount()
+})
+
+// Ajuste coherencia-bloque1: el panel del mapa lee el estado de las actividades cargadas; una respuesta confirmada
+// las deja con el estado del registro, sin volver a pedirlas.
+test('una respuesta confirmada deja el registro EN_CURSO en las actividades cargadas', async () => {
+  const { app, player } = await aMedias({ responder: contenido('responder-b1-1-mensaje') })
+  const estado = () =>
+    cargarAlmacen(app).obtenerEstadoServidor().actividades.datos.flatMap((b) => b.actividades)
+      .find((a) => a.codigo === 'b1-1').estado
+  assert.equal(estado(), 'DISPONIBLE')
+  const pedidas = app.requests.filter((r) => r.url.endsWith('/actividades')).length
+  enviar(player, [{ codigo: 'ORGANIZAR' }])
+  await esperar()
+  assert.equal(estado(), 'EN_CURSO')
+  assert.equal(app.requests.filter((r) => r.url.endsWith('/actividades')).length, pedidas)
   player.unmount()
 })
 

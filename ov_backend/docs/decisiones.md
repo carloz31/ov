@@ -41,6 +41,7 @@ Tomadas en el ajuste:
 
 - `NODOS_PERMITIDOS.registro` admite `pregunta`. En un registro del servidor sus intentos van al navegador, como en un encuentro; `entregar` no los mira.
 - En api, continuar la última consigna lleva a los pasos de cierre, si los hay, y el registro se entrega al continuar el último (`useActivityPlayer.move` llama a `registro.entregar()` en vez de `completar-actividad`, que rechaza los registros), con el cargador y el aviso de error del reproductor. Sin pasos de cierre (los de `ruta`), continuar la última consigna entrega como antes. Se entrega al final, y no al dejar el último ítem, para que quien sale durante los pasos de cierre vuelva al último ítem en lectura (registro con todo respondido y sin terminar) y siga desde ahí, como pide la tabla de cierre.
+- Pedido por el usuario tras la revisión en navegador: el panel decía «Iniciar actividad» de un registro a medias o con todo respondido y sin entregar, porque responder un ítem no tocaba las actividades cargadas (pasaba antes de este ajuste). Ahora `store/servidor/registro.ts` aplica a las actividades ya cargadas el `registro.estado` de cada paso confirmado (responder, seguimiento, reenviar), sin volver a pedirlas, como `actualizarFicha`.
 - Pruebas adaptadas, autorizadas por la tabla de cierre de las observaciones: en `tests/servidor/registro/servidor-registro-flujo.test.mjs`, «con todo respondido y sin terminar…» y «rehacer…» ahora recorren los pasos de cierre antes de entregar, y `recorrerApertura` resuelve la pregunta de b1-1. Del back, los mensajes de `R-CIUDAD` y `R-c*` en `test_casos_contenido.py` y la `descripcion` de `tests/llm/casos/b1-6.json`. En `tests/integration/datos/test_conversaciones_contenido.py` sale `b1-5-p05` de `CORRECTAS`: esa pregunta ya no existe con el banco nuevo.
 
 Anotado para otros ajustes (de las observaciones, sin tocar):
@@ -48,7 +49,6 @@ Anotado para otros ajustes (de las observaciones, sin tocar):
 - ma1, diálogo 01: «Leí tu punto de origen y me quedé pensando.» Nadia ya no lee un punto de origen: escuchó la historia.
 - ma2: sus 10 preguntas tienen el problema del largo, y su título dice «profesiones».
 - Las demás batallas (b3-5, b3-7, b3-9, b3-b, b4-4, ma7-b): revisar el mismo patrón.
-- Revisión en navegador: en api, el panel de una actividad dice «Iniciar actividad» para un registro a medias o con todo respondido y sin entregar, aunque el servidor ya lo tenga EN_CURSO: el almacén de actividades no se refresca al responder ítems. Pasaba antes de este ajuste con cualquier registro a medias; no se cambia sin decisión del usuario.
 - Banco de b1-5: con los textos tal cual, la correcta es la más larga en 3 de 18 (p10, p13 y p15; en p10 por un carácter), no en 2 como decía el texto de observaciones. No se tocaron los textos.
 - Fuentes de las fichas: Habermas y Bluck (2000), Savickas (2005), Bandura (1977), Low y otros (2005), Oettingen (2014) y Gollwitzer (1999) se citaron sin verificarlas en línea; los datos nuevos de F05 vienen de notas de prensa que citan la fuente original.
 
