@@ -27,8 +27,8 @@ const textos: Record<
         : `${total}carreras universitarias, técnicas y de las Fuerzas Armadas y Policía, con lo que estudian, dónde se dictan y cuánto ganan sus egresados.`,
   },
   professions: {
-    titulo: 'Catálogo de profesiones',
-    buscar: 'Buscar una profesión por nombre…',
+    titulo: 'Catálogo de ocupaciones',
+    buscar: 'Buscar una ocupación por nombre…',
     descripcion: () =>
       'Conoce qué hacen distintos profesionales, qué habilidades usan y a qué tipo de persona le atrae cada trabajo.',
   },
@@ -41,7 +41,7 @@ const textos: Record<
 }
 const nombreItems: Record<SeccionCatalogo, [string, string]> = {
   careers: ['carrera', 'carreras'],
-  professions: ['profesión', 'profesiones'],
+  professions: ['ocupación', 'ocupaciones'],
   institutions: ['institución', 'instituciones'],
 }
 

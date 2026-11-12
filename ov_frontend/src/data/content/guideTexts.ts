@@ -29,7 +29,7 @@ export const textosBloqueo = {
   },
   CATALOGO: {
     adelanto:
-      'Aquí se guarda un atlas de profesiones, carreras e instituciones. Te servirá para explorar lo que te llame la atención.',
+      'Aquí se guarda un atlas de ocupaciones, carreras e instituciones. Te servirá para explorar lo que te llame la atención.',
     final: 'Todavía no puedes consultarlo.',
   },
   PLANES: {
@@ -207,11 +207,11 @@ export const sectionIntros: Record<StudentView, string[]> = {
   ],
   // DATO DE PRUEBA
   'catalog-professions': [
-    'El atlas de profesiones te muestra el mundo del trabajo más allá de lo que ya conoces, para que encuentres opciones nuevas.',
+    'El atlas de ocupaciones te muestra el mundo del trabajo más allá de lo que ya conoces, para que encuentres opciones nuevas.',
   ],
   // DATO DE PRUEBA
   'catalog-careers': [
-    'Conocer las carreras te ayuda a ver qué formación lleva a cada profesión y cuál se parece más a lo que buscas.',
+    'Conocer las carreras te ayuda a ver qué formación lleva a cada ocupación y cuál se parece más a lo que buscas.',
   ],
   // DATO DE PRUEBA
   'catalog-institutions': [

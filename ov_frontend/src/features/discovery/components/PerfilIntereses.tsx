@@ -46,7 +46,7 @@ export function PerfilIntereses({
   const filas = Object.entries(puntajes).sort((a, b) => b[1] - a[1])
   return (
     <Parchment title="Perfil de intereses">
-      <p className="sx-c-conteo">Cuánto pesa cada interés en esta profesión</p>
+      <p className="sx-c-conteo">Cuánto pesa cada interés en esta ocupación</p>
       <div className="sx-c-barras">
         {filas.map(([letra, valor]) => (
           <div className="sx-c-barra-interes" key={letra} data-fuerte={codigo.includes(letra)}>
@@ -61,7 +61,7 @@ export function PerfilIntereses({
       {resultado && resultado.length > 0 && (
         <div className="sx-c-comparacion">
           <p className="sx-c-conteo">Comparado con tu resultado</p>
-          <FilaSellos etiqueta="Esta profesión" letras={codigo} />
+          <FilaSellos etiqueta="Esta ocupación" letras={codigo} />
           <FilaSellos etiqueta="Tú" letras={resultado} estudiante />
           <p>{fraseComparacion(codigo, resultado)}</p>
         </div>
