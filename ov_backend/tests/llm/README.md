@@ -4,7 +4,8 @@
 
 ```
 tests/llm/
-  evaluar_tarjetas.py            runner de las tarjetas v7 sobre la capa del LLM del backend
+  evaluar_tarjetas.py            runner de las tarjetas v7 sobre la capa del LLM del backend (y modos --guion y --pasos)
+  sugerencias_llm.py             modos --guion y --pasos (ajuste llm-sugerencias)
   casos/<registro>[-tarjetas-v7.x].json   casos y lo esperado
   prompts/                       prompts de las rondas
   resultados/<registro>/ y resultados/capa-llm/   CSV e informes de cada corrida (se versionan)
@@ -25,6 +26,28 @@ uv run python tests/llm/evaluar_tarjetas.py --informe <csv> --anterior <csv>    
 ```
 
 Con `--casos` o `--manifiesto`, el runner se detiene antes de llamar si un caso coincide con los EJEMPLOS o con las frases de GENERAL SI o SEGUIMIENTO de su tarjeta (salvo `solapamiento_aceptado`); con `--seguimientos`, que junta casos que ya corrieron en su ronda, solo lo informa. El informe anota el `git hash-object` de cada archivo usado y el hash del prompt. Las corridas anteriores (v7.x con Gemini y `piloto-claude-*`, en `resultados/<registro>/` y `resultados/piloto-claude/`) quedan como evidencia: el código, el prompt, las tarjetas y el brazo Gemini con que corrieron están en el historial de git.
+
+## Guion y pasos del plan (ajuste llm-sugerencias)
+
+Los modos `--guion` y `--pasos` de `evaluar_tarjetas.py` (lógica en `sugerencias_llm.py`) corren los casos de `casos/guion-v4-haiku.json` y `casos/pasos-v5-haiku.json` con el prompt, el mensaje, el esquema, el filtro (guion) y la validación (pasos) del backend, sin base. Una llamada por caso. Escriben en `resultados/guion/` y `resultados/pasos/` el CSV y el informe: chequeos automáticos (guion: esquema, a lo más una por campo, «?» al final, un solo «¿», largo, no repite base; pasos: esquema, tipo, largo, cantidad, infinitivo, sin «tu», «te» ni «podrías», sin cifras ni direcciones web, no repite un paso actual, clase esperada) y una tabla para la lectura a ciegas. En el guion, repetir una base con otras palabras es un defecto conocido y aceptado: va en su propia línea («repite base»). El informe de pasos empieza con la medición de la llamada con 1, 3, 5, 8 y 10 dudas (casos `M01`-`M10`): tokens de razonamiento y de salida, latencia y parada.
+
+```
+uv run python tests/llm/evaluar_tarjetas.py --guion --mostrar G1      # prompt y mensaje, sin llamar
+uv run python tests/llm/evaluar_tarjetas.py --pasos --solo A          # un caso: una llamada
+uv run python tests/llm/evaluar_tarjetas.py --guion                   # todos los casos del guion
+uv run python tests/llm/evaluar_tarjetas.py --pasos                   # todos los de pasos, con la medición
+```
+
+### Pendiente: primera corrida del guion y de los pasos
+
+El ajuste llm-sugerencias dejó listos los modos y los casos, pero no los corrió: en esa sesión no había clave. Para retomarlo en otra sesión de Claude Code:
+
+1. Comprueba que `ov_backend/.env` está ignorado por git (`git check-ignore -v ov_backend/.env`); si no, detente y avisa.
+2. Crea `ov_backend/.env` con una sola línea, `ANTHROPIC_API_KEY=<clave>`, escrita desde la variable de entorno sin mostrar el valor (por ejemplo, `printf 'ANTHROPIC_API_KEY=%s\n' "$ANTHROPIC_API_KEY" > .env`). No lo versiones, ni lo subas, ni pongas la clave en informes o commits.
+3. Haz primero una sola llamada de prueba: `uv run python tests/llm/evaluar_tarjetas.py --pasos --solo A`. Si falla por red o por la clave, detente e informa el error, sin la clave.
+4. Corre `--guion` y `--pasos`, una repetición por caso (es lo que hace el runner). No relances la corrida completa sin consultar.
+5. Lleva al usuario la tabla de medición del inicio del informe de pasos (tokens de razonamiento y de salida, latencia y parada con 1, 3, 5, 8 y 10 dudas). Con ella se fijan `MAXIMO_TOKENS_SALIDA_PASOS` y `TIEMPO_MAXIMO_PASOS_SEGUNDOS` (hoy 6000 y 30, provisionales; `app/core/parametros.py`). No los fijes ni cambies el flujo del guardado sin que el usuario decida: esa llamada va dentro del guardado de CONOCIMIENTO o REALIDAD, y el estudiante la espera con el botón cargando.
+6. No cambies los prompts por lo que salga: anótalo en el informe. En el guion, repetir una base con otras palabras es un defecto conocido y aceptado.
 
 ## Formato de un caso
 

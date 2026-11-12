@@ -540,11 +540,11 @@ def test_hu057_065_100_101_investigaciones_y_entrevistas(cliente):
         assert pedir(cliente, 'GET', f'/cuentas/{cuenta}/secciones/INVESTIGACIONES')['estado'] == 'BLOQUEADA'
         assert 'R-SEC-INVESTIGACIONES' in reglas(completar(cliente, 't-investigador', cuenta))
         accion('guardar-lo-que-pienso', pienso, cuenta)
-    # Paso 2: base + duda + una sugerida; Luis termina sin pedir sugerencias.
+    # Paso 2: base + una propia (su duda) + una sugerida; Luis termina sin pedir sugerencias.
     sugerencias = accion('pedir-sugerencias-guion', {})
     assert sugerencias['estado'] == 'LISTAS'
     sugerida = sugerencias['sugerencias'][0]
-    preguntas = [{'origen': 'DUDA', 'texto': pienso['duda']},
+    preguntas = [{'origen': 'PROPIA', 'texto': pienso['duda']},
                  {'origen': 'SUGERIDA', 'texto': sugerida['texto'], 'sugerencia': sugerida['codigo']}]
     accion('guardar-guion', {'preguntas': preguntas, 'terminar': True})
     accion('guardar-guion', {'preguntas': preguntas[:1], 'terminar': True}, 'est-luis')

@@ -10,7 +10,7 @@ Documentos vigentes (lee los que toque la tarea):
 |---|---|
 | `docs/sistema/motor.md` | Eventos, reglas, disponibilidad, acciones, progreso y diario. |
 | `docs/sistema/instrumentos.md` | Cuestionarios, cálculo de resultados, coincidencias O*NET y carreras. |
-| `docs/sistema/registro.md` | Ítems e intentos de registro, contexto de un ítem (piezas, marcadores, ecos), capa del LLM v7 y asistentes con Gemini. |
+| `docs/sistema/registro.md` | Ítems e intentos de registro, contexto de un ítem (piezas, marcadores, ecos) y capa del LLM v7. |
 | `docs/sistema/referencias.md` | Referencias: catálogo de tipos, resolución por cuenta y elección por referencia. |
 | `docs/sistema/planes.md` | Planes de carrera: tarjeta, secciones, totales, acciones y sugerencias de pasos con LLM. |
 | `docs/sistema/investigaciones.md` | Investigaciones, guion con sugerencias del LLM, entrevistas, reacciones, reportes y Leyenda. |
@@ -35,7 +35,7 @@ app/                    solo la aplicación; no lee archivos de datos
   services/             lógica de negocio por dominio
     motor/              núcleo de desbloqueos
     instrumentos/       cálculo, consultas y resultados
-    registro/           registro: intentos (`acciones.py`), flujo ítem por ítem con el LLM (`flujo.py`), lectura (`consultas.py`), `contexto.py` (opciones, piezas, marcadores, ecos y eco cambiado de un ítem) y `llm/` (capa del LLM v7, Claude); `evaluacion.py` y `gemini.py` quedan para los asistentes con Gemini
+    registro/           registro: intentos (`acciones.py`), flujo ítem por ítem con el LLM (`flujo.py`), lectura (`consultas.py`), `contexto.py` (opciones, piezas, marcadores, ecos y eco cambiado de un ítem) y `llm/` (capa del LLM v7, Claude); el cliente de `llm/` también lo usan el guion y los pasos del plan
     planes/             planes de carrera: consultas, acciones y sugerencias
     investigaciones/    investigaciones y entrevistas: consultas, acciones, sugerencias y orientadora
   core/                 parámetros, caché de definiciones y contexto de consultas
@@ -110,11 +110,10 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 
 ## Secretos y servicios externos
 
-- La clave de Gemini se lee de `.env`, que nunca se versiona. No la escribas en código, logs, respuestas, errores ni documentación.
+- La clave de Claude (`ANTHROPIC_API_KEY`) se lee de `.env`, que nunca se versiona. No la escribas en código, logs, respuestas, errores ni documentación.
 - `JWT_SECRETO` (firma de los tokens) también va en `.env`. Es obligatorio en `ENTORNO=produccion`, con al menos 32 caracteres; en desarrollo y pruebas, si falta, se usa uno fijo. Las contraseñas se guardan con Argon2id (`argon2-cffi`); las de prueba están en `datos/usuarios_prueba.txt`, que coincide con `datos/ruta.py`.
-- `EVALUADOR=falso` (por defecto) o `EVALUADOR=gemini`. Las pruebas usan siempre el evaluador falso y nunca acceden a la red (salvo las de marca `postgres`, que se omiten sin `TEST_POSTGRES_URL`).
-- LLM de registros (ajuste registros llm, lote 3): `app.state.cliente_llm` es `ClienteClaude` con `ANTHROPIC_API_KEY` y, sin clave, un cliente que siempre falla (el ítem queda SIN_EVALUAR). Las pruebas dejan la clave vacía y las plantillas inyectan `ClientePrueba` (`tests/soporte/soporte_llm.py`); ninguna llama al LLM real. No ejecutes nada que llame a Claude salvo que el usuario lo pida.
-- No ejecutes nada que llame a la API real de Gemini salvo que el usuario lo pida explícitamente.
+- Las pruebas nunca acceden a la red (salvo las de marca `postgres`, que se omiten sin `TEST_POSTGRES_URL`).
+- LLM de registros (ajuste registros llm, lote 3): `app.state.cliente_llm` es `ClienteClaude` con `ANTHROPIC_API_KEY` y, sin clave, un cliente que siempre falla (el ítem queda SIN_EVALUAR). Las pruebas dejan la clave vacía y las plantillas inyectan `ClientePrueba` (`tests/soporte/soporte_llm.py`); ninguna llama al LLM real. Desde el ajuste llm-sugerencias, el mismo cliente sirve al guion de Investigaciones y a los pasos del plan (`salida_json`, con topes por llamada), y `ClientePrueba` sin cola responde según el esquema que recibe (registro, guion o pasos; `fallar_pasos` hace fallar los pasos). No ejecutes nada que llame a Claude salvo que el usuario lo pida.
 
 ## Stack y comandos
 
@@ -130,7 +129,7 @@ Python 3.14, FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, SQLite (desarrollo y
 
 ```text
 tests/
-  conftest.py        solo autouse sin base (evaluador falso)
+  conftest.py        solo autouse sin base (sin clave del LLM real)
   soporte/           ayudas compartidas; ninguna prueba importa un test_*.py
   unit/              acceso, arquitectura, configuracion, diario, instrumentos, motor, planes, registro
   integration/
@@ -141,7 +140,7 @@ tests/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
     escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
     registros/        los registros definitivos de `contenido` recorridos ítem por ítem con el cliente de prueba del LLM (ajuste registros)
-  llm/               validación del LLM de registros contra el modelo real (`evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`, con la presentación de `datos/contenido.py`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
+  llm/               validación del LLM contra el modelo real: registros y, con `--guion` y `--pasos`, el guion y los pasos del plan (primera corrida pendiente, ver su README) (`evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`, con la presentación de `datos/contenido.py`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.

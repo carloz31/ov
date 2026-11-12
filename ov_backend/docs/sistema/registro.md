@@ -10,11 +10,7 @@ Lo que ve el estudiante (la escena, los personajes, el orden de los bloques) est
 
 | Variable | Por defecto | Uso |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | La capa del LLM v7 (`app.state.cliente_llm`). Sin clave, toda llamada falla (`sin_clave`) y el ítem queda SIN_EVALUAR. Las pruebas inyectan un cliente de prueba y nunca llaman al LLM real. |
-| `EVALUADOR` | `falso` | El evaluador de los asistentes con Gemini (sugerencias de pasos y guion): `gemini` usa la API real; `falso`, el determinista. Ya no evalúa registros. |
-| `GEMINI_API_KEY` | — | Obligatoria si `EVALUADOR=gemini`. |
-| `GEMINI_MODELO` | `gemini-3.5-flash-lite` (`MODELO_LLM_REGISTRO`) | Modelo de los asistentes. |
-| `GEMINI_TIMEOUT_SEGUNDOS` | `8` | Tiempo máximo por llamada de los asistentes. |
+| `ANTHROPIC_API_KEY` | — | La capa del LLM v7 (`app.state.cliente_llm`), que desde el ajuste llm-sugerencias sirve también al guion de Investigaciones y a los pasos del plan. Sin clave, toda llamada falla (`sin_clave`) y el ítem queda SIN_EVALUAR. Las pruebas inyectan un cliente de prueba y nunca llaman al LLM real. |
 
 ## Modelo
 
@@ -83,10 +79,6 @@ Apoderados y cuentas o actividades inexistentes: 404.
 **Piezas del perfil** (b4-1-respalda; en b4-1-menos, con «Lo que te cuesta» primero): `INT-<letra>` (las tres del código RIASEC, con su frase y el nombre de la dimensión como origen que se muestra), `INTEL-<dim>` y `HAB-<dim>` (las más altas de inteligencias y de habilidades sociales, todas si hay empate; solo con el resultado revelado), `BIEN-1`, `VAL-1`, `LOGRO-HAB` (ninguna con `NINGUNO`), `GUSTO` (citable) y `CUESTA-<opción>` (sin NADA). **Piezas del inicio** (b5-3-cambio): `INI-OPCION`, `INI-RUTA`, `INI-DIA`, `INI-FRENO` y `INI-MITO` (un mito de la lista aunque su texto no sea citable; la «Otra», con la regla de arriba; con «Ninguno me suena», nada). Cada pieza lleva el origen que se muestra (§4) y el que va al LLM, el que validó el runner; el texto de una pieza de test es su frase corta (`PIEZA_FRASE_<dimensión>`). Al LLM, una pieza va con su origen entre paréntesis y lo escrito por el estudiante entre «» (perfil) o "" (inicio); la «Otra» del ítem va con su origen («otra cosa tuya», «otra cosa que cambió») y sin comillas. Grupos, orígenes y frases están en `texto_fijo` (`PIEZA_*`, de `fijos.TEXTOS_FIJOS`); los ítems de las piezas, en `parametros.ITEMS_PIEZAS`. La carga falla si falta uno o si no tiene la forma esperada.
 
 **Ecos al LLM** (`ecos_llm` y su `forma`): b1-3-contraste, «Nombre: elección. «texto»» por ítem; `primera`, «Nombre: el 1.º»; un texto, «Nombre: texto»; `carrera`, «Tu Plan A: carrera»; `plan_a_b`, «Plan A: carrera · lo que te mueve: motivos · «relato»» y la del B; `carrera_institucion`, «Tu proyecto: carrera · institución». Los que se muestran llevan la cabecera del Plan A, los dos primeros planes, el proyecto con sus pasos pendientes y hechos, el primer check-in, la columna «Hoy» de b5-3 y las referencias de las opcionales. Cada eco que solo se muestra trae su `nombre`, que el front usa como origen o rótulo del bloque (ajuste front de registros, lote 2): «tu día a los 23» y «lo que estarás haciendo dentro de un año» (ma3), «Tu test de habilidades», «de inteligencias» y «de intereses» (h1, h2, h3) y «qué tan seguro/a te sientes de tu proyecto» (la seguridad de b5-3; el rótulo «Hoy» lo pone el front). Esos nombres no van al LLM ni cuentan para el eco cambiado.
-
-## Asistentes con Gemini
-
-El cliente Gemini de `gemini.py` (`EvaluadorGemini`) y el evaluador falso de `evaluacion.py` (`EvaluadorFalso`) ya no evalúan registros: sirven a las sugerencias de pasos y al guion (`app.state.evaluador_respuestas`), con `TEMPERATURA_ASISTENTES` y `NIVEL_RAZONAMIENTO_ASISTENTES`. El diario no usa el LLM (ajuste cartas-diario; ver «Diario» en `motor.md`).
 
 ## Capa del LLM v7 (ajuste registros llm, lote 1)
 

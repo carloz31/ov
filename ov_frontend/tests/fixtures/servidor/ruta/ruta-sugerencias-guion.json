@@ -2,16 +2,19 @@
   "estado": "LISTAS",
   "sugerencias": [
     {
+      "campo": "DIA",
       "codigo": "SUG-00000000000000000000000000000003",
-      "texto": "¿Qué te sorprendió al empezar en Ingeniería Eléctrica? (1)"
+      "texto": "¿Cómo se vive en tu trabajo lo de «DATO DE PRUEBA: revisa instalaciones de»?"
     },
     {
+      "campo": "NECESITA",
       "codigo": "SUG-00000000000000000000000000000004",
-      "texto": "¿Qué parte de tu trabajo casi nadie conoce? (1)"
+      "texto": "¿Cómo se vive en tu trabajo lo de «DATO DE PRUEBA: estudiar en un instituto»?"
     },
     {
+      "campo": "DUDA",
       "codigo": "SUG-00000000000000000000000000000005",
-      "texto": "¿Qué harías distinto si empezaras hoy? (1)"
+      "texto": "¿Cómo se vive en tu trabajo lo de «Es peligroso»?"
     }
   ]
 }

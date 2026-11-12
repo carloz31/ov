@@ -82,10 +82,6 @@
       {
         "codigo": "TIEMPO",
         "texto": "El tiempo"
-      },
-      {
-        "codigo": "SALUD",
-        "texto": "Mi salud o la de alguien cercano"
       }
     ],
     "dudas_sugeridas": [

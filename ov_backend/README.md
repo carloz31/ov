@@ -18,7 +18,7 @@ La aplicación no crea tablas ni carga datos al arrancar: la migración y la car
 - `DATABASE_URL` elige la base (por defecto `sqlite:///ov.db` en la raíz). Para PostgreSQL: `uv sync --extra postgres` y la URL antes de migrar y cargar.
 - Conjuntos de datos: `contenido` (el contenido real, el que se despliega) y `ruta` (banco de pruebas de mecánicas: `uv run python -m datos.cargar ruta`); `--vaciar` reemplaza los datos de la base.
 - `POST /desarrollo/reiniciar` (solo con `ENTORNO=desarrollo`) borra el estado de las cuentas y conserva el catálogo.
-- El evaluador de registros es `falso` por defecto. Para usar Gemini, configura `EVALUADOR=gemini` y `GEMINI_API_KEY` en `.env`; nunca publiques la clave.
+- El LLM (Claude Haiku) de los registros, el guion y los pasos del plan usa `ANTHROPIC_API_KEY` de `.env`; sin clave, se usan los respaldos. Nunca publiques la clave.
 
 ## Pruebas
 

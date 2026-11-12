@@ -42,8 +42,7 @@ def pedir_sugerencias_guion(entrada: PedirSugerenciasEntrada, peticion: Request)
     # No usa la dependencia de sesión: la llamada al LLM va entre dos transacciones, como en planes.
     try:
         return sugerencias_investigaciones.pedir_sugerencias(
-            peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.evaluador_respuestas,
-            tiempo_maximo_segundos=peticion.app.state.configuracion_registro.timeout_segundos)
+            peticion.app.state.fabrica_sesiones, entrada, peticion.app.state.cliente_llm)
     except ErrorAccion as error:
         raise traducir_error_accion(error) from error
     except IntegrityError as error:

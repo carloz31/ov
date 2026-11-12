@@ -1,9 +1,11 @@
 """B13 · HU-057, HU-058, HU-059 y HU-100: investigación, lo que pienso, guion, sugerencias y aliados."""
 
 from app import models as modelos
+from app.services.investigaciones.prompt_guion_v4_haiku import PROMPT
 from soporte_investigaciones import (
     FAMILIA, OTRA_FAMILIA, PIENSO, abrir_investigaciones, accion, guia_lista, guion, investigaciones, pensar,
 )
+from soporte_llm import fallo, salida_guion
 from soporte_ruta import avanzar, eventos, pedir
 
 
@@ -21,7 +23,7 @@ def test_vista_inicial_con_catalogos_y_sin_investigacion(cliente):
     vista = investigaciones(cliente)
     assert vista['en_curso'] is None
     assert vista['aliados'] == {'misma_familia': [], 'otras': []}
-    assert [p['codigo'] for p in vista['preguntas_base']] == ['BASE-1', 'BASE-2', 'BASE-3']
+    assert [p['codigo'] for p in vista['preguntas_base']] == ['BASE-1', 'BASE-2', 'BASE-3', 'BASE-4']
     assert [(t['codigo'], t['comentario_obligatorio'], t['icono']) for t in vista['tipos_reaccion']] == [
         ('APRENDI', True, 'bombilla'), ('ME_GUSTO', False, 'estrella'), ('CURIOSIDAD', True, 'pregunta'),
         ('MI_CAMINO', True, 'caminos')]
@@ -53,15 +55,20 @@ def test_guion_minimo_y_guia_lista(cliente, sesion):
     guion(cliente, preguntas=[], esperado=422)
     guion(cliente, preguntas=[{'origen': 'PROPIA', 'texto': '¿Qué te gusta de tu trabajo?'}], terminar=False)
     assert investigaciones(cliente)['en_curso']['estado'] == 'EN_CURSO'
-    lista = guion(cliente, preguntas=[{'origen': 'DUDA', 'texto': PIENSO['duda']},
+    # Ajuste llm-sugerencias: una sugerida aceptada no basta para terminar; hace falta una propia.
+    guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'}], esperado=422)
+    guion(cliente, preguntas=[{'origen': 'DUDA', 'texto': PIENSO['duda']}], esperado=422)
+    lista = guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'},
                                       {'origen': 'PROPIA', 'texto': '¿Qué te gusta de tu trabajo?'}])
     assert [e['tipo'] for e in lista['eventos_registrados']] == ['TERMINA_GUION']
     en_curso = investigaciones(cliente)['en_curso']
     assert en_curso['estado'] == 'GUIA_LISTA' and en_curso['guia_lista_en'] is not None
-    assert [p['origen'] for p in en_curso['preguntas']] == ['DUDA', 'PROPIA']
+    assert [p['origen'] for p in en_curso['preguntas']] == ['SUGERIDA', 'PROPIA']
     # Editar el guion ya listo no repite el evento; quitar todas las propias no se permite.
     assert guion(cliente, preguntas=[{'origen': 'PROPIA', 'texto': '¿Cómo empezaste?'}])['eventos_registrados'] == []
     guion(cliente, preguntas=[], terminar=False, esperado=422)
+    guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'}], terminar=False,
+          esperado=422)
     # Editar lo que pienso con la guía lista la mantiene lista.
     pensar(cliente, duda='¿Cuánto se gana al empezar en este oficio?')
     assert investigaciones(cliente)['en_curso']['estado'] == 'GUIA_LISTA'
@@ -81,55 +88,67 @@ def test_cancelar_borra_la_investigacion_y_deja_el_evento(cliente, sesion):
 
 
 def test_sugerencias_se_piden_una_vez_y_se_agregan_o_descartan(cliente, aplicacion):
-    evaluador = aplicacion.state.evaluador_respuestas
+    llm = aplicacion.state.cliente_llm
     abrir_investigaciones(cliente)
     pensar(cliente)
     primera = accion(cliente, 'pedir-sugerencias-guion', {})
-    assert primera['estado'] == 'LISTAS' and len(primera['sugerencias']) == 3
-    assert evaluador.llamadas_guion == 1
-    contexto = evaluador.contextos_guion[0]
-    assert contexto.familia and contexto.duda == PIENSO['duda'] and len(contexto.preguntas_base) == 3
+    assert primera['estado'] == 'LISTAS' and [s['campo'] for s in primera['sugerencias']] == ['DIA', 'NECESITA', 'DUDA']
+    [(sistema, mensaje, _)] = llm.llamadas
+    assert sistema == PROMPT and f'<duda>{PIENSO["duda"]}</duda>' in mensaje and mensaje.count('\n¿') == 4
     # Reabrir el paso no vuelve a llamar.
-    assert accion(cliente, 'pedir-sugerencias-guion', {}) == primera and evaluador.llamadas_guion == 1
+    assert accion(cliente, 'pedir-sugerencias-guion', {}) == primera and len(llm.llamadas) == 1
     agregada, descartada, _ = (s['codigo'] for s in primera['sugerencias'])
     guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': 'Editada por mí', 'sugerencia': agregada},
-                              {'origen': 'DUDA', 'texto': PIENSO['duda']}], descartadas=[descartada])
+                              {'origen': 'PROPIA', 'texto': PIENSO['duda']}], descartadas=[descartada])
     en_curso = investigaciones(cliente)['en_curso']
-    assert len(en_curso['sugerencias']) == 1
+    assert [s['campo'] for s in en_curso['sugerencias']] == ['DUDA']
     assert en_curso['preguntas'][0] == {'origen': 'SUGERIDA', 'texto': 'Editada por mí'}
     # F09: el front reenvía la sugerida ya agregada sin código (la consulta no lo devuelve); no cambia sugerencias.
     guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': 'Editada otra vez'},
-                              {'origen': 'DUDA', 'texto': PIENSO['duda']}], terminar=True)
+                              {'origen': 'PROPIA', 'texto': PIENSO['duda']}], terminar=True)
     assert investigaciones(cliente)['en_curso']['preguntas'][0] == {'origen': 'SUGERIDA', 'texto': 'Editada otra vez'}
     assert len(investigaciones(cliente)['en_curso']['sugerencias']) == 1
     guion(cliente, preguntas=[{'origen': 'PROPIA', 'texto': 'x', 'sugerencia': agregada}], esperado=422)
     # Una descartada no se puede agregar después; una inexistente tampoco.
     guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': 'x', 'sugerencia': descartada},
-                              {'origen': 'DUDA', 'texto': 'y'}], esperado=404)
-    # Cambiar lo que pienso invalida las pendientes y la próxima petición llama de nuevo, sin repetir las usadas.
+                              {'origen': 'PROPIA', 'texto': 'y'}], esperado=404)
+    # Cambiar lo que pienso borra las pendientes y la próxima petición llama de nuevo, sin repetir las usadas: el
+    # cliente de prueba repite la de día (agregada), que el filtro descarta, y vuelve a ofrecer la de la duda, que
+    # estaba pendiente y se borró.
     pensar(cliente, necesita='Creo que necesita un certificado técnico y cuidado con la seguridad.')
     assert investigaciones(cliente)['en_curso']['sugerencias'] == []
     segunda = accion(cliente, 'pedir-sugerencias-guion', {})
-    assert evaluador.llamadas_guion == 2 and segunda['estado'] == 'LISTAS'
-    usadas = {s['texto'] for s in primera['sugerencias']} | {'Editada por mí'}
+    assert len(llm.llamadas) == 2 and segunda['estado'] == 'LISTAS'
+    assert [s['campo'] for s in segunda['sugerencias']] == ['NECESITA', 'DUDA']
+    usadas = {s['texto'] for s in primera['sugerencias'][:2]} | {'Editada por mí'}
     assert not usadas & {s['texto'] for s in segunda['sugerencias']}
 
 
-def test_sugerencias_con_texto_pobre_o_fallo_del_llm(cliente, aplicacion):
-    evaluador = aplicacion.state.evaluador_respuestas
+def test_sugerencias_con_texto_pobre_fallo_o_ninguna_util(cliente, aplicacion, sesion):
+    llm = aplicacion.state.cliente_llm
     abrir_investigaciones(cliente)
     pensar(cliente, dia='No sé', necesita='Nada', duda='¿?')
     assert accion(cliente, 'pedir-sugerencias-guion', {}) == {'estado': 'SIN_SUGERENCIAS', 'sugerencias': []}
-    assert evaluador.llamadas_guion == 0
-    pensar(cliente, duda='[falla] ¿Es peligroso trabajar con electricidad?')
-    assert accion(cliente, 'pedir-sugerencias-guion', {}) == {'estado': 'ERROR', 'sugerencias': []}
-    assert investigaciones(cliente)['en_curso']['sugerencias_vigentes'] is False
-    pensar(cliente, duda='[vacio] ¿Es peligroso trabajar con electricidad?')
-    assert accion(cliente, 'pedir-sugerencias-guion', {})['estado'] == 'SIN_SUGERENCIAS'
+    assert llm.llamadas == []
+    pensar(cliente)
+    for falla in (fallo(), fallo('tiempo_agotado'), '{"preguntas": []}'):
+        llm.encolar(falla)
+        assert accion(cliente, 'pedir-sugerencias-guion', {}) == {'estado': 'ERROR', 'sugerencias': []}
+        assert investigaciones(cliente)['en_curso']['sugerencias_vigentes'] is False
+    # Tres null: SIN_SUGERENCIAS y no se vuelve a llamar.
+    llm.encolar(salida_guion())
+    assert accion(cliente, 'pedir-sugerencias-guion', {}) == {'estado': 'SIN_SUGERENCIAS', 'sugerencias': []}
     assert investigaciones(cliente)['en_curso']['sugerencias_vigentes'] is True
-    llamadas = evaluador.llamadas_guion
+    llamadas = len(llm.llamadas)
     accion(cliente, 'pedir-sugerencias-guion', {})
-    assert evaluador.llamadas_guion == llamadas
+    assert len(llm.llamadas) == llamadas
+    # Una que no pasa el filtro se descarta y la otra se guarda con su campo y su motivo.
+    pensar(cliente, duda='¿Cuánto gana alguien que recién empieza en esto?')
+    llm.encolar(salida_guion(dia='¿Una? ¿Dos?', duda='¿Cuánto gana alguien que recién empieza en tu campo?',
+                             motivo='De su duda sobre el sueldo'))
+    assert [s['campo'] for s in accion(cliente, 'pedir-sugerencias-guion', {})['sugerencias']] == ['DUDA']
+    fila = sesion.query(modelos.SugerenciaGuion).one()
+    assert (fila.campo, fila.motivo) == (modelos.CampoLoQuePienso.DUDA, 'De su duda sobre el sueldo')
 
 
 def test_aliados_del_mismo_salon_con_guia_lista(cliente):

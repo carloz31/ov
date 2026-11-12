@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base, enumerado
 from app.models.enums import (
     EstadoEntrevista, EstadoInvestigacion, EstadoReporte, EstadoSugerenciaGuion, MotivoReporte, OrigenPreguntaGuion,
+    CampoLoQuePienso,
 )
 
 
@@ -105,6 +106,9 @@ class SugerenciaGuion(Base):
     investigacion_id: Mapped[int] = mapped_column(ForeignKey("investigacion.id"))
     texto: Mapped[str] = mapped_column(Text)
     estado: Mapped[EstadoSugerenciaGuion] = mapped_column(enumerado(EstadoSugerenciaGuion))
+    # Ajuste llm-sugerencias: el campo de «lo que pienso» del que sale y el motivo que dio el LLM.
+    campo: Mapped[CampoLoQuePienso] = mapped_column(enumerado(CampoLoQuePienso))
+    motivo: Mapped[str] = mapped_column(Text)
 
 
 class Reaccion(Base):

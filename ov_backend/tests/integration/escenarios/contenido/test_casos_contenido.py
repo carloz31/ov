@@ -1,4 +1,4 @@
-"""Ajuste carga-casos: los seis casos de la Central en `contenido`, con las peticiones del front (evaluador falso)."""
+"""Ajuste carga-casos: los seis casos de la Central en `contenido`, con las peticiones del front (cliente de prueba del LLM)."""
 
 from soporte_ruta import FECHA, eventos, pedir, responder, responder_registro
 

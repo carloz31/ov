@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints, field_validator, model_validator
 
-from app.models.enums import EstadoInvestigacion, MotivoReporte, OrigenPreguntaGuion
+from app.models.enums import CampoLoQuePienso, EstadoInvestigacion, MotivoReporte, OrigenPreguntaGuion
 from app.schemas.acciones import AccionCuenta
 
 
@@ -73,7 +73,7 @@ class GuardarGuionEntrada(AccionCuenta):
         agregadas = [pregunta.sugerencia for pregunta in self.preguntas if pregunta.sugerencia is not None]
         if len(set(agregadas)) != len(agregadas) or set(agregadas) & set(self.descartadas):
             raise ValueError('Cada sugerencia se agrega o se descarta una sola vez')
-        if self.terminar and not any(p.origen != OrigenPreguntaGuion.SUGERIDA for p in self.preguntas):
+        if self.terminar and not any(p.origen == OrigenPreguntaGuion.PROPIA for p in self.preguntas):
             raise ValueError('Para terminar el guion agrega al menos una pregunta tuya')
         return self
 
@@ -196,8 +196,10 @@ class PreguntaGuionPublica(BaseModel):
 
 
 class SugerenciaGuionPublica(BaseModel):
+    """`campo`: de qué parte de «lo que pienso» sale (ajuste llm-sugerencias); el front rotula la de la duda."""
     codigo: str
     texto: str
+    campo: CampoLoQuePienso
 
 
 class InvestigacionEnCurso(BaseModel):

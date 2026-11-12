@@ -23,19 +23,20 @@ test('el paso del asistente sale de la investigación en curso', () => {
   assert.equal(pasoInvestigacion(jsonServidor('ruta/ruta-investigaciones-guia-lista').en_curso), 3)
 })
 
-test('el guion se numera seguido (base 1–3) y termina con una pregunta propia o la duda', () => {
+// Ajuste llm-sugerencias: cuatro preguntas base y la duda ya no entra como pregunta; terminar exige una propia.
+test('el guion se numera seguido (base 1–4) y termina con una pregunta propia', () => {
   const { numerarGuion, puedeTerminarGuion, avisoMuchasPreguntas } = adaptadores()
   const datos = jsonServidor('ruta/ruta-investigaciones-guia-lista')
   const guion = numerarGuion(datos.preguntas_base, datos.en_curso.preguntas)
   assert.deepEqual(
     guion.base.map((p) => p.numero),
-    [1, 2, 3],
+    [1, 2, 3, 4],
   )
   assert.deepEqual(copia(guion.propias.map((p) => [p.numero, p.origen])), [
-    [4, 'DUDA'],
-    [5, 'SUGERIDA'],
+    [5, 'PROPIA'],
+    [6, 'SUGERIDA'],
   ])
-  assert.equal(guion.total, 5)
+  assert.equal(guion.total, 6)
   assert.equal(puedeTerminarGuion(datos.en_curso.preguntas), true)
   assert.equal(puedeTerminarGuion([{ origen: 'SUGERIDA', texto: 'x' }]), false)
   assert.equal(avisoMuchasPreguntas(10), false)

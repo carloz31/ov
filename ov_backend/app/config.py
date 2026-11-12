@@ -3,14 +3,11 @@
 import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from math import isfinite
 from pathlib import Path
 
 from dotenv import dotenv_values
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import ArgumentError
-
-from app.core.parametros import MODELO_LLM_REGISTRO, TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
 
 
 RAIZ_PROYECTO = Path(__file__).resolve().parents[1]
@@ -21,19 +18,15 @@ LARGO_MINIMO_JWT_SECRETO = 32
 
 
 class ErrorConfiguracionRegistro(RuntimeError):
-    """Mensaje propio, seguro para mostrar al arrancar o en el script manual."""
+    """Mensaje propio, seguro para mostrar al arrancar."""
 
 
 @dataclass(frozen=True, slots=True)
 class Configuracion:
     url_bd: str = f'sqlite:///{(RAIZ_PROYECTO / "ov.db").as_posix()}'
     entorno: str = 'desarrollo'
-    evaluador: str = 'falso'
-    modelo: str = MODELO_LLM_REGISTRO
-    timeout_segundos: float = TIEMPO_MAXIMO_EVALUACION_SEGUNDOS
-    clave: str | None = field(default=None, repr=False)
     jwt_secreto: str = field(default=JWT_SECRETO_DESARROLLO, repr=False)
-    # Ajuste registros llm: la capa v7 (Claude) aún no está conectada; sin clave la aplicación arranca igual.
+    # Sin clave la aplicación arranca igual y toda llamada al LLM falla.
     clave_anthropic: str | None = field(default=None, repr=False)
 
 
@@ -48,21 +41,6 @@ def cargar_configuracion(
     def leer(nombre, defecto):
         return variables.get(nombre, valores.get(nombre, defecto))
 
-    proveedor = (leer('EVALUADOR', 'falso') or '').strip().lower()
-    if proveedor not in ('falso', 'gemini'):
-        raise ErrorConfiguracionRegistro('EVALUADOR debe ser falso o gemini')
-    modelo = (leer('GEMINI_MODELO', MODELO_LLM_REGISTRO) or '').strip()
-    if not modelo:
-        raise ErrorConfiguracionRegistro('GEMINI_MODELO no puede estar vacío')
-    try:
-        timeout = float(leer('GEMINI_TIMEOUT_SEGUNDOS', TIEMPO_MAXIMO_EVALUACION_SEGUNDOS))
-        if not isfinite(timeout) or timeout <= 0:
-            raise ValueError
-    except (ValueError, TypeError, OverflowError):
-        raise ErrorConfiguracionRegistro('GEMINI_TIMEOUT_SEGUNDOS debe ser positivo y finito') from None
-    clave = (leer('GEMINI_API_KEY', None) or '').strip() if proveedor == 'gemini' else None
-    if proveedor == 'gemini' and not clave:
-        raise ErrorConfiguracionRegistro('Falta GEMINI_API_KEY para usar EVALUADOR=gemini')
     ambiente = leer('ENTORNO', 'desarrollo')
     if ambiente not in ('desarrollo', 'produccion'):
         raise ValueError('ENTORNO debe ser desarrollo o produccion')
@@ -82,19 +60,12 @@ def cargar_configuracion(
             ruta = RAIZ_PROYECTO / ruta
         url_bd = url.set(database=ruta.as_posix()).render_as_string(hide_password=False)
     clave_anthropic = (leer('ANTHROPIC_API_KEY', '') or '').strip() or None
-    return Configuracion(url_bd, ambiente, proveedor, modelo, timeout, clave,
-                         jwt_secreto or JWT_SECRETO_DESARROLLO, clave_anthropic)
+    return Configuracion(url_bd, ambiente, jwt_secreto or JWT_SECRETO_DESARROLLO, clave_anthropic)
 
 
 def crear_cliente_llm(configuracion: Configuracion):
-    """El cliente del LLM de registros (lote 3): Claude con `ANTHROPIC_API_KEY`; sin clave, toda llamada falla."""
+    """El cliente del LLM (registros, guion y pasos del plan): Claude con `ANTHROPIC_API_KEY`; sin clave, toda llamada
+    falla."""
     from app.services.registro.llm import ClienteClaude, ClienteSinClave
     return ClienteClaude(configuracion.clave_anthropic) if configuracion.clave_anthropic else ClienteSinClave()
 
-
-def crear_evaluador_registro(configuracion: Configuracion):
-    if configuracion.evaluador == 'falso':
-        from app.services.registro.evaluacion import EvaluadorFalso
-        return EvaluadorFalso()
-    from app.services.registro.gemini import EvaluadorGemini
-    return EvaluadorGemini(configuracion)

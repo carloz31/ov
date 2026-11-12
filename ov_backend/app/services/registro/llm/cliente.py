@@ -31,7 +31,10 @@ class RespuestaCruda:
 class ClienteLLM(Protocol):
     modelo: str
 
-    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda: ...
+    def llamar(self, sistema: str, mensaje: str, esquema: dict, *, maximo_tokens: int | None = None,
+               tiempo: float | None = None) -> RespuestaCruda:
+        """`maximo_tokens` y `tiempo` cambian los topes solo para esa llamada (los pasos del plan tienen los suyos)."""
+        ...
 
 
 class ClienteClaude:
@@ -44,11 +47,13 @@ class ClienteClaude:
         self.cliente = anthropic.Anthropic(api_key=clave, timeout=tiempo, max_retries=0)
         self.modelo, self.esfuerzo, self.maximo_tokens, self.tiempo = modelo, esfuerzo, maximo_tokens, tiempo
 
-    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda:
+    def llamar(self, sistema: str, mensaje: str, esquema: dict, *, maximo_tokens: int | None = None,
+               tiempo: float | None = None) -> RespuestaCruda:
         inicio = time.perf_counter()
         try:
             respuesta = self.cliente.messages.create(
-                model=self.modelo, max_tokens=self.maximo_tokens, system=sistema,
+                model=self.modelo, max_tokens=maximo_tokens or self.maximo_tokens, system=sistema,
+                timeout=tiempo or self.tiempo,
                 messages=[{'role': 'user', 'content': mensaje}],
                 output_config={'effort': self.esfuerzo, 'format': {'type': 'json_schema', 'schema': esquema}})
         except self._anthropic.APITimeoutError:
@@ -72,7 +77,7 @@ class ClienteSinClave:
 
     modelo = 'sin_clave'
 
-    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda:
+    def llamar(self, sistema: str, mensaje: str, esquema: dict, **topes) -> RespuestaCruda:
         raise LlamadaFallida('sin_clave')
 
 
@@ -85,8 +90,10 @@ class ClienteFalso:
     def __init__(self, respuestas: Sequence[RespuestaCruda | str | Exception | Callable[[], RespuestaCruda]]):
         self._respuestas = list(respuestas)
         self.llamadas: list[tuple[str, str, dict]] = []
+        self.topes: list[dict] = []
 
-    def llamar(self, sistema: str, mensaje: str, esquema: dict) -> RespuestaCruda:
+    def llamar(self, sistema: str, mensaje: str, esquema: dict, **topes) -> RespuestaCruda:
+        self.topes.append(topes)
         self.llamadas.append((sistema, mensaje, esquema))
         respuesta = self._respuestas.pop(0)
         if isinstance(respuesta, Exception):
@@ -94,3 +101,50 @@ class ClienteFalso:
         if isinstance(respuesta, str):
             return RespuestaCruda(texto=respuesta, parada='end_turn')
         return respuesta() if callable(respuesta) else respuesta
+
+
+class SalidaInvalida(Exception):
+    """La llamada respondió, pero sin `end_turn` o fuera del esquema. `causa`: `rechazo`, `tope_tokens`,
+    `parada:<x>`, `json_invalido` o `fuera_de_esquema`. Nunca lleva el texto de la respuesta ni de una excepción."""
+
+    def __init__(self, causa: str, cruda: RespuestaCruda | None = None):
+        super().__init__(causa)
+        self.causa, self.cruda = causa, cruda
+
+
+def salida_json(cliente: ClienteLLM, sistema: str, mensaje: str, modelo, **topes):
+    """Llama con el esquema de `modelo` (Pydantic) y devuelve `(salida validada, respuesta cruda)`. Lanza
+    `LlamadaFallida` si la llamada falla o tarda, y `SalidaInvalida` si la parada no es `end_turn` o la salida no
+    cumple el esquema. Lo usan las sugerencias del guion y de los pasos (ajuste llm-sugerencias)."""
+    from pydantic import ValidationError
+    try:
+        cruda = cliente.llamar(sistema, mensaje, esquema_estricto(modelo), **topes)
+    except TimeoutError:
+        raise LlamadaFallida('tiempo_agotado') from None
+    if cruda.parada == 'refusal':
+        raise SalidaInvalida('rechazo', cruda)
+    if cruda.parada == 'max_tokens':
+        raise SalidaInvalida('tope_tokens', cruda)
+    if cruda.parada != 'end_turn':
+        raise SalidaInvalida(f'parada:{cruda.parada}', cruda)
+    try:
+        return modelo.model_validate_json(cruda.texto), cruda
+    except ValidationError as error:
+        invalido = any(e['type'] == 'json_invalid' for e in error.errors())
+        raise SalidaInvalida('json_invalido' if invalido else 'fuera_de_esquema', cruda) from None
+
+
+def esquema_estricto(modelo) -> dict:
+    """El esquema JSON de `modelo` con `additionalProperties: false` en todo objeto, como exige la salida
+    estructurada."""
+    def cerrar(nodo):
+        if isinstance(nodo, dict):
+            if nodo.get('type') == 'object':
+                nodo['additionalProperties'] = False
+            for valor in nodo.values():
+                cerrar(valor)
+        elif isinstance(nodo, list):
+            for valor in nodo:
+                cerrar(valor)
+        return nodo
+    return cerrar(modelo.model_json_schema())

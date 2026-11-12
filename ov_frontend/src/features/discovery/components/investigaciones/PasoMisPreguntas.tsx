@@ -27,8 +27,8 @@ function FilaPregunta({ fila, indice, p }: { fila: Fila; indice: number; p: Mode
   )
 }
 
-// F09 (boceto 10 · HU-059): las preguntas base (fijas), tu duda, las sugerencias de Lumi y las tuyas, numeradas
-// seguido. Sin tope; mínimo, las base y una tuya.
+// F09 (boceto 10 · HU-059): las preguntas base (fijas), las sugerencias de Lumi y las tuyas, numeradas seguido. Sin
+// tope; mínimo, las base y una propia (ajuste llm-sugerencias: la duda ya no entra como pregunta).
 export function PasoMisPreguntas({
   p,
   familia,
@@ -38,9 +38,7 @@ export function PasoMisPreguntas({
   familia: string
   onVolver: () => void | Promise<void>
 }) {
-  const indices = p.guion.propias.map((fila, indice) => ({ fila, indice }))
-  const duda = indices.filter(({ fila }) => fila.origen === 'DUDA')
-  const mias = indices.filter(({ fila }) => fila.origen !== 'DUDA')
+  const mias = p.guion.propias.map((fila, indice) => ({ fila, indice }))
   return (
     <div className="sx-i-asistente">
       <section className="sx-i-panel">
@@ -54,6 +52,9 @@ export function PasoMisPreguntas({
             </small>
           </span>
         </div>
+        <p className="sx-i-letra-chica">
+          Tip: revisa lo que escribiste en el paso anterior y piensa qué más quisieras preguntar.
+        </p>
         <fieldset className="sx-i-fieldset" data-guardando={p.ocupado || undefined} disabled={p.ocupado}>
           <p className="sx-i-grupo">Preguntas base · siempre van</p>
           <ol className="sx-i-preguntas">
@@ -64,16 +65,6 @@ export function PasoMisPreguntas({
               </li>
             ))}
           </ol>
-          {duda.length > 0 && (
-            <>
-              <p className="sx-i-grupo">Tu duda del paso anterior</p>
-              <ol className="sx-i-preguntas">
-                {duda.map(({ fila, indice }) => (
-                  <FilaPregunta key={indice} fila={fila} indice={indice} p={p} />
-                ))}
-              </ol>
-            </>
-          )}
           <SugerenciasLumi p={p} />
           <p className="sx-i-grupo">Mis preguntas</p>
           {mias.length > 0 && (
@@ -131,7 +122,7 @@ export function PasoMisPreguntas({
           </button>
         </div>
         <small className="sx-i-letra-chica">
-          Mínimo: las 3 base y 1 tuya. Tu guion sigue editable hasta que publiques.
+          Mínimo: las {p.guion.base.length} base y 1 tuya. Tu guion sigue editable hasta que publiques.
         </small>
       </section>
     </div>

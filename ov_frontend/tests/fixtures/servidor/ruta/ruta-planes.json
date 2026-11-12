@@ -85,10 +85,6 @@
       {
         "codigo": "TIEMPO",
         "texto": "El tiempo"
-      },
-      {
-        "codigo": "SALUD",
-        "texto": "Mi salud o la de alguien cercano"
       }
     ],
     "dudas_sugeridas": [
@@ -438,7 +434,7 @@
             "duda": 1,
             "sugerencia": 1
           },
-          "texto": "Busca en Psicología: ¿Dónde podría trabajar si estudio Psicología?",
+          "texto": "Revisar en la ficha de la carrera lo de: ¿Dónde podría trabajar si estudio Psicología?",
           "tipo": "investigar"
         },
         {
@@ -496,7 +492,7 @@
             "duda": 1,
             "texto": "¿Dónde podría trabajar si estudio Psicología?"
           },
-          "texto": "Busca en Psicología: ¿Dónde podría trabajar si estudio Psicología?",
+          "texto": "Revisar en la ficha de la carrera lo de: ¿Dónde podría trabajar si estudio Psicología?",
           "tipo": "investigar"
         },
         {
@@ -508,7 +504,7 @@
             "duda": 2,
             "texto": "¿Qué cursos se llevan en Psicología?"
           },
-          "texto": "Busca en Psicología: ¿Qué cursos se llevan en Psicología?",
+          "texto": "Revisar en la ficha de la carrera lo de: ¿Qué cursos se llevan en Psicología?",
           "tipo": "investigar"
         },
         {
@@ -520,7 +516,7 @@
             "duda": 3,
             "texto": "¿Cuántos postulan y cuántos ingresan?"
           },
-          "texto": "Busca en Psicología: ¿Cuántos postulan y cuántos ingresan?",
+          "texto": "Revisar en la ficha de la carrera lo de: ¿Cuántos postulan y cuántos ingresan?",
           "tipo": "investigar"
         },
         {
@@ -532,7 +528,7 @@
             "duda": 4,
             "texto": "DATO DE PRUEBA: ¿hay trabajo en Lima?"
           },
-          "texto": "Busca en Psicología: DATO DE PRUEBA: ¿hay trabajo en Lima?",
+          "texto": "Revisar en la ficha de la carrera lo de: DATO DE PRUEBA: ¿hay trabajo en Lima?",
           "tipo": "investigar"
         },
         {
@@ -544,7 +540,7 @@
             "duda": null,
             "texto": "Económicas"
           },
-          "texto": "Conversa en casa sobre: Económicas",
+          "texto": "Revisar en la ficha de la carrera lo de: Económicas",
           "tipo": "conversar"
         }
       ],
@@ -701,7 +697,7 @@
             "duda": null,
             "texto": "Económicas"
           },
-          "texto": "Conversa en casa sobre: Económicas",
+          "texto": "Revisar en la ficha de la carrera lo de: Económicas",
           "tipo": "conversar"
         }
       ],

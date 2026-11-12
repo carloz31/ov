@@ -11,7 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.models.base import Base, enumerado
 from app.models.enums import (
     EstadoDuda, EstadoPaso, EstadoSugerencia, FrecuenciaGasto, OrigenDuda, OrigenIdea, OrigenSugerencia,
-    PreguntaConocimiento, RespuestaConocimiento,
+    PreguntaConocimiento, RespuestaConocimiento, ClaseNovedadPlan,
 )
 
 
@@ -29,6 +29,17 @@ class SeccionTarjeta(Base):
     nombre: Mapped[str]
     orden: Mapped[int] = mapped_column(unique=True)
     para_comparar: Mapped[bool]
+
+
+class RespaldoPaso(Base):
+    """Paso de respaldo de una duda o complicación de lista (ajuste llm-sugerencias, §3.6): la opción es de
+    PREGUNTAS_CONOCIMIENTO, DUDAS_SUGERIDAS o DIFICULTADES. Los textos llevan `{carrera}` y, `texto`, `{institucion}`;
+    `texto_sin_institucion` es el que va cuando el plan no tiene institución."""
+    __tablename__ = "respaldo_paso"
+    opcion_id: Mapped[int] = mapped_column(ForeignKey("opcion_lista.id"), primary_key=True)
+    tipo_opcion_id: Mapped[int] = mapped_column(ForeignKey("opcion_lista.id"))
+    texto: Mapped[str] = mapped_column(Text)
+    texto_sin_institucion: Mapped[str] = mapped_column(Text)
 
 
 class ReferenciaRubro(Base):
@@ -184,6 +195,9 @@ class SugerenciaTarjeta(Base):
     estado: Mapped[EstadoSugerencia] = mapped_column(enumerado(EstadoSugerencia))
     generada_por: Mapped[OrigenSugerencia] = mapped_column(enumerado(OrigenSugerencia))
     creada_en: Mapped[datetime] = mapped_column(DateTime)
+    # Ajuste llm-sugerencias: la clase y el motivo que dio el LLM; nulos en las de respaldo. No se exponen.
+    clase: Mapped[ClaseNovedadPlan | None] = mapped_column(enumerado(ClaseNovedadPlan))
+    motivo: Mapped[str | None] = mapped_column(Text)
 
 
 class PasoTarjeta(Base):

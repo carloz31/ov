@@ -1,7 +1,6 @@
 """Contrato, reproducibilidad y aislamiento del exportador de fixtures `ruta-*`."""
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -135,14 +134,12 @@ def test_exportador_exige_destino_incluso_desde_otro_directorio(tmp_path):
 
 
 def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monkeypatch):
-    monkeypatch.setenv('EVALUADOR', 'gemini')
     ruta_ajena = tmp_path / 'base-del-usuario.db'
     # DATO DE PRUEBA: un archivo que jamás debe abrir ni reiniciar el exportador.
     ruta_ajena.write_bytes(b'Base del usuario: conservar estos bytes')
     monkeypatch.setenv('DATABASE_URL', f'sqlite:///{ruta_ajena.as_posix()}')
     bases = []
     crear = principal.crear_aplicacion
-    crear_evaluador = principal.crear_evaluador_registro
 
     def crear_temporal(url_bd):
         ruta = Path(url_bd.removeprefix('sqlite:///'))
@@ -151,12 +148,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
         bases.append(ruta)
         return crear(url_bd)
 
-    def solo_falso(configuracion):
-        assert configuracion.evaluador == 'falso'
-        return crear_evaluador(configuracion)
-
     monkeypatch.setattr(principal, 'crear_aplicacion', crear_temporal)
-    monkeypatch.setattr(principal, 'crear_evaluador_registro', solo_falso)
     destino = tmp_path / 'front' / 'tests' / 'fixtures' / 'servidor'
     # Los fixtures congelados de la raíz no se tocan.
     destino.mkdir(parents=True)
@@ -544,11 +536,9 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     # Dos exportaciones, cada una con tres bases: ruta, el registro b1-1 y los registros de piezas (lote 2).
     assert len(bases) == 6 and all(not ruta.parent.exists() for ruta in bases)
     assert ruta_ajena.read_bytes() == b'Base del usuario: conservar estos bytes'
-    assert exportador.os.environ['EVALUADOR'] == 'gemini'
 
 
-def test_fallo_del_recorrido_no_escribe_fixtures_y_restaura_evaluador(tmp_path, monkeypatch):
-    monkeypatch.delenv('EVALUADOR', raising=False)
+def test_fallo_del_recorrido_no_escribe_fixtures(tmp_path, monkeypatch):
     destino = tmp_path / 'no-publicado'
 
     def fallar(cliente):
@@ -558,7 +548,6 @@ def test_fallo_del_recorrido_no_escribe_fixtures_y_restaura_evaluador(tmp_path, 
     with pytest.raises(RuntimeError, match='Fallo de prueba del recorrido'):
         exportador.exportar_fixtures(destino)
     assert not destino.exists()
-    assert 'EVALUADOR' not in exportador.os.environ
 
 
 def test_fixtures_de_cuentas_y_apoderado(tmp_path):
@@ -575,23 +564,16 @@ def test_fixtures_de_cuentas_y_apoderado(tmp_path):
     assert bloque['actividades'] == [{**a, 'estado': 'COMPLETADA', 'bloqueo': None} for a in BLOQUE_FAMILIA['actividades']]
 
 
-@pytest.mark.parametrize('evaluador_previo', [None, 'gemini'])
-def test_fallo_del_apoderado_no_escribe_fixtures_y_restaura_evaluador(tmp_path, monkeypatch, evaluador_previo):
-    if evaluador_previo is None:
-        monkeypatch.delenv('EVALUADOR', raising=False)
-    else:
-        monkeypatch.setenv('EVALUADOR', evaluador_previo)
+def test_fallo_del_apoderado_no_escribe_fixtures(tmp_path, monkeypatch):
     destino = tmp_path / 'sin-publicar'
 
     def fallar(cliente):
-        assert os.environ['EVALUADOR'] == 'falso'
         raise RuntimeError('Fallo de prueba del apoderado')
 
     monkeypatch.setattr(exportador, '_recorrer_apoderado', fallar)
     with pytest.raises(RuntimeError, match='Fallo de prueba del apoderado'):
         exportador.exportar_fixtures(destino)
     assert not destino.exists()
-    assert os.environ.get('EVALUADOR') == evaluador_previo
 
 
 def test_cli_exporta_los_fixtures_de_ruta(tmp_path):

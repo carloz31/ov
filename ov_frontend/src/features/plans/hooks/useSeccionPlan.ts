@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   avisoGuardado,
   borradorConocimiento,
@@ -43,6 +43,9 @@ export function useSeccionPlan(
   const [realidad, setRealidad] = useState<BorradorRealidad | null>(null)
   const [pasos, setPasos] = useState<BorradorPasos | null>(null)
   const [guardando, setGuardando] = useState(false)
+  // Ajuste llm-sugerencias: CONOCIMIENTO y REALIDAD esperan al LLM; la referencia corta un segundo envío aunque llegue
+  // antes de que se pinte el botón deshabilitado.
+  const enviando = useRef(false)
 
   function editar(codigo: CodigoSeccionPlan) {
     if (!plan || !opciones) return
@@ -66,19 +69,22 @@ export function useSeccionPlan(
   }
 
   async function guardar() {
-    if (!plan || !editando || guardando) return
+    if (!plan || !editando || guardando || enviando.current) return
     const seccion = cuerpo()
     if (!seccion) return
+    enviando.current = true
     setGuardando(true)
     const respuesta = await guardarSeccionPlan(plan.carrera.codigo, seccion)
     if (respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar') {
       const refrescados = await planesRefrescados()
+      enviando.current = false
       setGuardando(false)
       setEditando(null)
       const actual = refrescados?.planes.find((p) => p.carrera.codigo === plan.carrera.codigo) ?? null
       avisar({ ...avisoGuardado(seccion.seccion, actual), error: false })
       return
     }
+    enviando.current = false
     setGuardando(false)
     avisar({
       titulo: 'No se pudo guardar',

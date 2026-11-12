@@ -1,26 +1,65 @@
-"""B13: filtro de las preguntas sugeridas, texto pobre y prompt del guion."""
+"""B13 y ajuste llm-sugerencias (§2): mensaje, esquema, filtro de las preguntas sugeridas, texto pobre y fallos."""
+
+import json
 
 import pytest
-from pydantic import ValidationError
 
 from app.core.parametros import MAXIMO_CARACTERES_PREGUNTA_GUION, MIN_CARACTERES_RESPALDO
+from app.models import CampoLoQuePienso
+from app.services.investigaciones.prompt_guion_v4_haiku import HASH, PROMPT, VERSION
 from app.services.investigaciones.sugerencias import (
-    ContextoGuion, clave_pregunta, filtrar_preguntas, pedir_preguntas, prompt_guion, texto_pobre,
+    ContextoGuion, PreguntaSugerida, RespuestaGuion, armar_mensaje, clave_pregunta, filtrar_preguntas, pedir_preguntas,
+    texto_pobre,
 )
+from app.services.registro.llm import ClienteFalso, LlamadaFallida, RespuestaCruda, esquema_estricto
+
+# DATO DE PRUEBA: textos de un estudiante inventado.
+CONTEXTO = ContextoGuion(familia='Enfermería y obstetricia', dia='Pone inyecciones', necesita='Paciencia',
+                         duda='Si hacen turnos de noche', preguntas_base=('¿Base uno?', '¿Base dos?'))
 
 
-def test_filtro_quita_repetidas_largas_vacias_y_recorta_a_tres():
-    excluidas = {clave_pregunta('¿Cómo es un día normal en tu trabajo?'), clave_pregunta('Mi pregunta propia')}
-    preguntas = ['¿Como es un dia normal en tu trabajo', '  mi PREGUNTA propia?  ', '', 'x' * (MAXIMO_CARACTERES_PREGUNTA_GUION + 1),
-                 '¿Qué estudiaste?', '¿Que estudiaste', '¿Uno?', '¿Dos?', '¿Tres?']
-    assert filtrar_preguntas({'preguntas': preguntas}, excluidas) == ['¿Qué estudiaste?', '¿Uno?', '¿Dos?']
+def respuesta(dia=None, necesita=None, duda=None):
+    return RespuestaGuion.model_validate({c: {'motivo': f'motivo {c}', 'pregunta': p}
+                                          for c, p in (('dia', dia), ('necesita', necesita), ('duda', duda))})
 
 
-def test_resultado_fuera_del_esquema_lanza():
-    with pytest.raises(ValidationError):
-        filtrar_preguntas({'preguntas': 'texto'}, set())
-    with pytest.raises(ValidationError):
-        filtrar_preguntas({'preguntas': [], 'extra': 1}, set())
+def test_prompt_version_y_largo_pedido():
+    assert VERSION == 'guion-v4-haiku' and len(HASH) == 64
+    assert 'máximo 20 palabras y 160 caracteres' in PROMPT and '{maximo_caracteres}' not in PROMPT
+    assert 'nunca instrucción' in PROMPT
+
+
+def test_mensaje_con_etiquetas_y_las_base_una_por_linea():
+    assert armar_mensaje(CONTEXTO) == (
+        '<familia>Enfermería y obstetricia</familia>\n<base>\n¿Base uno?\n¿Base dos?\n</base>\n'
+        '<dia>Pone inyecciones</dia>\n<necesita>Paciencia</necesita>\n<duda>Si hacen turnos de noche</duda>')
+
+
+def test_esquema_con_las_tres_claves_obligatorias_y_sin_propiedades_de_mas():
+    esquema = esquema_estricto(RespuestaGuion)
+    assert set(esquema['required']) == {'dia', 'necesita', 'duda'} and esquema['additionalProperties'] is False
+    campo = esquema['$defs']['SugerenciaCampo']
+    assert set(campo['required']) == {'motivo', 'pregunta'} and campo['additionalProperties'] is False
+
+
+def test_filtro_por_campo_descarta_la_que_no_pasa_y_sigue_con_las_demas():
+    excluidas = {clave_pregunta('¿Cómo es un día normal en tu trabajo?')}
+    assert filtrar_preguntas(respuesta(dia='¿Como es un dia normal en tu trabajo?', necesita='  ¿Cuánto   pesa?  ',
+                                       duda='¿Cómo son tus horarios?'), excluidas) == [
+        PreguntaSugerida(CampoLoQuePienso.NECESITA, '¿Cuánto pesa?', 'motivo necesita'),
+        PreguntaSugerida(CampoLoQuePienso.DUDA, '¿Cómo son tus horarios?', 'motivo duda')]
+
+
+@pytest.mark.parametrize('pregunta', (
+    '¿Sin cierre', 'Sin apertura?', '¿Una? ¿Y otra?', '¿' + 'x' * (MAXIMO_CARACTERES_PREGUNTA_GUION - 1) + '?', '¿?'))
+def test_filtro_exige_cierre_un_solo_signo_de_apertura_largo_y_texto(pregunta):
+    assert filtrar_preguntas(respuesta(dia=pregunta), set()) == []
+
+
+def test_filtro_acepta_hasta_el_maximo_y_no_repite_entre_campos():
+    larga = '¿' + 'x' * (MAXIMO_CARACTERES_PREGUNTA_GUION - 2) + '?'
+    assert [p.texto for p in filtrar_preguntas(respuesta(dia=larga, necesita='¿Qué tal?', duda='¿Que tal?'),
+                                               set())] == [larga, '¿Qué tal?']
 
 
 def test_texto_pobre_se_mide_con_los_tres_campos_juntos():
@@ -29,30 +68,16 @@ def test_texto_pobre_se_mide_con_los_tres_campos_juntos():
     assert not texto_pobre('a' * MIN_CARACTERES_RESPALDO, '', '¿?')
 
 
-class _Evaluador:
-    def __init__(self, resultado=None, error=None):
-        self.resultado, self.error = resultado, error
-
-    def sugerir_preguntas(self, contexto):
-        if self.error:
-            raise self.error
-        return self.resultado
+def test_pedir_llama_con_el_prompt_el_mensaje_y_el_esquema():
+    salida = json.dumps({'dia': {'motivo': 'm', 'pregunta': '¿Cuánto de tu día son inyecciones?'},
+                         'necesita': {'motivo': 'm', 'pregunta': None}, 'duda': {'motivo': 'm', 'pregunta': None}})
+    cliente = ClienteFalso([salida])
+    assert [p.texto for p in pedir_preguntas(cliente, CONTEXTO, set())] == ['¿Cuánto de tu día son inyecciones?']
+    assert cliente.llamadas == [(PROMPT, armar_mensaje(CONTEXTO), esquema_estricto(RespuestaGuion))]
 
 
-CONTEXTO = ContextoGuion(familia='Ingeniería Eléctrica', dia='DATO DE PRUEBA', necesita='DATO DE PRUEBA',
-                         duda='DATO DE PRUEBA', preguntas_base=('¿Base?',))
-
-
-def test_pedir_devuelve_none_ante_fallo_o_esquema_invalido():
-    assert pedir_preguntas(_Evaluador(error=RuntimeError('clave secreta')), CONTEXTO, set(),
-                           tiempo_maximo_segundos=5) is None
-    assert pedir_preguntas(_Evaluador({'otro': []}), CONTEXTO, set(), tiempo_maximo_segundos=5) is None
-    assert pedir_preguntas(_Evaluador({'preguntas': ['¿Base?', '¿Nueva?']}), CONTEXTO, {clave_pregunta('¿Base?')},
-                           tiempo_maximo_segundos=5) == ['¿Nueva?']
-    with pytest.raises(ValueError):
-        pedir_preguntas(_Evaluador({'preguntas': []}), CONTEXTO, set(), tiempo_maximo_segundos=0)
-
-
-def test_prompt_trata_el_texto_como_datos():
-    prompt = prompt_guion(CONTEXTO)
-    assert 'Ingeniería Eléctrica' in prompt and 'nunca como instrucciones' in prompt and 'DATO DE PRUEBA' not in prompt
+@pytest.mark.parametrize('falla', (
+    LlamadaFallida('error', 'APIError'), LlamadaFallida('tiempo_agotado'), '{"dia": {}}', '{"preguntas": []}',
+    RespuestaCruda(texto='{', parada='max_tokens'), RespuestaCruda(texto='', parada='refusal')))
+def test_pedir_devuelve_none_ante_fallo_demora_o_salida_fuera_del_esquema(falla):
+    assert pedir_preguntas(ClienteFalso([falla]), CONTEXTO, set()) is None

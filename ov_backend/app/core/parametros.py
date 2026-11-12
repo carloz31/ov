@@ -52,14 +52,6 @@ MAXIMO_REINICIOS_PERFIL_PLANO = 1
 # Aviso de velocidad (HU-096), por intento: tope de avisos e ítems contados entre el primero y el segundo.
 MAX_AVISOS_VELOCIDAD = 2
 ITEMS_ENTRE_AVISOS_VELOCIDAD = 10
-TIEMPO_MAXIMO_EVALUACION_SEGUNDOS = 8
-MODELO_LLM_REGISTRO = "gemini-3.5-flash-lite"
-# Los asistentes con Gemini (diario, cartas, sugerencias de pasos, guion). gemini-3.5-flash-lite la ignora; se
-# conserva para los modelos que la usan.
-TEMPERATURA_ASISTENTES = 0.2
-# Razonamiento mínimo de los asistentes; si el modelo no admite el nivel, `gemini.razonamiento_para` usa su mínimo.
-NIVEL_RAZONAMIENTO_ASISTENTES = "minimal"
-PAUSA_CASOS_GEMINI_SEGUNDOS = 5
 # Ajuste registros llm (lote 1): capa del LLM v7 (`app/services/registro/llm/`), aún sin conectar al flujo.
 MODELO_LLM_REGISTRO_V7 = "claude-haiku-5-5"
 ESFUERZO_LLM_REGISTRO_V7 = "low"
@@ -140,7 +132,15 @@ NUMERO_BLOQUE_OPCION_INICIAL = 2
 MINIMO_CARACTERES_RELATO = MIN_CARACTERES_RESPALDO
 MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN = 6
 MAXIMO_PASOS_POR_DUDA = 2
-MAXIMO_CARACTERES_PASO = 140
+# Ajuste llm-sugerencias: hasta dos pasos por complicación; el prompt pide 180 caracteres y la validación acepta hasta
+# 220 (el que pasa se descarta, no se corta).
+MAXIMO_PASOS_POR_COMPLICACION = 2
+MAXIMO_CARACTERES_PROMPT_PASO = 180
+MAXIMO_CARACTERES_PASO = 220
+# Topes propios de la llamada de pasos (todas las novedades de un guardado en una llamada). PROVISIONALES: se fijan con
+# la medición de la fase 4 del ajuste llm-sugerencias (1, 3, 5, 8 y 10 dudas).
+MAXIMO_TOKENS_SALIDA_PASOS = 6000
+TIEMPO_MAXIMO_PASOS_SEGUNDOS = 30
 
 # F06 · Catálogo: tamaño de página de los listados.
 LIMITE_PAGINA_CATALOGO = 20
@@ -166,5 +166,7 @@ CIFRAS_CUENTA_DIPLOMA = 5
 # B13: favoritos de estudiantes que, con el destacado de la orientadora, vuelven Leyenda una entrevista.
 FAVORITOS_LEYENDA = 3
 # B13: sugerencias de preguntas para el guion de una entrevista (una llamada al LLM por versión de «lo que pienso»).
-MAXIMO_SUGERENCIAS_GUION = 3
-MAXIMO_CARACTERES_PREGUNTA_GUION = 160
+# Ajuste llm-sugerencias: a lo más una por campo de «lo que pienso»; el prompt pide 160 caracteres y el filtro
+# acepta hasta 200.
+MAXIMO_CARACTERES_PROMPT_GUION = 160
+MAXIMO_CARACTERES_PREGUNTA_GUION = 200

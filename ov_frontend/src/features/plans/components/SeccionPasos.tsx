@@ -48,6 +48,8 @@ function PasoHecho({
   )
 }
 
+const TIP_PASOS = 'Tip: revisa tus dudas y piensa qué podrías hacer para resolver cada una.'
+
 // F07b (§8 con la corrección de lectura; lienzo de la sección 4): «Mis próximos pasos». En lectura, la franja de
 // sugerencias que esperan (abre la edición), los pendientes con su casilla «Lo hice» y los hechos tachados; en
 // edición, el bloque de sugerencias, los pendientes editables, la fila para escribir uno nuevo y los hechos aparte.
@@ -73,6 +75,7 @@ export function SeccionPasos({
     const pendientes = plan.pasos.filter((p) => p.estado === 'PENDIENTE')
     return (
       <>
+        <p className="sx-p-ayuda">{TIP_PASOS}</p>
         {m > 0 && (
           <div className="sx-p-franja">
             <p>
@@ -136,7 +139,7 @@ export function SeccionPasos({
       />
       <section className="sx-p-campo" aria-labelledby="sx-p-mis-pasos">
         <strong id="sx-p-mis-pasos">Mis pasos</strong>
-        <span className="sx-p-ayuda">Sin fechas: cada paso está pendiente o hecho.</span>
+        <span className="sx-p-ayuda">Sin fechas: cada paso está pendiente o hecho. {TIP_PASOS}</span>
         <ul className="sx-p-pasos">
           {borrador.pasos.map((p, i) => (
             <li className="sx-p-paso" key={claveDe(p)}>

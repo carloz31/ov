@@ -1,5 +1,5 @@
 """Ajuste carga-actividades: el camino del estudiante y la ruta del apoderado del conjunto `contenido`, de punta a
-punta, con las peticiones del front (evaluador falso)."""
+punta, con las peticiones del front (cliente de prueba del LLM)."""
 
 from soporte_catalogo_ruta import PSICOLOGIA
 from soporte_contenido import CAMINO, REQUERIDAS, avanzar, completar, preparar_planes, revelar_para_b4

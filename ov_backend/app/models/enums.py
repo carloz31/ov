@@ -266,6 +266,16 @@ class OrigenSugerencia(StrEnum):
     RESPALDO = "RESPALDO"
 
 
+class ClaseNovedadPlan(StrEnum):
+    """Clase que el LLM da a una duda o complicación antes de proponer pasos (ajuste llm-sugerencias, §3)."""
+    DATO = "DATO"
+    EXPERIENCIA = "EXPERIENCIA"
+    SOBRE_MI = "SOBRE_MI"
+    LO_QUE_DICEN = "LO_QUE_DICEN"
+    LISTA = "LISTA"
+    NO_APLICA = "NO_APLICA"
+
+
 class EstadoPaso(StrEnum):
     PENDIENTE = "PENDIENTE"
     HECHO = "HECHO"
@@ -279,10 +289,17 @@ class EstadoInvestigacion(StrEnum):
 
 
 class OrigenPreguntaGuion(StrEnum):
-    """Las preguntas base son catálogo y no se guardan por investigación."""
-    DUDA = "DUDA"
+    """Las preguntas base son catálogo y no se guardan por investigación. Ajuste llm-sugerencias: sale DUDA (la duda
+    ya no entra directo al guion)."""
     SUGERIDA = "SUGERIDA"
     PROPIA = "PROPIA"
+
+
+class CampoLoQuePienso(StrEnum):
+    """Campo de «lo que pienso» del que sale una sugerencia del guion (ajuste llm-sugerencias)."""
+    DIA = "DIA"
+    NECESITA = "NECESITA"
+    DUDA = "DUDA"
 
 
 class EstadoSugerenciaGuion(StrEnum):

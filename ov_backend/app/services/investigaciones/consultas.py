@@ -146,7 +146,7 @@ def _en_curso(sesion: Session, investigacion: Investigacion, familia: FamiliaBre
         lo_que_pienso=LoQuePienso(dia=investigacion.piensa_dia, necesita=investigacion.piensa_necesita,
                                   duda=investigacion.piensa_duda),
         preguntas=[PreguntaGuionPublica(origen=p.origen, texto=p.texto) for p in preguntas],
-        sugerencias=[SugerenciaGuionPublica(codigo=s.codigo, texto=s.texto) for s in sugerencias],
+        sugerencias=[SugerenciaGuionPublica(codigo=s.codigo, texto=s.texto, campo=s.campo) for s in sugerencias],
         sugerencias_vigentes=investigacion.sugerencias_vigentes, creada_en=investigacion.creada_en,
         guia_lista_en=investigacion.guia_lista_en)
 

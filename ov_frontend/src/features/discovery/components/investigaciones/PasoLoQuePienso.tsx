@@ -61,7 +61,7 @@ export function PasoLoQuePienso({ m }: { m: ModeloGuion }) {
                 onChange={(e) => m.setDuda(e.target.value)}
               />
               <small className="sx-i-letra-chica">
-                Esta duda se convertirá en una de tus preguntas en el siguiente paso.
+                Lumi usará lo que escribas aquí para sugerirte preguntas en el siguiente paso.
               </small>
             </label>
           </fieldset>

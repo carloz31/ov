@@ -22,3 +22,10 @@ Tomadas en el ajuste:
 - En un registro del servidor no hay pasos después de la última consigna (continuarla entrega y cierra); «Anterior» tras la última consigna solo aplica en los registros locales.
 - Pruebas adaptadas, autorizadas por las observaciones: `tests/local/actividades/actividades-anterior.test.mjs` (pregunta, paso tras una pregunta, registro entregado y primer ítem de un cuestionario ahora tienen «Anterior») y `tests/servidor/planes/servidor-planes-vistas.test.mjs` (el aviso de misma familia ya no aparece).
 - Se borran los estilos `.sx-p-aviso`, que solo usaba el aviso de misma familia.
+
+## Merge de llm-sugerencias en main
+
+- Al juntar llm-sugerencias (guion y pasos del plan a Claude Haiku) con cartas-diario (diario y cartas sin LLM), Gemini quedó sin ningún asistente. Decidido por el usuario: se retira en el mismo merge `gemini.py`, `evaluacion.py` (`EvaluadorFalso`), `app.state.evaluador_respuestas`, las variables `EVALUADOR` y `GEMINI_*`, sus parámetros (`MODELO_LLM_REGISTRO`, `TEMPERATURA_ASISTENTES`, `NIVEL_RAZONAMIENTO_ASISTENTES`, `PAUSA_CASOS_GEMINI_SEGUNDOS`, `TIEMPO_MAXIMO_EVALUACION_SEGUNDOS`) y la dependencia `google-genai`.
+- Pruebas retiradas o adaptadas por ese retiro: salen `test_evaluador_gemini.py`, `test_arranque_registro.py` y `soporte_red.py`; `test_configuracion_registro.py` pasa a probar `ANTHROPIC_API_KEY`; las del exportador de fixtures ya no restauran `EVALUADOR`; la pregunta del día de `test_cartas_adaptadas.py` ya no reemplaza el evaluador.
+- `test_semilla_ruta.py` toma `opcion_lista` = 123 de llm-sugerencias (DIFICULTADES sin SALUD) y `referencia` = 12 de cartas-diario.
+- Las dos ramas traían una migración 0053. La de cartas-diario (`0053_cartas_diario`) queda; las de llm-sugerencias, que no tocan sus tablas, se renumeran encima: guion 0053 → 0054 y pasos 0054 → 0055.

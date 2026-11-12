@@ -1,6 +1,6 @@
 """Recorrido de punta a punta de la Leyenda contra un backend levantado, solo por HTTP (Ajuste leyenda).
 
-Requiere el servidor con ENTORNO=desarrollo y EVALUADOR=falso sobre una base con el conjunto `ruta`. Reinicia el estado
+Requiere el servidor con ENTORNO=desarrollo sobre una base con el conjunto `ruta`. Reinicia el estado
 de las cuentas, ingresa con los usuarios de prueba (JWT) y hace: Ana y Luis abren Investigaciones y dejan su guía
 lista; Ana publica con Luis; Carmen destaca; Mía, Teo y Sol (DATO DE PRUEBA) marcan favorito. Después comprueba la
 vista LEYENDAS desde Beto (5B), el sello `t-ins-leyenda` de Ana y de Luis y sus desbloqueos sin ver.
@@ -134,7 +134,7 @@ def main():
     print(f'· FAVORITOS_LEYENDA = {pedir("GET", "/cuentas/est-ana/investigaciones", cuenta="est-ana")["favoritos_leyenda"]}')
     for cuenta in ('est-luis', 'est-ana'):
         accion('guardar-lo-que-pienso', cuenta, PIENSO)
-        accion('guardar-guion', cuenta, {'preguntas': [{'origen': 'DUDA', 'texto': PIENSO['duda']}],
+        accion('guardar-guion', cuenta, {'preguntas': [{'origen': 'PROPIA', 'texto': PIENSO['duda']}],
                                           'descartadas': [], 'terminar': True})
     publicada = accion('publicar-entrevista', 'est-ana', {**FICHA, 'coautores': ['est-luis']})
     codigo = publicada['por_cuenta']['est-ana']['eventos_registrados'][0]['referencia']

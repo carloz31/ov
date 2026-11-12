@@ -30,7 +30,7 @@ def test_urls_sin_ruta_relativa_se_conservan(url, tmp_path):
 
 def test_ruta_absoluta_y_precedencia_env(tmp_path, monkeypatch):
     archivo = tmp_path / '.env'
-    archivo.write_text('DATABASE_URL=sqlite:///desde_archivo.db\nENTORNO=produccion\nEVALUADOR=falso\n'
+    archivo.write_text('DATABASE_URL=sqlite:///desde_archivo.db\nENTORNO=produccion\n'
                        f'JWT_SECRETO={"x" * 32}\n', encoding='utf-8')
     ruta = tmp_path / 'desde_proceso.db'
     monkeypatch.setenv('DATABASE_URL', f'sqlite:///{ruta.as_posix()}')

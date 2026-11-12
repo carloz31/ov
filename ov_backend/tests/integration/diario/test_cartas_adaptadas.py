@@ -179,15 +179,7 @@ def test_pregunta_del_dia_exige_el_diario_y_es_solo_de_estudiantes(cliente):
     del_dia(cliente, cuenta='apo-rosa', esperado=409)
 
 
-class SinEvaluador:
-    """Cualquier uso del evaluador falla: el diario no lo llama."""
-
-    def __getattr__(self, nombre):
-        raise AssertionError(f'El diario llamó al evaluador ({nombre})')
-
-
-def test_la_pregunta_del_dia_guarda_su_texto_sin_llamar_a_ningun_evaluador(cliente, sesion, aplicacion, monkeypatch):
-    monkeypatch.setattr(aplicacion.state, 'evaluador_respuestas', SinEvaluador())
+def test_la_pregunta_del_dia_guarda_su_texto(cliente, sesion):
     completar(cliente, 't-inicio')
     hoy = del_dia(cliente, 7)
     [recomendacion] = recomendaciones(sesion, 'DIARIA')
