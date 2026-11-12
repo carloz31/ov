@@ -1,10 +1,9 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b2-3",
   "codigo": "b2-3",
   "tipo": "registro",
   "titulo": "Lo que valoro en un trabajo",
-  "subtitulo": "La brújula de Rosa",
+  "subtitulo": "El mirador de la brigada",
   "escenario": "bosque_volcan",
   "bloque": 2,
   "orden": 3,
@@ -26,14 +25,15 @@
       "id": "b2-3-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Antes de irnos de la brigada le pregunté a Rosa por qué se quedó aquí, con el azufre y los sustos, pudiendo trabajar en la ciudad."
+      "expresion": "pensativo",
+      "texto": "Desde este mirador se ve la mina, al otro lado de la isla. Rosa lleva un rato mirándola."
     },
     {
       "id": "b2-3-02",
       "tipo": "dialogo",
       "hablanteId": "rosa",
       "expresion": "neutral",
-      "texto": "Mi hermano y yo estudiamos lo mismo. Él se fue a la mina del otro lado de la isla: gana el triple y está contento. Yo me quedé porque cuando suena la alarma y las familias llegan al refugio, siento que estoy donde debo. No es mejor ni peor que lo de él. Es que valoramos cosas distintas."
+      "texto": "Mi hermano trabaja ahí. Estudiamos lo mismo. Él gana el triple y está contento. Yo me quedé porque cuando suena la alarma y las familias llegan al refugio, siento que estoy donde debo. No es mejor ni peor que lo de él."
     },
     {
       "id": "b2-3-03",
@@ -49,7 +49,7 @@
               "id": "b2-3-03ar",
               "tipo": "dialogo",
               "hablanteId": "rosa",
-              "texto": "Claro que sí. Pero cuando lo pensé en serio, me di cuenta de que lo que me iba a faltar allá no se compra. Eso fue saber qué valoro."
+              "texto": "Claro que sí. Pero cuando lo pensé en serio, vi que lo que me iba a faltar allá no se compra."
             }
           ]
         },
@@ -61,7 +61,7 @@
               "id": "b2-3-03br",
               "tipo": "dialogo",
               "hablanteId": "rosa",
-              "texto": "Él valora la estabilidad y poder ayudar a mis papás con plata. Lo tiene claro y por eso no se arrepiente. Los dos elegimos bien, porque elegimos según lo nuestro."
+              "texto": "Él valora la estabilidad y poder ayudar a mis papás con plata. Lo tiene claro y por eso no se arrepiente."
             }
           ]
         }
@@ -69,45 +69,62 @@
     },
     {
       "id": "b2-3-04",
-      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "texto": "Cuando me ofrecieron irme con él, hice una lista de lo que quería de un trabajo. Me salieron nueve cosas, y todas me importaban. No me sirvió de nada hasta que me obligué a quedarme con tres y ponerlas en orden."
+    },
+    {
+      "id": "b2-3-05",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Por qué a Rosa no le sirvió la lista de nueve?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Porque le faltaba anotar lo más importante.",
+          "correcta": false,
+          "retroalimentacion": "No le faltaba nada: estaba todo, y ese era el problema."
+        },
+        {
+          "id": "b",
+          "texto": "Porque no decía qué pesaba más para ella.",
+          "correcta": true,
+          "retroalimentacion": "Eso. La mina y el volcán le daban cosas distintas de la lista."
+        },
+        {
+          "id": "c",
+          "texto": "Porque era la misma lista de su hermano.",
+          "correcta": false,
+          "retroalimentacion": "Podía ser la misma. Lo que cambia entre los dos es el orden."
+        }
+      ],
+      "explicacion": "Casi todo lo de una lista así importa. Pero dos opciones rara vez ganan en todo, y cuando chocan hay que saber qué pesa más para ti.",
+      "pistas": [
+        {
+          "id": "b2-3-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en qué hizo después con la lista."
+        }
+      ]
+    },
+    {
+      "id": "b2-3-06",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Qué son los valores",
+      "presentadorId": "rosa",
+      "titulo": "Lo que valoras en un trabajo",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Un valor es algo que te importa de verdad: lo que buscas en un trabajo más allá del nombre de la carrera. Se forman con la familia, el colegio y lo que has vivido, y en la adolescencia se cuestionan: por eso a veces lo que valoran tus padres y lo que valoras tú no coincide."
-        },
-        {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Elegir por interés y propósito",
-            "texto": "La actividad en sí te mueve. Sostiene la decisión cuando la carrera se pone difícil."
-          },
-          "derecha": {
-            "titulo": "Elegir por salario, estatus o presión",
-            "texto": "Lo que viene después te mueve. Importa, pero solo sostiene mientras el premio llega."
-          }
-        },
-        {
-          "tipo": "lista",
-          "titulo": "Valores que la gente busca en un trabajo",
-          "items": [
-            "Estabilidad",
-            "Ingresos",
-            "Ayudar a otros",
-            "Crear",
-            "Autonomía",
-            "Reconocimiento",
-            "Tiempo para la familia",
-            "Aprender",
-            "Aportar a mi comunidad"
-          ]
+          "texto": "Un valor es algo que te importa de verdad: lo que buscas en un trabajo más allá del nombre de la carrera. Se forma con la familia, el colegio y lo que has vivido. Por eso a veces lo que valoras tú y lo que valoran en tu casa no coincide."
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "No hay valores buenos y malos. Lo que importa es saber cuáles son los tuyos, porque dos opciones rara vez ganan en todos."
+          "texto": "No hay valores mejores que otros. Hay un orden tuyo, y puede cambiar con los años."
         },
         {
           "tipo": "fuente",
@@ -116,20 +133,28 @@
       ]
     },
     {
-      "id": "b2-3-05",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora. Y vuelve dos veces: cuando ordenes tus criterios para decidir, tu primer valor va a ser el punto de partida; y al escribir tu proyecto te lo voy a recordar."
-    },
-    {
       "id": "b2-3-valores",
       "tipo": "consigna",
       "hablanteId": "rosa",
       "item": "b2-3-valores"
+    },
+    {
+      "id": "b2-3-07",
+      "tipo": "dialogo",
+      "hablanteId": "rosa",
+      "nuevoMomento": true,
+      "texto": "Ese orden es tuyo. A mí me sirvió el día que tuve que elegir entre la mina y el volcán."
+    },
+    {
+      "id": "b2-3-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Abajo, en el taller de la brigada, alguien martilla desde temprano. Vamos a ver."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu brújula tiene tres puntos. Anotado en tu bitácora."
+    "mensajeFin": "Tres cosas que valoras, en tu orden. No hay un orden mejor que otro: hay el tuyo."
   },
   "mapa": {
     "x": 720,

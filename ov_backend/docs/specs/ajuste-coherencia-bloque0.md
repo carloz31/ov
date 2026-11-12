@@ -97,3 +97,50 @@ Las de §6 de las observaciones, en el navegador del panel con back (`contenido`
 
 ### Preguntas abiertas
 Ninguna.
+
+## Ajuste · coherencia-bloque2
+
+### Contexto
+El usuario reescribió el contenido de las cinco actividades del bloque 2 (b2-1…b2-5) y las fichas F07–F10 (textos cerrados: se copian tal cual, sin resumir ni «mejorar»). Spec en curso: `ov_backend/docs/specs/ajuste-coherencia-bloque0.md` → este plan se agrega como sección `## Ajuste · coherencia-bloque2` al final. Rama `ajuste/coherencia-bloque2` (ya creada desde `main`, `49df1d2`).
+
+La mecánica que necesitan los registros nuevos (una `pregunta` dentro del registro y pasos después del último ítem) ya existe desde el ajuste coherencia-bloque1: este ajuste no toca código, solo contenido.
+
+Comprobado en la exploración:
+- Los JSON nuevos solo usan nodos, bloques y campos que ya están en `src/types/activities.ts` (`etiqueta`, `presentadorId`, `tabla.nota`, `lista.titulo`, `fuente.url`, `destacado`).
+- Todas las expresiones usadas existen en `catalogo.json`: `nico` (contento, dudoso), `rosa` y `guardian` (neutral), `companero` (pensativo, animado).
+- Los ítems de b2-3 y b2-4 quedan idénticos salvo `hablanteId` de las tres consignas de b2-4 (`companero` → `nico`); `RegistroItemServidor.tsx` ya pinta `node.hablanteId`.
+- Ninguna prueba del back ni del front, ni los fixtures de `tests/fixtures/servidor/`, contienen los textos que cambian.
+
+### Qué cambia (hoy → pasará a)
+
+**Contenido front**
+- `src/data/activities/contenidos/plataforma/b2_1.json` … `b2_5.json`: se reemplazan, completos, por los de `Downloads/` (copia de archivo). Nodos 17→18, 12→14, 6→9, 8→13, 15→16; salen `_nota` de b2_3/b2_4; cambian `objetivoAprendizaje`, `subtitulo` de b2-3 y los `mensajeFin`.
+- `src/data/activities/catalogo.json`: `descripcion` de `nico` (§3.1).
+- `h_habilidades_4.json` (diálogo de cierre de Dora): «siete habilidades» → «cinco habilidades». `h_intereses_6.json` (cierre de Sol): «buscar más por tu cuenta» → «buscar más ocupaciones por tu cuenta». Solo esa frase.
+
+**Backend (`ov_backend/datos/contenido.py`, solo conjunto `contenido`)**
+- `DESCRIPCIONES` de b2-3 y b2-4 (§2.1).
+- `FICHAS` F07 (contenido), F08, F09, F10 (descripción y contenido), §2.2–2.5. Para no alterar un carácter, los cuatro contenidos se toman con un script desde los bloques ```markdown del documento de observaciones y se escriben como literal de una línea (mismo formato que hoy: `\n`, `\\*`). Título y tema iguales.
+- Sin cambio de modelo, endpoints, esquemas, reglas ni `ACTIVIDADES`.
+
+**Fixtures y pruebas**
+- No hay pruebas que adaptar (§4). Se regenera igualmente el exportador de fixtures para confirmar que no cambia nada; si cambia algo, se versiona.
+
+**Documentos**
+- `ov_backend/docs/decisiones.md`: sección `## Ajuste coherencia-bloque2` con las decisiones de §7 de las observaciones y lo de §8 como «anotado para otros ajustes».
+
+### Qué no cambia
+Conjunto `ruta` y sus pruebas; condiciones y mensajes de las reglas y lo que abre cada actividad; ítems, tarjetas del LLM y huellas de los registros; instrumentos y páginas del libro de Helena; visitas de la ciudad salvo las dos frases; `h1`–`h3`; catálogo y sus filtros (quitar el código RIASEC de carreras es otro cambio); actividades y fichas de otros bloques; código del reproductor y `ResourceText.tsx` (se comprueba en navegador; si algo se ve mal, aviso antes de tocarlo).
+
+### Fases
+1. **F1 · Contenido y backend:** copiar los cinco JSON, `catalogo.json`, las dos frases de la ciudad; `DESCRIPCIONES` y `FICHAS` en `contenido.py`; exportar fixtures. Pruebas: `scripts/verificar_contenido_front.py`, `tests/integration/datos`, `tests/integration/escenarios`, `tests/integration/fichas`; front `tests/servidor/actividades` y `npm run test:servidor`. Commit `Ajuste coherencia-bloque2 · F1: contenido del bloque 2 y fichas F07–F10`.
+2. **F2 · Cierre:** suites completas (back `uv run pytest -n auto -q`; front `npm test`, `build`, `lint`, `check:estructura`); comprobaciones de §6 en el navegador con el conjunto `contenido` y `VITE_DATOS=api`; `decisiones.md`. Commit. La spec queda en curso.
+
+### Verificación
+Las de §6 de las observaciones en el navegador del panel: b2-1 (elección, cinco preguntas, tres láminas, tabla de `b2-1-13` en 375 px), b2-2 (pizarra con tabla y lista con título), b2-3/b2-4 (pregunta dentro del registro y pasos de cierre antes de la pantalla final; Nico en las consignas; tabla con primera cabecera vacía), b2-5 (elecciones, pregunta de varias respuestas, tabla de cuatro columnas en 375 px), reingreso a b2-3/b2-4 entregados, «Anterior» ida y vuelta en b2-1 y b2-4, aperturas tras b2-1/b2-2/b2-5, fichas F07–F10 y cierres de Dora (visita 4) y Sol (visita 6).
+
+### Preguntas abiertas
+Ninguna.
+
+### Indicaciones del usuario al aprobar
+1. Después de escribir las cuatro fichas en `contenido.py`, comprobar que el contenido cargado de F07, F08, F09 y F10 sea idéntico, carácter por carácter, al bloque markdown del documento de observaciones (el apóstrofo de «students'» en F08, los «O\*NET» de F07 y F10 y los enlaces). Si alguna difiere, corregirla antes del commit.

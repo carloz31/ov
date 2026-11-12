@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b2-4",
   "codigo": "b2-4",
   "tipo": "registro",
@@ -27,119 +26,181 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "¡Mira quién está en el taller de la brigada! Nico desarmó la carpa de verdad."
+      "texto": "¡Mira quién martilla! Nico desarmó la carpa de verdad."
     },
     {
       "id": "b2-4-02",
       "tipo": "dialogo",
       "hablanteId": "nico",
       "expresion": "contento",
-      "texto": "Subí y Rosa me puso a ayudar a Pacho con la pasarela. Y resulta que se me da bien, aunque nunca lo había pensado como algo mío. Lo raro es que lo que yo quería, que era la veterinaria… cuando me tocó ayudar con los animales del refugio, me costó horrible."
+      "texto": "Subí buscando a alguien que trabaje con animales, y Rosa me mandó primero a ayudar a Pacho con la pasarela. Quedó firme a la primera. Pacho dice que tengo buena mano, y yo nunca lo había pensado como algo mío."
     },
     {
       "id": "b2-4-03",
+      "tipo": "dialogo",
+      "hablanteId": "nico",
+      "expresion": "dudoso",
+      "texto": "Después fui al refugio, donde curan a las mulas de carga. Darles de comer y calmarlas me salió solo. Pero cuando hubo que limpiar una herida, me temblaban las manos y tuve que salir."
+    },
+    {
+      "id": "b2-4-04",
       "tipo": "eleccion",
       "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
-          "id": "b2-4-03a",
+          "id": "b2-4-04a",
           "texto": "¿Entonces ya no quieres Veterinaria?",
           "reaccion": [
             {
-              "id": "b2-4-03ar",
+              "id": "b2-4-04ar",
               "tipo": "dialogo",
               "hablanteId": "nico",
               "expresion": "dudoso",
-              "texto": "No sé. Me sigue gustando la idea. Pero ahora sé que querer y poder no siempre van juntos, y eso no lo había separado nunca."
+              "texto": "No sé. Me sigue gustando. Pero ahora sé qué parte me cuesta, y antes ni eso sabía."
             }
           ]
         },
         {
-          "id": "b2-4-03b",
+          "id": "b2-4-04b",
           "texto": "¿Y lo de la pasarela te gustó?",
           "reaccion": [
             {
-              "id": "b2-4-03br",
+              "id": "b2-4-04br",
               "tipo": "dialogo",
               "hablanteId": "nico",
               "expresion": "dudoso",
-              "texto": "Me salió bien y Pacho me felicitó. Pero gustarme… no sé si me gustó o si me gustó que me saliera bien. Son dos cosas distintas, ¿no?"
+              "texto": "Me salió bien y Pacho me felicitó. Pero no sé si me gustó, o si me gustó que me saliera bien."
             }
           ]
         }
       ]
     },
     {
-      "id": "b2-4-04",
-      "nuevoMomento": true,
+      "id": "b2-4-05",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "A Nico le salió bien la pasarela y le costó curar a la mula. ¿Qué puede decir hoy?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que debe dejar Veterinaria: no es lo suyo.",
+          "correcta": false,
+          "retroalimentacion": "Le costó una parte, una vez. Eso se puede practicar."
+        },
+        {
+          "id": "b",
+          "texto": "Que le sale una cosa y le gusta otra, por ahora.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Son dos datos distintos, y los dos le sirven."
+        },
+        {
+          "id": "c",
+          "texto": "Que si le gusta de verdad, lo demás no importa.",
+          "correcta": false,
+          "retroalimentacion": "Importa: conviene saber qué parte cuesta para prepararse."
+        }
+      ],
+      "explicacion": "Que algo te salga no dice que te guste, y que algo te cueste no dice que no puedas aprenderlo.",
+      "pistas": [
+        {
+          "id": "b2-4-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en que Nico habla de dos cosas distintas: lo que le salió y lo que quiere."
+        }
+      ]
+    },
+    {
+      "id": "b2-4-06",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Querer y poder",
+      "etiqueta": "En el taller de la brigada",
+      "titulo": "Lo que te sale y lo que te gusta",
       "bloques": [
         {
           "tipo": "tabla",
           "columnas": [
-            "Palabra",
-            "Qué es",
-            "Nico y la pasarela"
+            "",
+            "Cómo se nota",
+            "Nico"
           ],
           "filas": [
             [
-              "Aptitud",
-              "Lo que podrías desarrollar con práctica",
-              "Tiene buena mano para armar cosas, aunque nunca lo entrenó"
+              "Lo que te sale",
+              "En un resultado, en lo que otros te dicen o en que te cuesta menos",
+              "La pasarela quedó firme a la primera, y Pacho se lo dijo"
             ],
             [
-              "Capacidad",
-              "Lo que ya haces bien hoy",
-              "Armó la pasarela y le salió bien"
-            ],
-            [
-              "Interés",
-              "Lo que te atrae de forma sostenida",
-              "Lo que le atrae son los animales, no las pasarelas"
+              "Lo que te gusta",
+              "Te atrae y vuelves a eso, aunque todavía no te salga",
+              "Los animales: subió hasta aquí por ellos"
             ]
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Querer y poder no siempre coinciden. Puedes ser muy bueno en algo que no te interesa, y al revés. Los cuestionarios de Helena miden lo que te atrae y cómo te describes; lo que de verdad se te da bien, con notas, trabajos o cosas que otros te reconocen, solo lo sabes tú."
+          "texto": "No siempre coinciden. Y a veces el gusto llega después: lo que empieza a salir bien suele empezar a gustar."
         },
         {
           "tipo": "parrafo",
-          "texto": "Por eso este registro no tiene cuestionario: te pregunta en qué cursos o actividades te va bien, en cuáles te cuesta, y si eso coincide con lo que te gusta. No es para descartar nada: una capacidad baja en algo que te interesa es un plan de práctica, no un veto."
+          "texto": "Lo que cuesta no es un veto. Saber qué parte cuesta dice qué practicar."
         },
         {
           "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, parte 1 (aptitudes, capacidades e intereses como factores internos) y cuestionario de autopercepción, ítem 10."
+          "texto": "MINEDU (2013), cartilla, parte 1 (aptitudes, capacidades e intereses como factores internos). Lent, Brown y Hackett (1994), Toward a unifying social cognitive theory of career and academic interest, choice, and performance, Journal of Vocational Behavior."
         }
       ]
     },
     {
-      "id": "b2-4-05",
+      "id": "b2-4-07",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: ahí lo que se te da bien es una fila del cuadro."
+      "hablanteId": "nico",
+      "expresion": "contento",
+      "texto": "Pacho me hizo anotar las dos listas en una tabla del taller. Te toca a ti."
     },
     {
       "id": "b2-4-bien",
       "tipo": "consigna",
-      "hablanteId": "companero",
+      "hablanteId": "nico",
       "item": "b2-4-bien"
     },
     {
       "id": "b2-4-cuesta",
       "tipo": "consigna",
-      "hablanteId": "companero",
+      "hablanteId": "nico",
       "item": "b2-4-cuesta"
     },
     {
       "id": "b2-4-cruce",
       "tipo": "consigna",
-      "hablanteId": "companero",
+      "hablanteId": "nico",
       "item": "b2-4-cruce"
+    },
+    {
+      "id": "b2-4-08",
+      "tipo": "dialogo",
+      "hablanteId": "nico",
+      "nuevoMomento": true,
+      "expresion": "contento",
+      "texto": "Yo voy a seguir con las dos. Pacho me enseña poleas, y en el refugio me dejan mirar las curaciones hasta que se me pase el temblor. Todavía no sé. Pero ya no es el mismo «no sé»."
+    },
+    {
+      "id": "b2-4-09",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Del campamento a aquí hay bastante más que una subida."
+    },
+    {
+      "id": "b2-4-10",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Rosa está llamando a la ronda: seis refugios antes de que oscurezca."
     }
   ],
   "recompensa": {

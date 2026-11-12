@@ -82,7 +82,7 @@
       "id": "nico",
       "nombre": "Nico",
       "rol": "npc",
-      "descripcion": "Viajero acampado al pie del nevado desde hace siete meses, esperando «saber» antes de seguir. Representa la indecisión que se queda quieta. Al final desarma la carpa.",
+      "descripcion": "Viajero acampado al pie del nevado desde hace siete meses, esperando «saber» antes de seguir. Representa la indecisión que se queda quieta. Al final desarma la carpa y reaparece en el volcán, ayudando a la brigada.",
       "ubicacion": "Campamento al pie del nevado",
       "avatarUrl": "/images/personajes/nico.png",
       "expresiones": {
