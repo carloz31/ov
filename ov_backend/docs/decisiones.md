@@ -90,6 +90,49 @@ Anotado para otros ajustes (de las observaciones, sin tocar):
 - b2-6 figura en los documentos de diseño como opcional y no existe en el repo.
 - Fuentes: el dato del MTPE (F08 y `b2-1-14`) viene de una nota de Andina, ambigua en el «más del 80 %»; confirmarlo en el informe de la Encuesta de Demanda Ocupacional 2022. Caballo (2007) y Lent, Brown y Hackett (1994) sin verificar en línea; Durlak y otros (2011) y Su, Rounds y Armstrong (2009) verificadas por su resumen. No se comprobó que el Anexo 4.1 liste siete habilidades. La columna «Tareas donde se usa» de F09 es criterio de orientador.
 
+## Ajuste coherencia-bloque3
+
+Decididas por el usuario en el texto de observaciones:
+
+- En el puerto, los datos del mundo real están en algo de la historia (el tablero de la capitanía, el tablero de Doña Cifra, el tablón del puerto, la pila de Clotilde) y van en láminas con su fuente. Lumi no los explica.
+- Los enemigos del puerto (Doña Cifra, el Feriante, Clotilde) afirman algo y el estudiante lo corrige; las preguntas las hace Lumi.
+- En la historia, las fichas del catálogo son «hojas del atlas»: «ficha» es lo de la mochila y «carta» es lo del diario.
+- Ninguna carrera tiene un código RIASEC en el front. El camino de los intereses es: ocupaciones que se parecen al perfil, «Cómo se llega aquí» y, de ahí, las carreras. El backend conserva el RIASEC de las carreras y sus filtros.
+- Sale la tarea de guardar tres favoritos y la de buscar una opción «fuera de tu tipo principal»: queda como invitación.
+- b3-4 y b3-a se quedan solo con Lumi, que cuenta el caso de otra persona (Maite; un viajero y una enfermera) para mostrar cómo se responde el ítem.
+- El mínimo y el máximo de los ingresos del catálogo son los percentiles 10 y 90 (nota técnica de Ponte en Carrera). Sale «quien empieza está mucho más cerca del mínimo».
+- Institutos y universidades se comparan con sus dos caras: la familia de instituto mejor pagada supera a casi todas las universitarias, y en 18 de 22 familias que se dictan en los dos la universitaria paga más al inicio.
+- Las escuelas de las FF. AA. y la Policía dan una propina durante la formación, no un sueldo; el ejemplo con cifras de requisitos va en F15, con su año.
+- Con los institutos no se dice «si no está licenciado, descártalo» (solo dos de cada diez tienen licencia): se dice qué preguntar. El catálogo no indica si una institución tiene licencia y las fichas ya no lo afirman.
+- Beca 18 se describe con la convocatoria 2027 y sin prometer un número de becas.
+- Gastón Acurio queda en su testimonio, que se nombra por su título («Cocinar a escondidas»).
+- Alejandra calza con su carta de b0-5, y la familia no queda como culpable. El guardián de b3-10 calza con b1-7 y b2-5: no dice «tramo», no adelanta lo que viene y no nombra a la orientadora.
+- En los cuatro bancos de batalla las opciones tienen la misma forma y un largo parecido; los distractores son medias verdades o el dato dado vuelta.
+- Los textos usan los nombres de pantalla del plan («Cómo lo haría realidad», «Mis próximos pasos»), no los del backend.
+- Salen del bloque los diálogos de Lumi «Esto lo lee tu orientadora…», «bitácora», «me interesa», «tercer tramo», los anuncios de lo que viene y los adjetivos con género dirigidos al estudiante.
+
+Tomadas en el ajuste:
+
+- Las fichas F11–F17 y los cuatro bancos se copiaron con un script desde las observaciones y `bancos_bloque3.py`, y se comprobó que lo cargado es idéntico carácter por carácter. `bancos_bloque3.py` no entra al repo.
+- `ACTIVIDADES` y `R-b3-a` ya tenían el título de b3-4, las duraciones de b3-a (4) y b3-b (5) y el requisito b3-3 de b3-a: solo cambiaron los JSON del front, y `verificar_contenido_front.py` queda sin discrepancias.
+- Las carreras dejan de admitir `riasec` y `afines` en `PARAMETROS.careers` (`filtrosCatalogo.ts`): así la URL de carreras los ignora y no llegan al servidor, sin tocar `useCatalogoServidor`.
+- Decidido por el usuario al planear: sale «Cómo encaja contigo» de «Por qué la elijo» (`SeccionPorQue`, `encajeRiasec`, la carga del resultado RIASEC en `usePlanAbierto` y `.sx-p-encaje`), porque decía «{carrera} es de tipo …».
+- Agregado por el usuario al aprobar: la pestaña «Profesiones» del catálogo se llama «Ocupaciones», y la ayuda del modo lectura dice «Filtre por el tipo de interés de la ocupación». Ids, rutas y nombres internos (`professions`) no cambian.
+- Pruebas adaptadas, autorizadas por §4 de las observaciones: en `test_conversaciones_contenido.py` salen `b3-5-p06` y `b3-5-p08` de `CORRECTAS` (el banco de b3-5 se reemplazó entero). En el front, `servidor-catalogo-portal` (carreras sin filtro de intereses ni sellos; la ayuda nueva, en ocupaciones), `servidor-catalogo-vistas` (el caso de los temporizadores pasa a ocupaciones; «Limpiar filtros» cuenta 2 filtros porque `riasec` y `afines` se ignoran en carreras) y `servidor-planes-{contrato,tarjeta}` (sin `encajeRiasec` ni «Cómo encaja contigo»).
+- Revisión en navegador (base aparte con `contenido`, `est-ana` hasta b2-5 y `est-luis` hasta b3-9): b3-1 (elección, láminas, preguntas con retroalimentación y la de varias respuestas, tabla de cuatro columnas también a 375 px), b3-4 (pregunta dentro del registro, eco del valor de b2-3, dos pasos de cierre y cierre; un registro completado vuelve a abrirse desde el paso 1, como se decidió en el bloque 2), b3-6 (pregunta de seis opciones y lámina `b3-6-12` con la primera cabecera vacía, también a 375 px), F11–F16 (tablas sin fila de guiones, listas numeradas y con negrita, enlaces; F17 sigue cerrada hasta b3-10) y el catálogo (carreras sin sellos ni «Intereses», `riasec` y `afines` de la URL no llegan al servidor, detalle sin letras, ocupaciones intactas). No se miraron en pantalla b3-2, b3-3, b3-8, b3-10, b3-a, las cuatro batallas, el plan ni el modo lectura del apoderado: los cubren las pruebas.
+
+Anotado para otros ajustes (de las observaciones, sin tocar):
+
+- Textos visibles del catálogo que siguen diciendo «profesión»: el título «Catálogo de profesiones», «Buscar una profesión por nombre…», el conteo «N profesiones» y la descripción (`CatalogoServidor.tsx`), «Cuánto pesa cada interés en esta profesión» y «Esta profesión» (`PerfilIntereses.tsx`) y las presentaciones de Lumi del catálogo («El atlas de profesiones…», «…qué formación lleva a cada profesión…»). Se avisó al usuario; no se cambiaron.
+- Datos que envejecen cada año: Beca 18 (lámina `b3-8-12`, F16 y `b3-9-p13` a `p16`), el sueldo mínimo (`b3-8-13` y F16), los requisitos de la Escuela de Oficiales de la Policía (F15 y F16) y la escala de propinas (F11).
+- Datos que dependen de `carreras_salarios_por_departamento.csv`: la tabla de las familias mejor pagadas, las medianas (S/ 3 075 y S/ 2 632, redondeadas) y las 18 de 22 familias. Si el archivo cambia, se revisan `b3-3-04`, F13, `b3-5-p09` y `p10`.
+- Institutos sin licencia: «autorizados antes de la ley actual» se apoya en el D. L. N.° 1495 y notas de 2026, sin leer la norma vigente completa. Si cambia, cambian `b3-6-12`, F14 y `b3-7-p06`.
+- Por confirmar en la fuente: «tres de cada diez» de La República (tomado del extracto del buscador), el año de la planilla de ingresos del catálogo, que los créditos de pregrado del Pronabec son para continuar una carrera empezada y los 3 años de suboficiales.
+- Nombres de las secciones del plan: el front dice «Cómo lo haría realidad» y «Mis próximos pasos»; `fijos.py`, «Qué tan real es» y «Mis pasos». Decidir si se unifican.
+- `R-B4` nombra a la orientadora («las páginas que marcó tu orientadora»). b4-3, lámina 03, nombra el trayecto con cuatro opciones; hoy «Cómo llegaría» tiene seis.
+- Código RIASEC por carrera en otros bloques: lámina de b4-1, batalla b4-4, F19, h3 y conversaciones familiares.
+- `ma7` y `ma7-b` no se revisaron; comparten personaje (Doña Cifra) y tema con b3-3 y F13.
+
 ## Merge de llm-sugerencias en main
 
 - Al juntar llm-sugerencias (guion y pasos del plan a Claude Haiku) con cartas-diario (diario y cartas sin LLM), Gemini quedó sin ningún asistente. Decidido por el usuario: se retira en el mismo merge `gemini.py`, `evaluacion.py` (`EvaluadorFalso`), `app.state.evaluador_respuestas`, las variables `EVALUADOR` y `GEMINI_*`, sus parámetros (`MODELO_LLM_REGISTRO`, `TEMPERATURA_ASISTENTES`, `NIVEL_RAZONAMIENTO_ASISTENTES`, `PAUSA_CASOS_GEMINI_SEGUNDOS`, `TIEMPO_MAXIMO_EVALUACION_SEGUNDOS`) y la dependencia `google-genai`.
