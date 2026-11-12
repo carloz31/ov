@@ -1,4 +1,10 @@
+import { catalog } from '@/data/activities/content'
+
+// El retrato de Lumi del catálogo (`companero`); sin él, el dibujo de siempre.
+const retratoLumi = catalog.personajes.find((persona) => persona.id === 'companero')?.avatarUrl
+
 export function LumiPortrait() {
+  if (retratoLumi) return <img src={retratoLumi} alt="" className="size-full rounded-full object-cover" />
   return (
     <svg
       aria-hidden="true"

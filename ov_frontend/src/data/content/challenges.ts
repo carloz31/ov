@@ -193,7 +193,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Aurelio pregona desde la otra orilla y cada frase que aceptes sin dato rompe una tabla del puente. ' +
       'Clasifica cada pregón como mito o como afirmación con sustento y elige el argumento que lo desarma. ' +
       'Si el puente aguanta, Aurelio se queda sin eco.',
-    ilustracion: '/images/student/pregonero.svg',
+    ilustracion: '/images/student/pregonero.png',
     bloque: 1,
     orden: 5,
     obligatoria: true,
@@ -228,7 +228,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Doña Cifra lee los números del mercado como si fueran un horóscopo: un promedio es un destino, una demanda es un trabajo seguro ' +
       'y solo una ruta vale. Cada vez que leas bien una ficha o mandes a un viajero al embarcadero correcto, pierde un cliente. ' +
       'Si se queda sin clientes, cierra el puesto.',
-    ilustracion: '/images/student/cifra.svg',
+    ilustracion: '/images/student/cifra.png',
     bloque: 3, orden: 5, obligatoria: true,
     ubicacion: 'Puerto, plaza del mercado',
     duracionEstimadaMin: 8,
@@ -254,7 +254,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Don Próspero, el feriante, cuelga un anuncio tras otro: acreditación internacional, ingreso directo, bolsa de trabajo garantizada. ' +
       'Cada anuncio que desmontes (qué verificar, qué promesa es dudosa, qué modalidad de admisión aplica) le quita un banderín. ' +
       'Sin banderines, el stand se cierra.',
-    ilustracion: '/images/student/feriante.svg',
+    ilustracion: '/images/student/feriante.png',
     bloque: 3, orden: 7, obligatoria: true,
     ubicacion: 'Puerto, feria del malecón',
     duracionEstimadaMin: 8,
@@ -280,7 +280,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Clotilde guarda una pila de presupuestos de jóvenes que firmaron sin mirar. Todos tienen un hueco: un rubro que falta, un año ' +
       'que no se contó, un crédito calculado con el sueldo equivocado o una beca que nadie pidió. Cada hueco que encuentres es un ' +
       'contrato que no se firma. Sin contratos, Clotilde cierra la caseta.',
-    ilustracion: '/images/student/prestamista.svg',
+    ilustracion: '/images/student/prestamista.png',
     bloque: 3, orden: 9, obligatoria: true,
     ubicacion: 'Puerto, caseta junto al muelle',
     duracionEstimadaMin: 8,
@@ -302,7 +302,7 @@ export const desafiosPlataforma: Challenge[] = [
     presentacionEnemigo:
       'Doña Cifra volvió a abrir el puesto, esta vez solo con un pregón: que únicamente una ruta sirve. Un repaso corto: viajeros ' +
       'con situaciones distintas y el embarcadero que les calza. Opcional, para quien quiera asegurar lo aprendido.',
-    ilustracion: '/images/student/cifra.svg',
+    ilustracion: '/images/student/cifra.png',
     bloque: 3, orden: 12, obligatoria: false,
     ubicacion: 'Puerto, plaza del mercado',
     duracionEstimadaMin: 5,
@@ -353,7 +353,7 @@ export const desafiosPlataforma: Challenge[] = [
     presentacionEnemigo:
       'Aurelio volvió con un solo pregón, el que más aplausos le daba: «hay trabajos de hombres y trabajos de mujeres». Esta vez trae ' +
       'números a medias. Responde con los datos completos y el pregón se queda sin público. Corta y opcional.',
-    ilustracion: '/images/student/pregonero.svg',
+    ilustracion: '/images/student/pregonero.png',
     bloque: 1, orden: 39, obligatoria: false,
     ubicacion: 'Desierto, el oasis',
     duracionEstimadaMin: 5,
@@ -375,7 +375,7 @@ export const desafiosPlataforma: Challenge[] = [
     presentacionEnemigo:
       'Doña Cifra saca los números que nunca muestra: por región, por edad y por formalidad. Cada brecha que leas bien es un promedio ' +
       'que deja de engañar. Corta y opcional.',
-    ilustracion: '/images/student/cifra.svg',
+    ilustracion: '/images/student/cifra.png',
     bloque: 3, orden: 38, obligatoria: false,
     ubicacion: 'Puerto, plaza del mercado',
     duracionEstimadaMin: 5,
