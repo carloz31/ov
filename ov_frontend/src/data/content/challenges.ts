@@ -226,7 +226,7 @@ export const desafiosPlataforma: Challenge[] = [
     titulo: 'El mercado y las rutas',
     presentacionEnemigo:
       'Doña Cifra lee los números del mercado como si fueran un horóscopo: un promedio es un destino, una demanda es un trabajo seguro ' +
-      'y solo una ruta vale. Cada vez que leas bien una ficha o mandes a un viajero al embarcadero correcto, pierde un cliente. ' +
+      'y solo una ruta vale. Cada vez que corrijas una lectura suya o mandes a un viajero al embarcadero correcto, pierde un cliente. ' +
       'Si se queda sin clientes, cierra el puesto.',
     ilustracion: '/images/student/cifra.png',
     bloque: 3, orden: 5, obligatoria: true,
@@ -241,7 +241,7 @@ export const desafiosPlataforma: Challenge[] = [
     ],
     banco: [],
     recompensa: { titulo: 'El puesto cerró', lugar: 'la feria del malecón', href: '/student/map',
-      mensajeFin: 'Un salario promedio es un dato de otras personas. Lo que te toque dependerá de dónde, cómo y cuánto te preparas.' },
+      mensajeFin: 'Un salario promedio es un dato de otras personas. Sirve para ubicarte, no para saber cuánto vas a ganar tú.' },
   },
   {
     id: 'desafio-feriante',

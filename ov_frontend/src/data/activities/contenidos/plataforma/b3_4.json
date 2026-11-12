@@ -1,10 +1,9 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b3-4",
   "codigo": "b3-4",
   "tipo": "registro",
-  "titulo": "Lo que no sabía del mercado",
-  "subtitulo": "Después del puesto de Doña Cifra",
+  "titulo": "Lo que necesito saber",
+  "subtitulo": "La banca frente al mercado",
   "escenario": "playa",
   "bloque": 3,
   "orden": 4,
@@ -25,14 +24,107 @@
       "id": "b3-4-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Sentémonos un rato lejos del puesto de Doña Cifra. Si ya marcaste favoritos, el catálogo te muestra los ingresos de su familia por lugar. Quiero que mires los de tu opción, o los de tus favoritos, con calma."
+      "texto": "Sentémonos en esa banca, lejos de las cortinas moradas. Doña Cifra me hizo acordar de Maite, una viajera que conocí en este puerto."
     },
     {
       "id": "b3-4-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Esto lo lee tu orientadora, y vuelve al final: cuando escribas tu proyecto, en el campo de dificultades te voy a recordar qué dijiste que harías si un dato no te favorece."
+      "texto": "Maite quería ser topógrafa. A ella también le leyeron un sueldo, y era bueno. Pero lo que más le importaba era vivir cerca de los suyos, y de eso el tablero no decía nada."
+    },
+    {
+      "id": "b3-4-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Tú qué habrías hecho con ese sueldo delante?",
+      "opciones": [
+        {
+          "id": "b3-4-03a",
+          "texto": "Lo habría tomado: es un buen sueldo.",
+          "reaccion": [
+            {
+              "id": "b3-4-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Mucha gente lo haría, y a algunos les va bien así. Maite quiso saber una cosa más."
+            }
+          ]
+        },
+        {
+          "id": "b3-4-03b",
+          "texto": "Habría querido saber algo más antes.",
+          "reaccion": [
+            {
+              "id": "b3-4-03br",
+              "tipo": "dialogo",
+              "hablanteId": "companero",
+              "texto": "Eso hizo ella."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b3-4-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Hizo una pregunta bien concreta: ¿una topógrafa trabaja en su ciudad o pasa meses en campamentos? Y no se la hizo a quien le ofrecía la carrera. Se la hizo a un topógrafo que llevaba quince años midiendo carreteras."
+    },
+    {
+      "id": "b3-4-05",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Por qué le preguntó al topógrafo y no a quien le ofrecía la carrera?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Porque al topógrafo le tenía más confianza.",
+          "correcta": false,
+          "retroalimentacion": "Ni lo conocía. Lo eligió por lo que sabía, no por la confianza."
+        },
+        {
+          "id": "b",
+          "texto": "Porque quien ofrecía la carrera no sabía el sueldo.",
+          "correcta": false,
+          "retroalimentacion": "El sueldo sí lo sabía. No era eso lo que Maite necesitaba."
+        },
+        {
+          "id": "c",
+          "texto": "Porque el topógrafo había vivido lo que ella quería saber.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Quince años en campamentos: nadie se lo iba a contar mejor."
+        }
+      ],
+      "explicacion": "Para saber cómo es un trabajo de verdad sirve quien lo vive o lo vivió. Que alguien te tenga cariño ayuda, pero lo que cuenta es qué sabe de lo que quieres averiguar.",
+      "pistas": [
+        {
+          "id": "b3-4-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en qué tenía el topógrafo que no tenía la otra persona."
+        }
+      ]
+    },
+    {
+      "id": "b3-4-06",
+      "tipo": "diapositiva",
+      "etiqueta": "Lo que un promedio no dice",
+      "titulo": "Lo que necesitas saber depende de lo que valoras",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Un sueldo promedio es igual para todos los que lo leen. Lo que tú necesitas saber de una carrera, no: cómo son los horarios o los turnos, si hay que viajar o mudarse, si suele haber contrato, si se puede trabajar por cuenta propia, cuánto se gana en tu región."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La pregunta que más te sirve sobre una carrera es la que sale de lo que tú valoras."
+        }
+      ]
     },
     {
       "id": "b3-4-necesito",
@@ -45,10 +137,24 @@
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-4-quien"
+    },
+    {
+      "id": "b3-4-07",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "El topógrafo le dijo la verdad: medio año fuera de casa. Maite siguió adelante igual, pero sabiendo."
+    },
+    {
+      "id": "b3-4-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "En la plaza alguien pregona cifras a gritos. Ya sabes quién."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Los números frente a lo que creías. Anotado en tu bitácora."
+    "mensajeFin": "Ya sabes qué averiguar y a quién preguntarle. Si tienes un plan, puedes anotarlo en «Mis dudas»."
   },
   "mapa": {
     "x": 550,

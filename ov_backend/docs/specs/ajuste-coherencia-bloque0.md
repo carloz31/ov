@@ -144,3 +144,55 @@ Ninguna.
 
 ### Indicaciones del usuario al aprobar
 1. Después de escribir las cuatro fichas en `contenido.py`, comprobar que el contenido cargado de F07, F08, F09 y F10 sea idéntico, carácter por carácter, al bloque markdown del documento de observaciones (el apóstrofo de «students'» en F08, los «O\*NET» de F07 y F10 y los enlaces). Si alguna difiere, corregirla antes del commit.
+
+## Ajuste · coherencia-bloque3
+
+### Contexto
+El usuario reescribió el contenido del bloque 3 (el puerto): b3-1, b3-2, b3-3, b3-4, b3-6, b3-8, b3-10 y b3-a, las fichas F11–F17 y los bancos de las cuatro batallas (b3-5, b3-7, b3-9, b3-b). Los textos ya están cerrados y se copian tal cual. Además, el código RIASEC deja de mostrarse y de filtrarse en las carreras (solo front). Spec en curso: `ov_backend/docs/specs/ajuste-coherencia-bloque0.md` → este plan se agrega como sección `## Ajuste · coherencia-bloque3` al final. Rama `ajuste/coherencia-bloque3`, que se rehace desde `main` (`64d2952`, ya con el bloque 2; la rama está vacía, sin commits).
+
+### Qué cambia (hoy → pasará a)
+
+**Contenido front (`ov_frontend/src/data/activities/contenidos/plataforma/`)**
+- `b3_1`, `b3_2`, `b3_3`, `b3_4`, `b3_6`, `b3_8`, `b3_10`, `b3_a`: se reemplazan, completos, por los de `Downloads/` (copia de archivo). Hoy 11/11/14/4/14/13/14/3 nodos → 13/12/16/10/15/15/17/4. Las referencias de eco `b3-2-ref-codigo` y `b3-8-ref-costos` se conservan. b3_a pasa a `requisitos` `["b3-3"]`, `mapa.origen` `"b3-3"` y 4 min (ya calza con `R-b3-a` y con `ACTIVIDADES` del back, que ya dicen b3-3 y 4).
+- `b3_7.json` `ubicacion` → «Puerto, feria del malecón»; `b3_9.json` → «Puerto, caseta junto al muelle»; `b3_b.json` → «Puerto, plaza del mercado» y `duracionEstimadaMin` 8 → 5 (el back ya dice 5). `b3_5.json` no cambia.
+- `src/data/activities/catalogo.json`: `descripcion` de `practico` y `alejandra` (§3.1).
+- `src/data/content/challenges.ts`, `desafio-cifra`: `presentacionEnemigo` (la segunda frase) y `recompensa.mensajeFin` (§3.3).
+
+**Backend (`ov_backend/datos/contenido.py`, solo conjunto `contenido`)**
+- `DESCRIPCIONES` de b3-4, b3-5 y b3-10 (§2.1).
+- `FICHAS`: F11 y F14, descripción y contenido; F12, F13, F15, F16 y F17, contenido. Se copian con un script desde los bloques markdown de las observaciones y se comprueba que el texto cargado es idéntico carácter por carácter (como en el bloque 2).
+- `PREGUNTAS_BATALLA`: las de `b3-5`, `b3-7`, `b3-9` (14 → 18 cada una) y `b3-b` (10 → 12) se reemplazan por las de `bancos_bloque3.py`, tal cual. `bancos_bloque3.py` no se agrega al repo.
+- No cambian `ACTIVIDADES` (títulos y duraciones ya calzan), reglas, `CONFIGURACION_BATALLAS`, ítems ni tarjetas. Sin cambio de modelo, endpoints ni esquemas.
+
+**Front: el RIASEC sale de las carreras (§3.4; el backend no se toca)**
+- `features/discovery/lib/filtrosCatalogo.ts`, `PARAMETROS.careers`: hoy admite `riasec` y `afines` → pasará a `['buscar', 'tipo', 'area', 'familia', 'favoritos']`. Con eso `leerFiltros` ignora esas claves en la URL de carreras y `useCatalogoServidor` (`filtrosApi`) no las envía. Profesiones sin cambio.
+- `components/FiltrosCatalogo.tsx`: carreras pasan a `[Tipo, Campo]`; la fila «Intereses» (letras, «Afines a mi resultado» y, en modo lectura, «Filtre por el tipo de interés…») queda solo en ocupaciones. La ayuda de modo lectura queda «Filtre por el tipo de interés de la ocupación».
+- `components/TarjetaCatalogo.tsx`: sale `<SellosRiasec>` de la tarjeta de carrera; la de ocupación lo conserva.
+- `components/DetalleCarreraServidor.tsx`: sale `<SellosRiasec letras={carrera.riasec} conNombres />` de la cabecera.
+- Plan, «Por qué la elijo» (decidido por el usuario al planear): sale el bloque «Cómo encaja contigo» (`features/plans/components/SeccionPorQue.tsx`, prop `encaje`), `encajeRiasec` de `lib/servidor/adaptadoresPlanes.ts` y su cálculo en `features/plans/hooks/usePlanAbierto.ts` (y la carga del resultado RIASEC si solo la usaba eso). Estilos `.sx-p-encaje` si quedan sin uso.
+- Agregado por el usuario al aprobar: `features/discovery/components/CatalogNavigation.tsx`, el rótulo de la pestaña «Profesiones» pasa a «Ocupaciones» (como `AtlasNavigation.tsx`, los favoritos y los textos del bloque 3), y en `FiltrosCatalogo.tsx` la ayuda del modo lectura queda «Filtre por el tipo de interés de la ocupación». Solo textos visibles: ids, rutas y nombres internos (`professions`) no cambian. Si una prueba del front compara «Profesiones» como rótulo, se actualiza. Si aparece «Profesiones» o «profesión» en otro texto visible del catálogo, se avisa antes de cambiarlo.
+- No cambian: `SellosRiasec`, `DetalleOcupacionServidor`, `OcupacionesDeLaFamilia`, el filtro y «Afines» de ocupaciones, los tipos del servidor (`carrera.riasec` sigue llegando), el modo local y los datos de demostración de la orientadora (`CareerRow`, local).
+
+**Pruebas y fixtures**
+- Back `tests/integration/datos/test_conversaciones_contenido.py`: salen `b3-5-p06` y `b3-5-p08` de `CORRECTAS` (el banco de b3-5 se reemplazó entero, como b1-5 en el bloque 1; autorizado por §4).
+- Cualquier otra prueba del back que falle por textos, fichas o tamaño de los bancos del bloque 3: se actualiza el valor (§4).
+- Front: `tests/servidor/catalogo/servidor-catalogo-{vistas,portal,almacen}.test.mjs` se adaptan a carreras sin sellos ni fila «Intereses» y a que `riasec`/`afines` se ignoran en carreras; se agrega un caso que lo comprueba. `tests/servidor/planes/servidor-planes-{contrato,tarjeta}.test.mjs`: salen los casos de `encajeRiasec` y del texto «Cómo encaja contigo»; se comprueba que «Por qué la elijo» ya no lo muestra.
+- Regenerar fixtures si `exportar_fixtures_front.py` exporta alguna descripción cambiada.
+
+**Documentos**
+- `ov_backend/docs/decisiones.md`: sección «Ajuste coherencia-bloque3» con lo de §7 (decididas por el usuario), lo tomado en el ajuste y lo de §8 como «Anotado para otros ajustes».
+- `ov_frontend/AGENTS.md` / `docs/` solo si describen los filtros de carreras por intereses o «Cómo encaja contigo».
+
+### Qué no cambia
+Conjunto `ruta` y sus pruebas; condiciones y mensajes de las reglas y lo que abre cada actividad; ítems de los registros, tarjetas del LLM y huellas; `CONFIGURACION_BATALLAS`; testimonios; backend del catálogo (datos, modelos, filtros y el RIASEC de las carreras); sellos y filtro por letras de ocupaciones; nombres de las secciones del plan; `ma7`, `ma7-b`, `feria` e `investigador`; otros bloques y sus fichas; `b3_5.json`; los demás desafíos del puerto; `SlideNode.tsx` y `ResourceText.tsx` (se comprueban en navegador; si la tabla con primera cabecera vacía no se ve bien, aviso antes de tocarlos).
+
+### Fases
+1. **F1 · Contenido y backend:** copiar los ocho JSON, los campos de b3_7/b3_9/b3_b, `catalogo.json` y `challenges.ts`; cambios de `contenido.py` (script para fichas y bancos, con comprobación de igualdad); prueba de `CORRECTAS`; fixtures. Pruebas: `scripts/verificar_contenido_front.py`, `tests/integration/datos`, `tests/integration/escenarios`, lo de batallas/fichas del back; `npm run test:servidor`. Commit `Ajuste coherencia-bloque3 · F1: contenido del bloque 3, fichas F11–F17 y bancos de sus batallas`.
+2. **F2 · RIASEC fuera de las carreras:** filtros, tarjeta, detalle, plan y pruebas del front. Pruebas: `tests/servidor/catalogo`, `tests/servidor/planes`, `tests/servidor/perfil`, `npm run test:servidor`. Commit.
+3. **F3 · Cierre:** suites completas (back `uv run pytest -n auto -q`; front `npm test`, `build`, `lint`, `check:estructura`); comprobaciones en navegador de §6 con el conjunto `contenido`; `decisiones.md`. Commit. La spec queda en curso.
+
+### Verificación
+Las de §6 de las observaciones, en el navegador del panel con back (`contenido`) y front en `VITE_DATOS=api`: b3-1 (elección, cuatro preguntas, láminas, tabla de b3-1-10 a 375 px), b3-2 con y sin resultado de intereses, b3-3, b3-4 (pregunta dentro del registro, eco del valor de b2-3, dos pasos de cierre, reingreso), b3-6 (seis opciones, tabla con cabecera vacía), b3-8 (eco y pregunta de cinco opciones), b3-10 (dos elecciones, láminas de Alejandra), b3-a abierta con caso resuelto y b3-3, las cuatro batallas con los bancos nuevos y la presentación nueva de Doña Cifra, «Anterior» ida y vuelta en b3-1, b3-4 y b3-10, aperturas tras b3-6 y b3-10, fichas F11–F17, y el catálogo: carreras sin sellos ni «Intereses», detalle de carrera sin letras, ocupaciones intactas, lo mismo en modo lectura del apoderado; el plan sin «Cómo encaja contigo».
+
+### Preguntas abiertas
+Ninguna.

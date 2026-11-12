@@ -8,148 +8,179 @@
   "bloque": 3,
   "orden": 3,
   "obligatoria": true,
-  "requisitos": ["b3-2"],
+  "requisitos": [
+    "b3-2"
+  ],
   "ubicacion": "Puerto, mercado",
   "duracionEstimadaMin": 12,
-  "personajeIds": ["cifra", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe leer un salario (promedio, rango, jóvenes y adultos, por familia y departamento, solo formal), qué familias pagan más al inicio y por qué son excepción, qué es la demanda y cómo leerla, y qué cambia la informalidad.",
+  "personajeIds": [
+    "cifra",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe leer un salario del catálogo (promedio, mínimo y máximo, jóvenes y adultos, por familia y departamento, solo empleo en planilla), distingue lo que ganan las familias mejor pagadas de lo que gana la mayoría, sabe que una carrera muy pedida no asegura empleo y sabe a quiénes no cuentan las cifras de salario.",
   "nodos": [
     {
       "id": "b3-3-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "El mercado del puerto. Pescado, fruta, telas… y ese puesto con cortinas moradas y una fila de jóvenes. Es Doña Cifra. Dice que lee el futuro en los números."
+      "texto": "El mercado. Y ese puesto de cortinas moradas, con fila. Es Doña Cifra: dice que lee el futuro en los números."
     },
     {
       "id": "b3-3-02",
       "tipo": "dialogo",
       "hablanteId": "cifra",
       "expresion": "neutral",
-      "texto": "Acércate, acércate. Tengo aquí las cifras del mercado laboral, las de verdad, del Ministerio. Pero las cifras hay que saber leerlas, y eso solo lo hago yo. Dime, ¿qué carrera piensas estudiar? Te digo cuánto vas a ganar."
+      "texto": "Acércate, acércate. Mis cifras son de verdad: salen de las planillas. Lo que nadie más sabe es leerlas. Dime una carrera y te digo cuánto vas a ganar."
     },
     {
       "id": "b3-3-03",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "pensativo",
-      "texto": "Antes de que te lea nada, juguemos. Sin mirar sus cifras: ¿cuáles crees que son las carreras con más trabajo y las mejor pagadas en el Perú?"
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿Qué le respondes?",
+      "opciones": [
+        {
+          "id": "b3-3-03a",
+          "texto": "Dígame cuál es la que más paga.",
+          "reaccion": [
+            {
+              "id": "b3-3-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "cifra",
+              "texto": "¡Así me gusta! Directo al premio mayor."
+            }
+          ]
+        },
+        {
+          "id": "b3-3-03b",
+          "texto": "Una que me gusta, a ver qué sale.",
+          "reaccion": [
+            {
+              "id": "b3-3-03br",
+              "tipo": "dialogo",
+              "hablanteId": "cifra",
+              "texto": "El gusto no da de comer. Pero veamos."
+            }
+          ]
+        },
+        {
+          "id": "b3-3-03c",
+          "texto": "Prefiero ver los números yo.",
+          "reaccion": [
+            {
+              "id": "b3-3-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "cifra",
+              "texto": "Míralos. Total, sin mí no dicen nada."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "b3-3-04",
-      "tipo": "eleccion",
-      "registrar": false,
-      "enunciado": "¿Cuál de estos grupos crees que tiene las tres carreras MÁS DEMANDADAS?",
-      "nota": "No se guarda. Es para comparar lo que crees con lo que dicen los datos.",
-      "opciones": [
-        {
-          "id": "b3-3-04a",
-          "texto": "Administración, Contabilidad e Ingeniería Industrial.",
-          "reaccion": [
-            {
-              "id": "b3-3-04ar",
-              "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Es lo que suele mostrar Mi Carrera como «más solicitadas». Ojo con una trampa que vamos a ver: muy demandadas y con muchísimos egresados."
-            }
-          ]
-        },
-        {
-          "id": "b3-3-04b",
-          "texto": "Medicina, Derecho y Arquitectura.",
-          "reaccion": [
-            {
-              "id": "b3-3-04br",
-              "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Son de las más conocidas, no de las más solicitadas. Prestigio y demanda no son lo mismo."
-            }
-          ]
-        },
-        {
-          "id": "b3-3-04c",
-          "texto": "Programación, Marketing y Diseño.",
-          "reaccion": [
-            {
-              "id": "b3-3-04cr",
-              "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Crecen rápido, sí. Pero en el ranking de «más solicitadas» todavía mandan las administrativas, que tienen un mar de egresados."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "b3-3-05",
-      "tipo": "eleccion",
-      "registrar": false,
-      "enunciado": "¿Y cuál crees que tiene las familias de carreras MEJOR PAGADAS al inicio?",
-      "opciones": [
-        {
-          "id": "b3-3-05a",
-          "texto": "Medicina, Odontología y Sistemas.",
-          "reaccion": [
-            {
-              "id": "b3-3-05ar",
-              "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Entre las universitarias, cerca. Pero mira la tabla completa: hay técnicas en la misma altura."
-            }
-          ]
-        },
-        {
-          "id": "b3-3-05b",
-          "texto": "Derecho, Administración y Comunicación.",
-          "reaccion": [
-            {
-              "id": "b3-3-05br",
-              "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Son populares, no las mejor pagadas al inicio. Mira la tabla."
-            }
-          ]
-        },
-        {
-          "id": "b3-3-05c",
-          "texto": "Las técnicas de minería y electricidad.",
-          "reaccion": [
-            {
-              "id": "b3-3-05cr",
-              "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Pocos lo adivinan. Sí: lideran entre las técnicas y compiten con varias universitarias."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "b3-3-06",
-      "nuevoMomento": true,
       "tipo": "diapositiva",
-      "etiqueta": "Las cifras de verdad",
-      "presentadorId": "companero",
-      "titulo": "Qué familias pagan más al inicio",
+      "nuevoMomento": true,
+      "etiqueta": "El tablero de Doña Cifra",
+      "titulo": "Lo que ganan al empezar",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Ingreso promedio mensual de egresados jóvenes en planilla, a nivel nacional, con los mismos datos del catálogo (Ponte en Carrera, MTPE):"
+          "texto": "Ingreso promedio mensual de egresados jóvenes con empleo en planilla, en todo el país. Las cinco familias de carreras mejor pagadas de cada lado:"
         },
         {
           "tipo": "tabla",
-          "columnas": ["Universitarias", "S/", "Técnicas", "S/"],
+          "columnas": [
+            "Universidades",
+            "S/",
+            "Institutos y escuelas",
+            "S/"
+          ],
           "filas": [
-            ["Medicina", "7 030", "Minería, metalurgia y petróleo", "6 804"],
-            ["Odontología", "4 732", "Ingeniería eléctrica", "3 757"],
-            ["Obstetricia", "4 480", "Hidrografía", "3 641"],
-            ["Ingeniería de sistemas y cómputo", "4 320", "Suboficiales de las Fuerzas Armadas", "3 561"],
-            ["Ingeniería de telecomunicaciones", "4 227", "Ingeniería industrial", "3 551"]
+            [
+              "Medicina",
+              "7 030",
+              "Minería, metalurgia y petróleo",
+              "6 804"
+            ],
+            [
+              "Odontología",
+              "4 732",
+              "Ingeniería eléctrica",
+              "3 757"
+            ],
+            [
+              "Obstetricia",
+              "4 480",
+              "Hidrografía",
+              "3 641"
+            ],
+            [
+              "Ingeniería de sistemas y cómputo",
+              "4 320",
+              "Suboficiales de las Fuerzas Armadas",
+              "3 561"
+            ],
+            [
+              "Ingeniería de telecomunicaciones",
+              "4 227",
+              "Ingeniería industrial",
+              "3 551"
+            ]
           ]
         },
         {
           "tipo": "destacado",
           "variante": "dato",
-          "texto": "La mitad de las familias universitarias está por debajo de S/ 3 030, y la mitad de las técnicas, por debajo de S/ 2 630. El top es excepción, no promedio. Y Medicina paga más, pero dura siete años: el salario no dice nada del costo de llegar."
+          "texto": "Abajo del tablero, en letra chica: la mitad de las familias universitarias está por debajo de S/ 3 100, y la mitad de las de institutos, por debajo de S/ 2 600."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Catálogo de la plataforma, con datos de Ponte en Carrera (MTPE y Minedu), consultados en 2026."
+        }
+      ]
+    },
+    {
+      "id": "b3-3-05",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "expresion": "neutral",
+      "texto": "¿Ves? Medicina, siete mil. Estudia Medicina y ganas siete mil. ¿Para qué más lectura?"
+    },
+    {
+      "id": "b3-3-06",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Lumi te habla bajito: «¿Qué se está saltando?»",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que es un promedio: junta a quien gana tres mil con quien gana nueve mil.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Siete mil es el centro de mucha gente distinta, no lo que gana cada uno."
+        },
+        {
+          "id": "b",
+          "texto": "Que la cifra es vieja: hoy Medicina ya paga bastante menos que eso.",
+          "correcta": false,
+          "retroalimentacion": "Nada en el tablero dice eso. El problema no es la fecha: es cómo lo lee."
+        },
+        {
+          "id": "c",
+          "texto": "Que es solo de Lima: en las demás regiones nadie llega a esa cifra.",
+          "correcta": false,
+          "retroalimentacion": "El tablero es de todo el país. Por región cambia, pero no es eso lo que se saltó."
+        }
+      ],
+      "explicacion": "Un promedio no es un destino. En Medicina, entre los jóvenes, hay quien gana cerca de S/ 3 200 y quien gana cerca de S/ 9 800: el promedio queda en medio de los dos.",
+      "pistas": [
+        {
+          "id": "b3-3-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en la palabra que está en la primera línea del tablero, antes de la tabla."
         }
       ]
     },
@@ -157,155 +188,216 @@
       "id": "b3-3-07",
       "tipo": "dialogo",
       "hablanteId": "cifra",
-      "expresion": "neutral",
-      "texto": "¿Ves? Medicina, siete mil. Ya te lo decía yo: estudia Medicina y ganas siete mil. ¿Para qué más lectura?"
+      "texto": "Bueno, bueno. Entonces mira lo de arriba de cada columna. Eso es lo que gana cualquiera que estudia."
     },
     {
       "id": "b3-3-08",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Cómo leer un salario (lo que Doña Cifra se salta)",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué dice el tablero de quien estudia una carrera universitaria cualquiera?",
+      "opciones": [
         {
-          "tipo": "lista",
-          "items": [
-            "Promedio, mínimo y máximo. El promedio es el centro; el rango muestra la dispersión. En casi todas las familias, el ingreso de quien empieza está mucho más cerca del mínimo.",
-            "Jóvenes y adultos. La diferencia entre los dos es el crecimiento típico de la carrera: en Geología, de S/ 4 200 a S/ 10 800; en Obstetricia, de S/ 4 500 a S/ 5 300.",
-            "Por familia, no por carrera. Son datos de la familia de carreras y el tipo de institución, no de una carrera exacta.",
-            "Por departamento. Lima no es el Perú: una misma familia paga distinto en Arequipa o en Loreto.",
-            "Solo empleo formal. Son ingresos de trabajadores en planilla. Los de quien trabaja sin contrato no están."
-          ]
+          "id": "a",
+          "texto": "Que ganará por lo menos lo del quinto puesto.",
+          "correcta": false,
+          "retroalimentacion": "Esos cinco son los que más pagan. Debajo hay más de sesenta familias."
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Un salario promedio es un dato de otras personas. Lo que te toque dependerá de dónde, cómo y cuánto te preparas."
+          "id": "b",
+          "texto": "Que ganará más que cualquier técnico.",
+          "correcta": false,
+          "retroalimentacion": "Mira la otra columna: minería, de instituto, supera a casi todas las universitarias."
+        },
+        {
+          "id": "c",
+          "texto": "Que lo más probable es estar cerca de tres mil.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Lo dice la letra chica: la mitad está por debajo de S/ 3 100."
+        }
+      ],
+      "explicacion": "Lo de arriba del tablero es la excepción. Para saber qué es lo común se mira dónde queda la mitad, no quién va primero.",
+      "pistas": [
+        {
+          "id": "b3-3-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "El tablero tiene una línea en letra chica que Doña Cifra nunca lee en voz alta."
         }
       ]
     },
     {
       "id": "b3-3-09",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Demanda e informalidad",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "La demanda es cuántos puestos busca el mercado frente a cuántas personas egresan. Mi Carrera (MTPE) muestra las carreras «más solicitadas». Al leerla: una demanda alta con muchísimos egresados significa competencia, no empleo asegurado (Contabilidad y Administración son los ejemplos clásicos); la demanda de hoy no es la de dentro de cinco años; es por región; y demanda no es salario."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "dato",
-          "texto": "En el Perú, cerca de siete de cada diez personas que trabajan tienen empleo informal y, entre los de 14 a 24 años, más de ocho de cada diez (INEI, 2025–2026). Informal es sin seguridad social; suele venir sin contrato, sin pensión y sin vacaciones pagadas. Los salarios que ves son los de la minoría formal, y un título que te abre la puerta al empleo formal vale más que la diferencia de sueldo que muestre."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Catálogo de la plataforma con datos de Ponte en Carrera (MTPE). Mi Carrera (MTPE). INEI (2026), mercado laboral, abril 2025–marzo 2026.",
-          "url": "https://micarrera.trabajo.gob.pe/"
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "nuevoMomento": true,
+      "texto": "Está bien, deja los sueldos. Otra lectura: Administración. De las más pedidas por las empresas, año tras año. Trabajo seguro."
     },
     {
       "id": "b3-3-10",
-      "tipo": "dialogo",
-      "hablanteId": "cifra",
-      "expresion": "neutral",
-      "texto": "Mmm. Tú lees demasiado. A ver si tanto leer te sirve: te hago dos preguntas de mi puesto."
-    },
-    {
-      "id": "b3-3-11",
       "tipo": "pregunta",
-      "hablanteId": "cifra",
+      "hablanteId": "companero",
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una chica me dijo: «Voy a estudiar Contabilidad porque es la más solicitada; trabajo seguro». ¿Qué le falta leer?",
+      "enunciado": "¿Qué le falta leer?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Nada: si es la más solicitada, hay trabajo para todos.",
+          "texto": "Que las empresas ya dejaron de pedirla.",
           "correcta": false,
-          "retroalimentacion": "Es lo que Doña Cifra vende. Pero «más solicitada» va junto con «más egresados»: eso es competencia."
+          "retroalimentacion": "La siguen pidiendo, y mucho. El problema está en otro lado."
         },
         {
           "id": "b",
-          "texto": "Que una demanda alta con muchísimos egresados significa competencia, no empleo asegurado.",
+          "texto": "Que también es la que más gente estudia.",
           "correcta": true,
-          "retroalimentacion": "Exacto. Y además: la demanda de hoy no es la de dentro de cinco años, cuando egrese."
+          "retroalimentacion": "Sí. Muchos puestos y muchísima gente que los busca: eso es competencia."
         },
         {
           "id": "c",
-          "texto": "Que Contabilidad no tiene demanda.",
+          "texto": "Nada: la más pedida es la mejor pagada.",
           "correcta": false,
-          "retroalimentacion": "Sí tiene. El problema no es la demanda: es cuánta gente compite por ella."
+          "retroalimentacion": "Pedida no es bien pagada. Administración no está entre las cinco del tablero."
         }
       ],
-      "explicacion": "La demanda se lee contra la oferta de egresados, en el tiempo y por región. Una carrera «solicitada» con un mar de egresados no asegura empleo; hay que mirar la tendencia y la competencia.",
+      "explicacion": "Que una carrera sea muy pedida dice cuántos puestos hay, no cuánta gente los busca. Las dos cosas se leen juntas.",
       "pistas": [
         {
-          "id": "b3-3-11p1",
+          "id": "b3-3-10p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Busca en la tarjeta de demanda el ejemplo clásico. Dice Contabilidad con nombre y apellido."
+          "texto": "Piensa en una feria con cien puestos. ¿Da igual si llegan cien personas o mil?"
         }
       ]
+    },
+    {
+      "id": "b3-3-11",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "texto": "Mmm. Tú lees demasiado. Una más: estos sueldos son los de todos los que estudiaron. De todos."
     },
     {
       "id": "b3-3-12",
       "tipo": "pregunta",
-      "hablanteId": "cifra",
+      "hablanteId": "companero",
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Otro me preguntó: «Si más de ocho de cada diez jóvenes que trabajan lo hacen en la informalidad, ¿para qué estudiar, si igual voy a ganar menos de lo que dice la tabla?». ¿Qué le responderías?",
+      "enunciado": "¿Quiénes no están en el tablero?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Que tiene razón: con tanta informalidad, estudiar no cambia nada.",
+          "texto": "Quienes estudiaron en un instituto.",
           "correcta": false,
-          "retroalimentacion": "Al revés. La informalidad es justamente la razón por la que un título pesa: abre la puerta al empleo formal."
+          "retroalimentacion": "Sí están: es la columna de la derecha."
         },
         {
           "id": "b",
-          "texto": "Que las tablas muestran a la minoría formal, y un título que te abre esa puerta vale más que la diferencia de sueldo que muestre.",
-          "correcta": true,
-          "retroalimentacion": "Eso es. Formal significa contrato, seguro, pensión y vacaciones; la cifra de salario es solo una parte de lo que se gana."
+          "texto": "Quienes trabajan fuera de Lima.",
+          "correcta": false,
+          "retroalimentacion": "Sí están: el tablero es de todo el país."
         },
         {
           "id": "c",
-          "texto": "Que la informalidad es un invento de las estadísticas.",
-          "correcta": false,
-          "retroalimentacion": "Es un dato del INEI, y es de los más sólidos que hay sobre el trabajo en el Perú."
+          "texto": "Quienes trabajan sin estar en planilla.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Ella misma lo dijo al empezar: sus cifras salen de las planillas."
         }
       ],
-      "explicacion": "Las tablas de salario son de la minoría formal. Para tu decisión implica dos cosas: no esperar ese sueldo sin empleo formal, y valorar lo que te lleva a él.",
+      "explicacion": "Los sueldos del tablero son de quienes tienen empleo en planilla. Quien trabaja sin contrato o por su cuenta no está contado, y en el Perú es la mayoría de quienes trabajan.",
       "pistas": [
         {
           "id": "b3-3-12p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "La tarjeta de informalidad termina diciendo qué vale más que la diferencia de sueldo. Esa es la respuesta."
+          "texto": "Acuérdate de dónde dijo Doña Cifra que salen sus cifras."
         }
       ]
     },
     {
       "id": "b3-3-13",
+      "tipo": "diapositiva",
       "nuevoMomento": true,
-      "tipo": "dialogo",
-      "hablanteId": "cifra",
-      "expresion": "neutral",
-      "texto": "Bah. Si todos leyeran así, me quedo sin clientes. Pero no cantes victoria: en la plaza del mercado sigo teniendo mi puesto, y ahí hago las preguntas yo."
+      "etiqueta": "Lo que Doña Cifra se salta",
+      "titulo": "Cómo se lee un salario",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Promedio, mínimo y máximo van juntos. El mínimo y el máximo dejan fuera los extremos: uno de cada diez gana menos que el mínimo y uno de cada diez, más que el máximo.",
+            "Jóvenes y adultos. «Jóvenes» son egresados recientes, de 18 a 29 años. La diferencia con los adultos muestra cuánto suele crecer el ingreso: en Geología, de S/ 4 200 a S/ 10 800; en Obstetricia, de S/ 4 500 a S/ 5 300.",
+            "Por familia, no por carrera. El dato es de la familia de carreras y del tipo de institución.",
+            "Por departamento. Una misma familia paga distinto en Arequipa o en Loreto.",
+            "Solo empleo en planilla. Quien trabaja sin contrato o por su cuenta no está contado."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Un salario promedio es un dato de otras personas. Sirve para ubicarte, no para saber cuánto vas a ganar tú."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Catálogo de la plataforma, con datos de Ponte en Carrera (MTPE y Minedu). Mínimo y máximo: percentiles 10 y 90, según la nota técnica de Ponte en Carrera.",
+          "url": "https://ponteencarrera.minedu.gob.pe/pec-portal-web/assets/archivos/cuanto-ganan-tecnicos.pdf"
+        }
+      ]
     },
     {
       "id": "b3-3-14",
+      "tipo": "diapositiva",
+      "etiqueta": "Lo que Doña Cifra se salta",
+      "titulo": "Carreras pedidas y empleo sin planilla",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Cada año, el Ministerio de Trabajo les pregunta a las empresas cuánta gente piensan contratar y de qué carreras. De ahí salen las listas de «carreras más demandadas». Para leerlas:"
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Muy pedida no es empleo seguro. Administración está entre las primeras de la lista casi todos los años, y también es la carrera universitaria con más estudiantes.",
+            "La lista cambia de un año a otro y de una región a otra. La de hoy no es la de cuando egreses.",
+            "Pedida no es bien pagada."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "En el Perú, cerca de siete de cada diez personas que trabajan tienen un empleo informal: sin seguridad social y, por lo general, sin contrato ni vacaciones pagadas. Entre quienes tienen de 14 a 24 años, son más de ocho de cada diez. Los sueldos del tablero son de quienes consiguieron empleo en planilla."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MTPE, Encuesta de Demanda Ocupacional. Sunedu, en Gestión (2023). INEI (2026), indicadores del mercado laboral, abril 2025–marzo 2026.",
+          "url": "https://www.inei.gob.pe/media/MenuRecursivo/boletines/empleo-nacional-i-trimestre-2026.pdf"
+        }
+      ]
+    },
+    {
+      "id": "b3-3-15",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "nuevoMomento": true,
+      "expresion": "neutral",
+      "texto": "Bah. Si todos leyeran así, me quedo sin clientes. Mi puesto de la plaza sigue abierto, por si te animas."
+    },
+    {
+      "id": "b3-3-16",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Eso suena a desafío. Antes de ir, un registro corto: con tus favoritos marcados, quiero que me digas qué dato del mercado te sorprendió. La ficha de salarios, demanda e informalidad ya está en tu mochila."
+      "texto": "Lo de leer salarios te lo dejé en la mochila: «Salarios, demanda e informalidad»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un salario promedio es un dato de otras personas. Doña Cifra te espera en la plaza del mercado."
+    "mensajeFin": "Un salario promedio es un dato de otras personas. Sirve para ubicarte, no para saber cuánto vas a ganar tú."
   },
-  "mapa": { "x": 550, "y": 590, "icono": "informativa" }
+  "mapa": {
+    "x": 550,
+    "y": 590,
+    "icono": "informativa"
+  }
 }

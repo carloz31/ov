@@ -8,24 +8,29 @@
   "bloque": 3,
   "orden": 2,
   "obligatoria": true,
-  "requisitos": ["b3-1"],
+  "requisitos": [
+    "b3-1"
+  ],
   "ubicacion": "Puerto, sala del atlas en la capitanía",
   "duracionEstimadaMin": 10,
-  "personajeIds": ["practico", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué dato de una ficha del catálogo responde qué pregunta (carrera, ocupación, institución), cómo leerla sin engañarse, y sale invitado a marcar varios favoritos, mejor si alguno queda fuera de su tipo de interés principal.",
+  "personajeIds": [
+    "practico",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué pregunta responde el detalle de una carrera, de una ocupación y de una institución en el catálogo, lee un ingreso promedio junto con su mínimo y su máximo sabiendo que es de la familia de carreras, y sabe usar su código de intereses para llegar de una ocupación a las carreras que llevan a ella.",
   "nodos": [
     {
       "id": "b3-2-01",
       "tipo": "dialogo",
       "hablanteId": "practico",
       "expresion": "neutral",
-      "texto": "Antes de que sigan, pasen a la sala del atlas. Aquí la capitanía guarda las fichas de todo lo que se puede estudiar y hacer: carreras, ocupaciones e instituciones. Nadie sale del puerto sin haberlo abierto."
+      "texto": "La sala del atlas. Tres estantes: carreras, ocupaciones e instituciones. Cada hoja responde una pregunta distinta, y casi todos abren la que no es."
     },
     {
       "id": "b3-2-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Pensemos en una ocupación que te llame la atención, la que sea. Si ya abriste tu página de intereses, Sol te dejó pistas; si no, vale la primera que se te ocurra.",
+      "texto": "Piensa en una ocupación que te llame la atención, la que sea. Si ya abriste tu página de intereses, Sol te dejó pistas.",
       "eco": "b3-2-ref-codigo"
     },
     {
@@ -33,17 +38,16 @@
       "tipo": "eleccion",
       "registrar": false,
       "enunciado": "De esa ocupación, ¿qué es lo que menos sabes?",
-      "nota": "No se guarda. Sirve para ver qué ficha abrir primero.",
       "opciones": [
         {
           "id": "b3-2-03a",
-          "texto": "Qué hace exactamente quien la ejerce en un día normal.",
+          "texto": "Qué hace quien la ejerce en un día normal.",
           "reaccion": [
             {
               "id": "b3-2-03ar",
               "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Es lo más común y lo más importante. Eso está en la ficha de la ocupación: «qué hacen y dónde trabajan». Muchas suenan a una cosa y son otra."
+              "hablanteId": "practico",
+              "texto": "Eso está en la hoja de la ocupación, donde dice «Qué hacen»."
             }
           ]
         },
@@ -54,8 +58,8 @@
             {
               "id": "b3-2-03br",
               "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "La ficha de la ocupación dice qué carreras llevan ahí, y la ficha de cada carrera, su tipo y su duración."
+              "hablanteId": "practico",
+              "texto": "En la misma hoja, más abajo: «Cómo se llega aquí»."
             }
           ]
         },
@@ -66,8 +70,8 @@
             {
               "id": "b3-2-03cr",
               "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Eso está en la ficha de la carrera: ingresos de su familia por lugar, y la lista de instituciones que la ofrecen."
+              "hablanteId": "practico",
+              "texto": "Eso ya es la hoja de la carrera: «Cuánto ganan sus egresados» y «Dónde estudiarla»."
             }
           ]
         }
@@ -75,71 +79,86 @@
     },
     {
       "id": "b3-2-04",
+      "tipo": "dialogo",
+      "hablanteId": "practico",
       "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Tres fichas, tres preguntas",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "La ficha de una carrera responde qué estudiarías; la de una ocupación, qué harías; la de una institución, dónde. Saber leerlas evita marcar «me interesa» solo por el nombre."
-        },
-        {
-          "tipo": "tabla",
-          "titulo": "La ficha de una carrera",
-          "columnas": ["Dato", "Qué pregunta responde"],
-          "filas": [
-            ["Tipo, área y familia", "¿Qué ruta es y con qué se parece?"],
-            ["Duración", "¿Cuánto tiempo?"],
-            ["Sellos de interés (R, I, A, S, E, C)", "¿Se parece a mi perfil?"],
-            ["De qué trata y dónde podrías trabajar", "¿Qué haría después?"],
-            ["Cuánto ganan sus egresados (de la familia de carreras, jóvenes y adultos, por departamento)", "¿Qué rango de ingreso es realista?"],
-            ["Ocupaciones a las que conduce", "¿En qué se convierte?"],
-            ["Dónde estudiarla", "¿Dónde y con qué resultado?"]
-          ]
-        }
-      ]
+      "texto": "Yo una vez me embarqué por el nombre: «La Golondrina». Era un carguero de guano. Desde entonces leo qué lleva el barco antes que cómo se llama. Mira lo que pasó esta semana en la sala."
     },
     {
       "id": "b3-2-05",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Ocupaciones e instituciones",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "practico",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera quiere saber qué haría en un día cualquiera trabajando de topógrafa. ¿Qué abre?",
+      "opciones": [
         {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Ficha de una ocupación",
-            "texto": "Qué hacen y dónde trabajan. Su perfil de intereses (seis puntajes, medidos en gente que la ejerce; si ya tienes tu resultado, ves el tuyo al lado). A qué tipo de persona le suele atraer. Conocimientos y habilidades. Carreras que llevan aquí."
-          },
-          "derecha": {
-            "titulo": "Ficha de una institución",
-            "texto": "Tipo, gestión (pública o privada) y ubicación. Si está licenciada. Carreras que ofrece, con el ingreso promedio de sus egresados por familia. Su página web, donde están los costos y la admisión, que el catálogo no tiene."
-          }
+          "id": "a",
+          "texto": "La hoja de la carrera, en «De qué trata».",
+          "correcta": false,
+          "retroalimentacion": "Ahí dice qué se estudia, no qué se hace después."
         },
         {
-          "tipo": "pasos",
-          "titulo": "Cómo usarla sin engañarte",
-          "pasos": [
-            { "titulo": "Lee primero «qué hacen», no el nombre", "texto": "Muchas carreras suenan a una cosa y son otra." },
-            { "titulo": "Compara el rango, no solo el promedio", "texto": "Un promedio de S/ 3 000 con un mínimo de S/ 1 200 dice que la mitad gana menos de eso al empezar." },
-            { "titulo": "Si el sello no coincide con tu perfil, no descartes", "texto": "Pregúntate qué te atrajo y busca una ocupación afín que sí coincida." },
-            { "titulo": "Marca «me interesa» cuando leíste la ficha completa", "texto": "Los favoritos son la base de tus planes." },
-            { "titulo": "Busca al menos una opción fuera de tu tipo principal", "texto": "El contraste enseña más que la coincidencia." }
-          ]
+          "id": "b",
+          "texto": "La hoja de la ocupación, en «Qué hacen».",
+          "correcta": true,
+          "retroalimentacion": "Sí. Las tareas del día a día están ahí."
         },
         {
-          "tipo": "fuente",
-          "texto": "Catálogo de la plataforma: Ponte en Carrera (MTPE), clasificador CINE-Perú y ocupaciones de Mi Próximo Paso (O*NET).",
-          "url": "https://www.miproximopaso.org"
+          "id": "c",
+          "texto": "La hoja de la carrera, en «Dónde podrías trabajar».",
+          "correcta": false,
+          "retroalimentacion": "Dice lugares, no tareas."
+        }
+      ],
+      "explicacion": "La hoja de una carrera dice qué estudiarías; la de una ocupación, qué harías. Para saber cómo es un día de trabajo se abre la ocupación.",
+      "pistas": [
+        {
+          "id": "b3-2-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Topógrafa es lo que sería, no lo que estudiaría. ¿En qué estante está eso?"
         }
       ]
     },
     {
       "id": "b3-2-06",
-      "tipo": "dialogo",
+      "tipo": "pregunta",
       "hablanteId": "practico",
-      "texto": "Dos cosas que veo todos los días en esta sala, para que no te pasen a ti."
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Un viajero lee en la hoja de una carrera: jóvenes, promedio S/ 2 800, mínimo S/ 1 100, máximo S/ 6 500. Dice: «Al salir voy a ganar 2 800». ¿Qué le dices?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que va bien: el promedio es lo que gana la mayoría.",
+          "correcta": false,
+          "retroalimentacion": "El promedio junta a quienes ganan poco con quienes ganan mucho. No dice cuánto gana la mayoría."
+        },
+        {
+          "id": "b",
+          "texto": "Que mire el de adultos: ese es el que cuenta.",
+          "correcta": false,
+          "retroalimentacion": "Ese sirve para pensar a varios años, no el primero."
+        },
+        {
+          "id": "c",
+          "texto": "Que mire el mínimo: hay quien empieza cerca de ahí.",
+          "correcta": true,
+          "retroalimentacion": "Sí. El promedio solo no alcanza para pensar el primer año."
+        }
+      ],
+      "explicacion": "Promedio, mínimo y máximo se leen juntos. El de jóvenes sirve para pensar los primeros años; el de adultos, para más adelante.",
+      "pistas": [
+        {
+          "id": "b3-2-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "La hoja trae tres números, y él solo leyó uno."
+        }
+      ]
     },
     {
       "id": "b3-2-07",
@@ -148,34 +167,34 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un viajero ve en una ficha: ingreso promedio de jóvenes S/ 2 800, mínimo S/ 1 100, máximo S/ 6 500. Dice: «Al salir voy a ganar 2 800». ¿Qué le dirías?",
+      "enunciado": "Otro compara dos carreras de la misma familia y ve exactamente los mismos ingresos en las dos. ¿Qué pasó?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Que tiene razón: el promedio es lo que gana la gente.",
-          "correcta": false,
-          "retroalimentacion": "El promedio es el centro de muchas personas con distinta experiencia. Quien recién empieza suele estar más cerca del mínimo."
+          "texto": "El ingreso es de la familia, no de cada carrera.",
+          "correcta": true,
+          "retroalimentacion": "Sí. La hoja lo avisa: son promedios de la familia de carreras."
         },
         {
           "id": "b",
-          "texto": "Que mire el rango: con un mínimo de S/ 1 100, muchos empiezan bastante por debajo del promedio.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. El rango dice más que el promedio para pensar el primer año."
+          "texto": "El atlas se equivocó al copiar una de las dos.",
+          "correcta": false,
+          "retroalimentacion": "No es un error: las dos hojas muestran el mismo dato."
         },
         {
           "id": "c",
-          "texto": "Que el máximo de S/ 6 500 es lo que debería esperar.",
+          "texto": "Las dos carreras pagan exactamente lo mismo.",
           "correcta": false,
-          "retroalimentacion": "El máximo es de una minoría con años de experiencia. Esperarlo al salir es prepararse para una decepción."
+          "retroalimentacion": "Eso no se puede saber con este dato, que junta a toda la familia."
         }
       ],
-      "explicacion": "Promedio, mínimo y máximo van juntos: el rango de jóvenes sirve para pensar el primer año y el de adultos, para pensar a diez años. Un solo número engaña.",
+      "explicacion": "Los ingresos del atlas son de la familia de carreras y del tipo de institución, no de una carrera exacta. Sirven para ubicarse, no para comparar dos carreras hermanas.",
       "pistas": [
         {
           "id": "b3-2-07p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Segundo paso de la lista: «compara el rango, no solo el promedio»."
+          "texto": "Fíjate en qué tienen en común las dos carreras."
         }
       ]
     },
@@ -186,60 +205,119 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una viajera con código «SAE» encuentra una carrera que le atrae mucho, pero sus sellos son «R» e «I». ¿Qué conviene hacer?",
+      "enunciado": "Una viajera con código «SAE» quiere usar sus letras en el atlas. ¿Por dónde empieza?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Descartarla: su perfil no coincide.",
+          "texto": "Por las carreras: busca las que suenen a trabajar con gente.",
           "correcta": false,
-          "retroalimentacion": "El sello no es un veto. Que le atraiga es un dato que vale tanto como el código."
+          "retroalimentacion": "El nombre engaña, y las letras se midieron en ocupaciones."
         },
         {
           "id": "b",
-          "texto": "Marcarla igual, sin leer más: si le atrae, basta.",
-          "correcta": false,
-          "retroalimentacion": "Casi. Antes de marcarla conviene preguntarse qué le atrajo y leer la ficha completa."
+          "texto": "Por las ocupaciones: filtra por letras y abre «Cómo se llega aquí».",
+          "correcta": true,
+          "retroalimentacion": "Sí. De la ocupación se pasa a la familia y a las carreras que llevan a ella."
         },
         {
           "id": "c",
-          "texto": "Preguntarse qué le atrajo, leer «qué hacen» y buscar también una ocupación afín a su perfil para comparar.",
-          "correcta": true,
-          "retroalimentacion": "Eso es. La discrepancia no cierra la puerta: es un motivo para leer con más cuidado y comparar."
+          "texto": "Por su página de intereses: ahí ya está la carrera que le toca.",
+          "correcta": false,
+          "retroalimentacion": "Muestra ocupaciones parecidas a su perfil; no asigna una carrera."
         }
       ],
-      "explicacion": "Cuando el sello no coincide con tu perfil, la ficha no decide por ti. Decide tú, después de leer qué se hace en esa carrera y de compararla con una opción afín. Y de paso ya tienes tu «opción fuera de tu tipo».",
+      "explicacion": "Las letras son de las ocupaciones. El camino es: ocupaciones que se parecen a ti, «Cómo se llega aquí» y, de ahí, las carreras. Las carreras se buscan por tipo, área y familia.",
       "pistas": [
         {
           "id": "b3-2-08p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Tercer paso de la lista: ¿qué dice cuando el sello no coincide?"
+          "texto": "Acuérdate de dónde salió su código: de comparar su perfil con gente que ya trabaja."
         }
       ]
     },
     {
       "id": "b3-2-09",
+      "tipo": "diapositiva",
       "nuevoMomento": true,
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "Ahora te toca a ti, por tu cuenta y cuando quieras: entra al catálogo y marca con «me interesa» al menos tres ocupaciones o carreras. Una de ellas fuera de tu tipo de interés principal; si todavía no abriste tu página de intereses, que sean de al menos dos tipos distintos."
+      "presentadorId": "practico",
+      "titulo": "Tres hojas, tres preguntas",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Hoja",
+            "Responde",
+            "Lo que trae"
+          ],
+          "filas": [
+            [
+              "Carrera",
+              "¿Qué estudiaría?",
+              "Tipo, área, familia y duración. De qué trata. Dónde podrías trabajar. Cuánto ganan sus egresados. Dónde estudiarla."
+            ],
+            [
+              "Ocupación",
+              "¿Qué haría?",
+              "Qué hacen. Afinidad contigo. A qué tipo de persona le suele atraer. Conocimientos que usan. Aptitudes que necesitan. Cómo se llega aquí."
+            ],
+            [
+              "Institución",
+              "¿Dónde?",
+              "Dónde queda. Las carreras que ofrece. Costos y admisión: un enlace a su página oficial, porque el atlas no los trae."
+            ]
+          ]
+        }
+      ]
     },
     {
       "id": "b3-2-10",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "No tienes que justificar nada todavía: las razones las vas a escribir más adelante, cuando tengas con qué. Antes de bajar al mercado, la siguiente parada, te conviene marcar algunos favoritos: así vas a tener con qué mirar los números."
+      "tipo": "diapositiva",
+      "presentadorId": "practico",
+      "titulo": "Para leer una hoja sin engañarte",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Lee «Qué hacen» antes que el nombre. Muchas ocupaciones suenan a una cosa y son otra.",
+            "Mira el promedio junto con el mínimo y el máximo. Es de la familia de carreras y de empleos en planilla, no de esa carrera exacta.",
+            "Si una ocupación te atrae y su afinidad contigo es baja, no la descartes: pregúntate qué te atrajo.",
+            "Guarda en favoritos lo que leíste entero. De tus favoritos salen tus planes."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La hoja dice qué es una carrera o una ocupación. Si te conviene, lo dices tú después de leerla entera."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Catálogo de la plataforma: Ponte en Carrera (MTPE), clasificador CINE-Perú y ocupaciones de Mi Próximo Paso (O*NET).",
+          "url": "https://www.miproximopaso.org"
+        }
+      ]
     },
     {
       "id": "b3-2-11",
       "tipo": "dialogo",
       "hablanteId": "practico",
-      "texto": "La primera vez que abras el atlas, Lumi te mostrará cómo leer una ficha. Y la guía de esta sala queda en tu mochila."
+      "nuevoMomento": true,
+      "texto": "El atlas queda abierto. Sube cuando quieras."
+    },
+    {
+      "id": "b3-2-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Cómo se lee cada hoja te lo dejé en la mochila: «Cómo leer una ficha del catálogo». Si alguna te llamó, guárdala en favoritos; y vale abrir también alguna que no esperabas. En tu plan se abrió «Qué tanto la conozco»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El catálogo está abierto. Marca los favoritos que te llamen la atención, mejor si alguno queda fuera de tu tipo principal: son la base de tus planes."
+    "mensajeFin": "El atlas está abierto. Lo que guardes en favoritos es de donde salen tus planes."
   },
-  "mapa": { "x": 650, "y": 600, "icono": "informativa" }
+  "mapa": {
+    "x": 650,
+    "y": 600,
+    "icono": "informativa"
+  }
 }

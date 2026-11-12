@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b3-a",
   "codigo": "b3-a",
   "tipo": "registro",
@@ -10,10 +9,10 @@
   "orden": 11,
   "obligatoria": false,
   "requisitos": [
-    "b3-10"
+    "b3-3"
   ],
   "ubicacion": "Puerto, el malecón de noche",
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "companero"
   ],
@@ -25,20 +24,27 @@
       "id": "b3-a-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Antes de subir al acantilado, si escuchaste alguna voz de tu mochila, la del cocinero o cualquiera que hayas abierto en la Central, quiero que la pongas al lado de tu propia decisión."
+      "texto": "Ya tienes al menos una voz en la mochila. Antes de guardarla, ponla un rato al lado de la tuya."
     },
     {
       "id": "b3-a-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Acuérdate de las cuatro preguntas de Alejandra: qué decidió y qué le pasó, si se parece a ti, el momento del giro, y con qué te quedas. Esto lo lee tu orientadora y va a tu informe de viaje."
+      "texto": "Conocí a un viajero que escuchó a una enfermera contar su camino. Él no quería ser enfermero. Pero ella había trabajado de día y estudiado de noche, y a él le iba a tocar lo mismo. Se parecían en eso y en nada más. Con eso le bastó."
     },
     {
       "id": "b3-a-comparo",
       "tipo": "consigna",
       "hablanteId": "companero",
       "item": "b3-a-comparo"
+    },
+    {
+      "id": "b3-a-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Una historia no te dice qué hacer. Te muestra por dónde pasó otra persona."
     }
   ],
   "recompensa": {
@@ -48,6 +54,6 @@
     "x": 180,
     "y": 500,
     "icono": "registro",
-    "origen": "b3-10"
+    "origen": "b3-3"
   }
 }

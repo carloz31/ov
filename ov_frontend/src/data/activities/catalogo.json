@@ -161,7 +161,7 @@
       "id": "practico",
       "nombre": "Ulises",
       "rol": "npc",
-      "descripcion": "Práctico del puerto: guía a cada barco por el canal correcto. Conoce los cinco embarcaderos (las cinco rutas) y la sala del atlas de la capitanía. Marinero de pocas palabras, muy concreto.",
+      "descripcion": "Práctico del puerto: guía a cada barco por el canal correcto. Conoce los cinco embarcaderos (las cinco rutas) y la sala del atlas de la capitanía. Empezó cargando redes y se hizo práctico estudiando de noche. Marinero de pocas palabras, muy concreto.",
       "ubicacion": "Puerto, capitanía",
       "avatarUrl": "/images/personajes/practico.png",
       "expresiones": {
@@ -207,7 +207,7 @@
       "id": "alejandra",
       "nombre": "Alejandra",
       "rol": "npc",
-      "descripcion": "Sobrina de Mara, la del caso del molino (b0-5). Dejó Contabilidad en segundo ciclo y llega a la isla en el barco de la tarde. Habla de su giro sin dramatizarlo: se arrepiente de cómo decidió, no de haberlo intentado.",
+      "descripcion": "Sobrina de Mara, la del caso del molino (b0-5). Dejó Contabilidad en segundo ciclo y llega a la isla en el barco de la tarde. Habla de su giro sin dramatizarlo: se arrepiente de cómo decidió, no de haberlo intentado. Esta vez averiguó antes de elegir, y su papá la acompañó.",
       "ubicacion": "Puerto, malecón",
       "avatarUrl": "/images/personajes/alejandra.png",
       "expresiones": {

@@ -8,17 +8,22 @@
   "bloque": 3,
   "orden": 6,
   "obligatoria": true,
-  "requisitos": ["b3-5"],
+  "requisitos": [
+    "b3-5"
+  ],
   "ubicacion": "Puerto, feria del malecón",
   "duracionEstimadaMin": 12,
-  "personajeIds": ["feriante", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante distingue licenciamiento de acreditación, sabe quién los otorga y cómo verificarlos, conoce las modalidades de admisión de universidades, institutos y escuelas de FF. AA. y PNP, y detecta señales de alerta en la publicidad.",
+  "personajeIds": [
+    "feriante",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante distingue la licencia de la acreditación, sabe quién da cada una y dónde se comprueba, sabe que con los institutos la licencia todavía está en marcha y qué preguntar entonces, reconoce señales de alerta en la publicidad de una institución y sabe que la admisión tiene modalidades y reglas publicadas.",
   "nodos": [
     {
       "id": "b3-6-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "En el malecón hay una feria de instituciones. Banderines, música, chicos con bolsas llenas de folletos. Y un stand enorme, dorado, con un señor de terno que grita más que Aurelio."
+      "texto": "En el malecón hay feria. Banderines, música, chicos con bolsas llenas de folletos. Y un stand enorme, dorado, con un señor de terno que grita más que todos."
     },
     {
       "id": "b3-6-02",
@@ -35,7 +40,7 @@
       "opciones": [
         {
           "id": "b3-6-03a",
-          "texto": "¿Está licenciada por la Sunedu?",
+          "texto": "¿Tiene permiso para funcionar?",
           "reaccion": [
             {
               "id": "b3-6-03ar",
@@ -61,7 +66,7 @@
         },
         {
           "id": "b3-6-03c",
-          "texto": "¿Dónde puedo verificar todo eso?",
+          "texto": "¿Dónde puedo comprobar todo eso?",
           "reaccion": [
             {
               "id": "b3-6-03cr",
@@ -76,269 +81,333 @@
     },
     {
       "id": "b3-6-04",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "pensativo",
-      "texto": "Tres preguntas, tres respuestas vagas. Antes de que firmes nada en este malecón, necesitas dos palabras que no son lo mismo y que el Faro Dorado mezcla a propósito."
-    },
-    {
-      "id": "b3-6-05",
-      "nuevoMomento": true,
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Licenciamiento y acreditación",
+      "nuevoMomento": true,
+      "etiqueta": "El folleto del Faro Dorado",
+      "titulo": "Universidad del Faro Dorado",
       "bloques": [
         {
-          "tipo": "tabla",
-          "columnas": ["", "Licenciamiento", "Acreditación"],
-          "filas": [
-            ["Qué es", "Autorización para funcionar, por cumplir condiciones básicas de calidad", "Reconocimiento de que un programa alcanza estándares superiores a lo básico"],
-            ["A qué se aplica", "A la institución completa y a sus locales", "A cada programa de estudios (una carrera en una institución)"],
-            ["Es obligatorio", "Sí: sin licencia, no puede dar títulos válidos", "No: es voluntaria"],
-            ["Quién lo otorga", "Universidades: Sunedu (Ley 30220). Institutos y escuelas: Minedu (Ley 30512)", "Sineace (Ley 28740)"],
-            ["Cómo usarlo", "Es el filtro mínimo: si no está licenciada, descártala", "Es un plus: que un programa no esté acreditado no lo invalida"]
+          "tipo": "lista",
+          "items": [
+            "«Acreditación internacional.»",
+            "«Licenciamiento en proceso.»",
+            "«Ingreso directo, sin examen.»",
+            "«Bolsa de trabajo garantizada.»",
+            "«Pensión desde S/ 450.»",
+            "«¡Quedan tres vacantes!»",
+            "«Clases de lunes a viernes.»",
+            "«Prospecto y calendario en nuestra web.»"
           ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "dato",
-          "texto": "Al cerrarse el primer proceso, en 2020, la Sunedu había licenciado 94 universidades y denegado la licencia a 46, casi todas privadas. Sus estudiantes tuvieron que trasladarse. La lista sigue cambiando; por eso no se memoriza: se consulta."
         }
       ]
     },
     {
+      "id": "b3-6-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Antes de firmar nada, mira ahí enfrente: el tablón de avisos del puerto. Lo que dice el tablón no lo grita nadie."
+    },
+    {
       "id": "b3-6-06",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Cómo verificar en cinco minutos",
+      "etiqueta": "El tablón del puerto",
+      "titulo": "Avisos oficiales",
       "bloques": [
         {
-          "tipo": "pasos",
-          "pasos": [
-            { "titulo": "Universidad", "texto": "Busca «consultar si una universidad está licenciada» en gob.pe (Sunedu) y revisa también sus sedes: una universidad puede estar licenciada en Lima y no en una filial." },
-            { "titulo": "Instituto o escuela", "texto": "Busca la lista de institutos licenciados por el Minedu y la de escuelas pedagógicas." },
-            { "titulo": "Programa «acreditado»", "texto": "Confirma en el portal del Sineace con qué entidad y hasta cuándo." },
-            { "titulo": "Desconfía de las etiquetas vagas", "texto": "«En proceso de licenciamiento», «acreditación internacional» sin nombrar quién, «reconocida por el Estado» sin resolución." }
+          "tipo": "lista",
+          "items": [
+            "Para funcionar, una universidad necesita licencia. La da la Sunedu. A los institutos y escuelas se la da el Minedu.",
+            "La acreditación es otra cosa: un reconocimiento a una carrera que supera lo básico. La da el Sineace. No reemplaza a la licencia.",
+            "Las listas de quién tiene licencia y qué carreras están acreditadas son públicas."
           ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Licenciada es la condición para empezar a comparar, no el resultado de la comparación. Para saber si es buena en tu carrera miras el plan de estudios, los docentes, las prácticas y el ingreso de sus egresados en el catálogo."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Ley N.° 30220, Ley N.° 30512, Ley N.° 28740. Sunedu, consulta de universidades licenciadas. Minedu, lista de institutos licenciados. Sineace.",
-          "url": "https://www.gob.pe/institucion/sunedu/tramites-y-servicios"
         }
       ]
     },
     {
       "id": "b3-6-07",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Cómo se ingresa",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El folleto dice «licenciamiento en proceso» y «acreditación internacional». ¿Qué te dice eso?",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "titulo": "Universidades (concurso público de admisión, Ley 30220)",
-          "columnas": ["Modalidad", "Para quién", "Qué evalúa"],
-          "filas": [
-            ["Examen ordinario", "Todos los egresados de secundaria", "Prueba de conocimientos y aptitudes, con puntaje mínimo y orden de mérito por carrera"],
-            ["Centro preuniversitario (CEPRE)", "Quien se prepara en el centro de la propia universidad", "El rendimiento en el ciclo; a veces da ingreso directo"],
-            ["Primeros puestos", "Quienes terminaron entre los primeros de su promoción", "El certificado del colegio, a veces con evaluación adicional"],
-            ["Deportistas calificados", "Reconocidos por el IPD", "Documentación y rendimiento deportivo"],
-            ["Personas con discapacidad", "La ley reserva el 5 % de las vacantes", "Una evaluación adaptada"],
-            ["Traslado externo o titulados", "Quien ya estudió en otra institución", "Convalidación de lo cursado"]
-          ],
-          "nota": "Las públicas: examen muy competitivo, pocas vacantes, una o dos veces al año. Las privadas: varias convocatorias, evaluaciones distintas, menos competencia pero con pensión."
+          "id": "a",
+          "texto": "Que ya cumple: lo internacional vale más.",
+          "correcta": false,
+          "retroalimentacion": "La acreditación no reemplaza a la licencia. Y «internacional», sin decir quién la dio, no se puede comprobar."
         },
         {
-          "tipo": "lista",
-          "items": [
-            "Institutos y escuelas: cada uno define su admisión (examen o evaluación por semestre, exoneración a primeros puestos, convenios); dos entradas al año y vacantes que suelen alcanzar.",
-            "FF. AA. y Policía: concursos anuales con examen de conocimientos, evaluación física, psicológica y médica; requisitos de edad (16 a 21 o 22 años), estatura y salud; asignación mensual durante la formación."
-          ]
+          "id": "b",
+          "texto": "Que le falta poco: conviene matricularse ya.",
+          "correcta": false,
+          "retroalimentacion": "«En proceso» no dice cuánto falta ni si la va a obtener. Matricularse antes es el riesgo."
+        },
+        {
+          "id": "c",
+          "texto": "Que le falta lo que se exige y ofrece otra cosa.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Sin licencia, una universidad no puede funcionar. Lo demás no lo compensa."
+        }
+      ],
+      "explicacion": "La licencia es el permiso para funcionar. La acreditación es un reconocimiento aparte, a una carrera. Ofrecer la segunda cuando falta la primera es cambiar de tema.",
+      "pistas": [
+        {
+          "id": "b3-6-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "De las dos cosas, ¿cuál hace falta para funcionar?"
         }
       ]
     },
     {
       "id": "b3-6-08",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Cuáles de estas líneas del folleto son señales de alerta? Marca todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«Bolsa de trabajo garantizada.»",
+          "correcta": true,
+          "retroalimentacion": "Promete empleo sin nombrar una sola empresa."
+        },
+        {
+          "id": "b",
+          "texto": "«Clases de lunes a viernes.»",
+          "correcta": false,
+          "retroalimentacion": "Es un dato, y se puede comprobar."
+        },
+        {
+          "id": "c",
+          "texto": "«Ingreso directo, sin examen.»",
+          "correcta": true,
+          "retroalimentacion": "No dice con qué evaluación se ingresa."
+        },
+        {
+          "id": "d",
+          "texto": "«Pensión desde S/ 450.»",
+          "correcta": true,
+          "retroalimentacion": "«Desde» esconde el total: la matrícula, otros pagos y las pensiones más altas."
+        },
+        {
+          "id": "e",
+          "texto": "«Prospecto y calendario en nuestra web.»",
+          "correcta": false,
+          "retroalimentacion": "Eso es justo lo que hay que pedir. Falta entrar y ver si es cierto."
+        },
+        {
+          "id": "f",
+          "texto": "«¡Quedan tres vacantes!»",
+          "correcta": true,
+          "retroalimentacion": "Apuro para que firmes sin comprobar nada."
+        }
+      ],
+      "explicacion": "Cuatro señales: una promesa de empleo sin nombres, un ingreso sin decir cómo, un costo que empieza con «desde» y el apuro. Las otras dos líneas son datos que se pueden comprobar.",
+      "pistas": [
+        {
+          "id": "b3-6-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Pregúntale a cada línea: ¿dónde lo puedo comprobar? Si no hay dónde, es una señal."
+        }
+      ]
+    },
+    {
+      "id": "b3-6-09",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Dónde se comprueba si la Universidad del Faro Dorado tiene licencia?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "En su stand, con el certificado enmarcado.",
+          "correcta": false,
+          "retroalimentacion": "Un certificado en la pared lo imprime cualquiera. Se comprueba fuera del stand."
+        },
+        {
+          "id": "b",
+          "texto": "En la lista de universidades de la Sunedu.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Es pública, y conviene mirar también el local o la sede donde estudiarías."
+        },
+        {
+          "id": "c",
+          "texto": "En el portal del Sineace, que da el sello.",
+          "correcta": false,
+          "retroalimentacion": "Ahí están las carreras acreditadas, no las licencias."
+        }
+      ],
+      "explicacion": "La licencia de una universidad se comprueba en la Sunedu; la de un instituto o una escuela, en el Minedu. En el Sineace se comprueba la acreditación de una carrera.",
+      "pistas": [
+        {
+          "id": "b3-6-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "El tablón dice quién da la licencia a una universidad."
+        }
+      ]
+    },
+    {
+      "id": "b3-6-10",
+      "tipo": "dialogo",
+      "hablanteId": "feriante",
+      "nuevoMomento": true,
+      "expresion": "neutral",
+      "texto": "¡Mucho papel, joven! Aquí el ingreso es directo. En las demás hay examen, y a ese examen no ingresa nadie."
+    },
+    {
+      "id": "b3-6-11",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera terminó entre los primeros puestos de su promoción y quiere una universidad pública. ¿Tiene que dar el examen ordinario?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Sí: a una pública solo se entra por ese examen.",
+          "correcta": false,
+          "retroalimentacion": "No es la única puerta. Cada universidad fija otras modalidades en su reglamento."
+        },
+        {
+          "id": "b",
+          "texto": "Depende: muchas tienen una modalidad para ella.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Tiene que leer el prospecto de esa universidad: ahí dice si la hay y qué pide."
+        },
+        {
+          "id": "c",
+          "texto": "No: con primeros puestos entra directo a todas.",
+          "correcta": false,
+          "retroalimentacion": "No es automático: cada universidad decide si la tiene, con cuántas vacantes y qué evalúa."
+        }
+      ],
+      "explicacion": "A la universidad se ingresa por concurso, y cada una fija sus modalidades: examen ordinario, centro preuniversitario, primeros puestos y otras. La regla es leer el prospecto oficial.",
+      "pistas": [
+        {
+          "id": "b3-6-11p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "El feriante habla de un solo examen. ¿Será la única forma de entrar?"
+        }
+      ]
+    },
+    {
+      "id": "b3-6-12",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Señales de alerta en la publicidad",
+      "nuevoMomento": true,
+      "etiqueta": "El tablón, completo",
+      "titulo": "Licencia y acreditación",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "",
+            "Licencia",
+            "Acreditación"
+          ],
+          "filas": [
+            [
+              "Qué es",
+              "Permiso para funcionar, por cumplir condiciones básicas de calidad",
+              "Reconocimiento de que una carrera supera lo básico"
+            ],
+            [
+              "A qué se aplica",
+              "A la institución y a sus locales",
+              "A cada carrera, en cada institución"
+            ],
+            [
+              "Quién la da",
+              "Universidades: Sunedu. Institutos y escuelas: Minedu",
+              "Sineace"
+            ],
+            [
+              "¿Se exige?",
+              "Sí, para funcionar",
+              "En general es voluntaria. La norma la pide en Salud, Educación y Derecho"
+            ],
+            [
+              "Cómo usarla",
+              "Universidad sin licencia: descártala. Instituto: lee la nota de abajo",
+              "Es un punto a favor. Que una carrera no la tenga no la invalida"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Con los institutos, la licencia todavía está en marcha: solo dos de cada diez la tienen. Muchos de los demás, sobre todo públicos, fueron autorizados antes de la ley actual y siguen funcionando mientras se licencian. Si el tuyo no está en la lista, pregunta con qué resolución funciona y en qué va su licenciamiento."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "La lista de universidades también se mueve: algunas recuperaron la licencia que se les había negado y otras cerraron. No se memoriza: se consulta."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ley N.° 30220, Ley N.° 30512 y Ley N.° 28740 con su reglamento. Sunedu, lista de universidades licenciadas. Minedu, lista de institutos licenciados. ASIEES (2026), sobre la proporción de institutos licenciados.",
+          "url": "https://www.gob.pe/institucion/sunedu/tramites-y-servicios"
+        }
+      ]
+    },
+    {
+      "id": "b3-6-13",
+      "tipo": "diapositiva",
+      "etiqueta": "El tablón, completo",
+      "titulo": "Cómo se ingresa",
       "bloques": [
         {
           "tipo": "lista",
           "items": [
-            "«Ingreso directo garantizado» sin decir con qué evaluación.",
-            "«Sin examen» en una universidad pública: no existe.",
-            "Costos de inscripción que no aparecen en la página oficial.",
-            "Promesas de empleo o de «convenios» con empresas sin nombrarlas."
-          ]
-        },
-        {
-          "tipo": "pasos",
-          "titulo": "Prepararte sin sorpresas",
-          "pasos": [
-            { "titulo": "Averigua en la página oficial", "texto": "Calendario, modalidades y costo de inscripción. Un anuncio no reemplaza el prospecto." },
-            { "titulo": "Calcula el tiempo de preparación", "texto": "Una academia o un CEPRE toma de tres meses a un año, y cuesta." },
-            { "titulo": "Prevé más de un intento", "texto": "No ingresar a la primera a una pública demandada es frecuente, no un veredicto." },
-            { "titulo": "Ten un plan B", "texto": "Otra modalidad o institución mientras vuelves a postular." }
+            "Universidades: por concurso. Además del examen ordinario, cada una fija otras modalidades: centro preuniversitario, primeros puestos, deportistas calificados, traslados. La ley reserva el 5 % de las vacantes para personas con discapacidad.",
+            "En las públicas hay pocas vacantes y mucha competencia: no ingresar a la primera es frecuente. Las privadas abren varias convocatorias al año y cobran pensión.",
+            "Institutos y escuelas: cada uno define su admisión. Suele haber dos ingresos al año.",
+            "Fuerzas Armadas y Policía: un concurso por etapas, todas eliminatorias: conocimientos, examen médico, aptitud física y psicológica. Hay requisitos de edad, estatura y salud, que cambian según la escuela."
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
           "texto": "Postular es un proceso con reglas publicadas. Si no encuentras las reglas, no confíes en la promesa."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ley N.° 30220, artículo 98. Ley N.° 29973. Prospectos de admisión de la Escuela de Oficiales de la PNP (2026) y de las escuelas de las Fuerzas Armadas."
         }
       ]
-    },
-    {
-      "id": "b3-6-09",
-      "tipo": "dialogo",
-      "hablanteId": "feriante",
-      "expresion": "neutral",
-      "texto": "Mucha teoría, joven. Vamos a lo práctico: le hago tres preguntas de mi stand y vemos si de verdad sabe tanto."
-    },
-    {
-      "id": "b3-6-10",
-      "tipo": "pregunta",
-      "hablanteId": "feriante",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "El Faro Dorado dice: «Estamos en proceso de licenciamiento, pero tenemos acreditación internacional». ¿Qué significa eso para ti?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Que está bien: la acreditación vale más que la licencia.",
-          "correcta": false,
-          "retroalimentacion": "Al revés. La acreditación es un plus voluntario; la licencia es la condición para dar títulos válidos."
-        },
-        {
-          "id": "b",
-          "texto": "Que no tiene licencia, así que sus títulos no valen, y la «acreditación» sin decir quién la dio es una etiqueta vaga.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Sin licencia se descarta; y «acreditación internacional» sin nombre de entidad no se puede verificar."
-        },
-        {
-          "id": "c",
-          "texto": "Que hay que esperar a que termine el proceso y mientras tanto matricularse.",
-          "correcta": false,
-          "retroalimentacion": "Los estudiantes de las 46 universidades que no obtuvieron licencia tuvieron que trasladarse. Esperar matriculado es la peor opción."
-        }
-      ],
-      "explicacion": "Licenciamiento es obligatorio y se aplica a la institución; acreditación es voluntaria y por programa. «En proceso» y «acreditación internacional» sin entidad son las dos etiquetas vagas de la lista.",
-      "pistas": [
-        {
-          "id": "b3-6-10p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "En la tabla, ¿cuál de las dos es obligatoria? Y en la lista de etiquetas vagas, ¿cuántas acaba de decir?"
-        }
-      ]
-    },
-    {
-      "id": "b3-6-11",
-      "tipo": "pregunta",
-      "hablanteId": "feriante",
-      "formato": "opcion_multiple",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "De lo que gritó el feriante, ¿cuáles son señales de alerta? Marca todas las que correspondan.",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "«Bolsa de trabajo garantizada».",
-          "correcta": true,
-          "retroalimentacion": "Promesa de empleo sin empresas con nombre: señal de alerta."
-        },
-        {
-          "id": "b",
-          "texto": "«Ingreso directo sin examen».",
-          "correcta": true,
-          "retroalimentacion": "Ingreso directo sin decir con qué evaluación: señal de alerta."
-        },
-        {
-          "id": "c",
-          "texto": "«Pensión desde S/ 450».",
-          "correcta": true,
-          "retroalimentacion": "«Desde» esconde el total: matrícula, otros pagos y las escalas más altas. Hay que pedir el ciclo completo."
-        },
-        {
-          "id": "d",
-          "texto": "«Quedan tres vacantes».",
-          "correcta": true,
-          "retroalimentacion": "Urgencia para que firmes sin verificar. Una institución seria publica su calendario; no cuenta vacantes a gritos."
-        }
-      ],
-      "explicacion": "Las cuatro. El stand del Faro Dorado junta todas las señales de alerta en una sola frase: promesa de empleo, ingreso sin evaluación, costo «desde» y urgencia.",
-      "pistas": [
-        {
-          "id": "b3-6-11p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Pregúntale a cada frase: «¿dónde puedo verificarlo?». Si no hay dónde, es una señal."
-        }
-      ]
-    },
-    {
-      "id": "b3-6-12",
-      "tipo": "pregunta",
-      "hablanteId": "feriante",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una viajera terminó entre los primeros puestos de su promoción y quiere una universidad pública. Su amigo le dice que igual «tiene que dar el examen ordinario como todos». ¿Es así?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Sí: en las públicas no hay otra forma de entrar.",
-          "correcta": false,
-          "retroalimentacion": "La Ley Universitaria permite modalidades de exoneración; primeros puestos es una de las más frecuentes."
-        },
-        {
-          "id": "b",
-          "texto": "No necesariamente: muchas universidades tienen la modalidad de primeros puestos, con el certificado del colegio y a veces una evaluación adicional.",
-          "correcta": true,
-          "retroalimentacion": "Eso es. Lo que debe hacer es leer el prospecto de admisión de esa universidad, porque cada una fija sus modalidades."
-        },
-        {
-          "id": "c",
-          "texto": "No: con primeros puestos entra directo a cualquier universidad sin trámite.",
-          "correcta": false,
-          "retroalimentacion": "Cada universidad define su reglamento; a veces hay evaluación adicional y siempre hay documentos. No es automático."
-        }
-      ],
-      "explicacion": "El ingreso es por concurso, pero cada universidad fija modalidades de exoneración en su reglamento: CEPRE, primeros puestos, deportistas, discapacidad, traslados. La regla es leer el prospecto oficial.",
-      "pistas": [
-        {
-          "id": "b3-6-12p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Mira la tabla de modalidades: hay una fila con el nombre de su situación."
-        }
-      ]
-    },
-    {
-      "id": "b3-6-13",
-      "nuevoMomento": true,
-      "tipo": "dialogo",
-      "hablanteId": "feriante",
-      "expresion": "dudoso",
-      "texto": "Usted no es un cliente fácil. Pero mi stand sigue abierto hasta la noche, y a esa hora llegan los que no leyeron nada. Si quiere cerrarlo, va a tener que desmontar mis anuncios uno por uno."
     },
     {
       "id": "b3-6-14",
       "tipo": "dialogo",
+      "hablanteId": "feriante",
+      "nuevoMomento": true,
+      "expresion": "dudoso",
+      "texto": "Usted no es cliente fácil. Pero mi stand sigue abierto hasta la noche, y a esa hora llegan los que no leyeron nada."
+    },
+    {
+      "id": "b3-6-15",
+      "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Otro desafío. Dos fichas nuevas en tu mochila: licenciamiento y acreditación, y cómo se ingresa. Y en la ciudad se abrió la feria vocacional: cómo aprovechar una de verdad."
+      "texto": "Lo del tablón te lo dejé en la mochila, en dos partes: «Licenciamiento y acreditación» y «Cómo se ingresa». Y en la plaza de la ciudad, Marina abrió una feria de las de verdad."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Licenciada es la condición para empezar a comparar. El stand del Faro Dorado sigue abierto; toca desmontarlo."
+    "mensajeFin": "Con la licencia se empieza a comparar; no es el resultado de la comparación. Y toda admisión tiene reglas publicadas."
   },
-  "mapa": { "x": 460, "y": 550, "icono": "informativa" }
+  "mapa": {
+    "x": 460,
+    "y": 550,
+    "icono": "informativa"
+  }
 }
