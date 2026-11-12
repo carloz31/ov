@@ -21,7 +21,11 @@ export function ResourceText({ text }: { text: string }) {
                         .split('|')
                         .slice(1, -1)
                         .map((cell, col) =>
-                          index === 0 ? <th key={col}>{cell.trim()}</th> : <td key={col}>{cell.trim()}</td>,
+                          index === 0 ? (
+                            <th key={col}>{enLinea(cell.trim())}</th>
+                          ) : (
+                            <td key={col}>{enLinea(cell.trim())}</td>
+                          ),
                         )}
                     </tr>
                   ))}
@@ -49,18 +53,21 @@ export function ResourceText({ text }: { text: string }) {
 
 const esSeparador = (fila: string) => /^[\s|:-]+$/.test(fila) && fila.includes('-')
 
-// Negrita y enlaces dentro de un bloque. Solo se enlaza a https.
+// Ajuste coherencia-bloque2: un signo escapado (`O\*NET`) se muestra sin la barra.
+const sinEscapes = (texto: string) => texto.replace(/\\([\\`*_{}[\]()#+\-.!|>~])/g, '$1')
+
+// Negrita y enlaces dentro de un bloque (también en las celdas de una tabla). Solo se enlaza a https.
 function enLinea(texto: string): ReactNode[] {
   return texto.split(/(\*\*.*?\*\*|\[[^\]]+\]\([^)\s]+\))/g).map((fragmento, index) => {
     const negrita = /^\*\*(.*)\*\*$/.exec(fragmento)
-    if (negrita) return <strong key={index}>{negrita[1]}</strong>
+    if (negrita) return <strong key={index}>{sinEscapes(negrita[1])}</strong>
     const enlace = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(fragmento)
     if (enlace && enlace[2].startsWith('https://'))
       return (
         <a key={index} href={enlace[2]} target="_blank" rel="noopener noreferrer">
-          {enlace[1]}
+          {sinEscapes(enlace[1])}
         </a>
       )
-    return enlace ? enlace[1] : fragmento
+    return sinEscapes(enlace ? enlace[1] : fragmento)
   })
 }

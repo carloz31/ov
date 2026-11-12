@@ -61,6 +61,23 @@ test('una tabla de ficha no muestra la fila separadora, venga con o sin espacios
   }
 })
 
+// Ajuste coherencia-bloque2: F07 y F10 escriben «O\*NET» para que el asterisco no abra una negrita.
+test('un signo escapado se muestra sin la barra, en párrafos, celdas, negritas y enlaces', () => {
+  const app = fixtureServidor()
+  const { ResourceText } = app.load('src/components/student/ResourceText.tsx')
+  const arbol = app
+    .mount(ResourceText, {
+      text: 'El perfil de O\\*NET y **O\\*NET**.\n\n| Fuente |\n| --- |\n| O\\*NET, 60 preguntas |\n\n[O\\*NET manual](https://ejemplo.pe)',
+    })
+    .render()
+  const tipos = (tipo) => elementos(arbol, (e) => e.type === tipo)
+  assert.ok(!texto(arbol).includes('\\'))
+  assert.equal(texto(tipos('strong')), 'O*NET')
+  assert.equal(texto(tipos('td')), 'O*NET, 60 preguntas')
+  assert.equal(texto(tipos('a')), 'O*NET manual')
+  assert.ok(texto(tipos('p')).includes('El perfil de O*NET'))
+})
+
 test('el modal muestra tema, origen, tramo y minutos; enlaza la actividad solo desde la mochila', async () => {
   const app = fixtureServidor()
   app.fetch((r) => {

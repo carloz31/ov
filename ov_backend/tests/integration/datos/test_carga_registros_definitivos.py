@@ -188,7 +188,9 @@ def test_dialogos_y_preguntas_de_eleccion_que_venian_del_front(items):
     assert items['b1-1-logro'].pregunta_eleccion.startswith('Piensa en un logro tuyo')
     assert items['ma8-respuesta'].pregunta_eleccion.startswith('Sobre estudiar {carrera}')
     # Sin diálogo, a propósito.
-    assert all(items[c].dialogo is None for c in ('b2-4-cruce', 'b3-4-quien', 'ma3-hoy', 'ma4-modelo', 'b3-a-comparo'))
+    assert all(items[c].dialogo is None for c in ('b3-4-quien', 'ma3-hoy', 'ma4-modelo', 'b3-a-comparo'))
+    # Ajuste coherencia-bloque2: Nico presenta también la última consigna de b2-4.
+    assert items['b2-4-cruce'].dialogo == 'Esta es la pregunta que más me costó responder a mí.'
 
 
 def test_cero_cartas_personalizadas_y_ninguna_regla_r_c(sesion_contenido):

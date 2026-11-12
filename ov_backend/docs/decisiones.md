@@ -76,12 +76,12 @@ Tomadas en el ajuste:
 - Ninguna prueba ni fixture contenía los textos cambiados; no se adaptó ninguna prueba.
 - Revisión en navegador (base aparte con `contenido`): b2-1 a b2-5 completos, «Anterior» ida y vuelta en b2-1 y b2-4, preguntas con pista, registros con pregunta y pasos de cierre, salida y reingreso de b2-4 durante el cierre (vuelve al último ítem en lectura), tablas a 375 px, F07–F10 y lo que abre cada cierre. Las frases nuevas de Dora (visita 4) y Sol (visita 6) se comprobaron en el JSON, no en pantalla.
 
-Vistos en la revisión, sin tocar (el ajuste no cambia código):
+Vistos en la revisión y corregidos a pedido del usuario:
 
-- `ResourceText.tsx` no quita el escape de «O\*NET»: la barra se ve en F07 y F10 (y ya se veía en F07 y F12 en `main`).
-- `b2-4-cruce` no tiene `dialogo`, así que esa consigna no muestra a Nico (`RegistroPersonaje` no pinta nada sin texto); las otras dos sí.
-- Un registro ya entregado se abre desde el inicio para rehacerlo («Ver o modificar mis respuestas»), como dice `useActivityPlayer`; solo uno respondido y sin entregar se abre en el último ítem. Las observaciones esperaban el último ítem también para los entregados.
-- En la lámina `b2-5-08`, a unos 1024 px, la primera columna corta palabras («Investigad|or», «Emprende|dor»). A 375 px se ve bien.
+- `ResourceText.tsx` mostraba la barra de «O\*NET» (F07, F10 y, desde antes, F12). Ahora quita la barra de un signo escapado en párrafos, negritas y enlaces, y las celdas de tabla pasan por `enLinea` (también admiten negrita y enlaces). Prueba nueva en `servidor-ficha-modal.test.mjs`.
+- `b2-4-cruce` no tenía `dialogo` y su consigna no mostraba a Nico (`RegistroPersonaje` no pinta nada sin texto). Lleva `dialogo='Esta es la pregunta que más me costó responder a mí.'`, frase elegida por el usuario. La huella de las tarjetas del LLM no cambia: solo cubre el texto de la tarjeta. Se adaptó `test_carga_registros_definitivos.py`, que lo listaba entre los ítems sin diálogo a propósito.
+- Un registro completado se abría desde el inicio para rehacerlo. Ahora entra en el último ítem, en lectura, como uno respondido y sin entregar (pedido en §6 de las observaciones). «Anterior» lleva al resto, y al continuar siguen los pasos de cierre y se vuelve a entregar. Pruebas adaptadas, con autorización del usuario: «rehacer…» y «“Modificar” prellena…» de `servidor-registro-flujo.test.mjs`.
+- En las láminas, la primera columna de una tabla cortaba palabras a unos 1024 px («Investigad|or»). `.sx-content-table` y `.journey-content-table` usan `overflow-wrap: break-word`, así la columna toma el ancho de su palabra más larga.
 
 Anotado para otros ajustes (de las observaciones, sin tocar):
 

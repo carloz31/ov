@@ -45,14 +45,15 @@ export function useActivityPlayer({
   const pageRef = useRef<HTMLDivElement>(null)
   const [nodeId, setNodeId] = useState(() => {
     if (modoApi && instrumentoServidor) return instrumentoServidor.nodoInicialId
-    // Ajuste front de registros (lote 1): completado (rehacer), desde el inicio, con sus diálogos y diapositivas;
-    // a medias, en el primer ítem sin respuesta (`item_actual`); con todo respondido y sin terminar, en el último
-    // ítem, en lectura, donde «Continuar» lo termina. La primera vez, `item_actual` es el primero: desde el inicio.
+    // Ajuste front de registros (lote 1): a medias, en el primer ítem sin respuesta (`item_actual`); con todo
+    // respondido, en el último ítem, en lectura, desde donde siguen los pasos de cierre y la entrega. Desde el ajuste
+    // coherencia-bloque2 también el completado entra ahí (antes, desde el inicio); «Anterior» lleva al resto. La
+    // primera vez, `item_actual` es el primero: desde el inicio.
     if (modoApi && registroServidor) {
       const { registro } = registroServidor
       const consignas = nodes.filter((n) => n.tipo === 'consigna')
-      if (registro.estado === 'COMPLETADA' || !registro.items.some((i) => i.respuesta)) return nodes[0]?.id
-      if (registro.item_actual === null) return consignas.at(-1)?.id ?? nodes[0]?.id
+      if (!registro.items.some((i) => i.respuesta)) return nodes[0]?.id
+      if (registro.estado === 'COMPLETADA' || registro.item_actual === null) return consignas.at(-1)?.id ?? nodes[0]?.id
       return consignas.find((n) => n.tipo === 'consigna' && n.item === registro.item_actual)?.id ?? nodes[0]?.id
     }
     if (edit || desdeInicio) return nodes[0]?.id

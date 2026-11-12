@@ -271,25 +271,28 @@ test('si `entregar` falla tras los pasos de cierre, el aviso del reproductor la 
   player.unmount()
 })
 
-test('rehacer: empieza desde el inicio, cada ítem en lectura y al final vuelve a entregar', async () => {
+// Ajuste coherencia-bloque2 (adaptada): el completado ya no empieza desde el inicio, sino en el último ítem, en
+// lectura; «Anterior» lleva a los demás ítems y, al continuar, siguen los pasos de cierre y vuelve a entregar.
+test('rehacer: entra en el último ítem en lectura, «Anterior» llega a los demás y al final vuelve a entregar', async () => {
   const { app } = await iniciar({
     actividad: 'b1-1',
     registro: contenido('registro-b1-1-completado'),
     acciones: { entregar: contenido('entregar-b1-1') },
   })
   const player = await abrir(app, 'b1-1')
-  assert.equal(itemEnPantalla(player), undefined)
-  recorrerApertura(player)
-  const vistos = []
-  for (let actual = itemEnPantalla(player); actual && vistos.length < 5; actual = itemEnPantalla(player)) {
-    vistos.push([actual.node.item, actual.vista])
-    actual.registro.continuar(actual.node)
-    await esperar()
-  }
-  assert.deepEqual(vistos, [['b1-1-gustos', 'lectura'], ['b1-1-logro', 'lectura'], ['b1-1-dificultad', 'lectura']])
-  // Ajuste coherencia-bloque1 (adaptada): entrega al continuar el último paso de cierre.
+  const ultimo = itemEnPantalla(player)
+  assert.deepEqual([ultimo.node.item, ultimo.vista], ['b1-1-dificultad', 'lectura'])
+  ultimo.elemento.props.onAnterior()
+  const previo = itemEnPantalla(player)
+  assert.deepEqual([previo.node.item, previo.vista], ['b1-1-logro', 'lectura'])
+  previo.registro.continuar(previo.node)
+  await esperar()
+  const otraVez = itemEnPantalla(player)
+  assert.equal(otraVez.node.item, 'b1-1-dificultad')
+  otraVez.registro.continuar(otraVez.node)
+  await esperar()
   assert.equal(peticiones(app, 'entregar').length, 0)
-  await recorrerCierre(player)
+  assert.deepEqual(await recorrerCierre(player), pasosCierre(app))
   assert.equal(peticiones(app, 'entregar').length, 1)
   player.unmount()
 })
@@ -322,10 +325,10 @@ test('reenviar llama a `reenviar` y abre la pantalla de Lumi con cada paso posib
 test('«Modificar» prellena la elección y la caja con las dos líneas; «Cancelar» vuelve sin cambios', async () => {
   const { app } = await iniciar({ actividad: 'b1-1', registro: contenido('registro-b1-1-completado') })
   const player = await abrir(app, 'b1-1')
-  recorrerApertura(player)
+  // Ajuste coherencia-bloque2 (adaptada): el completado entra en el último ítem, en lectura.
   const lectura = itemEnPantalla(player)
-  assert.equal(lectura.node.item, 'b1-1-gustos')
-  const vigente = contenido('registro-b1-1-completado').items[0].respuesta
+  assert.equal(lectura.node.item, 'b1-1-dificultad')
+  const vigente = contenido('registro-b1-1-completado').items.find((i) => i.codigo === 'b1-1-dificultad').respuesta
   lectura.hijo.props.onModificar()
   const edicion = itemEnPantalla(player)
   assert.equal(edicion.vista, 'edicion')

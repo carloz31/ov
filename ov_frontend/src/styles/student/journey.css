@@ -1073,6 +1073,8 @@
   text-align: left;
   vertical-align: top;
   border: 1px solid currentColor;
+  /* Ajuste coherencia-bloque2: la columna toma el ancho de su palabra más larga en vez de cortarla. */
+  overflow-wrap: break-word;
 }
 @media (max-width: 639px) {
   :is(.sx-content-table, .journey-content-table) thead {
