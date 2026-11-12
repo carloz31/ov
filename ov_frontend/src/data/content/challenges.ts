@@ -325,8 +325,8 @@ export const desafiosPlataforma: Challenge[] = [
     titulo: 'Decidir con criterio',
     presentacionEnemigo:
       'El Eco vive en el borde del acantilado y no tiene voz propia: repite lo que los viajeros trajeron de casa. «Estudia lo que da plata.» ' +
-      '«Tus amigos van a estar ahí.» «Esa carrera es respetada.» Te va a mostrar compañeros que eligieron así; cada vez que reconozcas ' +
-      'el criterio débil y la información que les faltó, el Eco pierde una voz. Sin voces, se calla.',
+      '«Tus amigos van a estar ahí.» «Esa carrera es respetada.» Te va a repetir lo que dijeron otros viajeros; cada vez que reconozcas ' +
+      'la razón que va sola y lo que faltó averiguar, el Eco pierde una voz. Sin voces, se calla.',
     ilustracion: '/images/student/eco.svg',
     bloque: 4, orden: 4, obligatoria: true,
     ubicacion: 'Acantilado, el borde',
@@ -335,7 +335,7 @@ export const desafiosPlataforma: Challenge[] = [
     nodos: [],
     vidasEnemigo: 5, vidasEstudiante: 3, opcionesPorPregunta: 4,
     requisitos: [
-      { tipo: 'ficha', id: 'F20', titulo: 'Criterios para decidir' },
+      { tipo: 'ficha', id: 'F20', titulo: 'Cómo decides y con qué razones' },
       { tipo: 'ficha', id: 'F19', titulo: 'Cruzar tu perfil con tus opciones' },
       { tipo: 'ficha', id: 'F02', titulo: 'Lo que pesa cuando decides' },
     ],

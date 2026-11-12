@@ -33,8 +33,7 @@
       "id": "h3-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora y aparece en tu informe de viaje. Vuelve en el puerto, cuando busques intereses en el catálogo, y al cruzar tu perfil con tus opciones.",
-      "eco": "h3-ref-resultado"
+      "texto": "Esto lo lee tu orientadora y aparece en tu informe de viaje. Vuelve en el puerto, cuando busques intereses en el catálogo, y al cruzar tu perfil con tus opciones."
     },
     {
       "id": "h3-curiosidad",

@@ -33,8 +33,7 @@
       "id": "h1-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: la habilidad que elijas y tu acción aparecen en la fila de habilidades sociales.",
-      "eco": "h1-ref-resultado"
+      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: la habilidad que elijas y tu acción aparecen en la fila de habilidades sociales."
     },
     {
       "id": "h1-reto",

@@ -28,7 +28,7 @@
       "id": "helena",
       "nombre": "Helena",
       "rol": "npc",
-      "descripcion": "Erudita que recibe a quienes buscan el pergamino. Presenció su creación y conoce su ubicación, pero no la revela. Fabrica los libros de autoconocimiento. Tono sereno, sin rodeos.",
+      "descripcion": "Erudita que recibe a quienes buscan el pergamino. Presenció su creación y conoce su ubicación, pero no la revela. Fabrica los libros de autoconocimiento: los hace preguntando y escuchando. No sabe estar quieta, y sube al mirador del acantilado cuando se cansa de la mesa. Tono sereno, sin rodeos.",
       "ubicacion": "Cabaña de Helena",
       "avatarUrl": "/images/personajes/helena.png",
       "expresiones": {

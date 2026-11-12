@@ -30,8 +30,7 @@
       "id": "b3-2-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Piensa en una ocupación que te llame la atención, la que sea. Si ya abriste tu página de intereses, Sol te dejó pistas.",
-      "eco": "b3-2-ref-codigo"
+      "texto": "Piensa en una ocupación que te llame la atención, la que sea. Si ya abriste tu página de intereses con Sol, puede ser una de las que salieron ahí."
     },
     {
       "id": "b3-2-03",

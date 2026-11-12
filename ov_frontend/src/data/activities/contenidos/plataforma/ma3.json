@@ -29,11 +29,7 @@
       "id": "ma3-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora. Es la práctica de la meta útil: acción, plazo, recurso.",
-      "eco": [
-        "ma3-ref-dia",
-        "ma3-ref-hito"
-      ]
+      "texto": "Esto lo lee tu orientadora. Es la práctica de la meta útil: acción, plazo, recurso."
     },
     {
       "id": "ma3-hoy",

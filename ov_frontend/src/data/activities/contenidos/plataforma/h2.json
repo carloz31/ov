@@ -33,8 +33,7 @@
       "id": "h2-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones.",
-      "eco": "h2-ref-resultado"
+      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones."
     },
     {
       "id": "h2-reconozco",
