@@ -50,7 +50,7 @@ Un plan está **listo para comparar** cuando todas sus secciones `para_comparar`
 
 `GET /cuentas/{c}/planes` → `PlanesCuenta`, con una lectura por tabla sea cual sea el número de planes:
 - `planes`, por prioridad (`A`, `B`, `C`): `carrera`, `institucion` (con `gestion` y `duracion_ciclos` de la carrera en ella, nula si no se conoce; F07b), `idea_origen`, `motivos`, `relato`, `conocimiento` (las cinco preguntas, nulas sin respuesta), `dudas` (con el `hallazgo` del paso que la cerró), `camino`, `gastos`, `totales_por_frecuencia`, `total_primer_anio`, `total_carrera`, `financiamiento`, `complicaciones`, `sugerencias` (con su `origen`: número de duda o complicación y su texto), `pasos` (con su `origen`), `medidores`, `secciones` (`codigo`, `nombre`, `estado`, `bloqueo`, `guardada_en`), `lista_para_comparar` y `actualizada_en`;
-- `avisos`: `MISMA_FAMILIA` con las prioridades de los planes de una misma familia de carreras (HU-098);
+- `avisos`: `MISMA_FAMILIA` con las prioridades de los planes de una misma familia de carreras (HU-098). Es un dato para el informe de la orientadora: el front no se lo muestra al estudiante (ajuste coherencia-bloque0);
 - `opcion_inicial` y `maximo_planes`;
 - `opciones`: las listas de la tarjeta (`valores`, `caminos` con `incluye_preparacion`, `rubros` con su referencia, `financiamiento`, `dificultades`, `pasos`, `dudas_sugeridas`) y las `preguntas` de conocimiento con su `texto` y el `texto_duda` que crean, ambos con `{carrera}`; y `ciclos_por_anio` (F07b).
 
@@ -159,7 +159,6 @@ Lo que no debe salir, para revisar el modelo real a mano (la validación solo pu
 
 ## Fuera de B11
 
-- «Es a propósito» en el aviso de misma familia (guardar que el estudiante ya respondió).
 - HU-049: sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista.
 - Eventos propios de cambio de plan A (ordenar ya deja ACTUALIZA_PLAN).
 - Lo que ve la orientadora de las tarjetas (HU-086, B14) y los temas para conversar.

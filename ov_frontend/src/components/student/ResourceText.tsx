@@ -9,7 +9,8 @@ export function ResourceText({ text }: { text: string }) {
         if (part.startsWith('### ')) return <h3 key={i}>{enLinea(part.slice(4))}</h3>
         if (part.startsWith('## ')) return <h3 key={i}>{part.slice(3)}</h3>
         if (part.startsWith('|')) {
-          const rows = part.split('\n').filter((row) => !row.includes('|---'))
+          // La fila separadora (`| --- | :---: |`, con o sin espacios) no se muestra.
+          const rows = part.split('\n').filter((row) => !esSeparador(row))
           return (
             <div key={i} className="journey-resource-table">
               <table>
@@ -45,6 +46,8 @@ export function ResourceText({ text }: { text: string }) {
     </div>
   )
 }
+
+const esSeparador = (fila: string) => /^[\s|:-]+$/.test(fila) && fila.includes('-')
 
 // Negrita y enlaces dentro de un bloque. Solo se enlaza a https.
 function enLinea(texto: string): ReactNode[] {

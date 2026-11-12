@@ -231,21 +231,6 @@
   }
 }
 
-.sx-p-aviso {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  margin: 0 0 24px;
-  padding: 16px 20px;
-  border-radius: 18px;
-  background: var(--sx-parchment);
-  color: var(--sx-parchment-ink);
-}
-.sx-p-aviso > svg {
-  flex: none;
-  margin-top: 2px;
-}
-
 .sx-p-favoritas {
   list-style: none;
   padding: 0;

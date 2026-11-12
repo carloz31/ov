@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { elementos, fixtureServidor } from '../../soporte/servidor-ayudas.mjs'
 
-// F01 · ajuste: «Anterior» en el reproductor también en modo local (excepción al modo local congelado).
+// F01 · ajuste: «Anterior» en el reproductor también en modo local (excepción al modo local congelado). Desde el
+// ajuste coherencia-bloque0, en todo paso que tenga uno previo, salvo la pantalla de Lumi y el cierre.
 function abrir(id) {
   const app = fixtureServidor({ api: false })
   const activity = app.load('src/data/activities/content.ts').activities.find((a) => a.id === id)
@@ -30,7 +31,7 @@ test('en un encuentro, «Anterior» vuelve al paso previo y el indicador de paso
   player.unmount()
 })
 
-test('elección, reacción y diapositivas retroceden; junto a una pregunta no hay «Anterior»', () => {
+test('elección, reacción, diapositivas y preguntas retroceden', () => {
   const { activity, player } = abrir('enc-mitos')
   const ir = (n) => {
     for (let i = 0; i < n; i++) {
@@ -62,10 +63,13 @@ test('elección, reacción y diapositivas retroceden; junto a una pregunta no ha
   const pregunta = activity.nodos.find((n) => n.id === 'e08')
   assert.equal(pregunta.tipo, 'pregunta')
   assert.equal(de(tree, 'QuestionNode').props.node.id, 'e08')
+  // Ajuste coherencia-bloque0: una pregunta también tiene «Anterior».
+  de(tree, 'QuestionNode').props.onAnterior()
+  assert.equal(de(player.render(), 'SlideNode').props.node.id, 'e07')
   player.unmount()
 })
 
-test('el paso que sigue a una pregunta no tiene «Anterior»', () => {
+test('el paso que sigue a una pregunta vuelve a ella con «Anterior»', () => {
   const app = fixtureServidor({ api: false })
   // DATO DE PRUEBA: actividad mínima con una pregunta no bloqueante entre dos diálogos, retomada después de ella.
   const activity = {
@@ -100,7 +104,8 @@ test('el paso que sigue a una pregunta no tiene «Anterior»', () => {
   const player = app.mount(Reproductor, { activity, onClose() {} })
   const tree = player.render()
   assert.equal(de(tree, 'PlayerTopBar').props.index, 2)
-  assert.equal(de(tree, 'DialogueBox').props.onAnterior, undefined)
+  de(tree, 'DialogueBox').props.onAnterior()
+  assert.equal(de(player.render(), 'QuestionNode').props.node.id, 'p2')
   player.unmount()
 })
 
@@ -153,7 +158,7 @@ test('en un cuestionario local, «Anterior» vuelve al ítem con su opción marc
   player.unmount()
 })
 
-test('en un registro local, los pasos posteriores a la entrega no tienen «Anterior»', () => {
+test('en un registro local, un paso posterior a la entrega vuelve a la última consigna', () => {
   const app = fixtureServidor({ api: false })
   // DATO DE PRUEBA: registro mínimo ya entregado, retomado en el diálogo de cierre.
   const activity = {
@@ -199,7 +204,8 @@ test('en un registro local, los pasos posteriores a la entrega no tienen «Anter
   const player = app.mount(Reproductor, { activity, onClose() {} })
   const tree = player.render()
   assert.equal(de(tree, 'PlayerTopBar').props.index, 2)
-  assert.equal(de(tree, 'DialogueBox').props.onAnterior, undefined)
+  de(tree, 'DialogueBox').props.onAnterior()
+  assert.equal(de(player.render(), 'SubmissionNode').props.node.id, 'r2')
   player.unmount()
 })
 
@@ -225,7 +231,7 @@ test('en un cuestionario local, cambiar una respuesta al volver deja solo la úl
   player.unmount()
 })
 
-test('en un cuestionario local, la primera pregunta no tiene «Anterior»', () => {
+test('en un cuestionario local, la primera pregunta vuelve al paso de entrada', () => {
   const { player } = abrir('act-tip-01')
   while (!de(player.render(), 'ItemNode')) {
     const tree = player.render()
@@ -234,6 +240,10 @@ test('en un cuestionario local, la primera pregunta no tiene «Anterior»', () =
     else de(tree, 'DialogueBox').props.onContinue()
   }
   const primera = de(player.render(), 'ItemNode')
-  assert.equal(primera.props.onAnterior, undefined)
+  const indice = de(player.render(), 'PlayerTopBar').props.index
+  primera.props.onAnterior()
+  const tree = player.render()
+  assert.equal(de(tree, 'PlayerTopBar').props.index, indice - 1)
+  assert.equal(de(tree, 'ItemNode'), undefined)
   player.unmount()
 })

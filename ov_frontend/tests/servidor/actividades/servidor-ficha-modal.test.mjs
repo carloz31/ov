@@ -46,6 +46,21 @@ test('el markdown de lectura dibuja subtítulos, listas, citas y enlaces https, 
   assert.ok(texto(arbol).includes('otro'))
 })
 
+test('una tabla de ficha no muestra la fila separadora, venga con o sin espacios ni dos puntos', () => {
+  const app = fixtureServidor()
+  const { ResourceText } = app.load('src/components/student/ResourceText.tsx')
+  const tabla = (separador) =>
+    app.mount(ResourceText, { text: `| A | B |\n${separador}\n| uno - dos | tres |` }).render()
+  for (const separador of ['| --- | --- |', '|---|---|', '| :--- | ---: |', '|:-:|:-:|']) {
+    const arbol = tabla(separador)
+    const filas = elementos(arbol, (e) => e.type === 'tr')
+    assert.equal(filas.length, 2, separador)
+    assert.equal(texto(elementos(arbol, (e) => e.type === 'th')), 'AB')
+    assert.equal(texto(elementos(arbol, (e) => e.type === 'td')), 'uno - dostres')
+    assert.ok(!texto(arbol).includes('---'), separador)
+  }
+})
+
 test('el modal muestra tema, origen, tramo y minutos; enlaza la actividad solo desde la mochila', async () => {
   const app = fixtureServidor()
   app.fetch((r) => {

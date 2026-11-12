@@ -62,6 +62,7 @@ export function NodeRenderer({
     registro,
     onAnterior,
     alRetroceder,
+    intentosRevision,
   } = model
   const itemRegistro = registro.registroEnServidor ? registro.item(node) : undefined
   return reaction ? (
@@ -146,6 +147,8 @@ export function NodeRenderer({
       onContinue={advance}
       fresh={edit && activity.tipo === 'encuentro'}
       onResources={openResources}
+      onAnterior={onAnterior}
+      intentosRevision={intentosRevision.current}
     />
   ) : node.tipo === 'item' ? (
     <ItemNode

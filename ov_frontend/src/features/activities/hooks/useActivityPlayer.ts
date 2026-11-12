@@ -8,7 +8,7 @@ import type { RespuestaCompletarActividad } from '@/types/servidor'
 import type { InstrumentoServidor } from '@/features/activities/components/MaraInteractionPlayer'
 import { catalog } from '@/data/activities/content'
 import { nextPendingNode, studentId, visibleNodes } from '@/lib/activities/logic'
-import type { Actividad, NodoDialogo } from '@/types/activities'
+import type { Actividad, IntentoPregunta, NodoDialogo } from '@/types/activities'
 import { updateJourney, useJourney, useJourneyError } from '@/store/journeyStore'
 import { prepareActivity } from '@/features/activities/lib/reflection/personalization'
 import { useInstrumentResponses } from './useInstrumentResponses'
@@ -171,23 +171,22 @@ export function useActivityPlayer({
     return completion.move(...args)
   }
   // «Anterior» (F01): las elecciones solo agregan reacciones, así que el camino recorrido es el orden de
-  // los nodos y el paso anterior es nodes[index - 1], también al retomar. No se retrocede hacia ni desde
-  // una pregunta con retroalimentación, ni en un registro entregado (salvo en su consulta, F02) o un
-  // cuestionario local completado (en api, el completado se relee con «Anterior», ajuste de F03).
+  // los nodos y el paso anterior es nodes[index - 1], también al retomar. Desde el ajuste coherencia-bloque0
+  // todo paso con uno previo lo tiene: también una pregunta (antes y después de responderla) y el paso que la
+  // sigue, el primer ítem de un cuestionario y los pasos posteriores a la última consigna de un registro. No se
+  // retrocede en un registro local entregado o un cuestionario local completado (en api, el completado se
+  // relee con «Anterior», ajuste de F03).
   const [alRetroceder, setAlRetroceder] = useState<string>()
+  // Al rehacer, los intentos de una pregunta no se guardan: se recuerdan aquí para que, al volver a ella, se
+  // vea resuelta sin pedirla de nuevo.
+  const intentosRevision = useRef<Record<string, IntentoPregunta[]>>({})
   const previo = nodes[index - 1]
   const anterior =
     previo &&
     (node || reaction) &&
     !matrix &&
-    node?.tipo !== 'pregunta' &&
-    // La primera pregunta de un cuestionario no vuelve al diálogo de entrada.
-    !(node?.tipo === 'item' && index === nodes.findIndex((n) => n.tipo === 'item')) &&
-    previo.tipo !== 'pregunta' &&
     // Un registro del servidor ya completado se rehace: sus ítems sí retroceden (se ven en lectura).
     !(activity.tipo === 'registro' && (yaCompletada || edit) && !(modoApi && registroServidor)) &&
-    // Tras la última consigna el registro ya está entregado: sus pasos posteriores no retroceden.
-    !(activity.tipo === 'registro' && index > nodes.findLastIndex((n) => n.tipo === 'consigna')) &&
     !(activity.tipo === 'instrumento' && yaCompletada && !instrumentoServidor)
       ? previo
       : undefined
@@ -307,5 +306,6 @@ export function useActivityPlayer({
     // La pantalla de Lumi y la edición de un ítem no tienen «Anterior» (ajuste front de registros, lote 1).
     onAnterior: anterior && registro.vista(node) !== 'lumi' ? retroceder : undefined,
     alRetroceder,
+    intentosRevision,
   }
 }

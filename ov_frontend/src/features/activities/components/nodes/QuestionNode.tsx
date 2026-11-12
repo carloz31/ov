@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, BookOpen } from 'lucide-react'
 import { catalog } from '@/data/activities/content'
 import { studentId } from '@/lib/activities/logic'
-import type { Actividad, NodoPregunta } from '@/types/activities'
+import type { Actividad, IntentoPregunta, NodoPregunta } from '@/types/activities'
 import { updateJourney, useJourney } from '@/store/journeyStore'
 import { DialogueBox } from '../DialogueBox'
 import { CheckOption, type CheckOptionState } from '../CheckOption'
 import { evaluateStudentCheck } from '../../lib/checks'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
+import { PasoAnterior } from '../PasoAnterior'
 
 export function QuestionNode({
   activity,
@@ -15,17 +16,23 @@ export function QuestionNode({
   onContinue,
   fresh = false,
   onResources,
+  onAnterior,
+  intentosRevision,
 }: {
   activity: Actividad
   node: NodoPregunta
   onContinue: () => void
   fresh?: boolean
   onResources: (ids: string[]) => void
+  onAnterior?: () => void
+  // Ajuste coherencia-bloque0: los intentos de esta visita cuando no se guardan (al rehacer), por nodo, para que
+  // al volver con «Anterior» la pregunta se vea resuelta.
+  intentosRevision?: Record<string, IntentoPregunta[]>
 }) {
   const state = useJourney()
   const review = fresh || state.progress[activity.id]?.estado === 'completada'
   const prior = review
-    ? []
+    ? (intentosRevision?.[node.id] ?? [])
     : state.attempts.filter((a) => a.actividadId === activity.id && a.nodoId === node.id)
   const [attempts, setAttempts] = useState(prior)
   const last = attempts.at(-1)
@@ -63,6 +70,7 @@ export function QuestionNode({
     }
     if (review || updateJourney((current) => ({ ...current, attempts: [...current.attempts, attempt] }))) {
       setAttempts([...attempts, attempt])
+      if (review && intentosRevision) intentosRevision[node.id] = [...attempts, attempt]
       if (!outcome.final) setSelected(selected.filter((id) => !outcome.wrongIds.includes(id)))
     }
   }
@@ -143,6 +151,7 @@ export function QuestionNode({
             </div>
           )}
           <div className="sx-player-actions">
+            {onAnterior && <PasoAnterior onClick={onAnterior} />}
             {sheets.length > 0 && (
               <button type="button" className="sx-secondary-button" onClick={() => onResources(sheets)}>
                 <BookOpen size={18} />

@@ -144,11 +144,11 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-10-28 · F07b · Planes fuera de los lotes F07
 
-- **Dato:** lo que B11 dejó fuera y ningún lote F07 implementa: HU-049 (sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista); «Es a propósito» en el aviso de misma familia (guardar que el estudiante ya respondió); lo que ve la orientadora de las tarjetas (HU-086, B14).
-- **Dónde se mostraría:** el cierre de actividad o un aviso en Mis planes (HU-049); la franja del aviso de misma familia; el perfil del estudiante en el portal de la orientadora (F10).
-- **Opciones:** HU-049 como aviso en el cierre de actividad con enlace a Mis planes, o como franja en Mis planes; «Es a propósito» como botón en el aviso, con su campo en el backend; las tarjetas en la vista de la orientadora cuando llegue B14.
-- **Si no se muestra:** el estudiante no recibe el recordatorio de revisar sus planes y el aviso de misma familia sigue apareciendo.
-- **Estado:** pendiente de su lote (backend sin implementar para HU-049 y «Es a propósito»; B14 para la orientadora).
+- **Dato:** lo que B11 dejó fuera y ningún lote F07 implementa: HU-049 (sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista); lo que ve la orientadora de las tarjetas (HU-086, B14), incluido el aviso de misma familia (`avisos`), que desde el ajuste coherencia-bloque0 el estudiante ya no ve.
+- **Dónde se mostraría:** el cierre de actividad o un aviso en Mis planes (HU-049); el perfil del estudiante en el portal de la orientadora (F10).
+- **Opciones:** HU-049 como aviso en el cierre de actividad con enlace a Mis planes, o como franja en Mis planes; las tarjetas y el aviso de misma familia en la vista de la orientadora cuando llegue B14.
+- **Si no se muestra:** el estudiante no recibe el recordatorio de revisar sus planes, y la orientadora no ve qué planes son de la misma familia.
+- **Estado:** pendiente de su lote (backend sin implementar para HU-049; B14 para la orientadora). «Es a propósito» se descartó en el ajuste coherencia-bloque0.
 
 ## 2026-10-28 · Ajuste F07a v4.2 · Compartir o imprimir el plan
 

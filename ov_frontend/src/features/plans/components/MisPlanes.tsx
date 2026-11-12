@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { ArrowLeft, CircleAlert, Eye } from 'lucide-react'
+import { ArrowLeft, Eye } from 'lucide-react'
 import { useReturnFocus } from '@/hooks/useReturnFocus'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
@@ -46,8 +46,7 @@ function EspacioPlan({
 }
 
 // F07a · ajuste v4.2 (F07b-pantallas §2): Mis planes con los planes del servidor. El plan A es la tarjeta
-// principal; B y C, «Rutas alternas» compactas a la derecha, con los espacios libres al final. Aviso de misma
-// familia; crear desde favoritas, «Subir prioridad» (con confirmación) y eliminar. Ajuste: «Ruta principal» sobre
+// principal; B y C, «Rutas alternas» compactas a la derecha, con los espacios libres al final. Crear desde favoritas, «Subir prioridad» (con confirmación) y eliminar. Ajuste: «Ruta principal» sobre
 // el plan A, que ocupa el mismo alto que las rutas alternas.
 export function MisPlanes() {
   const focus = useReturnFocus()
@@ -63,7 +62,9 @@ export function MisPlanes() {
         enSeccion
       />
     )
-  const { planes, opcion_inicial, avisos } = v.datos
+  // Ajuste coherencia-bloque0: el aviso de misma familia (`avisos`) no se muestra al estudiante; queda para la
+  // orientadora.
+  const { planes, opcion_inicial } = v.datos
   // Cada confirmación queda ocupada solo por su acción.
   const eliminando = !!v.ocupado?.startsWith('eliminar:'),
     subiendo = !!v.ocupado?.startsWith('ordenar:')
@@ -97,16 +98,6 @@ export function MisPlanes() {
           </p>
         </div>
       </header>
-      {avisos.map((aviso) => (
-        <p className="sx-p-aviso" role="note" key={aviso.familia.codigo}>
-          <CircleAlert aria-hidden="true" />
-          <span>
-            Tus planes {aviso.planes.join(' y ')} son de la misma familia,{' '}
-            <strong>{aviso.familia.nombre}</strong>. Tener una alternativa en otra área también puede ayudarte
-            a decidir. <Link to={appPaths.student.catalog.careers}>Explorar otras áreas</Link>
-          </span>
-        </p>
-      ))}
       <div className="sx-p-mis-planes">
         <section className="sx-p-principal" aria-labelledby="sx-p-principal-titulo">
           <h2 id="sx-p-principal-titulo" className="sx-p-fila-titulo">

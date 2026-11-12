@@ -62,7 +62,8 @@ test('Mis planes v4.2: A como ruta principal, B y C como rutas alternas compacta
   const arbol = vista.render()
   const marcado = texto(arbol)
   assert.doesNotMatch(marcado, /planes listos para comparar/)
-  assert.match(marcado, /Tus planes A y B son de la misma familia, Psicología\..*Explorar otras áreas/)
+  // Ajuste coherencia-bloque0: aunque el servidor entregue el aviso de misma familia, el estudiante no lo ve.
+  assert.doesNotMatch(marcado, /misma familia|Explorar otras áreas/)
   assert.match(marcado, /Ruta principal.*Rutas alternas/)
   const tarjetas = elementos(arbol, (e) => e.type?.name === 'TarjetaPlan')
   assert.deepEqual(copia(tarjetas.map((t) => [t.props.plan.prioridad, t.props.principal])), [
