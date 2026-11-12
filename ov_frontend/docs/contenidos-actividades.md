@@ -56,7 +56,7 @@ Toda actividad, de cualquier rol, es el mismo objeto: metadatos, una lista orden
 | `consigna` | Texto, archivo u opción; en registros, celdas de plantilla y preguntas de seguimiento. | `Entregable` |
 | `resultado` | Revelación del perfil. | Resultado del instrumento |
 
-Bloques de diapositiva: `parrafo`, `lista`, `destacado` (`dato`, `idea_clave`, `alerta`), `comparacion` (dos columnas con títulos libres), `pasos`, `reflexion` (pregunta sin campo), `fuente` (con enlace opcional) y `tabla` (`columnas`, `filas`, `nota`; cada fila con tantas celdas como columnas).
+Bloques de diapositiva: `parrafo`, `lista`, `destacado` (`dato`, `idea_clave`, `alerta`), `comparacion` (dos columnas con títulos libres), `pasos`, `reflexion` (pregunta sin campo), `fuente` (con enlace opcional) y `tabla` (`columnas`, `filas`, `nota`; cada fila con tantas celdas como columnas; la primera cabecera puede ir vacía, como en una tabla de doble entrada, y en pantallas angostas cada fila pasa a una tarjeta). Una diapositiva puede llevar a la vez `presentadorId` (el personaje que la presenta, con su avatar) y `etiqueta`.
 
 ## Reglas de comportamiento
 
@@ -79,5 +79,46 @@ Secuencia de un encuentro: gancho (diapositiva o elección personal) → concept
 - Los casos usan nombres y situaciones cotidianas del contexto limeño.
 - Las afirmaciones con dato llevan `fuente`; sin cifras que cambien con el tiempo, salvo de una fuente oficial con fecha.
 - Apoderado: tono informativo y sin culpa, entre 10 y 15 minutos, frases cortas.
+
+### Criterios de redacción del contenido real
+
+Decididos por el usuario en los ajustes de coherencia de los bloques 0 a 3; valen para todo el contenido de `plataforma/` y las fichas.
+
+- **La historia primero.** El tema entra por la historia: el estudiante resuelve algo (una elección, una pregunta) y después llega la lámina, corta. El detalle queda en la ficha.
+- **Quién explica.** Las láminas las presenta el personaje de la escena o nadie; Lumi no explica la teoría. Los datos del mundo real están en algo de la historia (un tablero, un tablón, un folleto, una pila de cuentas) y van en láminas con su fuente.
+- **Lumi** no tiene género en ningún texto ni habla como profesor. Su historia solo se insinúa: no cuenta de dónde viene y siempre mira el faro y se da la vuelta.
+- **El estudiante** no recibe adjetivos con género.
+- **La orientadora** no se nombra en boca de los personajes: quién ve cada cosa se dice en una lámina o en la explicación de una pregunta. Quién ve los registros se dice una sola vez, en una lámina de b1-1.
+- **Sin anuncios.** Ningún texto dice en qué actividad reaparece lo que escribe el estudiante ni adelanta lo que viene («un registro corto…», «otro desafío», «tercer tramo»), ni nombra h1, h2 o h3.
+- **Registros.** El personaje de la escena cuenta algo propio que muestra cómo se responde cada ítem, y es quien lo pide; si es Lumi, cuenta el caso de otra persona.
+- **Preguntas.** En actividades y batallas, las opciones tienen la misma forma y un largo parecido; la correcta no se reconoce por ser la más larga y su posición se reparte. Los distractores son verosímiles: medias verdades o el dato dado vuelta. Los enemigos afirman algo y el estudiante lo corrige; no examinan al estudiante.
+- **Ni una idea ni su contraria.** Se enseña a no cambiar un mito por su versión al revés («las técnicas no son la opción B» no quiere decir «da igual»). No hay valores, rutas ni carreras mejores que otras. Una propuesta teórica (Gardner) no se presenta como un hecho.
+- **Vocabulario.** Carreras y ocupaciones, como en el catálogo (no «profesiones»). El libro de Helena tiene páginas con sello, no capítulos. La señal es «Tu señal de hoy», no «check-in». «Ficha» es lo de la mochila y «carta» lo del diario; en la historia, las fichas del catálogo son «hojas del atlas». Sin «bitácora», «brújula», «me interesa» ni «tarjeta» para una lámina. «Opción inicial» no se le nombra al estudiante: solo se le dice que, si guarda pronto su plan, al final verá con qué idea empezó.
+- **RIASEC.** Ninguna carrera tiene código ni se busca por letras: las letras son de las ocupaciones, y el camino es ocupaciones parecidas al perfil, «Cómo se llega aquí» y, de ahí, las carreras.
+- **Nombres de pantalla.** Se citan como se ven (en el plan, «Cómo lo haría realidad» y «Mis próximos pasos»), no como en el backend.
+- **Cifras.** Con población, periodo y fuente, o sin número donde basta la idea; lo que cambia cada año, con su año.
+
+### Continuidad de la historia
+
+- Nadia no entrega ni traza un mapa del viajero: el mapa de la isla ya lo lleva y salió de su taller.
+- El artefacto de Iván no lleva al pergamino de un salto: acerca cada vez un poco más y toma su rumbo de lo que el viajero entiende de sí. Cuando se queda quieto, algo o alguien lo ayuda a orientarse: el guardián (b1-7, b2-5, b3-10) lo vuelve a mover cuando el viajero dice qué se lleva, sin decir «tramo», sin adelantar lo que viene y sin nombrar a la orientadora.
+- Familia se nombra en los diálogos de b1-3 sin explicar el módulo ni la carta.
+- Rosa dice quién guarda las preguntas de cada página: Dora (b2-1), Bruno (b2-2) y Sol (b2-5).
+- Alejandra calza con su carta de b0-5: lo que le gustaba existe como trabajo, se lo dijo a sus papás y esta vez averiguó antes. La familia no queda como culpable.
+- Los testimonios se nombran por su título («Cocinar a escondidas»); la historia de la persona queda en el testimonio.
+
+### Pendientes del contenido real
+
+Anotados en los ajustes de coherencia, sin tocar todavía:
+
+- **Textos que no siguen los criterios:** `ma1`, diálogo 01 («Leí tu punto de origen…»: Nadia ya no lee un punto de origen); `ma2` (título con «profesiones» y opciones de largo dispar); h1 (el diálogo 02 nombra a la orientadora y el cierre dice «plan de práctica» y «bitácora»); el mensaje de `R-B4` («las páginas que marcó tu orientadora»); el banco de b1-5 (la correcta es la más larga en p10, p13 y p15).
+- **Por revisar con el mismo patrón:** las batallas b4-4 y ma7-b, y las misiones `ma7` y `ma7-b`, que comparten personaje y tema con b3-3 y F13.
+- **RIASEC por carrera en otros bloques:** la lámina de b4-1, la batalla b4-4 (la regla «si solo calza con el código…»), F19, h3 («las cinco familias que salieron de tus intereses») y las conversaciones familiares.
+- **Desfases:** b4-3, lámina 03, nombra cuatro trayectos y «Cómo llegaría» tiene seis; F18 e `investigador.json` hablan de «cinco preguntas base» y el guion usa 3 (`PREGUNTAS_BASE_GUION`); b2-6 figura en los documentos de diseño y no existe. Las secciones del plan se llaman en el front «Cómo lo haría realidad» y «Mis próximos pasos», y en `fijos.py`, «Qué tan real es» y «Mis pasos»: decidir si se unifican.
+- **Datos que envejecen cada año:** Beca 18 (lámina `b3-8-12`, F16 y `b3-9-p13` a `p16`), el sueldo mínimo (`b3-8-13` y F16), los requisitos de la Escuela de Oficiales de la Policía (F15 y F16) y la escala de propinas (F11).
+- **Datos que dependen de `carreras_salarios_por_departamento.csv`:** la tabla de las familias mejor pagadas, las medianas (S/ 3 075 y S/ 2 632, redondeadas) y las 18 de 22 familias. Si el archivo cambia, se revisan `b3-3-04`, F13, `b3-5-p09` y `p10`.
+- **Institutos sin licencia:** «autorizados antes de la ley actual» se apoya en el D. L. N.° 1495 y notas de 2026, sin leer la norma vigente completa. Si cambia, cambian `b3-6-12`, F14 y `b3-7-p06`.
+- **Por confirmar en la fuente:** «tres de cada diez jóvenes pasan a la educación superior» (F11, `b3-1-11`, `b3-b-p05`; tomado del extracto del buscador de La República); el año de la planilla de ingresos del catálogo; que los créditos de pregrado del Pronabec son para continuar una carrera empezada; los 3 años de suboficiales; el dato del MTPE de F08 y `b2-1-14` (una nota de Andina, ambigua en «más del 80 %»; confirmarlo en la Encuesta de Demanda Ocupacional 2022); que el Anexo 4.1 liste siete habilidades.
+- **Fuentes citadas sin verificar en línea:** Habermas y Bluck (2000), Savickas (2005), Bandura (1977), Low y otros (2005), Oettingen (2014), Gollwitzer (1999), Caballo (2007) y Lent, Brown y Hackett (1994). Los datos nuevos de F05 vienen de notas de prensa que citan la fuente original, y la columna «Tareas donde se usa» de F09 es criterio de orientador.
 
 Para agregar un contenido: crea el JSON, regístralo en `src/data/activities/contenidos.ts` (una prueba exige que todo archivo de la carpeta esté registrado) y, si es una actividad del backend, usa su clave en `contenido` en `ov_backend/datos/`.
