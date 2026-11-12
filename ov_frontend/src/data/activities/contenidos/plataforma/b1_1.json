@@ -1,10 +1,9 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-1",
   "codigo": "b1-1",
   "tipo": "registro",
   "titulo": "Mi historia personal",
-  "subtitulo": "El mirador de la cartógrafa",
+  "subtitulo": "El taller de la cartógrafa",
   "escenario": "nevado",
   "bloque": 1,
   "orden": 1,
@@ -26,136 +25,163 @@
       "id": "b1-1-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "En el nevado vive Nadia, la cartógrafa. Todos los mapas de la isla salieron de su taller, incluido el que vamos a necesitar. Pero no regala mapas: los traza contigo."
+      "texto": "Ese es el taller de Nadia, la cartógrafa. Todos los mapas de la isla salieron de ahí, también el que llevas. Entremos: aquí arriba el frío no perdona."
     },
     {
       "id": "b1-1-02",
       "tipo": "dialogo",
       "hablanteId": "cartografa",
       "expresion": "neutral",
-      "texto": "Bienvenidos. Antes de dibujar hacia dónde vas, dibujo de dónde vienes. Un mapa sin punto de origen no sirve para nada: puedes estar en cualquier lado."
+      "texto": "Pasen, hay fuego. Todos los que suben quieren ir directo al mirador, a ver cuánto falta. Yo antes los hago asomarse a esta otra ventana: la que da al camino por donde llegaron."
     },
     {
       "id": "b1-1-03",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Desde aquí se ve el muelle, el bosque, el humo de la cabaña de Helena. Pero tu camino no empezó en el muelle. Empezó bastante antes, y esa parte no está en ningún mapa mío. Solo la conoces tú."
+    },
+    {
+      "id": "b1-1-04",
       "tipo": "eleccion",
       "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
-          "id": "b1-1-03a",
-          "texto": "¿Qué tiene que ver mi pasado con la carrera que elija?",
+          "id": "b1-1-04a",
+          "texto": "¿Y qué tiene que ver lo de antes con lo que voy a elegir?",
           "reaccion": [
             {
-              "id": "b1-1-03ar",
+              "id": "b1-1-04ar",
               "tipo": "dialogo",
               "hablanteId": "cartografa",
-              "texto": "Más de lo que crees. Lo que disfrutabas de niño, quién te marcó y qué dificultades superaste son datos sobre ti que ningún cuestionario tiene."
+              "texto": "Más de lo que parece. Lo que te encantaba hacer, algo que lograste, algo que te costó: ahí hay pistas de ti que no salen en ningún cuestionario."
             }
           ]
         },
         {
-          "id": "b1-1-03b",
-          "texto": "Mi historia no tiene nada interesante.",
+          "id": "b1-1-04b",
+          "texto": "Lo de antes no tiene nada interesante.",
           "reaccion": [
             {
-              "id": "b1-1-03br",
+              "id": "b1-1-04br",
               "tipo": "dialogo",
               "hablanteId": "cartografa",
-              "texto": "Todas tienen datos. Lo que cambia es cuánto se mira. Esa es la trampa de descartar: ya veremos la otra, que es idealizar."
+              "texto": "Eso dicen casi todos al llegar. Y después cuentan que le enseñaron a leer a su hermano. No hace falta que sea grande: hace falta que sea tuyo."
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "b1-1-04",
-      "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "cartografa",
-      "titulo": "Pensar la propia historia",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "El programa del MINEDU lo llama pensamiento autobiográfico: reconstruir la historia de la propia vida. Ponerla por escrito permite tomar conciencia de lo vivido, darle sentido y recién entonces proyectarse al futuro. No es nostalgia: es una herramienta de autoconocimiento."
         },
         {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Autoconcepto",
-            "texto": "La imagen que tienes de ti: qué crees que se te da bien, cómo te describes, qué «tipo de persona» piensas que eres."
-          },
-          "derecha": {
-            "titulo": "Autoestima",
-            "texto": "Cómo valoras esa imagen: si la aceptas o la rechazas."
-          }
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Alguien con un autoconcepto borroso («no sé qué se me da bien») o una autoestima baja («no voy a poder») tiende a dejar que otros decidan o a elegir lo más seguro aunque no le interese."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, parte 1 (Super, Erikson) y parte 2 (pensamiento autobiográfico, Horna 2005). Sesión de tutoría 1, «Construyo mi historia personal»."
+          "id": "b1-1-04c",
+          "texto": "Hay partes que prefiero no mirar.",
+          "reaccion": [
+            {
+              "id": "b1-1-04cr",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "No hace falta mirarlo todo. Cuenta lo que quieras contar; con eso alcanza."
+            }
+          ]
         }
       ]
     },
     {
       "id": "b1-1-05",
-      "tipo": "diapositiva",
-      "presentadorId": "cartografa",
-      "titulo": "Qué buscar en tu historia",
-      "bloques": [
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Mira. Guardo lo que me dijeron dos viajeros cuando les pregunté qué les encantaba de chicos."
+    },
+    {
+      "id": "b1-1-06",
+      "tipo": "pregunta",
+      "hablanteId": "cartografa",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Uno dijo: «Me gustaba el deporte». La otra: «Organizaba los partidos del barrio y armaba los equipos». ¿Cuál te deja conocer mejor a quien lo dijo?",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "columnas": [
-            "Pregunta",
-            "Qué pista deja"
-          ],
-          "filas": [
-            [
-              "¿Qué te gustaba hacer desde niño?",
-              "Intereses que se sostienen en el tiempo, no modas"
-            ],
-            [
-              "¿Qué personas influyeron en quién eres?",
-              "Modelos que admiras y por qué"
-            ],
-            [
-              "¿Cuál es un logro del que estás orgulloso?",
-              "Habilidades que ya usaste, no solo que crees tener"
-            ],
-            [
-              "¿Qué dificultad superaste y cómo?",
-              "Recursos propios: constancia, ayuda que supiste pedir, creatividad"
-            ]
-          ]
+          "id": "a",
+          "texto": "El primero: va directo al punto.",
+          "correcta": false,
+          "retroalimentacion": "Es corto, pero podría ser de cualquiera: no dice qué hacía ni qué le gustaba de eso."
         },
         {
-          "tipo": "parrafo",
-          "texto": "La clave está en los ejemplos concretos. «Me gusta el deporte» dice poco; «organizaba los partidos del barrio y armaba los equipos» dice que te gusta organizar y liderar, no solo jugar."
+          "id": "b",
+          "texto": "La segunda: cuenta qué hacía.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Con ese detalle ya se ve que le gustaba organizar y juntar gente, no solo jugar."
         },
         {
-          "tipo": "lista",
-          "titulo": "Dos trampas al recordar",
-          "items": [
-            "Idealizar: contar solo lo bueno. Las dificultades dicen tanto de ti como los logros.",
-            "Descartar: pensar que tu historia «no tiene nada interesante». Todas tienen datos."
-          ]
+          "id": "c",
+          "texto": "Los dos dicen lo mismo.",
+          "correcta": false,
+          "retroalimentacion": "A los dos les gustaba el deporte, sí. Pero solo en una se ve qué hacía."
+        }
+      ],
+      "explicacion": "Un ejemplo concreto dice más que una palabra general. «Me gusta el deporte» lo puede decir cualquiera; «armaba los equipos» ya habla de una persona.",
+      "pistas": [
+        {
+          "id": "b1-1-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "cartografa",
+          "texto": "Fíjate en cuál de los dos podrías reconocer si te lo cruzas en el camino."
         }
       ]
     },
     {
-      "id": "b1-1-06",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Lo que escribas aquí lo va a leer tu orientadora, para que cuando conversen no empiecen de cero. Y vuelve más adelante: cuando cruces tu perfil con tus opciones, yo te lo voy a recordar tal cual lo escribiste."
+      "id": "b1-1-07",
+      "tipo": "diapositiva",
+      "presentadorId": "cartografa",
+      "titulo": "Mirar tu historia",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Mirar hacia atrás antes de mirar hacia adelante no es nostalgia: es una forma de conocerte. Al contar lo vivido, uno lo ordena y le encuentra sentido."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Lo que vas a contar",
+            "La pista que deja"
+          ],
+          "filas": [
+            [
+              "Algo que te encantaba hacer de niño o niña",
+              "Intereses que vienen de lejos, no modas"
+            ],
+            [
+              "Un logro tuyo, aunque sea pequeño",
+              "Habilidades que ya usaste, no solo las que crees tener"
+            ],
+            [
+              "Algo que te costó y cómo lo fuiste superando",
+              "Con qué cuentas cuando algo se pone difícil: constancia, pedir ayuda, ingenio"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Lo que escribas aquí lo ven tú y tu orientadora. No hay respuestas correctas. A veces Lumi te va a pedir un detalle más: es para entenderte mejor, no para corregirte."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, parte 2 (pensamiento autobiográfico, Horna 2005). Sesión de tutoría 1, «Construyo mi historia personal»."
+        }
+      ]
     },
     {
-      "id": "b1-1-07",
+      "id": "b1-1-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Yo me quedo a escuchar. De lo que hiciste antes de llegar a la isla no sé nada, y me da curiosidad."
+    },
+    {
+      "id": "b1-1-09",
       "tipo": "dialogo",
       "hablanteId": "cartografa",
-      "texto": "Tres trazos y tengo tu punto de origen. Con ejemplos, por favor: un mapa hecho de generalidades no lleva a ningún lado."
+      "texto": "Entonces acércate al fuego. Son tres cosas, sin apuro."
     },
     {
       "id": "b1-1-gustos",
@@ -174,10 +200,42 @@
       "tipo": "consigna",
       "hablanteId": "cartografa",
       "item": "b1-1-dificultad"
+    },
+    {
+      "id": "b1-1-10",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Gracias por contarlo. Eso no entra en ningún mapa, pero es lo primero que conviene llevar encima."
+    },
+    {
+      "id": "b1-1-11",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "¿Y tú, Lumi? Nunca me contaste de dónde vienes."
+    },
+    {
+      "id": "b1-1-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Otro día, Nadia."
+    },
+    {
+      "id": "b1-1-13",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Por si un día quieres volver a mirar tu historia con calma, te dejé en la mochila lo que Nadia les pregunta a los viajeros: «Tu historia te da pistas»."
+    },
+    {
+      "id": "b1-1-14",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Ahora sí. Vengan al mirador: toca la otra ventana."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu punto de origen está en el mapa. Lo que te gustaba a los ocho años no decide tu carrera, pero dice qué tipo de cosas te mueven."
+    "mensajeFin": "Ya miraste por dónde viniste. Lo que te encantaba a los ocho años no decide tu carrera, pero dice qué tipo de cosas te mueven."
   },
   "mapa": {
     "x": 640,

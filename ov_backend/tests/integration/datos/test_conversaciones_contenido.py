@@ -10,8 +10,9 @@ from datos import contenido
 
 
 JSON_PLATAFORMA = Path(__file__).parents[4] / 'ov_frontend/src/data/activities/contenidos/plataforma'
-# La posición de la correcta antes del ajuste: cambiar el texto no la mueve.
-CORRECTAS = {'b1-5-p05': 1, 'b3-5-p06': 0, 'b3-5-p08': 2, 'ma7-b-p03': 0, 'ma7-b-p07': 3}
+# La posición de la correcta antes del ajuste: cambiar el texto no la mueve. Sale b1-5-p05: el ajuste
+# coherencia-bloque1 reemplazó todo el banco de b1-5.
+CORRECTAS = {'b3-5-p06': 0, 'b3-5-p08': 2, 'ma7-b-p03': 0, 'ma7-b-p07': 3}
 
 
 def test_carga_las_diez_conversaciones_completas(sesion_contenido):

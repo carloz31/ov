@@ -1,9 +1,8 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-6",
   "codigo": "b1-6",
   "tipo": "registro",
-  "titulo": "Mi postura",
+  "titulo": "El mito que traje de casa",
   "subtitulo": "Lo que quedó del puente",
   "escenario": "desierto",
   "bloque": 1,
@@ -27,30 +26,102 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Cruzamos. Mira hacia atrás: las tablas que no se rompieron son los pregones que no te creíste."
+      "texto": "Cruzamos. Mira hacia atrás: las tablas que quedaron enteras son los pregones que no te creíste."
     },
     {
       "id": "b1-6-02",
       "tipo": "dialogo",
       "hablanteId": "aurelio",
       "expresion": "contento",
-      "texto": "Bien cruzado. Pero te confieso algo: a mí, de todos mis pregones, hay uno que todavía me suena verdadero aunque ya vi los datos. ¿A ti no te pasa? ¿No hay uno que escuchaste tanto en tu casa que te cuesta soltarlo?"
+      "texto": "Bien cruzado. Te confieso algo: de todos mis pregones, hay uno que todavía me suena verdadero, y eso que ya vi el cuaderno."
     },
     {
       "id": "b1-6-03",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto sí se guarda, y lo lee tu orientadora: le sirve saber qué frases pesan en tu casa. Y vuelve más adelante, cuando ordenes tus criterios: ahí te voy a recordar cómo dijiste que ese mito podía afectar tu decisión."
+      "hablanteId": "aurelio",
+      "expresion": "dudoso",
+      "texto": "Es «la carrera decide toda tu vida». Me llegó por mi padre, en la fragua. Cada vez que yo miraba hacia el camino, decía que el que deja su oficio no levanta cabeza. Dejé la fragua hace años y todavía lo escucho."
+    },
+    {
+      "id": "b1-6-04",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "No lo decía por malo: tenía miedo por mí. Pero recién ahora que sé de dónde viene puedo pensarlo yo, en vez de solo oírlo. ¿A ti no te pasa con alguno?"
+    },
+    {
+      "id": "b1-6-05",
+      "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "b1-6-05a",
+          "texto": "Sí, hay uno que todavía me suena.",
+          "reaccion": [
+            {
+              "id": "b1-6-05ar",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "expresion": "contento",
+              "texto": "Entonces no soy el único. Menos mal."
+            }
+          ]
+        },
+        {
+          "id": "b1-6-05b",
+          "texto": "No sé cuál; los escuché todos tantas veces…",
+          "reaccion": [
+            {
+              "id": "b1-6-05br",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "texto": "Pasa. A veces uno no sabe cuál carga hasta que los ve en fila."
+            }
+          ]
+        },
+        {
+          "id": "b1-6-05c",
+          "texto": "Creo que ninguno.",
+          "reaccion": [
+            {
+              "id": "b1-6-05cr",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "texto": "Puede ser. Igual mira la lista: a veces el que uno carga no es de los míos, sino otra frase de casa."
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "b1-6-mito",
       "tipo": "consigna",
       "hablanteId": "aurelio",
       "item": "b1-6-mito"
+    },
+    {
+      "id": "b1-6-06",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Ahora ya sabes de quién es esa voz. Eso no la apaga, pero la próxima vez que suene vas a saber de dónde viene."
+    },
+    {
+      "id": "b1-6-07",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "expresion": "contento",
+      "texto": "Yo voy a intentar pregonar con el cuaderno en la mano. No prometo nada: la costumbre es terca."
+    },
+    {
+      "id": "b1-6-08",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Sigamos. El desierto se acaba allá, donde se ven esas piedras."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un mito con nombre pesa menos. Anotado en tu bitácora."
+    "mensajeFin": "Un mito con nombre y con origen pesa menos."
   },
   "mapa": {
     "x": 1000,

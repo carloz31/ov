@@ -38,3 +38,62 @@ Conjunto `ruta` y sus pruebas; reglas de desbloqueo y requisitos; el cuestionari
 
 ## Preguntas abiertas
 Ninguna.
+
+## Ajuste · coherencia-bloque1
+
+### Contexto
+El usuario reescribió el contenido del bloque 1 (b1-1…b1-7, salvo b1-5), las fichas F04–F06 y el banco de la batalla b1-5 (textos cerrados: se copian tal cual). Spec en curso: `ov_backend/docs/specs/ajuste-coherencia-bloque0.md` → este plan se agrega como sección `## Ajuste · coherencia-bloque1` al final. Rama `ajuste/coherencia-bloque1` (ya creada desde `main`, `a139d71`).
+
+**Contradicción a resolver en código (no en contenido):** las observaciones dicen que `useActivityPlayer.ts` «ya contempla pasos posteriores a la última consigna», pero en api no es así: `useRegistroServidor.continuar` (`src/features/activities/hooks/useRegistroServidor.ts:188-204`) llama a `entregar` y cierra al continuar la última consigna; los pasos de cierre nunca se verían. `decisiones.md` del bloque 0 lo dejó anotado («en un registro del servidor no hay pasos después de la última consigna»). Además, `NODOS_PERMITIDOS.registro` (`src/types/activities.ts:222`) no admite `pregunta`. Las dos cosas se ajustan abajo (§Front).
+
+### Qué cambia (hoy → pasará a)
+
+**Contenido front**
+- `src/data/activities/contenidos/plataforma/b1_1.json`, `b1_2`, `b1_3`, `b1_4`, `b1_6`, `b1_7`: se reemplazan, completos, por los de `Downloads/` (copia de archivo).
+- `src/data/activities/catalogo.json`: `descripcion` de `cartografa`, `ivan` y `guardian` (§3.1).
+
+**Backend (`ov_backend/datos/contenido.py`, solo conjunto `contenido`)**
+- `ACTIVIDADES`: b1-2 título «Mirar hacia adelante» y 5→6; b1-4 12→14; b1-6 título «El mito que traje de casa».
+- `DESCRIPCIONES` b1-2, b1-3, b1-4 (§2.2).
+- `ITEMS_REGISTRO`: comentario `# b1-6 El mito que traje de casa`; nombre `b1-6-mito` → «El mito y cómo te llegó».
+- Reglas: mensajes de `R-b1-2`, `R-F04`, `R-CIUDAD`, `R-c1`…`R-c6`, `R-b1-7`, `R-ma2`, `R-SEC-CHECK_IN` (§2.4); condiciones iguales.
+- `FICHAS` F04 (contenido), F05 y F06 (descripción y contenido), textos de §2.5–2.7.
+- `PREGUNTAS_BATALLA`: las 14 `b1-5-p01…p14` se reemplazan por las 18 de §2.8 (tal cual). `CONFIGURACION_BATALLAS`, `batallas.py`, `challenges.ts` y `ma2-*` no cambian.
+- Sin cambio de modelo, endpoints ni esquemas.
+
+**Front: registros del servidor con pregunta y pasos de cierre**
+- `src/types/activities.ts`: `NODOS_PERMITIDOS.registro` agrega `'pregunta'`. `QuestionNode` ya se pinta en cualquier actividad (`NodeRenderer.tsx:142`); en un registro del servidor los intentos van al navegador como en un encuentro, y `entregar` no los mira.
+- `useRegistroServidor.ts`: hoy `continuar` en la última consigna entrega → pasará a: si hay un nodo después, `avanzar(siguiente)`; si no, entrega (registros sin cierre, como los de `ruta`, siguen igual). La entrega se separa en `entregar(): Promise<string | undefined>` (devuelve el mensaje de error) y se expone.
+- `useActivityPlayer.ts`, `move`: con `modoApi && registroServidor && !next` (Continuar en el último paso de cierre, o «Reintentar» del aviso de error) llama a `registro.entregar()` en vez de `completarActividad` (que el servidor rechaza para registros, 409), con el cargador y el aviso de error del reproductor (`guardando` / `errorServidor`, `StudentActivityPlayer.tsx:94-118`).
+- Resultado, según la tabla de las observaciones: entregar el último ítem → pasos de cierre → al continuar el último, `entregar` y pantalla de cierre. Si sale durante los pasos de cierre, el registro queda con todo respondido y sin terminar: al volver se abre en el último ítem (`useActivityPlayer.ts:55`, sin cambio) y desde ahí sigue por los pasos de cierre. «Anterior» desde el primer paso de cierre ya vuelve al último ítem en lectura (lógica del bloque 0, sin cambio). Rehacer un completado recorre todo y vuelve a entregar al final.
+
+**Fixtures y pruebas**
+- Regenerar fixtures (`uv run python scripts/exportar_fixtures_front.py --destino ../ov_frontend/tests/fixtures/servidor`): `contenido-entregar-b1-1` trae el título nuevo de b1-2.
+- `tests/integration/escenarios/contenido/test_casos_contenido.py:51-53`: mensajes nuevos de `R-CIUDAD` y `R-c*`.
+- `tests/llm/casos/b1-6.json`: `descripcion` empieza con «El mito que traje de casa».
+- Cualquier otra prueba del back que falle por títulos, fichas o tamaño del banco: se actualiza el valor (autorizado por §4).
+- Front `tests/servidor/registro/servidor-registro-flujo.test.mjs`: `recorrerApertura` también resuelve un `QuestionNode` (b1-1 ahora trae `b1-1-06`). Se adaptan los dos casos que hoy esperan la entrega al continuar el último ítem (l.176 y l.194): ahora recorren los pasos de cierre y entregan al final del último (autorizado por la tabla de cierre de §1). Casos nuevos: «Anterior» desde el primer paso de cierre vuelve al último ítem en lectura; un error de `entregar` en el último paso muestra el aviso y «Reintentar» vuelve a entregar.
+- `tests/servidor/actividades/servidor-mecanica-contenido.test.mjs`: se agrega que `NODOS_PERMITIDOS.registro` incluye `pregunta` y que b1-1, b1-3, b1-6 y b1-7 pasan `validateActivity`.
+
+**Documentos**
+- `ov_frontend/docs/contenidos-actividades.md` (l.12, 19, 66): registro admite `pregunta`; tras el último ítem, los pasos de cierre y luego `entregar`.
+- `ov_frontend/docs/origen-de-datos.md` l.46: «Continuar» tras el último paso entrega.
+- `ov_backend/docs/decisiones.md`: decisiones de §7 de las observaciones + las de este ajuste (se reemplaza la viñeta del bloque 0 que decía que no hay pasos después de la última consigna). Las de §8 («anotado para otros ajustes») van en decisiones como pendientes.
+
+### Qué no cambia
+Conjunto `ruta` y sus pruebas; condiciones de reglas y lo que abre cada actividad; ítems, tarjetas y huellas de los registros; `b1_5.json`, configuración y textos del desafío b1-5; `ma2` y demás batallas; actividades y fichas de otros bloques; `ma1` (su «punto de origen» queda anotado, no se toca); modo local (no carga `plataforma/`); `completarActividad` para encuentros e instrumentos; `ResourceText.tsx` (se comprueba en navegador).
+
+### Fases
+1. **F1 · Contenido y backend:** copiar los seis JSON y `catalogo.json`; cambios de `contenido.py`; pruebas del back que leen textos; regenerar fixtures. Pruebas: `scripts/verificar_contenido_front.py`, `tests/integration/escenarios`, lo de contenido/batallas/fichas del back; `npm run test:servidor`. Commit `Ajuste coherencia-bloque1 · F1: …`.
+2. **F2 · Registros con pregunta y pasos de cierre:** `NODOS_PERMITIDOS`, `useRegistroServidor`, `useActivityPlayer`, pruebas y documentos del front. Pruebas: `tests/local/actividades`, `tests/servidor/actividades`, `tests/servidor/registro`, `npm run test:servidor`. Commit.
+3. **F3 · Cierre:** suites completas (back `uv run pytest -n auto -q`; front `npm test`, `build`, `lint`, `check:estructura`); comprobaciones en navegador de §6 con el conjunto `contenido`; `decisiones.md`. Commit. La spec queda en curso.
+
+### Verificación
+Las de §6 de las observaciones, en el navegador del panel con back (`contenido`) y front en `VITE_DATOS=api`: preguntas dentro de b1-1/b1-3/b1-7, pasos de cierre y pantalla final, reingreso a b1-1 sin terminar, «Anterior» ida y vuelta en b1-1 y b1-4, tablas de b1-4 en 375 px, fichas F04–F06, batalla b1-5 dos veces, títulos nuevos en mapa y cabecera, aperturas tras b1-3 y b1-7.
+
+### Indicaciones del usuario al aprobar
+1. **Registro respondido y sin entregar** (sale durante los pasos de cierre): comprobar en el navegador que el mapa lo muestra en curso, que al volver entra al último ítem y llega al cierre sin reescribir nada y que no se pierden respuestas. Si algo trata ese estado como error o como registro vacío, avisar antes de cambiarlo.
+2. **F05 en `ResourceText.tsx`**: si la tabla dentro de un mito, entre dos listas, o el título en negrita antes de cada lista no se ven bien, está autorizado corregir `ResourceText.tsx` (con prueba) en vez de cambiar la ficha.
+
+### Preguntas abiertas
+Ninguna.

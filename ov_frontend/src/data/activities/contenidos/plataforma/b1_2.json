@@ -2,30 +2,34 @@
   "id": "b1-2",
   "codigo": "b1-2",
   "tipo": "encuentro",
-  "titulo": "Mis deseos para el futuro",
+  "titulo": "Mirar hacia adelante",
   "subtitulo": "El mirador del nevado",
   "escenario": "nevado",
   "bloque": 1,
   "orden": 2,
   "obligatoria": true,
-  "requisitos": ["b1-1"],
+  "requisitos": [
+    "b1-1"
+  ],
   "ubicacion": "Mirador del nevado",
-  "duracionEstimadaMin": 5,
-  "personajeIds": ["cartografa", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe que sentir desorientación, preocupación, ilusión y expectativa a la vez es normal en esta etapa, y que mirar el futuro con miedo puede pasar a mirarlo con curiosidad.",
+  "duracionEstimadaMin": 6,
+  "personajeIds": [
+    "cartografa",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe que sentir ilusión y preocupación a la vez al mirar su futuro es normal, entiende que el vértigo de mirar todo de golpe baja al fijarse en lo que sigue, y sale con una pregunta concreta que quiere averiguar.",
   "nodos": [
     {
       "id": "b1-2-01",
       "tipo": "dialogo",
       "hablanteId": "cartografa",
-      "texto": "Antes de que bajen, vengan al mirador. Desde aquí, los días claros, se ve la ciudad. Y más allá, si fuerzan la vista, el faro."
+      "texto": "Esta es la otra ventana. Los días claros se ve la ciudad. Más allá el desierto, el volcán, el puerto. Y si fuerzan la vista, el faro."
     },
     {
       "id": "b1-2-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "Se ve todo el camino que falta. Es… bastante."
+      "texto": "Se ve todo lo que falta. Es… bastante."
     },
     {
       "id": "b1-2-03",
@@ -42,7 +46,7 @@
               "id": "b1-2-03ar",
               "tipo": "dialogo",
               "hablanteId": "cartografa",
-              "texto": "Yo llegué así. Y me sirvió, hasta que me tropecé con la primera duda. Escucha lo que me pasó después."
+              "texto": "Así llegan muchos. Sirve, hasta que aparece la primera duda. A mí me pasó al revés."
             }
           ]
         },
@@ -54,19 +58,19 @@
               "id": "b1-2-03br",
               "tipo": "dialogo",
               "hablanteId": "cartografa",
-              "texto": "A mí me pasó lo mismo en este mismo lugar. Te cuento cómo se me quitó, porque no fue de golpe."
+              "texto": "A mí me pasó lo mismo, en este mismo lugar."
             }
           ]
         },
         {
           "id": "b1-2-03c",
-          "texto": "Las dos cosas, según el momento.",
+          "texto": "Ganas y vértigo a la vez.",
           "reaccion": [
             {
               "id": "b1-2-03cr",
               "tipo": "dialogo",
               "hablanteId": "cartografa",
-              "texto": "Esa es la respuesta más honesta que escucho en este mirador. Te cuento la mía."
+              "texto": "Es lo que más escucho aquí arriba. Y es lo más normal."
             }
           ]
         }
@@ -75,66 +79,171 @@
     {
       "id": "b1-2-04",
       "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "etiqueta": "Lo que cuenta Nadia",
-      "presentadorId": "cartografa",
-      "titulo": "La primera vez que miré el futuro",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "«Cuando llegué a la isla subí a este mirador y vi lo mismo que ustedes: todo el camino, la ciudad, el faro. Me senté y no pude bajar. No era el frío. Era que todo el mundo en mi casa sabía lo que yo debía hacer, y yo solo sabía que no lo sabía. Miedo, vergüenza, ganas de volver al muelle.»"
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "«Bajé igual, porque estaba oscureciendo. Y en el camino empecé a fijarme en cosas: cómo estaban trazados los senderos, dónde se perdía la gente, qué faltaba en los mapas que vendían en la ciudad. Sin darme cuenta, el miedo se había vuelto curiosidad. No porque supiera la respuesta: porque me había puesto a mirar.»"
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "«Hoy hago mapas. No lo decidí en el mirador. Lo fui decidiendo cada vez que miré algo con atención.»"
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "La primera vez que subí vi lo mismo que ustedes. Me senté en esa piedra y no pude bajar. No era el frío: en mi casa todos sabían lo que yo debía hacer, y yo solo sabía que no lo sabía."
     },
     {
       "id": "b1-2-05",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Lo que sienten casi todos en esta etapa",
-      "bloques": [
-        {
-          "tipo": "lista",
-          "items": [
-            "Desorientación: no saber por dónde empezar.",
-            "Preocupación: por equivocarse, por el dinero, por decepcionar.",
-            "Ilusión: por lo que viene, por ser otra persona dentro de unos años.",
-            "Expectativa: de que algo se aclare pronto."
-          ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Las cuatro a la vez es lo normal. Todos los que pasaron por este mirador se sintieron así. Lo que cambia la mirada no es tener la respuesta: es empezar a mirar con atención."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, sesión de tutoría 2, «Mis deseos para el futuro»."
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Bajé igual, porque oscurecía. Y en el camino me fui fijando en cosas: cómo estaban trazados los senderos, dónde se perdía la gente, qué les faltaba a los mapas que vendían en la ciudad. Cuando llegué abajo ya no tenía miedo. Tenía preguntas."
     },
     {
       "id": "b1-2-06",
-      "tipo": "dialogo",
-      "hablanteId": "cartografa",
-      "texto": "Lo que deseas para tu vida lo vas a escribir más adelante, cuando tengas con qué. Por ahora, bajen. La ciudad está a un tramo."
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Nadia no supo esa tarde qué quería ser. ¿Qué fue lo que cambió mientras bajaba?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Decidió esa tarde que iba a hacer mapas.",
+          "correcta": false,
+          "retroalimentacion": "Eso llegó mucho después. Esa tarde todavía no sabía nada."
+        },
+        {
+          "id": "b",
+          "texto": "Empezó a fijarse en lo que tenía cerca.",
+          "correcta": true,
+          "retroalimentacion": "Eso. No tenía la respuesta; tenía algo que mirar."
+        },
+        {
+          "id": "c",
+          "texto": "Se le pasó el miedo solo, con el tiempo.",
+          "correcta": false,
+          "retroalimentacion": "Bajó con miedo. No se le pasó esperando: se le fue pasando mientras miraba."
+        }
+      ],
+      "explicacion": "El miedo de Nadia no se fue porque encontrara una respuesta, sino porque encontró preguntas chicas. Una pregunta chica se puede responder; «¿qué voy a hacer con mi vida?» no se responde de un tirón.",
+      "pistas": [
+        {
+          "id": "b1-2-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de qué empezó a notar en el camino: los senderos, dónde se perdía la gente."
+        }
+      ]
     },
     {
       "id": "b1-2-07",
       "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Hoy hago mapas. No lo decidí aquí arriba: lo fui decidiendo cada vez que miré algo con atención. Toma, prueba con mi catalejo. Pero no busques el faro. Mira lo que sigue: la ciudad."
+    },
+    {
+      "id": "b1-2-08",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "¿En qué te fijas primero?",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b1-2-08a",
+          "texto": "En un taller con humo en la ventana.",
+          "reaccion": [
+            {
+              "id": "b1-2-08ar",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "El de Iván. Siempre está inventando algo. Ya tienes qué preguntarle: para qué sirve eso que arma."
+            }
+          ]
+        },
+        {
+          "id": "b1-2-08b",
+          "texto": "En la gente de la plaza.",
+          "reaccion": [
+            {
+              "id": "b1-2-08br",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "Casi todos llegaron buscando lo mismo que tú. Cada quien te puede contar cómo terminó haciendo lo que hace."
+            }
+          ]
+        },
+        {
+          "id": "b1-2-08c",
+          "texto": "En el camino que sale por el otro lado.",
+          "reaccion": [
+            {
+              "id": "b1-2-08cr",
+              "tipo": "dialogo",
+              "hablanteId": "cartografa",
+              "texto": "Lleva al desierto. Ya querrás saber qué hay ahí, pero primero toca la ciudad."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-2-09",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "¿Ves? Hace un momento mirabas todo lo que falta. Ahora tienes algo que quieres averiguar."
+    },
+    {
+      "id": "b1-2-10",
+      "nuevoMomento": true,
+      "tipo": "diapositiva",
+      "presentadorId": "cartografa",
+      "titulo": "Del vértigo a la curiosidad",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Sentir ilusión y preocupación a la vez al mirar lo que viene es lo normal a tu edad. No se quita esperando ni teniendo ya la respuesta: se va quitando al mirar de cerca."
+        },
+        {
+          "tipo": "comparacion",
+          "izquierda": {
+            "titulo": "Mirar todo de golpe",
+            "texto": "«¿Qué voy a hacer con mi vida?» Una pregunta tan grande que paraliza."
+          },
+          "derecha": {
+            "titulo": "Mirar lo que sigue",
+            "texto": "«¿Qué quiero averiguar ahora?» Una pregunta que se puede responder esta semana."
+          }
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La curiosidad no es saber la respuesta: es tener una pregunta que quieres responder. Quien explora con curiosidad llega a decidir con más confianza."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, sesión de tutoría 2, «Mis deseos para el futuro». Savickas (2005), The theory and practice of career construction."
+        }
+      ]
+    },
+    {
+      "id": "b1-2-11",
+      "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Si quieres contarme lo que te provocó el mirador, tu diario está abierto."
+      "expresion": "pensativo",
+      "texto": "Yo he subido aquí muchas veces. Siempre miro el faro un rato y me doy la vuelta. Nunca se me ocurrió mirar la ciudad."
+    },
+    {
+      "id": "b1-2-12",
+      "tipo": "dialogo",
+      "hablanteId": "cartografa",
+      "texto": "Lo que quieres para tu vida no hace falta tenerlo claro aquí arriba. Se va armando al bajar. Vayan antes de que oscurezca."
+    },
+    {
+      "id": "b1-2-13",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Si el mirador te dejó algo dando vueltas, escríbemelo en el diario. Vamos: Helena dijo que buscáramos a su primo Iván."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Mirar con atención cambia la mirada. El futuro no se decide en un mirador."
+    "mensajeFin": "El futuro no se decide en un mirador. Se va decidiendo cada vez que miras algo con atención."
   },
-  "mapa": { "x": 720, "y": 130, "icono": "informativa" }
+  "mapa": {
+    "x": 720,
+    "y": 130,
+    "icono": "informativa"
+  }
 }

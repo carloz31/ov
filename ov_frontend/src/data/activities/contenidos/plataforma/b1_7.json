@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-7",
   "codigo": "b1-7",
   "tipo": "registro",
@@ -12,7 +11,7 @@
   "requisitos": [
     "b1-6"
   ],
-  "ubicacion": "Desierto, el límite del tramo",
+  "ubicacion": "Desierto, las piedras del límite",
   "duracionEstimadaMin": 10,
   "personajeIds": [
     "guardian",
@@ -27,14 +26,13 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Espera. La aguja del artefacto dejó de moverse. Iván dijo que esto pasaría al final de cada tramo: se apaga hasta que algo o alguien lo ayude a orientarse de nuevo."
+      "texto": "Aquí se acaba el desierto. Y mira: la aguja nos trajo derecho a estas piedras y se quedó quieta. Si Iván tenía razón, aquí debería estar el pergamino."
     },
     {
       "id": "b1-7-02",
       "tipo": "dialogo",
       "hablanteId": "guardian",
-      "expresion": "neutral",
-      "texto": "Nadie cruza este límite sin saber hacia dónde va. Soy guardián del pergamino. No lo custodio para esconderlo: lo custodio para que llegue a quien sabe qué hacer con él."
+      "texto": "Aquí no está. Aquí estoy yo. Soy guardián del pergamino: no lo cuido para esconderlo, sino para que llegue a quien sepa qué hacer con él."
     },
     {
       "id": "b1-7-03",
@@ -44,25 +42,25 @@
       "opciones": [
         {
           "id": "b1-7-03a",
-          "texto": "Yo sé hacia dónde voy: al faro, por el pergamino.",
+          "texto": "Entonces el artefacto se equivocó.",
           "reaccion": [
             {
               "id": "b1-7-03ar",
               "tipo": "dialogo",
               "hablanteId": "guardian",
-              "texto": "Eso es un lugar, no una dirección. Te pregunto por tu vida: ¿quién quieres ser dentro de cinco años? El artefacto se orienta con eso, no con el faro."
+              "texto": "No se equivocó. No te lleva al pergamino de un salto: te acerca cada vez un poco más. Hoy acercarte era llegar hasta mí."
             }
           ]
         },
         {
           "id": "b1-7-03b",
-          "texto": "Todavía no lo sé del todo.",
+          "texto": "¿Y cómo llego al pergamino?",
           "reaccion": [
             {
               "id": "b1-7-03br",
               "tipo": "dialogo",
               "hablanteId": "guardian",
-              "texto": "Nadie lo sabe del todo. Por eso no te pido una promesa: te pido un plan, que es otra cosa. Déjame explicarte la diferencia."
+              "texto": "No de un salto. El artefacto te acerca cada vez un poco más, y toma su rumbo de lo que vas entendiendo de ti. Hoy te trajo hasta mí."
             }
           ]
         }
@@ -70,140 +68,98 @@
     },
     {
       "id": "b1-7-04",
-      "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "guardian",
-      "titulo": "Tres piezas que van juntas",
-      "bloques": [
-        {
-          "tipo": "tabla",
-          "columnas": [
-            "Componente",
-            "Qué es",
-            "Pregunta que responde"
-          ],
-          "filas": [
-            [
-              "Autovaloración personal",
-              "Cómo te conoces y te valoras",
-              "¿Quién soy y qué tengo?"
-            ],
-            [
-              "Visión de futuro",
-              "Lo que imaginas y deseas para ti, tu familia y tu comunidad",
-              "¿Hacia dónde quiero ir?"
-            ],
-            [
-              "Plan de vida",
-              "Las metas y los pasos para llegar, con criterios que guíen las decisiones",
-              "¿Cómo llego?"
-            ]
-          ],
-          "nota": "Modelo de Orientación para el Desarrollo Personal (Oliveros, 2004), que usa el programa del MINEDU."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "El orden importa: sin autovaloración, la visión de futuro es copiada de otros; sin visión de futuro, el plan es una lista de tareas sin dirección. Lo primero ya lo trabajaste en el nevado. Hoy toca lo segundo y lo tercero."
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Hasta aquí miraste hacia atrás: tu historia, las voces de tu casa, los pregones que cargabas. Con eso llegó la aguja hasta estas piedras. Para que vuelva a moverse le falta lo otro: hacia dónde quieres ir."
     },
     {
       "id": "b1-7-05",
-      "tipo": "diapositiva",
-      "presentadorId": "guardian",
-      "titulo": "Por qué cinco años",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "Un plan a cinco años permite proyectar cambios grandes: terminar una formación, empezar a trabajar, mudarse, independizarse. Un plan solo a un año se queda en «ingresar a algún lado». Las metas se escriben como tentativas: se ajustan cuando cambian las condiciones o cambias tú. Un plan que no se revisa deja de ser plan."
-        },
-        {
-          "tipo": "pasos",
-          "titulo": "Las cuatro preguntas del plan",
-          "pasos": [
-            {
-              "titulo": "¿Quién seré?",
-              "texto": "Qué estaré haciendo y cómo me describiría."
-            },
-            {
-              "titulo": "¿Dónde estaré?",
-              "texto": "Lugar, grupo al que perteneceré, personas alrededor."
-            },
-            {
-              "titulo": "¿Qué deseo más y cómo lo voy a lograr?",
-              "texto": "Intereses, metas y el camino hacia ellas."
-            },
-            {
-              "titulo": "¿Qué dificultades se me pueden presentar?",
-              "texto": "Y cómo las voy a superar."
-            }
-          ]
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "El plan de vida no es solo académico: incluye quién quieres ser como persona, cómo quieres relacionarte con los demás y qué quieres aportar."
-        }
-      ]
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Te voy a pedir tres cosas. Antes, escucha lo que hicieron dos viajeros que pasaron por aquí."
     },
     {
       "id": "b1-7-06",
-      "tipo": "diapositiva",
-      "presentadorId": "guardian",
-      "titulo": "Una meta útil tiene cuatro partes",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "guardian",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Uno imaginó su día perfecto y no quiso pensar en qué podía frenarlo, «para no atraer la mala suerte». La otra imaginó el suyo y además nombró su freno. ¿A quién le sirvió más?",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "columnas": [
-            "Parte",
-            "Mal escrita",
-            "Bien escrita"
-          ],
-          "filas": [
-            [
-              "Acción",
-              "«Estar bien»",
-              "«Terminar el segundo ciclo de mi carrera»"
-            ],
-            [
-              "Plazo",
-              "«Algún día»",
-              "«A fines del próximo año»"
-            ],
-            [
-              "Recurso que necesito",
-              "—",
-              "«Un ingreso para el pasaje y los materiales»"
-            ],
-            [
-              "Dificultad y estrategia",
-              "—",
-              "«Si no ingreso a la primera, me preparo seis meses más y postulo de nuevo»"
-            ]
-          ]
+          "id": "a",
+          "texto": "Al primero: pensar en frenos desanima.",
+          "correcta": false,
+          "retroalimentacion": "Desanima un rato. Pero el freno aparece igual, y lo encuentra sin preparar."
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "La diferencia entre un deseo y una meta es que la meta dice qué harías, no solo cómo te sentirías."
+          "id": "b",
+          "texto": "A la segunda: un freno con nombre se puede preparar.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Quien ya lo nombró sabe qué hacer cuando aparece."
         },
         {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, parte 2 (Oliveros 2004; Horna 2005) y sesión de tutoría 4, «Mi plan de vida»."
+          "id": "c",
+          "texto": "A ninguno: el futuro no se puede planear.",
+          "correcta": false,
+          "retroalimentacion": "No se puede asegurar. Pero sí se puede elegir hacia dónde caminar."
+        }
+      ],
+      "explicacion": "Imaginar solo lo bueno se siente bien, pero mueve poco. Imaginar lo que quieres y también lo que puede frenarlo es lo que ayuda a pasar del deseo a hacer algo.",
+      "pistas": [
+        {
+          "id": "b1-7-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Piensa en quién de los dos se sorprende menos cuando algo sale mal."
         }
       ]
     },
     {
       "id": "b1-7-07",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora. Y vuelve al final del viaje: cuando escribas tu proyecto, te voy a mostrar esta línea de tiempo para que la actualices y compares lo que pensabas con lo que decides."
+      "tipo": "diapositiva",
+      "presentadorId": "guardian",
+      "titulo": "Mirar lejos, mirar cerca, mirar el freno",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Lo que vas a contar",
+            "Para qué sirve"
+          ],
+          "filas": [
+            [
+              "Un día a tus 23 años",
+              "Darle una dirección a lo que quieres"
+            ],
+            [
+              "Lo que estarás haciendo dentro de un año",
+              "Acercar ese día a algo que se puede empezar"
+            ],
+            [
+              "Lo que podría frenarte",
+              "Que no te tome por sorpresa"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Lo que imagines no es una promesa: es una dirección, y se corrige en el camino."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, sesión de tutoría 4, «Mi plan de vida». Oettingen (2014), Rethinking Positive Thinking."
+        }
+      ]
     },
     {
       "id": "b1-7-08",
       "tipo": "dialogo",
       "hablanteId": "guardian",
-      "texto": "Tres trazos y el artefacto vuelve a girar. Escribe sin filtro de «qué es posible»: eso se revisa después."
+      "texto": "Escribe sin pensar todavía en «qué es posible». Eso se revisa después."
     },
     {
       "id": "b1-7-dia",
@@ -222,10 +178,36 @@
       "tipo": "consigna",
       "hablanteId": "guardian",
       "item": "b1-7-freno"
+    },
+    {
+      "id": "b1-7-09",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "¡Se mueve! La aguja está girando otra vez… Apunta hacia ese humo. Hacia el bosque del volcán."
+    },
+    {
+      "id": "b1-7-10",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Ya tiene con qué. Cada vez que entiendes algo de ti, el artefacto afina su rumbo y te deja un poco más cerca. Cuando llegue el momento, va a señalar el pergamino."
+    },
+    {
+      "id": "b1-7-11",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Sigue avanzando. Buena suerte en el camino."
+    },
+    {
+      "id": "b1-7-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo que explicó sobre mirar lejos y mirar cerca te lo dejé en la mochila: «El plan de vida». Vamos, que el volcán no queda cerca."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El artefacto vuelve a girar: apunta al bosque del volcán. Un plan a cinco años no se cumple al pie de la letra; sirve porque te obliga a decidir hoy qué paso dar primero."
+    "mensajeFin": "El artefacto vuelve a moverse: apunta al bosque del volcán. Lo que imaginaste no es una promesa; es una dirección."
   },
   "mapa": {
     "x": 920,

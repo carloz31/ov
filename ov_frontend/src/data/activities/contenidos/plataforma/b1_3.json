@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b1-3",
   "codigo": "b1-3",
   "tipo": "registro",
@@ -27,78 +26,130 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "¡La ciudad! Aquí vive la mayoría de los que llegaron a la isla y se quedaron. Y en ese taller con humo en la ventana vive Iván, el primo de Helena."
+      "texto": "¡La ciudad! Aquí vive la mayoría de los que llegaron a la isla y se quedaron. Ese es el taller con humo en la ventana."
     },
     {
       "id": "b1-3-02",
       "tipo": "dialogo",
       "hablanteId": "ivan",
-      "expresion": "neutral",
-      "texto": "¿Helena los manda? Entonces vienen por el pergamino. Pasen, pasen, cuidado con los cables. Les voy a mostrar algo que llevo años afinando."
+      "expresion": "animado",
+      "texto": "¿Los manda Helena? Entonces vienen por el pergamino. Pasen, pasen, cuidado con los cables. Seguro les habló de mi aparato."
     },
     {
       "id": "b1-3-03",
       "tipo": "diapositiva",
       "etiqueta": "El invento de Iván",
-      "titulo": "El artefacto que se acopla al mapa",
+      "titulo": "El artefacto de Iván",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Una caja de latón con una aguja que no apunta al norte: apunta hacia donde podría estar el pergamino. Se engancha al mapa de Nadia y, cuando funciona, marca la siguiente zona que conviene recorrer. Lumi sabe leer sus señales."
+          "texto": "Una caja de latón con una aguja que no apunta al norte: apunta hacia la parte de la isla donde conviene buscar. Se engancha a tu mapa."
         },
         {
           "tipo": "lista",
           "titulo": "Lo que Iván advierte",
           "items": [
-            "No muestra el destino: muestra la dirección. El camino hay que caminarlo igual.",
-            "Al final de cada tramo se apaga, y vuelve a orientarse solo cuando alguien o algo lo ayuda a calibrarse.",
-            "Se calibra con lo que el viajero lleva dentro, no con pilas."
+            "No muestra dónde está el pergamino: muestra hacia dónde seguir. El camino hay que caminarlo igual.",
+            "Se calibra con lo que el viajero lleva dentro, no con pilas.",
+            "A veces se apaga. No la sacudas: vuelve a orientarse cuando algo o alguien la ayuda."
           ]
         }
       ]
     },
     {
       "id": "b1-3-04",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Mira, la engancho a tu mapa y… ¿ves? Gira sin parar. Siempre pasa con los recién llegados. A mí me pasó igual."
+    },
+    {
+      "id": "b1-3-05",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Yo también busqué el pergamino un tiempo. Todos los que llegaron conmigo decían que para eso se viene a la isla, y yo repetía lo mismo sin pensarlo mucho."
+    },
+    {
+      "id": "b1-3-06",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Hasta que un día se malogró la bomba de agua de la plaza y me quedé a arreglarla. Después fue el molino. Después los faroles. Y me di cuenta de que estaba más contento arreglando cosas aquí que buscando allá."
+    },
+    {
+      "id": "b1-3-07",
       "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
       "registrar": false,
       "opciones": [
         {
-          "id": "b1-3-04a",
-          "texto": "¿Por qué te quedaste en la ciudad si tienes esto?",
+          "id": "b1-3-07a",
+          "texto": "¿Y no te arrepientes de haber dejado de buscar?",
           "reaccion": [
             {
-              "id": "b1-3-04ar",
+              "id": "b1-3-07ar",
               "tipo": "dialogo",
               "hablanteId": "ivan",
-              "texto": "Porque le tomé cariño a la gente de aquí. Tienen problemas que resolver y me gusta ayudar. Tú también puedes: hay casos esperando en la Central, y a los habitantes les encanta conversar con recién llegados."
+              "texto": "No lo dejé por cansancio. Lo dejé porque encontré lo que me gusta: aquí siempre hay algún problema, y a mí me gusta ayudar a la gente del pueblo. Aquí soy feliz."
             }
           ]
         },
         {
-          "id": "b1-3-04b",
-          "texto": "¿Y qué más hay en la ciudad?",
+          "id": "b1-3-07b",
+          "texto": "¿Y qué dijeron los que llegaron contigo?",
           "reaccion": [
             {
-              "id": "b1-3-04br",
+              "id": "b1-3-07br",
               "tipo": "dialogo",
               "hablanteId": "ivan",
-              "texto": "Gente que conserva las preguntas para restaurar otros capítulos del libro de Helena. Casos que resolver en la Central. Un centro de investigación. Nada de eso es obligatorio, pero el pergamino se entiende mejor con todo eso recorrido."
+              "texto": "Algunos, que me rendí. Los escuché; no lo decían por mal. Pero buscar era la idea de ellos, y quedarme a ayudar a la gente del pueblo era la mía. Aquí soy feliz."
             }
           ]
         }
       ]
     },
     {
-      "id": "b1-3-05",
-      "tipo": "dialogo",
-      "hablanteId": "ivan",
-      "texto": "Ahora, el artefacto. Para calibrarlo necesito saber con qué voces llegas. Todo viajero trae expectativas encima: las de su familia, las de sus amigos y las suyas. Si no las separas, la aguja gira sin parar."
+      "id": "b1-3-08",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "La aguja de Iván también giraba. ¿Qué hizo que se quedara quieta?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Encontró por fin una pista del pergamino.",
+          "correcta": false,
+          "retroalimentacion": "Dejó de buscarlo, y la aguja igual se calmó."
+        },
+        {
+          "id": "b",
+          "texto": "Supo cuál voz era suya y cuál de los demás.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Buscar era la idea de los otros; arreglar cosas era la suya."
+        },
+        {
+          "id": "c",
+          "texto": "Dejó de hacerles caso a los que llegaron con él.",
+          "correcta": false,
+          "retroalimentacion": "Los siguió escuchando. Lo que cambió es que supo cuál voz era de quién."
+        }
+      ],
+      "explicacion": "Lo que esperan de ti los demás importa, y muchas veces viene con cariño. Pero para decidir necesitas saber cuál voz es de quién: recién ahí puedes ver dónde coinciden y dónde no.",
+      "pistas": [
+        {
+          "id": "b1-3-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en lo que dijo de sus compañeros: de quién era la idea de buscar."
+        }
+      ]
     },
     {
-      "id": "b1-3-06",
+      "id": "b1-3-09",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, para que cuando conversen sepa qué pesa en casa. Y vuelve más adelante, cuando ordenes tus criterios para decidir: ahí te voy a citar lo que escribas sobre tu familia."
+      "hablanteId": "ivan",
+      "texto": "Para calibrarla necesito lo mismo de ti: qué esperan de ti, qué quieres tú, y dónde se encuentran o chocan. No hay combinación mala. Lo que la traba es no distinguirlas."
     },
     {
       "id": "b1-3-voz",
@@ -117,10 +168,56 @@
       "tipo": "consigna",
       "hablanteId": "ivan",
       "item": "b1-3-contraste"
+    },
+    {
+      "id": "b1-3-10",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "expresion": "animado",
+      "texto": "Listo. Mira la aguja: se quedó quieta. No hacía falta que las voces coincidieran; hacía falta saber cuál es cuál."
+    },
+    {
+      "id": "b1-3-11",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Una cosa más. A los que llegaron conmigo los escuché, pero nunca les conté lo que yo quería. Se enteraron cuando ya me había quedado. No hagas lo mismo con los de tu casa."
+    },
+    {
+      "id": "b1-3-12",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Para eso se te acaba de abrir un lugar: Familia. Tú respondes desde tu lado, ellos desde el suyo, y después cada quien ve lo que dijo el otro."
+    },
+    {
+      "id": "b1-3-13",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Y la aguja apunta al otro lado de la ciudad, por el camino que vimos desde el mirador. Hacia el desierto."
+    },
+    {
+      "id": "b1-3-14",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Entonces por ahí es. Pero la ciudad no se va a mover: en la Central siempre hay algún problema del pueblo esperando a alguien con ganas de ayudar. Date una vuelta y mira si alguno te interesa."
+    },
+    {
+      "id": "b1-3-15",
+      "tipo": "dialogo",
+      "hablanteId": "ivan",
+      "texto": "Y aquí vive gente que guarda preguntas para las páginas de ese libro que te dio Helena. Les encanta conversar con viajeros. No los busques a todos hoy: en el camino te irán diciendo quién guarda cuál."
+    },
+    {
+      "id": "b1-3-16",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Gracias, Iván. Vamos a necesitar agua para el desierto."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El artefacto está calibrado y la ciudad, abierta. También tu sección de familia: tu carta para tu apoderado te espera ahí."
+    "mensajeFin": "El artefacto quedó calibrado y apunta al desierto. Se abrieron la ciudad, con su Central de casos, y tu sección Familia."
   },
   "mapa": {
     "x": 800,

@@ -8,31 +8,33 @@
   "bloque": 1,
   "orden": 4,
   "obligatoria": true,
-  "requisitos": ["b1-3"],
+  "requisitos": [
+    "b1-3"
+  ],
   "ubicacion": "Desierto, oasis de la caravana",
-  "duracionEstimadaMin": 12,
-  "personajeIds": ["aurelio", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué es un mito, conoce los datos que discuten los seis mitos más frecuentes sobre el futuro profesional (incluido el de género), distingue un mito de una afirmación con sustento y aplica cuatro preguntas para desarmar una creencia.",
+  "duracionEstimadaMin": 14,
+  "personajeIds": [
+    "aurelio",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué es un mito y de dónde sale, reconoce qué tiene de cierto y qué no se sostiene en los seis mitos más frecuentes sobre el futuro profesional (incluido el de género), lee un dato sin cambiar un mito por su versión al revés y aplica cuatro preguntas para revisar una creencia.",
   "nodos": [
     {
       "id": "b1-4-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "El artefacto apunta al desierto. Iván dice que del otro lado hay un puente, y que antes del puente hay un oasis donde paran las caravanas. Vamos a necesitar agua."
+      "texto": "Agua, por fin. Y gente: aquí paran las caravanas antes del puente."
     },
     {
       "id": "b1-4-02",
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "expresion": "neutral",
       "texto": "¡Atención, atención, viajeros del oasis! ¡El que no va a la universidad no llega a nada! ¡El test te dirá qué estudiar! ¡Lo que te gusta no da de comer! ¡Hay trabajos de hombres y trabajos de mujeres!"
     },
     {
       "id": "b1-4-03",
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "expresion": "dudoso",
       "texto": "…Ay, disculpen. Soy Aurelio, pregonero de la caravana. Llevo años repitiendo lo que escucho en los mercados de la isla. Pero ayer una chica me preguntó «¿y eso quién lo comprobó?»… y no supe qué decirle."
     },
     {
@@ -70,221 +72,229 @@
     {
       "id": "b1-4-05",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "pensativo",
-      "texto": "Aurelio, lo que pregonas tiene nombre: son mitos. Y en esta isla son el obstáculo que más viajeros ha detenido, porque se sienten como sentido común. Te propongo un trato: te muestro los datos y tú dejas de pregonar lo que no se sostenga."
+      "hablanteId": "aurelio",
+      "texto": "Desde ayer no duermo. Tengo seis pregones y no sé cuál es cierto. La caravana lleva un cuaderno con todo lo que ve en la isla: quién estudia qué, quién trabaja en qué, cuánto gana. Nunca lo abrí. ¿Me ayudan a revisarlos?"
     },
     {
       "id": "b1-4-06",
       "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Qué es un mito",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "Un mito es una creencia que se repite sin evidencia que la respalde. En la elección de carrera abundan, y lo peligroso es que no suenan a mentira: suenan a consejo de alguien que te quiere."
-        },
-        {
-          "tipo": "lista",
-          "titulo": "De dónde salen",
-          "items": [
-            "De experiencias de otra época: lo que le pasó a alguien hace veinte años describe otro mercado.",
-            "Del miedo: las familias repiten lo que les da seguridad.",
-            "De estereotipos: ideas sobre qué es «para» ciertas personas.",
-            "De información incompleta: la oferta y el mercado cambian más rápido que las frases."
-          ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Que una frase se repita mucho no la vuelve cierta; solo la vuelve conocida."
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Empiezo por uno que me enseñó un comerciante: «Mi primo estudió Turismo en 2006 y nunca encontró trabajo, así que Turismo no tiene futuro»."
     },
     {
       "id": "b1-4-07",
-      "tipo": "diapositiva",
-      "presentadorId": "aurelio",
-      "etiqueta": "Pregones 1 y 2",
-      "titulo": "«Mis padres saben qué me conviene» · «El test me dirá qué estudiar»",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué le preguntarías primero a esa frase?",
+      "opciones": [
         {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Lo que dice el mito",
-            "texto": "Tu familia te conoce y sabe qué te conviene. Y si no, un test lo dirá."
-          },
-          "derecha": {
-            "titulo": "Lo que muestran los datos",
-            "texto": "La experiencia de tu familia vale, pero su información del mercado suele ser de cuando ellos eligieron, y a veces proyectan en ti lo que no pudieron hacer. El programa del MINEDU les pide acompañar, informar y respetar: la decisión es tuya. Un test de intereses ordena lo que ya sabes de ti y sugiere áreas para explorar; no conoce tu contexto ni la oferta de tu ciudad. Un resultado es una hipótesis, no una sentencia."
-          }
+          "id": "a",
+          "texto": "¿Quién es ese primo y qué sabe de Turismo?",
+          "correcta": false,
+          "retroalimentacion": "Sirve saberlo, pero el primo algo sabe: le pasó a él. Lo que falla está en otro lado."
+        },
+        {
+          "id": "b",
+          "texto": "¿De qué año es lo que le pasó al primo?",
+          "correcta": true,
+          "retroalimentacion": "Eso. Lo de 2006 describe el mercado de hace veinte años. Y además es un solo caso."
+        },
+        {
+          "id": "c",
+          "texto": "¿Cuánto ganaba el primo mientras buscaba?",
+          "correcta": false,
+          "retroalimentacion": "No cambia nada: la frase habla de encontrar trabajo, y de hace veinte años."
+        }
+      ],
+      "explicacion": "Lo que le pasó al primo es verdad, pero es una sola experiencia y de otra época. Convertida en «Turismo no tiene futuro», ya es otra cosa.",
+      "pistas": [
+        {
+          "id": "b1-4-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Hay un número en la frase. Fíjate en ese número."
         }
       ]
     },
     {
       "id": "b1-4-08",
-      "tipo": "diapositiva",
-      "presentadorId": "aurelio",
-      "etiqueta": "Pregones 3 y 4",
-      "titulo": "«Solo la universidad da futuro» · «Si estudio lo que me gusta voy a ganar poco»",
-      "bloques": [
-        {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Lo que dice el mito",
-            "texto": "Sin universidad no hay futuro, y estudiar lo que te gusta es condenarte a ganar poco."
-          },
-          "derecha": {
-            "titulo": "Lo que muestran los datos",
-            "texto": "La plataforma Mi Carrera del MTPE, con ingresos de planilla, muestra técnicos en minería con un promedio cercano a S/ 5 600 y técnicos industriales alrededor de S/ 3 700, frente a unos S/ 2 400 en una universitaria tan común como Contabilidad. La ruta técnica dura menos, cuesta menos y en varios campos tiene más demanda. Y el ingreso no depende del nombre de la carrera: depende de la ocupación concreta, la institución, la experiencia y la ciudad. Dentro de una misma carrera el rango es enorme."
-          }
-        },
-        {
-          "tipo": "destacado",
-          "variante": "dato",
-          "texto": "Lo que sí está documentado: quien abandona una carrera que no le interesa pierde tiempo y dinero."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Andina (2023), ingresos de carreras técnicas según Mi Carrera (MTPE).",
-          "url": "https://andina.pe/ingles/noticia-mtpe-algunas-carreras-tecnicas-pagan-hasta-dos-veces-mas-las-profesionales-966960.aspx"
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "La pregunta que te hizo esa chica era buena, Aurelio. Yo le sumaría tres."
     },
     {
       "id": "b1-4-09",
       "tipo": "diapositiva",
-      "presentadorId": "aurelio",
-      "etiqueta": "Pregón 5",
-      "titulo": "«La carrera decide toda mi vida»",
-      "bloques": [
-        {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Lo que dice el mito",
-            "texto": "Si eliges mal, te arruinas la vida."
-          },
-          "derecha": {
-            "titulo": "Lo que muestran los datos",
-            "texto": "Menos de la mitad de los egresados en el Perú trabaja en algo vinculado a lo que estudió. Las trayectorias cambian: se cambia de carrera, se combinan áreas, se estudia una segunda cosa. Elegir es un primer paso que se puede corregir, no una condena."
-          }
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú.",
-          "url": "https://andina.pe/agencia/noticia-jovenes-estan-escogiendo-mejor-sus-carreras-que-favorecera-adecuacion-ocupacional-1032314.aspx"
-        }
-      ]
-    },
-    {
-      "id": "b1-4-10",
-      "tipo": "dialogo",
-      "hablanteId": "aurelio",
-      "expresion": "dudoso",
-      "texto": "Me queda el pregón que más grito y que más gente aplaude: «hay trabajos de hombres y trabajos de mujeres». Ese sí es verdad, ¿no? Basta mirar quién hace qué."
-    },
-    {
-      "id": "b1-4-11",
-      "tipo": "diapositiva",
       "presentadorId": "companero",
-      "etiqueta": "Pregón 6",
-      "titulo": "«Hay trabajos de hombres y trabajos de mujeres»",
+      "titulo": "Cuatro preguntas para un pregón",
       "bloques": [
         {
-          "tipo": "parrafo",
-          "texto": "El único requisito para ejercer una profesión son las habilidades, los conocimientos y el interés. Lo que existe es una costumbre social, y los números la muestran: en el Perú las mujeres son el 54 % de los egresados universitarios, pero en mecánica, metalurgia y electrónica hay menos de una mujer por cada diez estudiantes, y en tecnologías de la información 14 por cada 100; al revés, en educación inicial y obstetricia hay 0,5 hombres por cada 100 (Sunedu, 2023)."
-        },
-        {
-          "tipo": "lista",
-          "items": [
-            "Las mujeres con educación superior ganan entre 20 % y 22 % menos que los hombres de la misma carrera.",
-            "Hombres y mujeres tienden a elegir lo que menos contradice los estereotipos, y las mujeres persisten menos en carreras «no femeninas» aunque tengan la capacidad (Fouad, 2007).",
-            "Nada de eso dice qué puedes hacer; dice qué opciones la gente descarta sin mirarlas."
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "¿Quién lo dice y qué sabe del tema?",
+              "texto": "No es para descartar a la persona: es para saber de dónde viene lo que sabe."
+            },
+            {
+              "titulo": "¿Con qué dato?",
+              "texto": "Una experiencia vale, pero es una sola. Sin dato, es opinión."
+            },
+            {
+              "titulo": "¿De qué año es?",
+              "texto": "Un consejo de hace veinte años puede describir otro mercado."
+            },
+            {
+              "titulo": "¿Aplica a mi caso?",
+              "texto": "Un promedio nacional no es tu situación."
+            }
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "«Mirar quién hace qué» describe la costumbre, no la capacidad. Si Daniela descarta Mecánica porque «no es para ella», el que pierde una buena mecánica es el país."
+          "texto": "Un mito suele ser una experiencia real convertida en regla para todos. Por eso no suena a mentira: suena a consejo."
+        }
+      ]
+    },
+    {
+      "id": "b1-4-10",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Estos dos los grito juntos: «¡Tus padres saben qué te conviene estudiar!» y «¡El test te dirá qué estudiar!». La gente asiente siempre."
+    },
+    {
+      "id": "b1-4-11",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Del primero, «Tus padres saben qué te conviene estudiar», ¿qué parte sí se sostiene?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que tu familia te conoce y su experiencia vale.",
+          "correcta": true,
+          "retroalimentacion": "Eso sí. Lo que no se sigue de ahí es que sepan qué te conviene estudiar hoy."
         },
         {
-          "tipo": "fuente",
-          "texto": "El Peruano (2023), Sunedu: género y educación universitaria. MINEDU (2013), cartilla, parte 1.",
-          "url": "https://elperuano.pe/noticia/202958-sunedu-hay-mas-mujeres-que-hombres-en-universidades-pero-ganan-hasta-un-27-menos"
+          "id": "b",
+          "texto": "Que tu familia sabe cómo está hoy el mercado.",
+          "correcta": false,
+          "retroalimentacion": "Lo que saben de carreras y sueldos suele ser de cuando ellos eligieron."
+        },
+        {
+          "id": "c",
+          "texto": "Que a tu familia le toca decidir lo que estudias.",
+          "correcta": false,
+          "retroalimentacion": "A la familia le toca acompañar, informar y respetar. Decidir te toca a ti."
+        }
+      ],
+      "explicacion": "Casi todo mito tiene una parte cierta, y por eso convence. Tu familia te conoce; lo que suele estar desactualizado es lo que sabe de carreras y sueldos.",
+      "pistas": [
+        {
+          "id": "b1-4-11p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de la segunda pregunta: ¿de qué año es lo que saben?"
         }
       ]
     },
     {
       "id": "b1-4-12",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Lo que sí tiene sustento",
+      "etiqueta": "Pregones 1 y 2",
+      "presentadorId": "aurelio",
+      "titulo": "Lo cierto y lo que no se sostiene",
       "bloques": [
         {
-          "tipo": "lista",
-          "items": [
-            "Las mujeres tienen la misma capacidad que los hombres para ser excelentes profesionales.",
-            "Existen varias rutas válidas después del colegio: universidad, instituto, oficios, Fuerzas Armadas y emprendimiento.",
-            "Combinar interés con información real sobre ingresos y empleabilidad da mejores decisiones que mirar solo una de las dos.",
-            "Las habilidades que desarrollas (comunicarte, resolver problemas, trabajar en equipo) sirven aunque cambies de campo.",
-            "Estar satisfecho con el trabajo pesa tanto o más que ganar mucho dinero en cómo la gente evalúa su vida."
+          "tipo": "tabla",
+          "columnas": [
+            "El pregón",
+            "Lo que tiene de cierto",
+            "Lo que no se sostiene"
+          ],
+          "filas": [
+            [
+              "«Mis padres saben qué me conviene estudiar»",
+              "Tu familia te conoce, y su experiencia de trabajo vale",
+              "Lo que saben de carreras y sueldos suele ser de cuando ellos eligieron. Les toca acompañar, informar y respetar; la decisión es tuya"
+            ],
+            [
+              "«El test me dirá qué estudiar»",
+              "Un buen test ordena lo que ya sabes de ti y te muestra áreas que no habías mirado",
+              "Sale de tus respuestas de hoy y no conoce tu contexto. Sugiere áreas para explorar: no decide ni descarta nada"
+            ]
           ]
         },
         {
-          "tipo": "pasos",
-          "titulo": "Cómo desarmar un mito en cuatro preguntas",
-          "pasos": [
-            { "titulo": "¿Quién lo dice y qué sabe del tema?", "texto": "Una experiencia personal vale, pero es una sola." },
-            { "titulo": "¿Con qué dato?", "texto": "Si no hay dato, es opinión." },
-            { "titulo": "¿De qué año es ese dato?", "texto": "Un consejo de hace veinte años puede describir otro mercado." },
-            { "titulo": "¿Aplica a mi caso?", "texto": "Un promedio nacional no es tu situación." }
-          ]
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Un resultado es una hipótesis para explorar, no una sentencia."
         }
       ]
     },
     {
       "id": "b1-4-13",
+      "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "expresion": "neutral",
-      "texto": "Está bien, está bien. Pero no me creas tan fácil: en mi caravana todavía hay gente que pregona. A ver si distingues lo que se sostiene de lo que no."
+      "texto": "Ahora sí, el cuaderno. Aquí anotan cuánto gana cada quien. A ver qué dice de «¡El que no va a la universidad no llega a nada!»."
     },
     {
       "id": "b1-4-14",
-      "tipo": "pregunta",
-      "hablanteId": "aurelio",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un comerciante de la caravana dice: «Mi hijo quería ser diseñador, pero eso no da plata. Lo mandé a Administración y ahí está, aburrido pero seguro». ¿Qué mito está detrás y cuál es el dato que lo discute?",
-      "opciones": [
+      "tipo": "diapositiva",
+      "etiqueta": "Pregones 3 y 4",
+      "presentadorId": "aurelio",
+      "titulo": "El cuaderno de la caravana",
+      "bloques": [
         {
-          "id": "a",
-          "texto": "«Solo la universidad da futuro»; el dato es que las carreras técnicas pagan más.",
-          "correcta": false,
-          "retroalimentacion": "Las dos carreras que menciona son universitarias. El mito aquí es otro: el del gusto frente al dinero."
+          "tipo": "parrafo",
+          "texto": "Ingreso promedio mensual de jóvenes, según la carrera que estudiaron."
         },
         {
-          "id": "b",
-          "texto": "«Si estudio lo que me gusta voy a ganar poco»; el dato es que el ingreso depende de la ocupación, la institución y la experiencia, no del nombre de la carrera.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Y hay otro dato en la propia frase: «aburrido». Quien abandona una carrera que no le interesa pierde tiempo y dinero; eso sí está documentado."
+          "tipo": "tabla",
+          "columnas": [
+            "En institutos",
+            "S/",
+            "En universidades",
+            "S/"
+          ],
+          "filas": [
+            [
+              "Técnico en minería, metalurgia y petróleo",
+              "6 804",
+              "Medicina",
+              "7 030"
+            ],
+            [
+              "Técnico electricista",
+              "3 757",
+              "Derecho",
+              "4 113"
+            ],
+            [
+              "Técnico industrial",
+              "3 551",
+              "Enfermería",
+              "4 050"
+            ]
+          ]
         },
         {
-          "id": "c",
-          "texto": "No es un mito: el padre tiene razón, Administración es más segura.",
-          "correcta": false,
-          "retroalimentacion": "Administración tiene muchísimos egresados y, por eso, mucha competencia. «Seguro» es una opinión; el rango de ingresos dentro de cada carrera es enorme."
-        }
-      ],
-      "explicacion": "El ingreso no se decide por el nombre de la carrera. Dentro de Diseño hay quien gana mucho y quien gana poco, igual que en Administración. Lo que sí cambia los resultados es elegir con interés y con información, no con miedo.",
-      "pistas": [
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "Son promedios. Dentro de una misma carrera, el que más gana y el que menos están muy lejos: pesan la ocupación concreta, la institución, la experiencia y la ciudad."
+        },
         {
-          "id": "b1-4-14p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Mira las dos palabras clave del padre: «gusta» y «plata». ¿Qué pregón de Aurelio junta esas dos?"
+          "tipo": "fuente",
+          "texto": "Mi Carrera (MTPE), datos a agosto de 2025, en El Peruano (2026).",
+          "url": "https://elperuano.pe/noticia/292138-tecnicos-en-mineria-metalurgia-y-petroleo-y-medicos-son-los-jovenes-mejor-pagados"
         }
       ]
     },
@@ -292,43 +302,37 @@
       "id": "b1-4-15",
       "tipo": "pregunta",
       "hablanteId": "aurelio",
-      "formato": "opcion_multiple",
+      "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "De estas cuatro frases de la caravana, ¿cuáles tienen sustento? Marca todas las que correspondan.",
+      "enunciado": "Con el cuaderno delante, ¿qué pasa con «Solo la universidad da futuro»?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Después del colegio hay varias rutas válidas, no solo la universidad.",
-          "correcta": true,
-          "retroalimentacion": "Con sustento: universidad, instituto, oficios, Fuerzas Armadas y emprendimiento son rutas reales, con datos de ingreso en Mi Carrera."
+          "texto": "Se confirma: la carrera mejor pagada es universitaria.",
+          "correcta": false,
+          "retroalimentacion": "Medicina está arriba, sí. Pero una carrera arriba no vuelve cierta la regla para todas."
         },
         {
           "id": "b",
-          "texto": "Un test de intereses dice qué carrera te toca.",
-          "correcta": false,
-          "retroalimentacion": "Mito. Un test sugiere áreas para explorar; no conoce tu contexto ni decide por ti."
+          "texto": "No se sostiene: hay técnicas que pagan como universitarias.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Depende de la carrera, no de si se estudia en un instituto o en una universidad."
         },
         {
           "id": "c",
-          "texto": "Las habilidades que desarrollas sirven aunque cambies de campo.",
-          "correcta": true,
-          "retroalimentacion": "Con sustento: comunicarte, resolver problemas y trabajar en equipo se llevan a cualquier trabajo."
-        },
-        {
-          "id": "d",
-          "texto": "Las mujeres rinden menos en ingeniería; por eso hay pocas.",
+          "texto": "Se da vuelta: lo técnico paga más que lo universitario.",
           "correcta": false,
-          "retroalimentacion": "Mito. Hay pocas porque se descarta la opción antes de mirarla, no por capacidad. Las mujeres son la mayoría de los egresados universitarios del país."
+          "retroalimentacion": "Tampoco. Eso sería cambiar un mito por otro: mira Medicina."
         }
       ],
-      "explicacion": "Dos tienen sustento (las rutas y las habilidades transferibles) y dos son mitos (el test que decide y el género). La diferencia siempre está en si hay un dato detrás.",
+      "explicacion": "El cuaderno no dice que una ruta gane siempre. Dice que hay carreras técnicas que pagan tanto o más que muchas universitarias, y que conviene comparar carreras concretas.",
       "pistas": [
         {
           "id": "b1-4-15p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Pregúntale a cada frase: ¿con qué dato? Las que no tienen ninguno son los pregones."
+          "texto": "Compara fila por fila, y fíjate si alguna columna gana siempre."
         }
       ]
     },
@@ -339,34 +343,34 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una viajera dice: «Mi tío estudió Turismo en 2006 y nunca encontró trabajo, así que Turismo no tiene futuro». ¿Cuál de las cuatro preguntas desarma mejor esa frase?",
+      "enunciado": "Un comerciante de la caravana dice: «Mi hijo quería ser diseñador, pero lo mandé a Administración. Ahí está, aburrido pero seguro». ¿Qué pregón hay detrás?",
       "opciones": [
         {
           "id": "a",
-          "texto": "¿Quién lo dice y qué sabe del tema?",
+          "texto": "«Solo la universidad da futuro.»",
           "correcta": false,
-          "retroalimentacion": "Sirve, pero el tío sí sabe algo: le pasó a él. El problema está en otra parte."
+          "retroalimentacion": "Las dos carreras que nombra se estudian en la universidad. El pregón es otro."
         },
         {
           "id": "b",
-          "texto": "¿De qué año es ese dato?",
+          "texto": "«Lo que te gusta no da de comer.»",
           "correcta": true,
-          "retroalimentacion": "Eso es. Una experiencia de 2006 describe un mercado de hace veinte años. Y además es un solo caso: habría que preguntar también si aplica al suyo."
+          "retroalimentacion": "Ese. Y fíjate en la palabra «aburrido»: elegir sin interés también tiene un costo."
         },
         {
           "id": "c",
-          "texto": "Ninguna: si le pasó a su tío, es cierto.",
+          "texto": "«La carrera decide toda tu vida.»",
           "correcta": false,
-          "retroalimentacion": "Lo que le pasó al tío es real. Que valga para todo el mundo en todas las épocas, no."
+          "retroalimentacion": "Puede que el padre lo piense, pero no es lo que dice: él opone gusto y seguridad."
         }
       ],
-      "explicacion": "La experiencia del tío es verdadera, pero es una sola y de otra época. Un mito suele ser una experiencia real convertida en regla general. Las cuatro preguntas sirven para separar las dos cosas.",
+      "explicacion": "«Seguro» es una opinión: el cuaderno muestra que el ingreso cambia mucho dentro de cada carrera. Lo que sí cambia el resultado es elegir con interés y con datos, no con miedo.",
       "pistas": [
         {
           "id": "b1-4-16p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Hay un número en la frase. Fíjate en ese número."
+          "texto": "El padre pone dos cosas frente a frente: lo que su hijo quería y lo que él cree seguro."
         }
       ]
     },
@@ -375,19 +379,207 @@
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "expresion": "contento",
-      "texto": "Me ganaste. Pero te advierto algo: del otro lado del oasis está el puente de los mitos, y yo voy a estar en la otra orilla pregonando, porque es mi oficio. Cada vez que repitas uno de mis pregones como si fuera verdad, una tabla se rompe."
+      "texto": "Yo iba a ser herrero, como mi padre. Y mírenme, con una campana. Igual pregono que «la carrera decide toda tu vida»."
     },
     {
       "id": "b1-4-18",
+      "tipo": "eleccion",
+      "enunciado": "Aurelio te pregunta: «¿Conoces a alguien que trabaje en algo distinto de lo que estudió?»",
+      "registrar": false,
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "b1-4-18a",
+          "texto": "Sí, conozco a alguien.",
+          "reaccion": [
+            {
+              "id": "b1-4-18ar",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "texto": "¿Ves? Yo conozco a una costurera que estudió para contadora, y a un contador que ahora hornea pan. Ninguno se arruinó."
+            }
+          ]
+        },
+        {
+          "id": "b1-4-18b",
+          "texto": "No se me ocurre nadie.",
+          "reaccion": [
+            {
+              "id": "b1-4-18br",
+              "tipo": "dialogo",
+              "hablanteId": "aurelio",
+              "texto": "Pregunta en tu casa esta noche. Te apuesto mi campana a que aparece alguien."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "b1-4-19",
+      "tipo": "diapositiva",
+      "etiqueta": "Pregón 5",
+      "presentadorId": "aurelio",
+      "titulo": "«La carrera decide toda mi vida»",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "En el Perú, el 44 % de los egresados técnicos y el 38,4 % de los universitarios trabajan en ocupaciones vinculadas a lo que estudiaron. Los demás tomaron otro camino: cambiaron de área, combinaron dos, estudiaron otra cosa."
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Elegir es un primer paso que se puede corregir. Eso no quiere decir que dé igual: quiere decir que se elige con cuidado, no con pánico."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú.",
+          "url": "https://andina.pe/agencia/noticia-peru-tecnicos-superan-a-universitarios-trabajos-afines-a-sus-estudios-revela-unesco-1080082.aspx"
+        }
+      ]
+    },
+    {
+      "id": "b1-4-20",
+      "nuevoMomento": true,
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Me queda el pregón que más grito y que más gente aplaude: «hay trabajos de hombres y trabajos de mujeres». Ese sí es verdad, ¿no? Basta mirar quién hace qué."
+    },
+    {
+      "id": "b1-4-21",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El cuaderno dice que en mecánica, metalurgia y electrónica hay menos de una mujer por cada diez estudiantes. ¿Qué muestra ese dato?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Quién puede con esas carreras.",
+          "correcta": false,
+          "retroalimentacion": "El dato cuenta quiénes están matriculados. De lo que cada quien puede, no dice nada."
+        },
+        {
+          "id": "b",
+          "texto": "Quién elige hoy esas carreras.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Describe una costumbre: qué opciones se eligen y cuáles se descartan sin mirarlas."
+        },
+        {
+          "id": "c",
+          "texto": "Quién aprueba esas carreras.",
+          "correcta": false,
+          "retroalimentacion": "No habla de notas ni de egresados: habla de quiénes se matriculan."
+        }
+      ],
+      "explicacion": "«Mirar quién hace qué» describe la costumbre, no la capacidad. El dato es real; lo que no se sostiene es la conclusión que el pregón saca de él.",
+      "pistas": [
+        {
+          "id": "b1-4-21p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Pregúntale al dato qué cuenta exactamente: ¿estudiantes, notas o capacidades?"
+        }
+      ]
+    },
+    {
+      "id": "b1-4-22",
+      "tipo": "diapositiva",
+      "etiqueta": "Pregón 6",
+      "presentadorId": "aurelio",
+      "titulo": "«Hay trabajos de hombres y trabajos de mujeres»",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "titulo": "Lo que dice el cuaderno",
+          "items": [
+            "Las mujeres son el 54 % de los egresados universitarios del Perú.",
+            "En mecánica, metalurgia y electrónica hay menos de una mujer por cada diez estudiantes; en tecnologías de la información, 14 de cada 100.",
+            "Al revés, en educación inicial y obstetricia hay 0,5 hombres por cada 100: el estereotipo también les cierra opciones a ellos.",
+            "Las mujeres con educación superior ganan entre 20 % y 22 % menos que los hombres de su misma carrera. Eso es una desigualdad, no una diferencia de capacidad."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Para ejercer una ocupación hacen falta habilidades, conocimientos e interés. Ninguna exige ser hombre o mujer."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "El Peruano (2023), Sunedu: género y educación universitaria.",
+          "url": "https://elperuano.pe/noticia/202958-sunedu-hay-mas-mujeres-que-hombres-en-universidades-pero-ganan-hasta-un-27-menos"
+        }
+      ]
+    },
+    {
+      "id": "b1-4-23",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "O sea que «mirar quién hace qué» me dice qué se acostumbra, no qué se puede. Y era mi mejor pregón… A ver si de verdad aprendiste a distinguir."
+    },
+    {
+      "id": "b1-4-24",
+      "tipo": "pregunta",
+      "hablanteId": "aurelio",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "De estas cuatro frases de la caravana, ¿cuáles tienen sustento? Marca todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Después del colegio hay varias rutas válidas.",
+          "correcta": true,
+          "retroalimentacion": "Con sustento: universidad, instituto, oficios, Fuerzas Armadas y emprendimiento son rutas reales, con ingresos que se pueden consultar."
+        },
+        {
+          "id": "b",
+          "texto": "Lo técnico siempre paga más que lo universitario.",
+          "correcta": false,
+          "retroalimentacion": "Mito, y de los nuevos: es «solo la universidad da futuro» dado vuelta. Depende de la carrera."
+        },
+        {
+          "id": "c",
+          "texto": "Lo que aprendes sirve aunque cambies de campo.",
+          "correcta": true,
+          "retroalimentacion": "Con sustento: comunicarte, resolver problemas y trabajar en equipo se llevan a cualquier trabajo."
+        },
+        {
+          "id": "d",
+          "texto": "Un test de intereses dice qué carrera te toca.",
+          "correcta": false,
+          "retroalimentacion": "Mito. Un test sugiere áreas para explorar; no decide por ti."
+        }
+      ],
+      "explicacion": "Dos tienen sustento (las rutas y las habilidades que se llevan a otro campo) y dos son mitos (el test que decide y lo técnico que siempre paga más). Un mito dado vuelta sigue siendo un mito.",
+      "pistas": [
+        {
+          "id": "b1-4-24p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Desconfía de las frases con «siempre» y de las que deciden por ti."
+        }
+      ]
+    },
+    {
+      "id": "b1-4-25",
+      "tipo": "dialogo",
+      "hablanteId": "aurelio",
+      "texto": "Me ganaste. Pero te advierto algo: del otro lado del oasis está el puente de los mitos, y yo voy a estar en la otra orilla pregonando, porque es mi oficio. Cada vez que repitas uno de mis pregones como si fuera verdad, una tabla se rompe."
+    },
+    {
+      "id": "b1-4-26",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "Entonces cruzamos con los argumentos de hoy. Los dejé en tu mochila, en la ficha «Mitos sobre el futuro profesional». Repásala si quieres; el puente te espera."
+      "texto": "Lo que salió del cuaderno te lo dejé en la mochila: «Mitos sobre el futuro profesional». En el puente te va a servir."
     }
   ],
   "recompensa": {
     "mensajeFin": "Que una frase se repita mucho no la vuelve cierta. El puente de los mitos ya está a la vista."
   },
-  "mapa": { "x": 1000, "y": 350, "icono": "informativa" }
+  "mapa": {
+    "x": 1000,
+    "y": 350,
+    "icono": "informativa"
+  }
 }

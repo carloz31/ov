@@ -59,7 +59,7 @@
       "id": "ivan",
       "nombre": "Iván",
       "rol": "npc",
-      "descripcion": "Primo de Helena, inventor del artefacto que se acopla al mapa. Se encariñó con la ciudad y se quedó a ayudar a sus habitantes. Entusiasta, algo desordenado.",
+      "descripcion": "Primo de Helena, inventor del artefacto que se acopla al mapa. Buscó el pergamino un tiempo, hasta que se encariñó con la ciudad y se quedó a ayudar a sus habitantes. Entusiasta, algo desordenado.",
       "ubicacion": "Taller de Iván, en la ciudad",
       "avatarUrl": "/images/personajes/ivan.png",
       "expresiones": {
@@ -95,7 +95,7 @@
       "id": "cartografa",
       "nombre": "Nadia",
       "rol": "npc",
-      "descripcion": "Cartógrafa del nevado. Traza el mapa de cada viajero empezando por su punto de origen. Llegó a la isla con miedo y descubrió su oficio mirando con atención. Precisa, cálida.",
+      "descripcion": "Cartógrafa del nevado. Dibuja los mapas de la isla y a cada viajero que sube le pregunta por el camino que hizo antes de llegar. Llegó a la isla con miedo y descubrió su oficio mirando con atención. Precisa, cálida.",
       "ubicacion": "Taller y mirador del nevado",
       "avatarUrl": "/images/personajes/cartografa.png",
       "expresiones": {
@@ -106,7 +106,7 @@
       "id": "guardian",
       "nombre": "Guardián del pergamino",
       "rol": "npc",
-      "descripcion": "Aparece al final de cada tramo, cuando el artefacto se apaga. No esconde el pergamino: cuida que llegue a quien sabe qué hacer con él. Solemne pero amable; pide profundizar sin juzgar.",
+      "descripcion": "Aparece donde el artefacto se queda quieto. No esconde el pergamino: cuida que llegue a quien sabe qué hacer con él. Solemne pero amable; pide profundizar sin juzgar.",
       "ubicacion": "Límite de cada tramo",
       "avatarUrl": "/images/personajes/guardian.png",
       "expresiones": {
