@@ -6,6 +6,7 @@ import { AccionesConAnterior } from './AccionesConAnterior'
 
 export type DialogueBoxProps = {
   speakerId: string
+  expression?: string
   text: string
   label?: string
   hint?: string
@@ -16,6 +17,7 @@ export type DialogueBoxProps = {
 }
 export function DialogueBox({
   speakerId,
+  expression,
   text,
   label,
   hint,
@@ -65,7 +67,7 @@ export function DialogueBox({
       }}
     >
       <div className="sx-dialogue-avatar">
-        <CharacterAvatar id={speakerId} size="lg" />
+        <CharacterAvatar id={speakerId} expression={expression} size="lg" />
       </div>
       <div className="sx-dialogue-copy">
         {label && <p className="sx-player-eyebrow">{label}</p>}

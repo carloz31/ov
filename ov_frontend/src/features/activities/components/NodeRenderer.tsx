@@ -70,6 +70,7 @@ export function NodeRenderer({
       <DialogueBox
         key={reaction.id}
         speakerId={reaction.hablanteId}
+        expression={reaction.expresion}
         text={reaction.texto}
         hint="Escucha, a tu ritmo."
         onContinue={() => setReactions(reactions.slice(1))}
@@ -98,6 +99,7 @@ export function NodeRenderer({
       <DialogueBox
         key={node.id}
         speakerId={node.hablanteId}
+        expression={node.expresion}
         text={node.texto}
         onContinue={advance}
         onAnterior={onAnterior}

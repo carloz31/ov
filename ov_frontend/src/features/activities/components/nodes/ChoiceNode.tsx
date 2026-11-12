@@ -38,7 +38,7 @@ export function ChoiceNode({
           {onAnterior && <PasoAnterior onClick={onAnterior} />}
         </section>
       </div>
-      {previous && <DialogueBox speakerId={previous.hablanteId} text={previous.texto} typewriter={false} />}
+      {previous && <DialogueBox speakerId={previous.hablanteId} expression={previous.expresion} text={previous.texto} typewriter={false} />}
     </div>
   )
 }

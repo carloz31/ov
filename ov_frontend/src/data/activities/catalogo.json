@@ -5,11 +5,11 @@
       "nombre": "[Nombre del compañero]",
       "rol": "companero",
       "descripcion": "Guía del estudiante en la búsqueda de la llave. Da pistas en los retos, hace el puente entre lo aprendido y la vida del estudiante. Tono cercano, nunca evalúa.",
-      "avatarUrl": "/img/personajes/companero.png",
+      "avatarUrl": "/images/personajes/companero.png",
       "expresiones": {
-        "neutral": "/img/personajes/companero_neutral.png",
-        "animado": "/img/personajes/companero_animado.png",
-        "pensativo": "/img/personajes/companero_pensativo.png"
+        "neutral": "/images/personajes/companero_neutral.png",
+        "animado": "/images/personajes/companero_animado.png",
+        "pensativo": "/images/personajes/companero_pensativo.png"
       }
     },
     {
@@ -18,10 +18,10 @@
       "rol": "npc",
       "descripcion": "Trabaja en el molino y conversa con medio pueblo. Primera voz del test de intereses. Reacciones siempre neutras.",
       "ubicacion": "Molino",
-      "avatarUrl": "/img/personajes/mara.png",
+      "avatarUrl": "/images/personajes/mara.png",
       "expresiones": {
-        "neutral": "/img/personajes/mara_neutral.png",
-        "sonrie": "/img/personajes/mara_sonrie.png"
+        "neutral": "/images/personajes/mara_neutral.png",
+        "sonrie": "/images/personajes/mara_sonrie.png"
       }
     },
     {
@@ -30,9 +30,9 @@
       "rol": "npc",
       "descripcion": "Erudita que recibe a quienes buscan el pergamino. Presenció su creación y conoce su ubicación, pero no la revela. Fabrica los libros de autoconocimiento. Tono sereno, sin rodeos.",
       "ubicacion": "Cabaña de Helena",
-      "avatarUrl": "/img/personajes/helena.png",
+      "avatarUrl": "/images/personajes/helena.png",
       "expresiones": {
-        "neutral": "/img/personajes/helena_neutral.png"
+        "neutral": "/images/personajes/helena_neutral.png"
       }
     },
     {
@@ -41,11 +41,11 @@
       "rol": "npc",
       "descripcion": "Pregonero de la plaza. Durante años repitió frases que escuchaba sin revisarlas. Encarna los mitos vocacionales, pero no es ridiculizado: es alguien que quiere aprender a distinguir.",
       "ubicacion": "Oasis del desierto",
-      "avatarUrl": "/img/personajes/aurelio.png",
+      "avatarUrl": "/images/personajes/aurelio.png",
       "expresiones": {
-        "neutral": "/img/personajes/aurelio_neutral.png",
-        "dudoso": "/img/personajes/aurelio_dudoso.png",
-        "contento": "/img/personajes/aurelio_contento.png"
+        "neutral": "/images/personajes/aurelio_neutral.png",
+        "dudoso": "/images/personajes/aurelio_dudoso.png",
+        "contento": "/images/personajes/aurelio_contento.png"
       }
     },
     {
@@ -61,10 +61,10 @@
       "rol": "npc",
       "descripcion": "Primo de Helena, inventor del artefacto que se acopla al mapa. Se encariñó con la ciudad y se quedó a ayudar a sus habitantes. Entusiasta, algo desordenado.",
       "ubicacion": "Taller de Iván, en la ciudad",
-      "avatarUrl": "/img/personajes/ivan.png",
+      "avatarUrl": "/images/personajes/ivan.png",
       "expresiones": {
-        "neutral": "/img/personajes/ivan_neutral.png",
-        "animado": "/img/personajes/ivan_animado.png"
+        "neutral": "/images/personajes/ivan_neutral.png",
+        "animado": "/images/personajes/ivan_animado.png"
       }
     },
     {
@@ -73,9 +73,9 @@
       "rol": "npc",
       "descripcion": "Capitán del barco que trae viajeros a la isla. Nunca baja al muelle. Seco, pero no antipático; ha visto a muchos llegar con la misma idea.",
       "ubicacion": "Muelle",
-      "avatarUrl": "/img/personajes/capitan.png",
+      "avatarUrl": "/images/personajes/capitan.png",
       "expresiones": {
-        "neutral": "/img/personajes/capitan_neutral.png"
+        "neutral": "/images/personajes/capitan_neutral.png"
       }
     },
     {
@@ -84,11 +84,11 @@
       "rol": "npc",
       "descripcion": "Viajero acampado al pie del nevado desde hace siete meses, esperando «saber» antes de seguir. Representa la indecisión que se queda quieta. Al final desarma la carpa.",
       "ubicacion": "Campamento al pie del nevado",
-      "avatarUrl": "/img/personajes/nico.png",
+      "avatarUrl": "/images/personajes/nico.png",
       "expresiones": {
-        "neutral": "/img/personajes/nico_neutral.png",
-        "dudoso": "/img/personajes/nico_dudoso.png",
-        "contento": "/img/personajes/nico_contento.png"
+        "neutral": "/images/personajes/nico_neutral.png",
+        "dudoso": "/images/personajes/nico_dudoso.png",
+        "contento": "/images/personajes/nico_contento.png"
       }
     },
     {
@@ -97,9 +97,9 @@
       "rol": "npc",
       "descripcion": "Cartógrafa del nevado. Traza el mapa de cada viajero empezando por su punto de origen. Llegó a la isla con miedo y descubrió su oficio mirando con atención. Precisa, cálida.",
       "ubicacion": "Taller y mirador del nevado",
-      "avatarUrl": "/img/personajes/cartografa.png",
+      "avatarUrl": "/images/personajes/cartografa.png",
       "expresiones": {
-        "neutral": "/img/personajes/cartografa_neutral.png"
+        "neutral": "/images/personajes/cartografa_neutral.png"
       }
     },
     {
@@ -108,9 +108,9 @@
       "rol": "npc",
       "descripcion": "Aparece al final de cada tramo, cuando el artefacto se apaga. No esconde el pergamino: cuida que llegue a quien sabe qué hacer con él. Solemne pero amable; pide profundizar sin juzgar.",
       "ubicacion": "Límite de cada tramo",
-      "avatarUrl": "/img/personajes/guardian.png",
+      "avatarUrl": "/images/personajes/guardian.png",
       "expresiones": {
-        "neutral": "/img/personajes/guardian_neutral.png"
+        "neutral": "/images/personajes/guardian_neutral.png"
       }
     },
     {
@@ -119,9 +119,9 @@
       "rol": "npc",
       "descripcion": "Jefa de la brigada que vigila el volcán. Fue la más callada de su promoción y aprendió a liderar practicando. Pide brigadistas con habilidades sociales, no con experiencia en volcanes. Directa, práctica, sin solemnidad.",
       "ubicacion": "Bosque del volcán, puesto de la brigada",
-      "avatarUrl": "/img/personajes/rosa.png",
+      "avatarUrl": "/images/personajes/rosa.png",
       "expresiones": {
-        "neutral": "/img/personajes/rosa_neutral.png"
+        "neutral": "/images/personajes/rosa_neutral.png"
       }
     },
     {
@@ -130,9 +130,9 @@
       "rol": "npc",
       "descripcion": "Tabernera de la ciudad. Por su puerta pasa todo el mundo; por eso Helena le confió las preguntas sobre cómo uno se comporta con los demás. Lee las frases y escucha sin opinar.",
       "ubicacion": "Ciudad, taberna",
-      "avatarUrl": "/img/personajes/dora.png",
+      "avatarUrl": "/images/personajes/dora.png",
       "expresiones": {
-        "neutral": "/img/personajes/dora_neutral.png"
+        "neutral": "/images/personajes/dora_neutral.png"
       }
     },
     {
@@ -141,9 +141,9 @@
       "rol": "npc",
       "descripcion": "Profesor de la escuela de la ciudad. Conserva las preguntas de inteligencias: ha visto a muchos alumnos ser inteligentes de una forma que el examen no mide. Paciente, con un consejo guardado para cada resultado.",
       "ubicacion": "Ciudad, escuela",
-      "avatarUrl": "/img/personajes/maestro.png",
+      "avatarUrl": "/images/personajes/maestro.png",
       "expresiones": {
-        "neutral": "/img/personajes/maestro_neutral.png"
+        "neutral": "/images/personajes/maestro_neutral.png"
       }
     },
     {
@@ -152,9 +152,9 @@
       "rol": "npc",
       "descripcion": "Bibliotecaria de la ciudad. Guarda las sesenta preguntas de intereses y las parte en dos visitas. Insiste en responder solo si te gustaría, sin pensar en si sabrías, en lo que paga ni en lo que dirían en casa.",
       "ubicacion": "Ciudad, biblioteca",
-      "avatarUrl": "/img/personajes/bibliotecaria.png",
+      "avatarUrl": "/images/personajes/bibliotecaria.png",
       "expresiones": {
-        "neutral": "/img/personajes/bibliotecaria_neutral.png"
+        "neutral": "/images/personajes/bibliotecaria_neutral.png"
       }
     },
     {
@@ -163,9 +163,9 @@
       "rol": "npc",
       "descripcion": "Práctico del puerto: guía a cada barco por el canal correcto. Conoce los cinco embarcaderos (las cinco rutas) y la sala del atlas de la capitanía. Marinero de pocas palabras, muy concreto.",
       "ubicacion": "Puerto, capitanía",
-      "avatarUrl": "/img/personajes/practico.png",
+      "avatarUrl": "/images/personajes/practico.png",
       "expresiones": {
-        "neutral": "/img/personajes/practico_neutral.png"
+        "neutral": "/images/personajes/practico_neutral.png"
       }
     },
     {
@@ -174,9 +174,9 @@
       "rol": "npc",
       "descripcion": "Adivina del mercado del puerto: tiene las cifras reales del MTPE, pero las lee como horóscopo (un promedio es un destino, una demanda es empleo seguro, una sola ruta vale). Teatral, insistente. Enemiga de b3-5 y de la revancha b3-b.",
       "ubicacion": "Puerto, mercado",
-      "avatarUrl": "/img/personajes/cifra.png",
+      "avatarUrl": "/images/personajes/cifra.png",
       "expresiones": {
-        "neutral": "/img/personajes/cifra_neutral.png"
+        "neutral": "/images/personajes/cifra_neutral.png"
       }
     },
     {
@@ -185,10 +185,10 @@
       "rol": "npc",
       "descripcion": "Promotor del stand dorado de la «Universidad del Faro Dorado» en la feria del malecón. Grita promesas: acreditación internacional, ingreso directo, bolsa de trabajo garantizada, tres vacantes. Enemigo de b3-7.",
       "ubicacion": "Puerto, feria del malecón",
-      "avatarUrl": "/img/personajes/feriante.png",
+      "avatarUrl": "/images/personajes/feriante.png",
       "expresiones": {
-        "neutral": "/img/personajes/feriante_neutral.png",
-        "dudoso": "/img/personajes/feriante_dudoso.png"
+        "neutral": "/images/personajes/feriante_neutral.png",
+        "dudoso": "/images/personajes/feriante_dudoso.png"
       }
     },
     {
@@ -197,10 +197,10 @@
       "rol": "npc",
       "descripcion": "Prestamista de la caseta junto al muelle: «fácil, rápido, sin preguntas». Cariñosa y evasiva; guarda una pila de presupuestos de jóvenes que firmaron sin mirar. Enemiga de b3-9.",
       "ubicacion": "Puerto, caseta junto al muelle",
-      "avatarUrl": "/img/personajes/prestamista.png",
+      "avatarUrl": "/images/personajes/prestamista.png",
       "expresiones": {
-        "neutral": "/img/personajes/prestamista_neutral.png",
-        "dudoso": "/img/personajes/prestamista_dudoso.png"
+        "neutral": "/images/personajes/prestamista_neutral.png",
+        "dudoso": "/images/personajes/prestamista_dudoso.png"
       }
     },
     {
@@ -209,9 +209,9 @@
       "rol": "npc",
       "descripcion": "Sobrina de Mara, la del caso del molino (b0-5). Dejó Contabilidad en segundo ciclo y llega a la isla en el barco de la tarde. Habla de su giro sin dramatizarlo: se arrepiente de cómo decidió, no de haberlo intentado.",
       "ubicacion": "Puerto, malecón",
-      "avatarUrl": "/img/personajes/alejandra.png",
+      "avatarUrl": "/images/personajes/alejandra.png",
       "expresiones": {
-        "neutral": "/img/personajes/alejandra_neutral.png"
+        "neutral": "/images/personajes/alejandra_neutral.png"
       }
     },
     {
@@ -220,9 +220,9 @@
       "rol": "npc",
       "descripcion": "Voz del borde del acantilado. No tiene voz propia: repite lo que los viajeros trajeron de casa («estudia lo que da plata», «tus amigos van a estar ahí», «esa carrera es respetada»). Enemigo de b4-4; vuelve en ma8 como provocador.",
       "ubicacion": "Acantilado, el borde",
-      "avatarUrl": "/img/personajes/eco.png",
+      "avatarUrl": "/images/personajes/eco.png",
       "expresiones": {
-        "neutral": "/img/personajes/eco_neutral.png"
+        "neutral": "/images/personajes/eco_neutral.png"
       }
     },
     {
@@ -231,9 +231,9 @@
       "rol": "npc",
       "descripcion": "Enciende la luz del faro cada noche para los que todavía están en el mar. Sabe que nadie navega en línea recta. Serena; habla de la decisión como ruta provisional.",
       "ubicacion": "Faro, la casa de la base",
-      "avatarUrl": "/img/personajes/vigia.png",
+      "avatarUrl": "/images/personajes/vigia.png",
       "expresiones": {
-        "neutral": "/img/personajes/vigia_neutral.png"
+        "neutral": "/images/personajes/vigia_neutral.png"
       }
     },
     {
@@ -242,10 +242,10 @@
       "rol": "npc",
       "descripcion": "Investigador del centro de investigación de la ciudad, con el techo caído por la última lluvia. Investiga a la gente que trabaja; la isla paga por cada entrevista nueva del archivo y con eso repara el centro. Despistado, entusiasta, agradecido.",
       "ubicacion": "Ciudad, centro de investigación",
-      "avatarUrl": "/img/personajes/investigador.png",
+      "avatarUrl": "/images/personajes/investigador.png",
       "expresiones": {
-        "neutral": "/img/personajes/investigador_neutral.png",
-        "contento": "/img/personajes/investigador_contento.png"
+        "neutral": "/images/personajes/investigador_neutral.png",
+        "contento": "/images/personajes/investigador_contento.png"
       }
     },
     {
@@ -254,9 +254,9 @@
       "rol": "npc",
       "descripcion": "Organiza la feria de la plaza de la ciudad. Quiere que los chicos salgan con respuestas y no con bolsas de folletos. Práctica, directa.",
       "ubicacion": "Ciudad, plaza",
-      "avatarUrl": "/img/personajes/organizadora.png",
+      "avatarUrl": "/images/personajes/organizadora.png",
       "expresiones": {
-        "neutral": "/img/personajes/organizadora_neutral.png"
+        "neutral": "/images/personajes/organizadora_neutral.png"
       }
     }
   ],
