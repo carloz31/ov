@@ -38,6 +38,17 @@ uv run python tests/llm/evaluar_tarjetas.py --guion                   # todos lo
 uv run python tests/llm/evaluar_tarjetas.py --pasos                   # todos los de pasos, con la medición
 ```
 
+### Pendiente: primera corrida del guion y de los pasos
+
+El ajuste llm-sugerencias dejó listos los modos y los casos, pero no los corrió: en esa sesión no había clave. Para retomarlo en otra sesión de Claude Code:
+
+1. Comprueba que `ov_backend/.env` está ignorado por git (`git check-ignore -v ov_backend/.env`); si no, detente y avisa.
+2. Crea `ov_backend/.env` con una sola línea, `ANTHROPIC_API_KEY=<clave>`, escrita desde la variable de entorno sin mostrar el valor (por ejemplo, `printf 'ANTHROPIC_API_KEY=%s\n' "$ANTHROPIC_API_KEY" > .env`). No lo versiones, ni lo subas, ni pongas la clave en informes o commits.
+3. Haz primero una sola llamada de prueba: `uv run python tests/llm/evaluar_tarjetas.py --pasos --solo A`. Si falla por red o por la clave, detente e informa el error, sin la clave.
+4. Corre `--guion` y `--pasos`, una repetición por caso (es lo que hace el runner). No relances la corrida completa sin consultar.
+5. Lleva al usuario la tabla de medición del inicio del informe de pasos (tokens de razonamiento y de salida, latencia y parada con 1, 3, 5, 8 y 10 dudas). Con ella se fijan `MAXIMO_TOKENS_SALIDA_PASOS` y `TIEMPO_MAXIMO_PASOS_SEGUNDOS` (hoy 6000 y 30, provisionales; `app/core/parametros.py`). No los fijes ni cambies el flujo del guardado sin que el usuario decida: esa llamada va dentro del guardado de CONOCIMIENTO o REALIDAD, y el estudiante la espera con el botón cargando.
+6. No cambies los prompts por lo que salga: anótalo en el informe. En el guion, repetir una base con otras palabras es un defecto conocido y aceptado.
+
 ## Formato de un caso
 
 ```json

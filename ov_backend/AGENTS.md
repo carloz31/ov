@@ -113,7 +113,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 - La clave de Gemini se lee de `.env`, que nunca se versiona. No la escribas en código, logs, respuestas, errores ni documentación.
 - `JWT_SECRETO` (firma de los tokens) también va en `.env`. Es obligatorio en `ENTORNO=produccion`, con al menos 32 caracteres; en desarrollo y pruebas, si falta, se usa uno fijo. Las contraseñas se guardan con Argon2id (`argon2-cffi`); las de prueba están en `datos/usuarios_prueba.txt`, que coincide con `datos/ruta.py`.
 - `EVALUADOR=falso` (por defecto) o `EVALUADOR=gemini`. Las pruebas usan siempre el evaluador falso y nunca acceden a la red (salvo las de marca `postgres`, que se omiten sin `TEST_POSTGRES_URL`).
-- LLM de registros (ajuste registros llm, lote 3): `app.state.cliente_llm` es `ClienteClaude` con `ANTHROPIC_API_KEY` y, sin clave, un cliente que siempre falla (el ítem queda SIN_EVALUAR). Las pruebas dejan la clave vacía y las plantillas inyectan `ClientePrueba` (`tests/soporte/soporte_llm.py`); ninguna llama al LLM real. No ejecutes nada que llame a Claude salvo que el usuario lo pida.
+- LLM de registros (ajuste registros llm, lote 3): `app.state.cliente_llm` es `ClienteClaude` con `ANTHROPIC_API_KEY` y, sin clave, un cliente que siempre falla (el ítem queda SIN_EVALUAR). Las pruebas dejan la clave vacía y las plantillas inyectan `ClientePrueba` (`tests/soporte/soporte_llm.py`); ninguna llama al LLM real. Desde el ajuste llm-sugerencias, el mismo cliente sirve al guion de Investigaciones y a los pasos del plan (`salida_json`, con topes por llamada), y `ClientePrueba` sin cola responde según el esquema que recibe (registro, guion o pasos; `fallar_pasos` hace fallar los pasos). No ejecutes nada que llame a Claude salvo que el usuario lo pida.
 - No ejecutes nada que llame a la API real de Gemini salvo que el usuario lo pida explícitamente.
 
 ## Stack y comandos
@@ -141,7 +141,7 @@ tests/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
     escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
     registros/        los registros definitivos de `contenido` recorridos ítem por ítem con el cliente de prueba del LLM (ajuste registros)
-  llm/               validación del LLM de registros contra el modelo real (`evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`, con la presentación de `datos/contenido.py`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
+  llm/               validación del LLM contra el modelo real: registros y, con `--guion` y `--pasos`, el guion y los pasos del plan (primera corrida pendiente, ver su README) (`evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`, con la presentación de `datos/contenido.py`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
