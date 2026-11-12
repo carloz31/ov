@@ -72,12 +72,13 @@ for (const { cuenta, base, coletilla } of ROLES) {
     const filtros = elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0]
     assert.equal(filtros.props.soloLetras, true)
     const panel = texto(elementos(FiltrosCatalogo(filtros.props), (e) => e.type?.name === 'PanelFiltros')[0].props.filas.map((f) => f.controles))
-    assert.doesNotMatch(panel, /Afines a mi resultado/)
-    assert.match(panel, /Filtre por el tipo de interés de la carrera/)
+    // Ajuste coherencia-bloque3: las carreras no se filtran por intereses (sin letras, «Afines» ni su ayuda).
+    assert.doesNotMatch(panel, /Afines a mi resultado|Filtre por el tipo de interés/)
     const tarjeta = elementos(arbol, (e) => e.type?.name === 'TarjetaCatalogo')[0]
     assert.equal(tarjeta.props.conFavorito, false)
     const html = TarjetaCatalogo(tarjeta.props)
     assert.equal(elementos(html, (e) => e.type?.name === 'FavoriteButton').length, 0)
+    assert.equal(elementos(html, (e) => e.type?.name === 'SellosRiasec').length, 0)
     const enlaces = elementos(html, (e) => typeof e.props?.to === 'string').map((e) => e.props.to)
     assert.ok(enlaces.length >= 2 && enlaces.every((to) => to.startsWith(`${base}/careers`)), enlaces.join())
     carreras.unmount()
@@ -92,6 +93,12 @@ for (const { cuenta, base, coletilla } of ROLES) {
     await esperar()
     arbol = profesiones.render()
     assert.doesNotMatch(texto(arbol), /Tu exploración|íconos revelados/)
+    const filtrosOcupaciones = elementos(arbol, (e) => e.type?.name === 'FiltrosCatalogo')[0]
+    const panelOcupaciones = texto(
+      elementos(FiltrosCatalogo(filtrosOcupaciones.props), (e) => e.type?.name === 'PanelFiltros')[0].props.filas.map((f) => f.controles),
+    )
+    assert.doesNotMatch(panelOcupaciones, /Afines a mi resultado/)
+    assert.match(panelOcupaciones, /Filtre por el tipo de interés de la ocupación/)
     for (const t of elementos(arbol, (e) => e.type?.name === 'TarjetaCatalogo')) {
       const icono = elementos(TarjetaCatalogo(t.props), (e) => e.type?.name === 'IconoProfesion')[0]
       assert.equal(icono.props.revelado, true)

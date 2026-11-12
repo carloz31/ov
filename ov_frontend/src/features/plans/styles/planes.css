@@ -388,15 +388,11 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--primary) 14%, var(--sx-parchment));
 }
-.sx-p-encaje,
 .sx-p-repregunta {
   padding: 14px 18px;
   border: 1px solid color-mix(in srgb, var(--sx-gold) 60%, transparent);
   border-radius: 14px;
   background: color-mix(in srgb, var(--sx-gold) 10%, var(--sx-parchment));
-}
-.sx-p-encaje p {
-  margin: 4px 0 0;
 }
 .sx-p-repregunta {
   display: flex;

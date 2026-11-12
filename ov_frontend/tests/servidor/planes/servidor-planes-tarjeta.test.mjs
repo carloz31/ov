@@ -77,7 +77,7 @@ test('sin ?seccion= abre la primera abierta no lista; el menú lleva títulos de
   assert.doesNotMatch(marcado, /Qué tan real es|Mis pasos(?! )/)
 })
 
-test('POR_QUE en lectura con la repregunta fija; «Cómo encaja contigo» con el resultado revelado', async () => {
+test('POR_QUE en lectura con la repregunta fija y sin «Cómo encaja contigo» (ajuste coherencia-bloque3)', async () => {
   const { app, vista } = planAbierto()
   const arbol = await dibujar(vista)
   const porQue = hijo(arbol, 'SeccionPorQue')
@@ -86,16 +86,9 @@ test('POR_QUE en lectura con la repregunta fija; «Cómo encaja contigo» con el
   const marcado = texto(SeccionPorQue(porQue.props))
   assert.match(marcado, /IdeaDe un test/)
   assert.match(marcado, /¿Puedes contar un poco más\? ¿Qué pasó, con quién estabas\?Agregar/)
-  // ruta-resultado-riasec: código IRA; Psicología es S, I, A.
-  assert.deepEqual(copia(porQue.props.encaje), {
-    carrera: 'Social',
-    principal: 'Investigador',
-    segundo: 'Realista',
-  })
-  assert.match(
-    marcado,
-    /Cómo encaja contigoPsicología es de tipo Social\. Tu tipo principal es Investigador y el segundo, Realista\. Es una pista, no una regla\./,
-  )
+  // Una carrera no muestra su tipo RIASEC: el plan ya no dice cómo encaja con el resultado.
+  assert.equal('encaje' in porQue.props, false)
+  assert.doesNotMatch(marcado, /Cómo encaja contigo|es de tipo/)
   assert.ok(boton(arbol, 'Editar'))
 })
 
@@ -225,7 +218,6 @@ test('motivos en dos filas: marcar sube con su número, la ✕ baja (o borra uno
   const props = {
     plan: familia.planes[0],
     opciones: familia.opciones,
-    encaje: null,
     borrador: { idea: 'MIA', motivos: [], relato: 'r' },
     onCambiar: (cambio) => (props.borrador = cambio(props.borrador)),
     onEditar() {},

@@ -130,9 +130,10 @@ test('con temporizadores falsos, R, I y A a 100 ms una de otra piden una sola li
   // El arnés toma `setTimeout` al crearse: los temporizadores falsos se activan antes.
   mock.timers.enable({ apis: ['setTimeout'] })
   try {
-    const { app } = catalogo()
+    // Ajuste coherencia-bloque3: las letras solo filtran ocupaciones.
+    const { app } = catalogo('/student/catalog/professions')
     const { CatalogoServidor } = app.load('src/features/discovery/components/CatalogoServidor.tsx')
-    const vista = app.mount(CatalogoServidor, { section: 'careers', obtenido: () => false, iconosRevelados: null })
+    const vista = app.mount(CatalogoServidor, { section: 'professions', obtenido: () => false, iconosRevelados: 1 })
     vista.render()
     await esperar()
     let arbol = vista.render()
@@ -148,13 +149,13 @@ test('con temporizadores falsos, R, I y A a 100 ms una de otra piden una sola li
     mock.timers.tick(399)
     vista.render()
     await esperar()
-    assert.deepEqual(busquedas(app, 'carreras'), ['?limite=20&desde=0'])
+    assert.deepEqual(busquedas(app, 'ocupaciones'), ['?limite=20&desde=0'])
     mock.timers.tick(1)
     vista.render()
     await esperar()
     vista.render()
     await esperar()
-    assert.deepEqual(busquedas(app, 'carreras'), ['?limite=20&desde=0', '?riasec=RIA&limite=20&desde=0'])
+    assert.deepEqual(busquedas(app, 'ocupaciones'), ['?limite=20&desde=0', '?riasec=RIA&limite=20&desde=0'])
     arbol = vista.render()
     assert.equal(elementos(arbol, (e) => e.type?.name === 'FilaResultado')[0].props.buscando, false)
   } finally {
@@ -170,10 +171,11 @@ test('«Limpiar filtros» cuenta los activos, limpia la pestaña y pide la lista
   await esperar()
   let arbol = vista.render()
   const fila = () => elementos(arbol, (e) => e.type?.name === 'FilaResultado')[0].props
-  // Las letras y «afines» cuentan como un filtro: tipo, intereses y búsqueda.
-  assert.equal(fila().activos, 3)
+  // Ajuste coherencia-bloque3: en carreras, `riasec` y `afines` de la URL se ignoran y no llegan al servidor.
+  assert.equal(fila().activos, 2)
+  assert.ok(busquedas(app, 'carreras').every((b) => !/riasec|afines/.test(b)), busquedas(app, 'carreras').join())
   const { FilaResultado } = app.load('src/features/discovery/components/FilaResultado.tsx')
-  assert.match(texto(FilaResultado(fila())), /· 3 filtros activos/)
+  assert.match(texto(FilaResultado(fila())), /· 2 filtros activos/)
   fila().onLimpiar()
   arbol = vista.render()
   assert.equal(app.query.toString(), '')

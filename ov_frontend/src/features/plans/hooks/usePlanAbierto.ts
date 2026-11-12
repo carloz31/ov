@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { dimensionNames } from '@/features/discovery/lib/catalogDetails'
-import { encajeRiasec, seccionSiguiente } from '@/lib/servidor/adaptadoresPlanes'
+import { seccionSiguiente } from '@/lib/servidor/adaptadoresPlanes'
 import { appPaths } from '@/routes/paths'
 import { useDetalleCatalogo } from '@/store/servidor/catalogo'
-import { cargarResultadoRiasec } from '@/store/servidor/resultado'
-import { useEstadoServidor } from '@/store/servidor/sesion'
 import type { CodigoSeccionPlan } from '@/types/servidor'
 import type { AvisoPlan, EstadoNavegacionPlan } from './useAccionesPlanes'
 import { useMedidores } from './useMedidores'
@@ -28,7 +25,6 @@ export function usePlanAbierto(
 ) {
   const servidor = usePlanesServidor()
   const navigate = useNavigate()
-  const almacen = useEstadoServidor()
   const [aviso, setAviso] = useState<AvisoPlan | null>(() =>
     avisoInicial ? { ...avisoInicial, id: 0 } : null,
   )
@@ -54,10 +50,6 @@ export function usePlanAbierto(
     }
     navigate(appPaths.student.decisions, { replace: true, state: estado })
   }, [noExiste, navigate])
-  // «Cómo encaja contigo» usa el resultado RIASEC revelado, si lo hay.
-  useEffect(() => {
-    if (servidor.usaTarjetaV4 && almacen.estadoResultado === 'sin_cargar') void cargarResultadoRiasec()
-  }, [servidor.usaTarjetaV4, almacen.estadoResultado])
 
   // F07b: REALIDAD en edición elige entre las instituciones que ofrecen la carrera (favoritas primero) y enlaza a
   // la página de la elegida; los detalles se piden solo mientras se edita.
@@ -86,7 +78,6 @@ export function usePlanAbierto(
     medidores,
     instituciones,
     paginaInstitucion: institucionDetalle?.datos?.pagina_web ?? null,
-    encaje: plan ? encajeRiasec(plan.carrera.riasec, almacen.resultadoRiasec, dimensionNames) : null,
     aviso,
     cerrarAviso: () => setAviso(null),
   }

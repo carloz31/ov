@@ -5,7 +5,9 @@ export type SeccionCatalogo = 'professions' | 'careers' | 'institutions'
 
 // Los parámetros que admite cada pestaña. `afines` y `favoritos` son marcas (`1`), excluyentes entre sí.
 export const PARAMETROS: Record<SeccionCatalogo, readonly string[]> = {
-  careers: ['buscar', 'tipo', 'area', 'familia', 'riasec', 'afines', 'favoritos'],
+  // Ajuste coherencia-bloque3: las carreras no se filtran por letras (no hay un código RIASEC confiable por
+  // carrera); `riasec` y `afines` en la URL de carreras se ignoran y no llegan al servidor.
+  careers: ['buscar', 'tipo', 'area', 'familia', 'favoritos'],
   // Ajuste resultados-intereses: profesiones por área y familia; el grupo ya no filtra.
   professions: ['buscar', 'area', 'familia', 'riasec', 'afines', 'favoritos'],
   institutions: ['buscar', 'tipo', 'gestion', 'ubicacion', 'favoritos'],

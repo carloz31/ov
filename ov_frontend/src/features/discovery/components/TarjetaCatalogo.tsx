@@ -8,7 +8,8 @@ import { IconoProfesion } from './IconoProfesion'
 import { SellosRiasec } from './SellosRiasec'
 
 // Ajuste catalogo-datos-reales (F6a): la tarjeta de cada listado del catálogo del servidor. Carrera: tipo,
-// nombre, familia (enlace al listado filtrado), sellos y duración. Profesión: sellos, ícono, título y resumen.
+// nombre, familia (enlace al listado filtrado) y duración (sin sellos desde el ajuste coherencia-bloque3).
+// Ocupación: sellos, ícono, título y resumen.
 // Institución: tipo y gestión, nombre y «Departamento · Distrito».
 // Ajuste catalogo-apoderado: sin `conFavorito` (modo lectura) no lleva corazón; los enlaces siguen las rutas del rol.
 export function TarjetaCatalogo({
@@ -44,7 +45,6 @@ export function TarjetaCatalogo({
           {item.familia.nombre}
         </Link>
         <div className="sx-c-tarjeta-pie">
-          <SellosRiasec letras={item.riasec} />
           {item.duracion && <span className="sx-c-duracion">{item.duracion}</span>}
         </div>
       </article>

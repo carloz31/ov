@@ -74,7 +74,8 @@ function Selector({
 }
 
 // Ajuste catalogo-datos-reales (F6a, rediseño tras la revisión): los filtros de cada pestaña como filas de un
-// panel. Carreras: Tipo, Campo (área y familia según el área) e Intereses. Profesiones: Campo e Intereses
+// panel. Carreras: Tipo y Campo (área y familia según el área; ajuste coherencia-bloque3: sin Intereses).
+// Ocupaciones: Campo e Intereses
 // (ajuste resultados-intereses: el grupo ya no filtra).
 // Instituciones: Tipo, Gestión y Lugar. Los cambios esperan antes de pedir la lista (`useCatalogoServidor`).
 // Ajuste catalogo-apoderado: con `soloLetras` (modo lectura) no hay «Afines a mi resultado»; queda una ayuda.
@@ -130,7 +131,7 @@ export function FiltrosCatalogo({
         {soloLetras ? (
           !letras && (
             <small className="sx-c-ayuda">
-              Filtre por el tipo de interés de la {clase === 'carreras' ? 'carrera' : 'profesión'}
+              Filtre por el tipo de interés de la ocupación
             </small>
           )
         ) : (
@@ -187,7 +188,6 @@ export function FiltrosCatalogo({
             ),
           },
           campo,
-          intereses,
         ]
       : clase === 'ocupaciones'
         ? [campo, intereses]

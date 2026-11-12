@@ -10,42 +10,28 @@ import {
 import type { OpcionesTarjeta, PlanCarrera } from '@/types/servidor'
 import { ChipsElegibles } from './ChipsElegibles'
 
-type Encaje = { carrera: string; principal: string; segundo: string } | null
-
 const mismoMotivo = (a: MotivoBorrador, codigo: string) => 'opcion' in a && a.opcion === codigo
 const normal = (texto: string) => texto.trim().toLocaleLowerCase('es')
 
 // F07a (F07b-pantallas §4.2): «Por qué la elijo». En lectura, idea, motivos (el principal primero) y lo que vivió,
-// con la repregunta fija si quedó en proceso; en edición, los tres campos. Arriba, «Cómo encaja contigo».
+// con la repregunta fija si quedó en proceso; en edición, los tres campos. Sin «Cómo encaja contigo» desde el
+// ajuste coherencia-bloque3: una carrera no muestra código RIASEC.
 export function SeccionPorQue({
   plan,
   opciones,
-  encaje,
   borrador,
   onCambiar,
   onEditar,
 }: {
   plan: PlanCarrera
   opciones: OpcionesTarjeta
-  encaje: Encaje
   borrador: BorradorPorQue | null
   onCambiar: (cambio: (b: BorradorPorQue) => BorradorPorQue) => void
   onEditar: () => void
 }) {
-  const bloqueEncaje = encaje && (
-    <div className="sx-p-encaje">
-      <strong>Cómo encaja contigo</strong>
-      <p>
-        {plan.carrera.nombre} es de tipo <strong>{encaje.carrera}</strong>. Tu tipo principal es{' '}
-        <strong>{encaje.principal}</strong> y el segundo, <strong>{encaje.segundo}</strong>. Es una pista, no
-        una regla.
-      </p>
-    </div>
-  )
   if (!borrador)
     return (
       <>
-        {bloqueEncaje}
         <dl className="sx-p-lectura">
           <div>
             <dt>Idea</dt>
@@ -88,7 +74,6 @@ export function SeccionPorQue({
     )
   return (
     <>
-      {bloqueEncaje}
       <fieldset className="sx-p-campo">
         <legend>¿De quién fue la idea?</legend>
         <div className="sx-p-opciones">

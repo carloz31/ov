@@ -15,7 +15,6 @@ import type {
   PorQueDatos,
   PreguntaConocimiento,
   RespuestaConocimiento,
-  ResultadoPublico,
   SeccionPlan,
 } from '@/types/servidor'
 import { ZONA_SERVIDOR, fechaServidor } from './fechas'
@@ -242,18 +241,6 @@ export function fechaCorta(iso: string) {
   return fecha
     .toLocaleDateString('es-PE', { day: 'numeric', month: 'short', timeZone: ZONA_SERVIDOR })
     .replace('.', '')
-}
-
-// «Cómo encaja contigo» (POR_QUE): solo con resultado RIASEC revelado, no plano, y carrera con tipo.
-export function encajeRiasec(
-  riasecCarrera: string[],
-  resultado: ResultadoPublico | null,
-  nombres: Record<string, string>,
-) {
-  const codigo = resultado && !resultado.perfil_plano ? resultado.codigo_interes?.codigo : null
-  if (!codigo || codigo.length < 2 || !riasecCarrera.length) return null
-  const nombre = (letra: string) => nombres[letra.toUpperCase()] ?? letra
-  return { carrera: nombre(riasecCarrera[0]), principal: nombre(codigo[0]), segundo: nombre(codigo[1]) }
 }
 
 // --- Borradores de edición y cuerpos de guardar-seccion --------------------------------------------

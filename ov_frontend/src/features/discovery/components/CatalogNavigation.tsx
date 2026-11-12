@@ -4,7 +4,7 @@ import { busquedaRecordada } from '../lib/filtrosCatalogo'
 import { useModoCatalogo } from '../hooks/useModoCatalogo'
 
 const sections = [
-  { id: 'professions', label: 'Profesiones', Icon: BriefcaseBusiness },
+  { id: 'professions', label: 'Ocupaciones', Icon: BriefcaseBusiness },
   { id: 'careers', label: 'Carreras', Icon: GraduationCap },
   { id: 'institutions', label: 'Instituciones educativas', Icon: School },
 ] as const

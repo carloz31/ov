@@ -131,7 +131,6 @@ export function PlanAbierto({
                 <SeccionPorQue
                   plan={plan}
                   opciones={opciones}
-                  encaje={v.encaje}
                   borrador={editando ? edicion.porQue : null}
                   onCambiar={edicion.cambiarPorQue}
                   onEditar={() => edicion.editar('POR_QUE')}

@@ -18,7 +18,6 @@ import { EsperaDetalle } from './EsperaDetalle'
 import { FuentesCatalogo } from './FuentesCatalogo'
 import { IngresoCarrera } from './IngresoCarrera'
 import { OcupacionesDeLaFamilia } from './OcupacionesDeLaFamilia'
-import { SellosRiasec } from './SellosRiasec'
 import { UnexpectedPlace } from './UnexpectedPlace'
 import '../styles/catalogo.css'
 
@@ -27,6 +26,7 @@ import '../styles/catalogo.css'
 // estudiarla, las parecidas, las entrevistas de su familia y el lugar inesperado; debajo, las ocupaciones a las que lleva su familia; al pie, las
 // fuentes.
 // Ajuste catalogo-apoderado: en modo lectura, sin favorito, plan ni lugar inesperado.
+// Ajuste coherencia-bloque3: la cabecera no muestra letras RIASEC (no hay un código confiable por carrera).
 export function DetalleCarreraServidor({
   codigo,
   variante,
@@ -84,7 +84,6 @@ export function DetalleCarreraServidor({
                 </span>
               )}
             </p>
-            <SellosRiasec letras={carrera.riasec} conNombres />
           </div>
           <div className="sx-c-cabecera-acciones">
             {botonFavorito}

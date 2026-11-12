@@ -17,14 +17,6 @@ const planes = await importarAislado('src/lib/servidor/adaptadoresPlanes.ts')
 const completos = jsonServidor('ruta/ruta-planes')
 const familia = jsonServidor('ruta/ruta-planes-misma-familia')
 const sinRespuestas = { eventos_registrados: [], nuevos_desbloqueos: [] }
-const nombres = {
-  R: 'Realista',
-  I: 'Investigador',
-  A: 'Artístico',
-  S: 'Social',
-  E: 'Emprendedor',
-  C: 'Convencional',
-}
 
 test('estados, botón y sección siguiente salen de las secciones del servidor', () => {
   const [corto, nuevo] = familia.planes
@@ -111,15 +103,8 @@ test('POR_QUE: borrador, cuerpo, repregunta y «Cómo encaja contigo»', () => {
   )
   assert.equal(planes.pideMasRelato(familia.planes[0]), true)
   assert.equal(planes.pideMasRelato(plan), false)
-  const resultado = { perfil_plano: false, codigo_interes: { codigo: 'SIA', hay_empate: false } }
-  assert.deepEqual(copia(planes.encajeRiasec(['I', 'S'], resultado, nombres)), {
-    carrera: 'Investigador',
-    principal: 'Social',
-    segundo: 'Investigador',
-  })
-  assert.equal(planes.encajeRiasec([], resultado, nombres), null)
-  assert.equal(planes.encajeRiasec(['I'], { ...resultado, perfil_plano: true }, nombres), null)
-  assert.equal(planes.encajeRiasec(['I'], null, nombres), null)
+  // Ajuste coherencia-bloque3: una carrera no muestra código RIASEC; sale «Cómo encaja contigo».
+  assert.equal(planes.encajeRiasec, undefined)
 })
 
 function almacenPlanes() {
