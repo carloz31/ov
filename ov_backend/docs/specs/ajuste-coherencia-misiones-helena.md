@@ -422,3 +422,196 @@ Los títulos del backend («Alguien que ya lo hace», «Lo que ya tengo de ese d
 - `ma3`: el guardián no cuenta nada de sí; como en b1-7, habla de una viajera que pasó. El caso muestra el «aunque sea en pequeño» del ítem, y el cierre vale también para quien marca «Todavía nada». Salen «línea de tiempo», «partir el primer hito» y «acción, plazo, recurso».
 - Los títulos de los JSON se alinean con los del backend.
 - Sale «Esto lo lee tu orientadora…» de los dos.
+
+---
+
+## Ajuste · coherencia-ma5
+
+
+## Contexto
+
+Reescritura, decidida por el usuario, de la informativa opcional `ma5` (Iván, cuelga de `h3`) y de su ficha F23. Textos **tal cual** del texto de observaciones y del `ma5.json` adjunto. Se suma a la spec en curso `ov_backend/docs/specs/ajuste-coherencia-misiones-helena.md` como sección `## Ajuste · coherencia-ma5` (con el texto como anexo), en la rama `ajuste/coherencia-bloque5`. El usuario decidió **no** incluir ahora `ajuste-coherencia-ma1-ma7.md` (está en Descargas, sin pasar): ma5 no depende de él.
+
+## Qué cambia (hoy → pasará a)
+
+### F6 · ma5 y F23
+- Front: `ov_frontend/src/data/activities/contenidos/plataforma/ma5.json` se reemplaza por el adjunto (hoy 7 nodos, dos láminas al inicio, subtítulo «El taller de Iván, después de hora», 8 min → 11 nodos: tres preguntas de Lumi y una lámina sin presentador con tabla, dos destacados y fuente con `url`; «El papel de la pared»; 6 min).
+- Backend `ov_backend/datos/contenido.py`, con un script de reemplazos exactos en el scratchpad que toma el contenido de F23 del texto de observaciones (entre las líneas de guiones):
+  - `ACTIVIDADES` l. 126: duración de ma5 8 → 6.
+  - `DESCRIPCIONES` l. 261: ma5 → «Un viajero dejó en el taller de Iván una lista de profesiones del futuro. Ábrela con él antes de creerle.»
+  - `REGLAS` l. 1256: `R-F23` «Visita a Iván después de hora.» → «Revisa con Iván la lista de profesiones del futuro.» (condición igual).
+  - `FICHAS` F23: resumen nuevo y contenido completo nuevo; título, tema «Mis opciones» y audiencia iguales.
+- Ya comprobado: el panel del catálogo se llama «Cómo se llega aquí» y hay otro «También puedes llegar desde» (`features/discovery/components/LlegarAOcupacion.tsx`, l. 30 y 59), como citan la lámina y la ficha. Ningún id de nodo `ma5-0x` se usa fuera del JSON. `ResourceText.tsx` ya pinta tablas, listas numeradas con negrita, citas y enlaces.
+
+### Docs
+- `decisiones.md`: las de §5.
+- `contenidos-actividades.md`: en «Pendientes», «Datos que envejecen»: el informe 2025 del WEF y el GEM 2025/2026 en F23; «Por confirmar en la fuente»: las cifras del GEM leídas en notas de prensa. En «Continuidad»: emprender sale de la historia de Iván en b1-3 (bomba, molino, faroles); Dora tiene la taberna.
+
+## Qué no cambia
+Título de ma5, `R-ma5`, requisitos, `mapa`, cantidad de fichas y reglas, el conjunto `ruta`. Ninguna pantalla nueva de «carreras del futuro».
+
+## Pruebas y verificación
+- `verificar_contenido_front.py`, re-exportar fixtures, pruebas de impacto (`tests/integration/datos`, `escenarios`, `fichas`; front `tests/local/actividades`, `tests/servidor/actividades`, `tests/servidor/registro`) y commit `Ajuste coherencia-ma5 · F6: …`. Si alguna prueba compara descripción, duración, nodos de ma5, el mensaje de `R-F23` o el texto de F23, se actualiza (autorizado en §3).
+- Búsquedas: en `ma5.json` «después de hora», «registro», «único», «apuesta»; en F23 «44 %», «módulo», «sobrevive»: ninguna aparece.
+- F7 · cierre: suites completas; navegador con `contenido` (servidores aparte 8010/5180 sobre base temporal; avanzar hasta h3 adecuado): ma5 colgada de h3, las tres preguntas (con un error para ver retroalimentación y explicación), la lámina con su tabla y dos destacados también a 375 px, «Anterior» de inicio a fin y de fin a inicio, F23 en la mochila al cerrar (tres tablas sin fila de guiones, lista numerada, cita, enlaces), y el panel «Cómo se llega aquí» / «También puedes llegar desde» en una ocupación del catálogo. Decisiones y docs; borrar lo provisional. Commit.
+
+La spec queda en curso.
+
+## Preguntas abiertas
+Ninguna.
+
+---
+
+### Anexo · texto de observaciones de coherencia-ma5
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-ma1-ma7.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026).
+
+## Qué es
+
+Reescritura de la informativa opcional `ma5` (con Iván, cuelga de `h3`) y de su ficha F23. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento, el JSON final `ma5.json`. La ficha F23 va completa en la sección 2.3.
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`).
+
+## 1. JSON de la actividad
+
+**Hoy:** `ov_frontend/src/data/activities/contenidos/plataforma/ma5.json`.
+**Pasará a:** se reemplaza, completo, por `ma5.json` de esta carpeta.
+
+| Actividad | Nodos (hoy → queda) | Lo que conviene saber |
+|---|---|---|
+| ma5 Ocupaciones nuevas y emprender | 7 → 11 | **Tres preguntas de opción única, que hace Lumi, y una sola lámina después de las preguntas** (`ma5-09`), sin presentador: lleva `etiqueta`, una tabla de tres columnas y tres filas, dos destacados (`dato` e `idea_clave`) y la fuente con `url`. Salen las dos láminas del inicio. Cambian `subtitulo` («El taller de Iván, después de hora» → «El papel de la pared»), `duracionEstimadaMin` (8 → 6) y `objetivoAprendizaje` |
+
+Además:
+
+- En las tres preguntas, las opciones tienen un largo parecido y la correcta varía de posición (segunda, primera, tercera). Los textos van tal cual.
+- La lámina nombra pantallas de la plataforma: el catálogo de ocupaciones y, dentro de una ocupación, el panel «Cómo se llega aquí» (`LlegarAOcupacion.tsx`). Si alguno no coincide con lo que se ve, avisar antes de cambiar el texto.
+- **La plataforma no tiene una pantalla de «carreras del futuro»:** la lista vive en la ficha F23, y la lámina manda a la ficha. No se agrega ninguna pantalla.
+- Los identificadores de nodo cambian. Comprobar con una búsqueda que ninguno se use fuera de este archivo.
+- `titulo`, `ubicacion`, `requisitos`, `mapa`, `personajeIds`, `escenario`, `bloque` y `orden` no cambian.
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+### 2.1 Actividad (`ACTIVIDADES` y `DESCRIPCIONES`)
+
+| Campo | Hoy | Queda |
+|---|---|---|
+| Duración de ma5 | 8 | 6 |
+| Descripción de ma5 | «Iván, después de hora: hacia dónde se mueve el trabajo y qué es emprender de verdad.» | «Un viajero dejó en el taller de Iván una lista de profesiones del futuro. Ábrela con él antes de creerle.» |
+
+El título y la regla `R-ma5` no cambian.
+
+### 2.2 Regla de la ficha
+
+| Regla | Mensaje de hoy | Queda |
+|---|---|---|
+| `R-F23` | «Visita a Iván después de hora.» | «Revisa con Iván la lista de profesiones del futuro.» |
+
+La condición no cambia.
+
+### 2.3 Ficha F23 (`FICHAS`)
+
+El título («Carreras del futuro y emprender»), el tema («Mis opciones») y el destinatario no cambian.
+
+**Resumen, hoy:** «Qué ocupaciones crecen, cómo leer una lista de «carreras del futuro» y qué significa emprender en el Perú.»
+**Queda:** «Qué ocupaciones crecen, cómo leer una lista de «carreras del futuro» y qué mirar antes de poner un negocio.»
+
+**Contenido:** se reemplaza completo por este texto (entre las dos líneas de guiones, sin incluirlas):
+
+----------
+
+Cada año aparece una lista nueva de «profesiones del futuro». Sirven para mirar hacia dónde se mueve el trabajo, no para elegir por moda. Y poner un negocio, en el Perú, es algo que mucha gente ya hace: conviene saber cómo.
+
+### Hacia dónde se mueve el trabajo
+
+El Foro Económico Mundial pregunta cada dos años a empresas grandes qué esperan del trabajo. Para su informe de 2025 respondieron más de mil, de 55 países. Estiman que, hacia 2030, cerca de 4 de cada 10 habilidades que hoy pide un trabajo habrán cambiado (39 %).
+
+El informe mide el crecimiento de dos maneras, y salen listas distintas:
+
+| Cómo se mide | Qué ocupaciones salen |
+| --- | --- |
+| Las que crecen más rápido, en porcentaje | Especialistas en datos y en inteligencia artificial, desarrolladores de software, ingenieros ambientales y de energías renovables |
+| Las que suman más puestos, en cantidad | Trabajadores del campo, de reparto, de construcción y de ventas; enfermería, cuidado de personas, docentes de secundaria y de educación superior |
+
+Una ocupación puede crecer muy rápido y seguir siendo pequeña. Otra crece despacio y da muchos más puestos.
+
+### De dónde se llega
+
+Estos son ejemplos de carreras que forman para lo que crece. No es una lista cerrada: a casi todas estas ocupaciones se llega por más de un camino.
+
+| Lo que crece | Ocupaciones | Carreras desde las que se llega |
+| --- | --- | --- |
+| Datos e inteligencia artificial | Especialistas en datos y en inteligencia artificial, desarrolladores | Ciencias de la computación, ingeniería de sistemas, estadística, matemática |
+| Seguridad digital | Especialistas en ciberseguridad y en redes | Ingeniería de sistemas, redes y telecomunicaciones |
+| Energía y ambiente | Ingenieros ambientales y de energías renovables | Ingeniería ambiental, de energía, civil |
+| Salud y cuidado | Enfermería, cuidado de personas, trabajo social | Ciencias de la salud, trabajo social |
+| Educación | Docentes de secundaria y de educación superior | Educación, o una carrera de base más formación docente |
+| Campo y alimentos | Trabajadores agrícolas y de la industria de alimentos | Agronomía, industrias alimentarias, carreras técnicas agropecuarias |
+
+Mi Carrera, la plataforma del Ministerio de Trabajo, publica su propia lista de carreras del futuro para el Perú. Léela con las mismas preguntas que cualquier otra.
+
+### Cómo leer una lista de carreras del futuro
+
+1. **Del futuro de quién.** Una lista habla del mercado de quienes respondieron: aquí, empresas grandes de muchos países. Lo que se pide en tu región puede ser otra cosa, y cambia de un año a otro.
+2. **Crecer rápido no es dar muchos puestos.** Mira si la lista mide porcentaje o cantidad.
+3. **Crecer no es pagar bien ni dar empleo formal.** Una ocupación puede crecer y seguir siendo mal pagada o informal.
+4. **Muchas no son carreras sino especializaciones.** A «especialista en inteligencia artificial» se llega desde computación, estadística o ingeniería. No es una carrera con ese nombre.
+5. **Lo que más se pide no es una carrera.** Las empresas del informe ponen primero pensar con orden un problema; después, adaptarse a los cambios y trabajar con otros.
+
+### Poner un negocio en el Perú
+
+Según el reporte GEM Perú 2025/2026:
+
+- El 12,8 % de los adultos está empezando un negocio o tiene uno de menos de tres años y medio.
+- El 5,3 % tiene un negocio que ya pasó los tres años y medio.
+- De quienes emprenden, 7 de cada 10 (71,6 %) dicen que empezaron porque no encontraban empleo.
+- 1 de cada 10 (9,9 %) espera dar trabajo a más de seis personas en cinco años.
+
+Empezar porque no hay empleo es lo más común, y no tiene nada de malo: muchas familias viven de un negocio así. Lo que ayuda es prepararlo.
+
+### Antes de abrir
+
+1. **¿Qué sé hacer que alguien necesita?** Puede venir de una carrera, de un oficio o de años de práctica.
+2. **¿Quién me lo pagaría, y cuánto?** Pregúntaselo a quienes serían tus clientes, no a tus amigos.
+3. **¿Con qué empiezo y cuánto aguanto sin ganar?** Los primeros meses casi nunca dan ingresos estables.
+4. **¿Conozco a alguien que ya lo hizo?** Su experiencia ahorra errores.
+
+Estudiar y poner un negocio no se excluyen. Una formación te da algo que ofrecer, y trabajar un tiempo en el rubro te muestra cómo funciona por dentro.
+
+> Una lista de carreras del futuro es una pista. Ábrela antes de usarla.
+
+**Para tu viaje.** En el catálogo de ocupaciones, cada ocupación tiene «Cómo se llega aquí»: la familia de carreras que forma para ella y, en «También puedes llegar desde», otras familias. Es una guía, no una lista definitiva: a muchas ocupaciones se llega también por otros caminos.
+
+**Fuentes:** [Foro Económico Mundial (2025), The Future of Jobs Report 2025](https://www.weforum.org/publications/the-future-of-jobs-report-2025/digest/). [Mi Carrera (MTPE)](https://micarrera.trabajo.gob.pe/). GEM Perú 2025/2026, en [Andina (2026)](https://andina.pe/agencia/noticia-financiamiento-y-politicas-publicas-siguen-siendo-las-mayores-barreras-para-emprender-1080299.aspx) y [Gestión (2026)](https://gestion.pe/economia/emprendedores-pendientes-en-peru-8-de-cada-10-ven-oportunidades-pero-solo-2-las-toman-noticia/).
+
+----------
+
+En el archivo va como una sola cadena, con `\n` y con las comillas escapadas como en las demás fichas.
+
+## 3. Pruebas y lo que no cambia
+
+- Si alguna prueba o fixture compara la descripción, la duración, la cantidad de nodos de `ma5`, el mensaje de `R-F23` o el texto de F23, se actualiza con los valores de este documento.
+- Ninguna pregunta de batalla usa F23. No cambian la cantidad de fichas, las reglas ni lo que abre la actividad. El conjunto `ruta` y sus pruebas no se tocan.
+
+## 4. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar en `ma5.json` «después de hora», «registro», «único» y «apuesta»: no aparecen. Buscar en F23 «44 %», «módulo» y «sobrevive»: no aparecen.
+- En el navegador, con el conjunto `contenido`:
+  - **ma5:** con el registro de `h3` adecuado, aparece colgada de `h3`. Las tres preguntas con pista y explicación, y la lámina con su tabla y sus dos destacados, también en pantalla angosta.
+  - **Ficha:** al cerrar, F23 queda en la mochila con el texto nuevo; las tres tablas y los enlaces de las fuentes se ven bien.
+  - **Catálogo:** abrir una ocupación y confirmar que el panel se llama «Cómo se llega aquí» y que debajo aparece «También puedes llegar desde» cuando hay familias secundarias.
+  - **«Anterior»:** recorrer `ma5` de inicio a fin y de fin a inicio.
+
+## 5. Decisiones ya tomadas (para `decisiones.md`)
+
+- `ma5` es práctica: un viajero dejó en el taller una lista de «profesiones del futuro» e Iván la abre con el estudiante (carrera o especialización, de qué mercado habla). Emprender sale de la historia de Iván en b1-3: la bomba, el molino y los faroles.
+- Salen «Sol vio tu registro», «me dijeron que contrastaste tu perfil», «el único de la ciudad que vive de un negocio propio» (Dora tiene la taberna) y «abrí el taller después de años arreglando artefactos para otros», que contradecía b1-3.
+- La plataforma no tiene pantalla de carreras del futuro: se muestran desde la ficha F23.
+- «Cómo se llega aquí» se presenta como guía y no como lista definitiva, en la lámina y en la ficha.
+- F23 pasa al informe de 2025 del Foro Económico Mundial (39 %, ya no 44 %) y suma la diferencia entre crecer rápido y sumar más puestos.
+- F23 corrige la lectura del GEM: el 5,3 % es la parte de los adultos con un negocio de más de tres años y medio, no la parte de emprendedores que «consolida». Sale «entre los países con más emprendimiento del mundo».
+- Salen de F23 dos afirmaciones sin fuente: que el negocio por oportunidad «sobrevive más» y que uno abierto después de una carrera «tiene mejores probabilidades». El negocio por necesidad se trata sin desmerecerlo.
+- Las cifras del GEM se leyeron en notas de prensa, no en el reporte.
