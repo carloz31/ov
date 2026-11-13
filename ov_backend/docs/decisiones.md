@@ -23,6 +23,12 @@
 - `ma4` y `ma3` siguen el molde corto de h1 a h3. En `ma4`, Dora cuenta a quién mira para aprender a escuchar sin interrumpir (a Sol); sale el reto de siete días. En `ma3`, el guardián no cuenta nada de sí: habla de una viajera, y el cierre vale también para quien marca «Todavía nada»; salen «línea de tiempo», «partir el primer hito» y «acción, plazo, recurso».
 - Los títulos de los JSON de `ma4` y `ma3` se alinean con los del backend. Sale «Esto lo lee tu orientadora…» de los dos.
 
+## Ajuste coherencia-feria
+
+- `feria` enseña a planear la visita en tres momentos (antes, en la feria, esa misma noche). Ya no repite `b3-6`: salen la licencia, «dato o promesa» y las frases del Faro Dorado. Tres preguntas de Lumi y una sola lámina al final, sin presentador. Duración 6 min.
+- Marina cuenta su primera feria, a los diecisiete: volvió con dos bolsas de folletos y sin saber nada nuevo. Sale «¿Me ayudas a probar la guía antes de abrir?».
+- F22 se reordena en los mismos tres momentos y remite a «Licenciamiento y acreditación» en vez de repetirla. Suma qué hacer si no hay feria (página web, ferias virtuales, Ruta 18 del Pronabec). Los consejos salen de la cartilla del MINEDU y de guías de orientadores (NACAC y College Board). `R-F22` dice «Planea con Marina tu visita a la feria.».
+
 ## Ajuste coherencia-ma1-ma7
 
 - `ma1`: Nadia ya no dice «Leí tu punto de origen» (nadie en la historia lee lo que el viajero escribe). Cuenta la carta que le escribió a la niña que fue, que calza con b1-2. Salen la cita de la fuente en boca de Lumi y la opción «¿Y quién la lee?», que repetía b0-2.
