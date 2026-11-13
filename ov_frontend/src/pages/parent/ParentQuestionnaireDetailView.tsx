@@ -115,7 +115,7 @@ export function ParentQuestionnaireDetailView() {
         </h1>
         <p className="text-muted-foreground">
           {locked
-            ? `Podrás ver los resultados de ${hijo} cuando completes tus actividades.`
+            ? `Podrá ver los resultados de ${hijo} cuando complete sus actividades.`
             : 'Este resultado no está disponible para esta cuenta.'}
         </p>
         {locked && (

@@ -115,7 +115,7 @@ export function ParentActivityFinish({
         {!review && !cierreServidor && (
           <>
             <section className="parent-route-progress" aria-label="Avance hacia el diploma">
-              <p>Su avance hacia el diploma «Conozco mi rol»</p>
+              <p>Su avance hacia el Diploma de compromiso</p>
               <strong>
                 {route.completed} de {route.total} actividades
               </strong>
@@ -128,7 +128,7 @@ export function ParentActivityFinish({
             {route.complete ? (
               <section className="parent-next-card">
                 <Award size={36} aria-hidden />
-                <h3>Obtuvo su diploma «Conozco mi rol»</h3>
+                <h3>Obtuvo su Diploma de compromiso</h3>
                 <Button onClick={() => navigate(`${appPaths.parent.overview}?diploma=1`)}>
                   Ver mi diploma en el inicio
                 </Button>

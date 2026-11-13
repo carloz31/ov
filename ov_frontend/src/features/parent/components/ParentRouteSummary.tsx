@@ -31,7 +31,7 @@ export function ParentRouteSummary({ model }: { model: ReturnType<typeof usePare
           <div>
             <p className="text-xs text-muted-foreground">Diploma de tu recorrido</p>
             <h3 id="parent-diploma-title" className="font-bold">
-              Conozco mi rol
+              Diploma de compromiso
             </h3>
             <p className="mt-1 text-sm">Completaste tu ruta</p>
           </div>

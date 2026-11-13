@@ -878,3 +878,26 @@ test('una finalización local que el servidor no conoce vuelve a empezar la acti
     ['completada', '$fin'],
   )
 })
+
+// Ajuste coherencia-apoderado: el contenido de p1 a p8 cambió y un nodo guardado puede no existir ya.
+test('un nodo guardado que ya no existe reinicia la actividad del apoderado y descarta sus intentos', () => {
+  const app = fixture('', undefined, { portal: true })
+  const logic = app.load('src/features/parent/lib/missionLogic.ts')
+  const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
+  const activity = { ...contenidoPorClave('p1'), requisitos: [] }
+  const vacio = app.load('src/lib/activities/logic.ts').initialJourney()
+  const permitir = { disponible: true, servidor: true }
+  let state = logic.startParentActivity(activity, vacio, 'apo-rosa', permitir)
+  const pregunta = activity.nodos.find((n) => n.tipo === 'pregunta')
+  state.progress[activity.id].nodoActualId = pregunta.id
+  const errada = pregunta.opciones.find((o) => !o.correcta).id
+  state = logic.answerParentQuestion(activity, pregunta, [errada], state, 'apo-rosa', permitir)
+  assert.equal(state.attempts.filter((a) => a.actividadId === activity.id).length, 1)
+  state.progress[activity.id].nodoActualId = 'p1-12'
+  assert.equal(logic.progresoObsoleto(activity, state), true)
+  const reiniciada = logic.startParentActivity(activity, state, 'apo-rosa', permitir)
+  assert.equal(reiniciada.progress[activity.id].nodoActualId, activity.nodos[0].id)
+  assert.equal(reiniciada.attempts.filter((a) => a.actividadId === activity.id).length, 0)
+  assert.equal(logic.progresoObsoleto(activity, reiniciada), false)
+  assert.equal(logic.startParentActivity(activity, reiniciada, 'apo-rosa', permitir), reiniciada)
+})

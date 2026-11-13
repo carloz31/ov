@@ -83,7 +83,7 @@ export function ParentChildrenSummary({ model }: { model: ReturnType<typeof useP
                 <div className="flex items-start gap-3 rounded-xl border p-4">
                   <LockKeyhole className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
                   <p className="text-sm">
-                    Podrás ver los resultados de {student.nombres} cuando completes tus actividades.
+                    Podrá ver los resultados de {student.nombres} cuando complete sus actividades.
                   </p>
                 </div>
                 <Button asChild variant="outline" className="min-h-11">

@@ -366,7 +366,14 @@ test('sobriety, step count, direct-link lock, resume, completion resources and r
   state = app.parent.answerParentQuestion(first, question, ['a'], state, 'apo-prototipo')
   app.store.updateParentJourney(() => state)
   assert.match(app.render(), /Casi\. Piénselo una vez más\./)
-  assert.match(app.render(), /Volver a intentarlo/)
+  // Ajuste coherencia-apoderado: tras el error se puede marcar otra opción sin pulsar nada más.
+  const retry = app.render()
+  const inputs = retry.match(/<input[^>]*>/g)
+  assert.doesNotMatch(retry, /Volver a intentarlo/)
+  assert.match(retry, /Comprobar de nuevo/)
+  assert.equal(inputs.filter((input) => /disabled/.test(input)).length, 1)
+  assert.equal(inputs.filter((input) => /checked/.test(input)).length, 0)
+  assert.match(retry, /data-tone="wrong"[\s\S]*Su respuesta/)
   assert.doesNotMatch(app.render(), /Equipo de orientación|Para recordar/)
   app.store.updateParentJourney(() => finish(app, first))
   assert.match(app.render(), /material de consulta/i)
@@ -609,6 +616,10 @@ test('feedback markup separates hints and final answers, summary uses the ficha 
   assert.match(hint, /data-tone="wrong"/)
   assert.match(hint, /aria-live="polite"/)
   assert.doesNotMatch(hint, /data-tone="correct"|Para recordar|Respuestas correctas|Revise la respuesta/)
+  const hintInputs = hint.match(/<input[^>]*>/g)
+  assert.match(hint, /Comprobar de nuevo/)
+  assert.equal(hintInputs.filter((input) => /checked/.test(input)).length, good.length > 1 ? 1 : 0)
+  assert.equal(hintInputs.filter((input) => /disabled/.test(input)).length, 1)
   state = app.parent.answerParentQuestion(
     first,
     node,
@@ -688,21 +699,4 @@ test('editorial transitions appear only at the eight approved moments and stay s
     ),
   )
   assert.ok(app.content.parentActivities.every((activity) => !activity.nodos[0].transicion))
-})
-
-// Ajuste coherencia-apoderado: el contenido cambió y el nodo guardado ya no existe.
-test('a saved node that no longer exists restarts the activity and drops its old attempts', () => {
-  const app = fixture(),
-    first = app.content.parentActivities[0]
-  let state = app.parent.startParentActivity(first, app.logic.initialJourney(), 'account-a')
-  const question = first.nodos.find((node) => node.tipo === 'pregunta')
-  state.progress[first.id].nodoActualId = question.id
-  state = app.parent.answerParentQuestion(first, question, ['a'], state, 'account-a')
-  state.progress[first.id].nodoActualId = 'nodo-que-ya-no-existe'
-  assert.equal(app.parent.progresoObsoleto(first, state), true)
-  const restarted = app.parent.startParentActivity(first, state, 'account-a')
-  assert.equal(restarted.progress[first.id].nodoActualId, first.nodos[0].id)
-  assert.equal(restarted.attempts.filter((attempt) => attempt.actividadId === first.id).length, 0)
-  assert.equal(app.parent.progresoObsoleto(first, restarted), false)
-  assert.equal(app.parent.startParentActivity(first, restarted, 'account-a'), restarted)
 })

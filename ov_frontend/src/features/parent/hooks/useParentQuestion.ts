@@ -29,12 +29,16 @@ export function useParentQuestion({
     ? practiceAttempts
     : state.attempts.filter((attempt) => attempt.actividadId === activity.id && attempt.nodoId === node.id)
   const feedbackTitle = useRef<HTMLHeadingElement>(null)
-  const answerOptions = useRef<HTMLFieldSetElement>(null)
   const last = attempts.at(-1)
-  const [selected, setSelected] = useState<string[]>(last?.opcionIds ?? [])
-  const [retrying, setRetrying] = useState(false)
   const [feedback, setFeedback] = useState(() =>
     last ? evaluateParentQuestion(node, last.opcionIds, attempts.length - 1) : undefined,
+  )
+  // Ajuste coherencia-apoderado: tras un error se puede marcar otra opción de inmediato; las equivocadas
+  // salen de la selección (en opción múltiple quedan las correctas marcadas).
+  const [selected, setSelected] = useState<string[]>(() =>
+    last && feedback && !feedback.canContinue
+      ? last.opcionIds.filter((id) => !feedback.wrongIds.includes(id))
+      : (last?.opcionIds ?? []),
   )
   const wrongIds = new Set(
     attempts.flatMap((attempt) =>
@@ -42,15 +46,17 @@ export function useParentQuestion({
     ),
   )
   useEffect(() => {
-    if (feedback && !retrying) feedbackTitle.current?.focus()
-    else if (retrying) answerOptions.current?.focus()
-  }, [feedback, retrying])
+    if (feedback) feedbackTitle.current?.focus()
+  }, [feedback])
+  function show(result: ReturnType<typeof evaluateParentQuestion>) {
+    setFeedback(result)
+    if (!result.canContinue) setSelected(selected.filter((id) => !result.wrongIds.includes(id)))
+  }
   function check() {
     const result = evaluateParentQuestion(node, selected, attempts.length)
     if (review) {
       onPracticeAnswer(selected)
-      setFeedback(result)
-      setRetrying(false)
+      show(result)
       return
     }
     let changed = false
@@ -66,14 +72,7 @@ export function useParentQuestion({
       changed = next !== current
       return next
     }, accountId)
-    if (saved && changed) {
-      setFeedback(result)
-      setRetrying(false)
-    }
+    if (saved && changed) show(result)
   }
-  function retry() {
-    setSelected(selected.filter((id) => !wrongIds.has(id)))
-    setRetrying(true)
-  }
-  return { feedbackTitle, answerOptions, selected, setSelected, retrying, feedback, wrongIds, check, retry }
+  return { feedbackTitle, selected, setSelected, feedback, wrongIds, attempted: attempts.length > 0, check }
 }

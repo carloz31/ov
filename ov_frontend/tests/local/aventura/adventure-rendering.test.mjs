@@ -2487,7 +2487,7 @@ test('family results require assigned route completion and honor sharing indepen
   const completed = { parentJourney: completedParentJourney() }
   const route = '/parent/children/ejemplo-07/questionnaires/interests'
   const saved = prioritySettingsStore.getSnapshot()
-  assert.match(render('/parent/overview'), /Podrás ver los resultados de Gabriela/)
+  assert.match(render('/parent/overview'), /Podrá ver los resultados de Gabriela cuando complete sus actividades/)
   assert.match(render(route), /Completa tus actividades/)
   assert.doesNotMatch(render(route), /Código de interés|Ocupaciones afines/)
   assert.match(render(route,completed), /Código de interés|Ocupaciones afines/)
@@ -2508,7 +2508,7 @@ test('family home unites own route and shared child summary with no private stud
   assert.equal(parentChildren.length,1)
   assert.equal(parentChildren[0].id,'ejemplo-07')
   assert.match(html,/Hola, José|Hola, Jos/)
-  assert.match(html,/Conozco mi rol|Completaste tu ruta/)
+  assert.match(html,/Diploma de compromiso|Completaste tu ruta/)
   assert.match(html,/Repasar mis actividades|Seguir con las conversaciones/)
   assert.match(html,/Gabriela García Muñoz|Avance de su recorrido|Resultados de sus cuestionarios/)
   assert.doesNotMatch(html,/Último avance|Hitos del proceso|Intereses destacados|Próximo hito|Conversación sugerida|Último acceso|Avance prioritario|Seguridad y diario|role="tab"/)
