@@ -2,7 +2,7 @@
   "id": "h-intereses-2",
   "codigo": "h-intereses-2",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mis intereses, 2 de 6",
+  "titulo": "Mis intereses, 2 de 6",
   "subtitulo": "La biblioteca de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hin2-01",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Segundo estante. Misma regla: solo si te gustaría hacerlo.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Así que estás de vuelta. Hoy vino Iván a arreglarme una lámpara y se quedó dos horas mirando cómo corre la escalera. A ese hombre le gusta saber cómo funciona todo. Ahora dime tú qué te gusta. Diez más."
     },
     {
       "id": "hin2-02",
@@ -38,16 +38,16 @@
       "id": "hin2-03",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Veinte de sesenta.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Suficiente por hoy. Anda a que te dé el aire."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Segundo estante. Faltan cuatro."
+    "mensajeFin": "Veinte de sesenta frases de Sol."
   },
   "mapa": {
-    "x": 545,
-    "y": 435,
+    "x": 555,
+    "y": 475,
     "icono": "test"
   }
 }

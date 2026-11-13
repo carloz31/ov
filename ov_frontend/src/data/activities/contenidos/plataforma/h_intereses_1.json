@@ -2,7 +2,7 @@
   "id": "h-intereses-1",
   "codigo": "h-intereses-1",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mis intereses, 1 de 6",
+  "titulo": "Mis intereses, 1 de 6",
   "subtitulo": "La biblioteca de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -22,50 +22,62 @@
     {
       "id": "hin1-01",
       "tipo": "dialogo",
-      "hablanteId": "bibliotecaria",
-      "texto": "Bienvenidos a la biblioteca. Soy Sol. Helena me dejó las preguntas de intereses porque son sesenta, y en una biblioteca hay tiempo. Las repartimos en seis visitas de diez, como seis estantes.",
-      "expresion": "neutral"
+      "hablanteId": "companero",
+      "texto": "La biblioteca. Habla bajito: dicen que Sol oye todo, hasta lo que uno piensa."
     },
     {
       "id": "hin1-02",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Cada frase es una actividad de trabajo. Tú dices cuánto te gustaría hacerla, nada más. No pienses en si sabrías, ni en si paga bien, ni en qué dirían en tu casa."
+      "expresion": "neutral",
+      "texto": "Oigo perfectamente, Lumi. Así que viniste a hablar conmigo. Soy Sol. Si te manda Rosa, la del volcán, vienes por las preguntas de Helena."
     },
     {
       "id": "hin1-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Yo entré aquí un día de lluvia, a esperar que pasara. Volví al día siguiente, sin lluvia. Y al otro. Uno se entera de lo que le gusta fijándose a dónde vuelve."
+    },
+    {
+      "id": "hin1-04",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le dices?",
       "registrar": false,
       "opciones": [
         {
-          "id": "hin1-03a",
-          "texto": "¿Y si nunca he hecho esa actividad?",
+          "id": "hin1-04a",
+          "texto": "¿Y si nunca he hecho lo que dice la frase?",
           "reaccion": [
             {
-              "id": "hin1-03ar",
+              "id": "hin1-04ar",
               "tipo": "dialogo",
               "hablanteId": "bibliotecaria",
-              "texto": "Imagínala. Casi nadie ha hecho las sesenta. Lo que mide es la atracción, no la experiencia."
+              "texto": "Imagínala. Casi nadie ha hecho las sesenta. Importa si te atrae, no si la conoces."
             }
           ]
         },
         {
-          "id": "hin1-03b",
-          "texto": "Entendido, empecemos.",
+          "id": "hin1-04b",
+          "texto": "¿Tengo que pensar si me saldría bien?",
           "reaccion": [
             {
-              "id": "hin1-03br",
+              "id": "hin1-04br",
               "tipo": "dialogo",
               "hablanteId": "bibliotecaria",
-              "texto": "Primer estante. Con calma."
+              "texto": "No. Ni si paga bien, ni qué dirían en tu casa. Solo si te gustaría."
             }
           ]
         }
       ]
     },
     {
-      "id": "hin1-04",
+      "id": "hin1-05",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Pero basta de mí: cuéntame tú. Son sesenta frases, y cada una es algo que se hace en un trabajo. Hoy van diez. Marca cuánto te gustaría hacerlo, de «Me disgusta mucho» a «Me gusta mucho»."
+    },
+    {
+      "id": "hin1-06",
       "tipo": "item",
       "instrumentoId": "TEST-RIASEC",
       "itemId": "plantilla",
@@ -73,19 +85,19 @@
       "etiqueta": "¿Cuánto te gustaría hacer esto?"
     },
     {
-      "id": "hin1-05",
+      "id": "hin1-07",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Diez de sesenta. El estante siguiente te espera cuando quieras; la página se abre al terminar los seis.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Por hoy es todo. Vuelve cuando quieras: yo de aquí no me muevo."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Primer estante de Sol. Faltan cinco."
+    "mensajeFin": "Diez de sesenta frases de Sol."
   },
   "mapa": {
-    "x": 520,
-    "y": 420,
+    "x": 590,
+    "y": 495,
     "icono": "test"
   }
 }

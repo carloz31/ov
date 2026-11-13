@@ -2,7 +2,7 @@
   "id": "h-habilidades-4",
   "codigo": "h-habilidades-4",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mi comportamiento con los demás, 4 de 4",
+  "titulo": "Mi comportamiento con los demás, 4 de 4",
   "subtitulo": "La taberna de Dora",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hh4-01",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "Última visita. Las seis que faltan, sobre cómo te integras y cómo diriges cuando toca.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Mira esa mesa del fondo: el señor no ha dicho una palabra y ya sé que tuvo un mal día. Eso se aprende mirando. Vamos con las que te faltan."
     },
     {
       "id": "hh4-02",
@@ -32,29 +32,29 @@
       "instrumentoId": "TEST-HABILIDADES",
       "itemId": "plantilla",
       "hablanteId": "dora",
-      "etiqueta": "¿Te describe?"
+      "etiqueta": "¿Te pasa casi siempre o casi nunca?"
     },
     {
       "id": "hh4-03",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "Veinticuatro de veinticuatro. Lo que dijiste ya está en camino al libro de Helena. Cuando rompas el sello verás cuáles de las cinco habilidades tienes más practicadas, y cuáles menos.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Eso era. Lo que me dijiste va al libro de Helena: ahí vas a ver qué tienes hoy más a mano con la gente, y qué menos. Todo eso se practica. Yo soy la prueba."
     },
     {
       "id": "hh4-04",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Revélala en tu perfil cuando quieras. Después hay un registro corto con Dora: eliges una habilidad con menos desarrollo y propones cómo practicarla.",
-      "expresion": "animado"
+      "expresion": "animado",
+      "texto": "Mira tu libro: la página de habilidades ya tiene su sello. Rómpelo cuando quieras."
     }
   ],
   "recompensa": {
-    "mensajeFin": "La página de habilidades está lista para abrirse en el libro de Helena."
+    "mensajeFin": "La página de habilidades está lista en el libro de Helena. Rompe su sello cuando quieras."
   },
   "mapa": {
-    "x": 400,
-    "y": 480,
+    "x": 690,
+    "y": 380,
     "icono": "test"
   }
 }

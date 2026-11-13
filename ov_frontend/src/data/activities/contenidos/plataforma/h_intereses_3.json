@@ -2,7 +2,7 @@
   "id": "h-intereses-3",
   "codigo": "h-intereses-3",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mis intereses, 3 de 6",
+  "titulo": "Mis intereses, 3 de 6",
   "subtitulo": "La biblioteca de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hin3-01",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Tercer estante. Si notas que varias frases se parecen, es a propósito: cada ambiente de trabajo aparece varias veces para que no dependa de una sola.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Otra vez por aquí. Te confieso algo: de chica quería ser cantante. Canto pésimo. Me gustaba igual, y me sigue gustando. Aquí no se pregunta si te sale: se pregunta si te gusta. A ver qué te gusta a ti."
     },
     {
       "id": "hin3-02",
@@ -38,16 +38,16 @@
       "id": "hin3-03",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Mitad del camino.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Vas por la mitad. Aquí es donde muchos ya no vuelven. Tú verás."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tercer estante. Mitad de las frases de Sol."
+    "mensajeFin": "Treinta de sesenta frases de Sol."
   },
   "mapa": {
-    "x": 570,
-    "y": 450,
+    "x": 555,
+    "y": 435,
     "icono": "test"
   }
 }

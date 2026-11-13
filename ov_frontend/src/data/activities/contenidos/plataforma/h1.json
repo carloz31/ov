@@ -46,8 +46,8 @@
     "mensajeFin": "Una habilidad baja no es un veto: es tu plan de práctica. Anotado en tu bitácora."
   },
   "mapa": {
-    "x": 330,
-    "y": 480,
+    "x": 700,
+    "y": 432,
     "icono": "registro",
     "origen": "h-habilidades-4"
   }

@@ -128,7 +128,7 @@
       "id": "dora",
       "nombre": "Dora",
       "rol": "npc",
-      "descripcion": "Tabernera de la ciudad. Por su puerta pasa todo el mundo; por eso Helena le confió las preguntas sobre cómo uno se comporta con los demás. Lee las frases y escucha sin opinar.",
+      "descripcion": "Tabernera de la ciudad. Por su puerta pasa todo el mundo; por eso Helena le confió las frases sobre cómo uno se porta con los demás. Conversadora y directa: opina de todo, menos de lo que le responden. Aprendió a decir que no detrás del mostrador.",
       "ubicacion": "Ciudad, taberna",
       "avatarUrl": "/images/personajes/dora.png",
       "expresiones": {
@@ -139,7 +139,7 @@
       "id": "maestro",
       "nombre": "Maestro Bruno",
       "rol": "npc",
-      "descripcion": "Profesor de la escuela de la ciudad. Conserva las preguntas de inteligencias: ha visto a muchos alumnos ser inteligentes de una forma que el examen no mide. Paciente, con un consejo guardado para cada resultado.",
+      "descripcion": "Profesor de la escuela de la ciudad. De chico dibujaba en los márgenes mientras los demás sumaban. Guarda las frases de inteligencias: ha visto a muchos alumnos ser inteligentes de una forma que el examen no mide. Paciente y algo distraído: se pierde en su propia ciudad y recuerda el nombre de cada alumno.",
       "ubicacion": "Ciudad, escuela",
       "avatarUrl": "/images/personajes/maestro.png",
       "expresiones": {
@@ -150,7 +150,7 @@
       "id": "bibliotecaria",
       "nombre": "Sol",
       "rol": "npc",
-      "descripcion": "Bibliotecaria de la ciudad. Guarda las sesenta preguntas de intereses y las parte en dos visitas. Insiste en responder solo si te gustaría, sin pensar en si sabrías, en lo que paga ni en lo que dirían en casa.",
+      "descripcion": "Bibliotecaria de la ciudad. Entró un día de lluvia y siguió volviendo. Guarda las sesenta frases de intereses y las reparte en seis visitas. Callada, de oído fino y humor seco. Insiste en responder solo si te gustaría, sin pensar en si sabrías, en lo que paga ni en lo que dirían en casa.",
       "ubicacion": "Ciudad, biblioteca",
       "avatarUrl": "/images/personajes/bibliotecaria.png",
       "expresiones": {

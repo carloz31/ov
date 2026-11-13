@@ -2,7 +2,7 @@
   "id": "h-inteligencias-1",
   "codigo": "h-inteligencias-1",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Explorando mis inteligencias, 1 de 5",
+  "titulo": "Explorando mis inteligencias, 1 de 5",
   "subtitulo": "La escuela del maestro Bruno",
   "escenario": "ciudad",
   "bloque": 7,
@@ -22,70 +22,82 @@
     {
       "id": "hi1-01",
       "tipo": "dialogo",
-      "hablanteId": "maestro",
-      "texto": "¿De parte de la brigada? Pasa, que acaban de salir los chicos. Soy Bruno. Helena me confió las preguntas sobre las inteligencias porque un maestro es quien más veces ha visto a alguien ser inteligente de una forma que el examen no mide.",
-      "expresion": "neutral"
+      "hablanteId": "companero",
+      "texto": "La escuela. Ya salieron los chicos. El que borra la pizarra es el maestro Bruno."
     },
     {
       "id": "hi1-02",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "expresion": "neutral",
+      "texto": "¿De parte de la brigada? Pasa, pasa, y disculpa la tiza. Soy Bruno. Así que viniste a conversar conmigo. Me alegra: los grandes ya casi no vienen."
+    },
+    {
+      "id": "hi1-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "De chico yo era el que dibujaba en los márgenes mientras los demás sumaban. Mi maestro creía que no atendía. Atendía a mi manera. Por eso Helena me dejó estas preguntas a mí."
+    },
+    {
+      "id": "hi1-04",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le dices?",
       "registrar": false,
       "opciones": [
         {
-          "id": "hi1-02a",
-          "texto": "¿Son muchas preguntas?",
+          "id": "hi1-04a",
+          "texto": "¿Es como un examen?",
           "reaccion": [
             {
-              "id": "hi1-02ar",
+              "id": "hi1-04ar",
               "tipo": "dialogo",
               "hablanteId": "maestro",
-              "texto": "Bastantes, y van intercaladas: una de cada inteligencia y vuelta a empezar. Por eso las partimos en cinco clases cortas, como un horario."
+              "texto": "No. No hay nota, ni respuesta que reste."
             }
           ]
         },
         {
-          "id": "hi1-02b",
-          "texto": "¿Y si en algunas no me reconozco?",
+          "id": "hi1-04b",
+          "texto": "¿Y si en muchas no me reconozco?",
           "reaccion": [
             {
-              "id": "hi1-02br",
+              "id": "hi1-04br",
               "tipo": "dialogo",
               "hablanteId": "maestro",
-              "texto": "Entonces marcas que casi nunca te pasa. No hay respuesta que reste: todo dibuja tu perfil."
+              "texto": "Entonces marcas «Falso» y seguimos. Todo dibuja cómo eres hoy."
             }
           ]
         }
       ]
     },
     {
-      "id": "hi1-03",
+      "id": "hi1-05",
       "tipo": "dialogo",
       "hablanteId": "maestro",
-      "texto": "Piensa en lo que haces de verdad, en tu vida de todos los días, no en lo que te gustaría. Primera clase."
+      "texto": "Ya hablé como maestro. Te toca. Son treinta y cinco frases y hoy van siete. Para cada una me dices si es «Verdadero», «Falso» o «No estoy seguro». Piensa en lo que haces de verdad, no en lo que te gustaría."
     },
     {
-      "id": "hi1-04",
+      "id": "hi1-06",
       "tipo": "item",
       "instrumentoId": "TEST-INTELIGENCIAS",
       "itemId": "plantilla",
       "hablanteId": "maestro",
-      "etiqueta": "¿Con qué frecuencia te pasa?"
+      "etiqueta": "¿Es verdad en tu caso?"
     },
     {
-      "id": "hi1-05",
+      "id": "hi1-07",
       "tipo": "dialogo",
       "hablanteId": "maestro",
-      "texto": "Hasta aquí la primera. Vuelve cuando quieras; la página se abre al terminar las cinco.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Hasta aquí por hoy. Vuelve cuando quieras: la escuela está abierta toda la tarde."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Primera clase con el maestro Bruno. Faltan cuatro."
+    "mensajeFin": "Siete de treinta y cinco frases del maestro Bruno."
   },
   "mapa": {
-    "x": 400,
-    "y": 330,
+    "x": 447,
+    "y": 381,
     "icono": "test"
   }
 }

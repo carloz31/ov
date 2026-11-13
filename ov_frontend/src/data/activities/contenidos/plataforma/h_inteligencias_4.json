@@ -2,7 +2,7 @@
   "id": "h-inteligencias-4",
   "codigo": "h-inteligencias-4",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Explorando mis inteligencias, 4 de 5",
+  "titulo": "Explorando mis inteligencias, 4 de 5",
   "subtitulo": "La escuela del maestro Bruno",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hi4-01",
       "tipo": "dialogo",
       "hablanteId": "maestro",
-      "texto": "Cuarta. Hoy hay música en el patio y los chicos no se concentran; a ti te va a servir, porque varias frases de hoy son sobre eso: ritmos, cuerpo, movimiento.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Llegas en buena hora: los chicos ensayan un baile para la fiesta de la ciudad y nadie me hace caso. Yo no tengo ritmo; aplaudo a destiempo. Igual me encanta verlos. Vamos con las tuyas."
     },
     {
       "id": "hi4-02",
@@ -32,22 +32,22 @@
       "instrumentoId": "TEST-INTELIGENCIAS",
       "itemId": "plantilla",
       "hablanteId": "maestro",
-      "etiqueta": "¿Con qué frecuencia te pasa?"
+      "etiqueta": "¿Es verdad en tu caso?"
     },
     {
       "id": "hi4-03",
       "tipo": "dialogo",
       "hablanteId": "maestro",
-      "texto": "Una más y terminamos.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Nos vemos. Yo voy a seguir aplaudiendo mal."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Cuarta clase. Falta una."
+    "mensajeFin": "Veintiocho de treinta y cinco frases del maestro Bruno."
   },
   "mapa": {
-    "x": 490,
-    "y": 375,
+    "x": 425,
+    "y": 312,
     "icono": "test"
   }
 }

@@ -2,7 +2,7 @@
   "id": "h-intereses-5",
   "codigo": "h-intereses-5",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mis intereses, 5 de 6",
+  "titulo": "Mis intereses, 5 de 6",
   "subtitulo": "La biblioteca de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hin5-01",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Quinto estante. Casi al final: no aceleres justo ahora.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Tú de nuevo. Bien. Hoy ando de mal humor: me tocó dar un aviso frente a toda la plaza, y eso me disgusta mucho. Ayudar a una sola persona a encontrar lo que busca, en cambio, me gusta mucho. Ahora cuéntame tú."
     },
     {
       "id": "hin5-02",
@@ -38,16 +38,16 @@
       "id": "hin5-03",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Cincuenta. Uno más.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Ya se me pasó el mal humor. Nos vemos."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Quinto estante. Falta uno."
+    "mensajeFin": "Cincuenta de sesenta frases de Sol."
   },
   "mapa": {
-    "x": 620,
-    "y": 480,
+    "x": 625,
+    "y": 435,
     "icono": "test"
   }
 }

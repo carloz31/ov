@@ -46,8 +46,8 @@
     "mensajeFin": "Un resultado es una hipótesis. Tú acabas de ponerla a prueba."
   },
   "mapa": {
-    "x": 450,
-    "y": 300,
+    "x": 470,
+    "y": 285,
     "icono": "registro",
     "origen": "h-inteligencias-5"
   }

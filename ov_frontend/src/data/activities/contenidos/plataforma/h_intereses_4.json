@@ -2,7 +2,7 @@
   "id": "h-intereses-4",
   "codigo": "h-intereses-4",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mis intereses, 4 de 6",
+  "titulo": "Mis intereses, 4 de 6",
   "subtitulo": "La biblioteca de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hin4-01",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Cuarto estante. ¿Te acuerdas de los seis refugios del volcán? Estas frases son de todos esos ambientes mezclados.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Llegas justo. Ayer bajó Rosa del volcán y me contó de tu paseo por los seis refugios. Las frases de hoy salen de ahí, mezcladas. Dime cuáles te llaman."
     },
     {
       "id": "hin4-02",
@@ -38,16 +38,16 @@
       "id": "hin4-03",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Cuarenta de sesenta.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Ya está. Hoy cierro temprano: los jueves hay música en la plaza."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Cuarto estante. Faltan dos."
+    "mensajeFin": "Cuarenta de sesenta frases de Sol."
   },
   "mapa": {
-    "x": 595,
-    "y": 465,
+    "x": 590,
+    "y": 415,
     "icono": "test"
   }
 }

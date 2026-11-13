@@ -2,7 +2,7 @@
   "id": "h-habilidades-1",
   "codigo": "h-habilidades-1",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mi comportamiento con los demás, 1 de 4",
+  "titulo": "Mi comportamiento con los demás, 1 de 4",
   "subtitulo": "La taberna de Dora",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,69 +23,81 @@
       "id": "hh1-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "La taberna de Dora. Rosa dijo que aquí conservan las preguntas sobre cómo te comportas con los demás. Tiene sentido: por esta puerta pasa toda la ciudad."
+      "texto": "La taberna de Dora. Por esta puerta pasa toda la ciudad, y Dora se acuerda de todos."
     },
     {
       "id": "hh1-02",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "¿De parte de Rosa? Siéntate. Helena me dejó veinticuatro frases sobre lo que sueles hacer con la gente. Te las leo de a seis, en cuatro visitas: aquí nadie se levanta de la mesa apurado.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "¡Lumi! Y con compañía. Siéntate, que aquí nadie se queda en la puerta. Soy Dora. ¿Vienes de parte de Rosa? A ella le hice estas mismas preguntas hace años."
     },
     {
       "id": "hh1-03",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Son de Helena, sobre cómo te portas con la gente. Me las dejó a mí porque llevo media vida detrás de este mostrador, mirando cómo se trata la gente cuando cree que nadie mira."
+    },
+    {
+      "id": "hh1-04",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le dices?",
       "registrar": false,
       "opciones": [
         {
-          "id": "hh1-03a",
-          "texto": "¿Por qué en cuatro visitas?",
+          "id": "hh1-04a",
+          "texto": "¿Y si respondo lo que queda mejor?",
           "reaccion": [
             {
-              "id": "hh1-03ar",
+              "id": "hh1-04ar",
               "tipo": "dialogo",
               "hablanteId": "dora",
-              "texto": "Porque cada seis frases conviene parar y pensar. Las que responden de corrido terminan contestando lo que les gustaría ser."
+              "texto": "Lo vas a notar al responder. Aquí vale lo que haces, no lo que te gustaría hacer."
             }
           ]
         },
         {
-          "id": "hh1-03b",
-          "texto": "Listo, empecemos.",
+          "id": "hh1-04b",
+          "texto": "¿Vas a opinar de lo que responda?",
           "reaccion": [
             {
-              "id": "hh1-03br",
+              "id": "hh1-04br",
               "tipo": "dialogo",
               "hablanteId": "dora",
-              "texto": "Responde como eres, no como te gustaría. Yo no opino: solo escucho."
+              "texto": "De eso no. Opino de todo lo demás, pregúntale a cualquiera."
             }
           ]
         }
       ]
     },
     {
-      "id": "hh1-04",
+      "id": "hh1-05",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Bueno, ya hablé mucho. Ahora tú. Son veinticuatro frases y hoy van seis. Para cada una me dices si te pasa «Casi siempre» o «Casi nunca»."
+    },
+    {
+      "id": "hh1-06",
       "tipo": "item",
       "instrumentoId": "TEST-HABILIDADES",
       "itemId": "plantilla",
       "hablanteId": "dora",
-      "etiqueta": "¿Te describe?"
+      "etiqueta": "¿Te pasa casi siempre o casi nunca?"
     },
     {
-      "id": "hh1-05",
+      "id": "hh1-07",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "Las primeras seis. Vuelve cuando quieras por las siguientes; la página no se abre hasta completar las cuatro visitas.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Eso es todo por hoy. Vuelve cuando quieras, que esta puerta no tiene llave."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Primera visita a la taberna. Faltan tres."
+    "mensajeFin": "Seis de veinticuatro frases de Dora."
   },
   "mapa": {
-    "x": 700,
-    "y": 300,
+    "x": 690,
+    "y": 330,
     "icono": "test"
   }
 }

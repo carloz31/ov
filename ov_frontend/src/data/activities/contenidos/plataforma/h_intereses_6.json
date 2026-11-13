@@ -2,7 +2,7 @@
   "id": "h-intereses-6",
   "codigo": "h-intereses-6",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mis intereses, 6 de 6",
+  "titulo": "Mis intereses, 6 de 6",
   "subtitulo": "La biblioteca de Sol",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hin6-01",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Último estante. Las diez que faltan.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "La última. Me había acostumbrado a verte por aquí. Cuéntame lo que falta."
     },
     {
       "id": "hin6-02",
@@ -38,23 +38,23 @@
       "id": "hin6-03",
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
-      "texto": "Sesenta de sesenta. Lo que Helena hace con esto es comparar tus seis puntajes con el perfil de cientos de ocupaciones, medido en gente que las ejerce. Las más parecidas aparecen como afines. Y tu código de tres letras te sirve para buscar más ocupaciones por tu cuenta en el catálogo.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Eso era todo. Con tus respuestas, Helena compara lo que te atrae con lo que hace la gente en cientos de ocupaciones. No te va a decir qué estudiar: te va a mostrar a cuáles te pareces."
     },
     {
       "id": "hin6-04",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Rompe el sello cuando quieras. Después hay un registro con Sol para contrastar lo que dice tu perfil con tu opción inicial: ahí es donde esto se vuelve útil.",
-      "expresion": "animado"
+      "expresion": "animado",
+      "texto": "Mira tu libro: la página de intereses ya tiene su sello. Rómpelo cuando quieras."
     }
   ],
   "recompensa": {
-    "mensajeFin": "La página de intereses está lista para abrirse en el libro de Helena."
+    "mensajeFin": "La página de intereses está lista en el libro de Helena. Rompe su sello cuando quieras."
   },
   "mapa": {
-    "x": 645,
-    "y": 495,
+    "x": 625,
+    "y": 475,
     "icono": "test"
   }
 }

@@ -2,7 +2,7 @@
   "id": "h-habilidades-2",
   "codigo": "h-habilidades-2",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Mi comportamiento con los demás, 2 de 4",
+  "titulo": "Mi comportamiento con los demás, 2 de 4",
   "subtitulo": "La taberna de Dora",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hh2-01",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "Volviste. Hoy la taberna está llena; igual te escucho. Seis frases más, sobre cómo reaccionas cuando alguien te pide algo o te lleva la contra.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "¡Mira quién volvió! Hoy le tuve que decir a un cliente que no le fío más. Los primeros años no podía: le fiaba a media ciudad. Decir que no me costó aprenderlo. Pero hoy la que pregunta soy yo: seis más, de todo un poco."
     },
     {
       "id": "hh2-02",
@@ -32,22 +32,22 @@
       "instrumentoId": "TEST-HABILIDADES",
       "itemId": "plantilla",
       "hablanteId": "dora",
-      "etiqueta": "¿Te describe?"
+      "etiqueta": "¿Te pasa casi siempre o casi nunca?"
     },
     {
       "id": "hh2-03",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "Doce de veinticuatro. Mitad del camino.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Ya está por hoy. Y la próxima pide algo, que esto es una taberna."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Segunda visita. Mitad de las frases de Dora."
+    "mensajeFin": "Doce de veinticuatro frases de Dora."
   },
   "mapa": {
-    "x": 760,
-    "y": 380,
+    "x": 740,
+    "y": 330,
     "icono": "test"
   }
 }

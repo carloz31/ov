@@ -2,7 +2,7 @@
   "id": "h-inteligencias-3",
   "codigo": "h-inteligencias-3",
   "tipo": "instrumento",
-  "titulo": "Misión de Helena: Explorando mis inteligencias, 3 de 5",
+  "titulo": "Explorando mis inteligencias, 3 de 5",
   "subtitulo": "La escuela del maestro Bruno",
   "escenario": "ciudad",
   "bloque": 7,
@@ -23,8 +23,8 @@
       "id": "hi3-01",
       "tipo": "dialogo",
       "hablanteId": "maestro",
-      "texto": "Tercera. Un consejo antes de empezar: si una frase te hace dudar, la duda es una respuesta válida. No la fuerces hacia el sí.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Adelante. Te confieso algo: me pierdo en mi propia ciudad. Todavía pregunto dónde queda la taberna de Dora. En cambio me acuerdo del nombre de cada alumno que tuve. Uno es así, disparejo. ¿Cómo eres tú?"
     },
     {
       "id": "hi3-02",
@@ -32,22 +32,22 @@
       "instrumentoId": "TEST-INTELIGENCIAS",
       "itemId": "plantilla",
       "hablanteId": "maestro",
-      "etiqueta": "¿Con qué frecuencia te pasa?"
+      "etiqueta": "¿Es verdad en tu caso?"
     },
     {
       "id": "hi3-03",
       "tipo": "dialogo",
       "hablanteId": "maestro",
-      "texto": "Tres de cinco. Vas bien.",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Gracias. Si ves a Dora, dile que hoy sí encontré el camino."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tercera clase. Faltan dos."
+    "mensajeFin": "Veintiuna de treinta y cinco frases del maestro Bruno."
   },
   "mapa": {
-    "x": 460,
-    "y": 360,
+    "x": 389,
+    "y": 338,
     "icono": "test"
   }
 }
