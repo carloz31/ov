@@ -3,42 +3,108 @@
   "codigo": "p6",
   "tipo": "encuentro",
   "audiencia": "apoderado",
-  "titulo": "Cómo conversar con mi hijo",
-  "subtitulo": "Escuchar antes de opinar",
+  "titulo": "Cómo conversar con mi hijo o hija",
+  "subtitulo": "Preguntar, escuchar y recién después opinar",
   "bloque": 1,
   "orden": 6,
   "obligatoria": true,
   "requisitos": [
     "p5"
   ],
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 12,
   "personajeIds": [
     "orientacion"
   ],
-  "objetivoAprendizaje": "Al terminar, el apoderado distingue preguntas que abren de preguntas que cierran, conoce cuatro reglas para una conversación que sirve y sabe cómo funcionan las conversaciones guiadas de la plataforma.",
+  "objetivoAprendizaje": "Al terminar, el apoderado distingue una pregunta que abre de una que pide defenderse, conoce un orden para conversar (preguntar, escuchar, devolver, pedir un ejemplo y recién opinar), sabe qué hacer ante un «no sé» y entiende cómo funcionan las conversaciones guiadas de la plataforma.",
   "nodos": [
     {
       "id": "p6-01",
       "tipo": "diapositiva",
-      "titulo": "La pregunta más repetida en quinto de secundaria",
+      "etiqueta": "Para empezar",
+      "titulo": "Esta vez va a conversar",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "«¿Ya sabes qué vas a estudiar?» es la pregunta más frecuente y la que menos información produce. Conversar sobre el futuro es una habilidad, y se puede practicar. El orden que funciona: preguntar, escuchar hasta el final, pedir un ejemplo, y recién entonces decir lo que usted piensa, como opinión y no como veredicto."
+          "texto": "Conversar sobre el futuro con un hijo o una hija se aprende haciéndolo. Por eso en esta actividad hay poco que leer: le proponemos llevar una conversación, turno por turno, y ver qué pasa con cada respuesta."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Usted va a ser Julio. Su hija Andrea tiene diecisiete años y está en quinto de secundaria. Es de noche, están terminando de cenar y ella le dice: «Papá, creo que quiero estudiar Turismo»."
         }
-      ],
-      "etiqueta": "Para empezar"
+      ]
     },
     {
       "id": "p6-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Primer turno. ¿Qué le responde a Andrea?",
+      "nota": "Elija lo que más se parezca a lo que usted diría. No se guarda.",
+      "opciones": [
+        {
+          "id": "p6-02a",
+          "texto": "«¿Turismo? ¿Y eso en qué vas a trabajar?»",
+          "reaccion": [
+            {
+              "id": "p6-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «No sé… en hoteles, supongo», y vuelve a mirar su celular. La pregunta es válida, pero llegó como un examen: ella sintió que tenía que defender algo que recién está pensando."
+            }
+          ]
+        },
+        {
+          "id": "p6-02b",
+          "texto": "«¿Estás segura? El mes pasado querías Derecho.»",
+          "reaccion": [
+            {
+              "id": "p6-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Ya, olvídalo». Usted recordó bien, y cambiar de idea a esta edad es lo esperable. Pero ella escuchó que no la toman en serio."
+            }
+          ]
+        },
+        {
+          "id": "p6-02c",
+          "texto": "«¿Qué te llamó la atención de Turismo?»",
+          "reaccion": [
+            {
+              "id": "p6-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Fue en el viaje de promoción. Me gustó cómo la guía tenía todo organizado y cómo la gente la escuchaba». Con una sola pregunta, usted ya sabe algo que no sabía."
+            }
+          ]
+        },
+        {
+          "id": "p6-02d",
+          "texto": "«Qué bien, hija. Lo que tú quieras está bien.»",
+          "reaccion": [
+            {
+              "id": "p6-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Ya», y la conversación termina ahí. La frase es cariñosa y le da su apoyo, pero no le pregunta nada: ella se queda sin contar por qué."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p6-03",
       "tipo": "diapositiva",
-      "titulo": "Preguntas que cierran y preguntas que abren",
+      "etiqueta": "La idea",
+      "titulo": "Una pregunta abre cuando usted no sabe la respuesta",
       "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Las cuatro respuestas nacen del interés. La diferencia está en lo que le piden a Andrea: tres le piden defenderse, confirmar o nada; una le pide contar. Sigamos por ahí."
+        },
         {
           "tipo": "tabla",
           "columnas": [
-            "Cierran",
-            "Abren"
+            "Preguntas que piden defenderse",
+            "Preguntas que piden contar"
           ],
           "filas": [
             [
@@ -51,181 +117,311 @@
             ],
             [
               "¿Y eso en qué vas a trabajar?",
-              "¿Cómo sería un día normal en ese trabajo? ¿Qué te falta averiguar?"
+              "¿Cómo te imaginas un día normal en ese trabajo?"
             ],
             [
               "¿Por qué no mejor…?",
-              "¿Qué otras opciones has mirado? ¿Qué te hizo descartarlas?"
-            ],
-            [
-              "Eso no da plata",
-              "¿Has visto cuánto ganan al inicio? ¿Cómo lo pagaríamos?"
+              "¿Qué otras opciones has mirado? ¿Qué te hizo dejarlas?"
             ]
-          ],
-          "nota": "Las de la derecha no son trucos: son preguntas cuya respuesta usted no conoce. Esa es la diferencia."
-        },
-        {
-          "tipo": "pasos",
-          "pasos": [
-            {
-              "titulo": "Un tema por conversación",
-              "texto": "De quince o veinte minutos. Las conversaciones largas sobre «el futuro» agotan a los dos."
-            },
-            {
-              "titulo": "Sin público",
-              "texto": "Ni delante de hermanos ni en una reunión familiar."
-            },
-            {
-              "titulo": "Las dudas no se juzgan",
-              "texto": "«No sé» es una respuesta válida; se sigue con «¿qué te ayudaría a saberlo?»."
-            },
-            {
-              "titulo": "Termine con un acuerdo pequeño",
-              "texto": "Averiguar un dato, visitar un lugar, hablar con alguien."
-            }
-          ],
-          "titulo": "Cuatro reglas"
-        }
-      ],
-      "etiqueta": "Concepto"
-    },
-    {
-      "id": "p6-03",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Su hija dice: «No sé qué quiero». ¿Qué respuesta abre?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "«¿Cómo que no sabes? Ya estás en quinto.»",
-          "correcta": false,
-          "retroalimentacion": "Juzga la duda. Ella aprende a no decir «no sé» delante de usted."
-        },
-        {
-          "id": "b",
-          "texto": "«Está bien no saber todavía. ¿Qué te ayudaría a saberlo?»",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Acepta la duda como respuesta válida y propone un paso."
-        },
-        {
-          "id": "c",
-          "texto": "«Entonces estudia Administración, que sirve para todo.»",
-          "correcta": false,
-          "retroalimentacion": "Llena el vacío con una sugerencia. Ella no dijo que quería una sugerencia."
-        }
-      ],
-      "explicacion": "«No sé» es una respuesta válida. La regla tres: las dudas no se juzgan, y se sigue con una pregunta que proponga un paso.",
-      "pistas": [
-        {
-          "id": "p6-03p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "Tercera regla."
-        }
-      ],
-      "transicion": "Dos situaciones."
-    },
-    {
-      "id": "p6-04",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_multiple",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "De estas preguntas, ¿cuáles abren? Marque todas las que correspondan.",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "¿Qué otras opciones has mirado?",
-          "correcta": true,
-          "retroalimentacion": "Abre: usted no conoce la respuesta."
-        },
-        {
-          "id": "b",
-          "texto": "¿Estás seguro de eso?",
-          "correcta": false,
-          "retroalimentacion": "Cierra: ya trae la duda de usted."
-        },
-        {
-          "id": "c",
-          "texto": "¿Cómo sería un día normal en ese trabajo?",
-          "correcta": true,
-          "retroalimentacion": "Abre: y de paso lo lleva a averiguarlo si no lo sabe."
-        },
-        {
-          "id": "d",
-          "texto": "¿Y eso en qué vas a trabajar?",
-          "correcta": false,
-          "retroalimentacion": "Cierra: es un veredicto con signo de interrogación."
-        }
-      ],
-      "explicacion": "Una pregunta abre cuando usted no conoce la respuesta y la quiere conocer. Las otras son opiniones disfrazadas.",
-      "pistas": [
-        {
-          "id": "p6-04p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "Pregúntese de cada una: ¿sé ya lo que quiero que me responda?"
-        }
-      ]
-    },
-    {
-      "id": "p6-05",
-      "tipo": "diapositiva",
-      "titulo": "Las conversaciones guiadas",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "La plataforma le propone diez conversaciones con su hijo o hija, una por tema: lo que disfruta, lo que les gustaría mejorar a su alrededor, las ideas sobre las profesiones, el futuro que imaginan, lo que significa vivir bien, sus fortalezas, su trabajo, los cambios de rumbo, lo que hace posible un plan y cómo acompañarlo."
-        },
-        {
-          "tipo": "pasos",
-          "pasos": [
-            {
-              "titulo": "Cada uno responde una pregunta por su lado",
-              "texto": "Usted tiene la suya; su hijo o hija, la suya, en su propia pantalla."
-            },
-            {
-              "titulo": "Luego ven la respuesta del otro",
-              "texto": "Con una guía para conversarla en casa, con preguntas sugeridas y un consejo."
-            },
-            {
-              "titulo": "Se habilitan conforme su hijo o hija avanza",
-              "texto": "Las encuentra en Conversaciones al terminar su ruta y escribir su carta; su hijo o hija las va abriendo con su avance."
-            }
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Conversar no es convencer. Es enterarse de lo que su hijo o hija piensa, y que se entere de lo que usted siente."
+          "texto": "Las de la derecha no son un truco. Son preguntas cuya respuesta usted de verdad no conoce."
+        }
+      ]
+    },
+    {
+      "id": "p6-04",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Segundo turno. Andrea acaba de contarle lo de la guía del viaje de promoción. ¿Qué le dice ahora?",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "p6-04a",
+          "texto": "«¿Y cuánto gana una guía de turismo?»",
+          "reaccion": [
+            {
+              "id": "p6-04ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «No sé». Es un dato que hay que mirar, y ya va a llegar ese momento. Hecha ahora, la pregunta corta lo que ella estaba contando."
+            }
+          ]
         },
         {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, actividad 3 (taller 1) y actividad 12 (taller 2) con madres y padres de familia."
+          "id": "p6-04b",
+          "texto": "«O sea que te gustó cómo organizaba todo. ¿Qué más hacía?»",
+          "reaccion": [
+            {
+              "id": "p6-04br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Sí. Y resolvía todo: se malogró el bus y en diez minutos ya había otro. Yo quiero hacer eso». Usted le devolvió lo que entendió y pidió un ejemplo. Ahora sabe que le atrae organizar y resolver, que es más que «Turismo»."
+            }
+          ]
+        },
+        {
+          "id": "p6-04c",
+          "texto": "«Entonces tienes que averiguar dónde se estudia.»",
+          "reaccion": [
+            {
+              "id": "p6-04cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Sí, ya veré». Es un buen paso, y sirve para cerrar la conversación. Dicho tan pronto, la convierte en una tarea antes de que ella termine de contar."
+            }
+          ]
+        },
+        {
+          "id": "p6-04d",
+          "texto": "«A mí eso me suena más a un pasatiempo que a una carrera.»",
+          "reaccion": [
+            {
+              "id": "p6-04dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea se queda callada. Puede que usted tenga razones para pensarlo, y puede decirlas. Pero todavía no sabe qué es lo que a ella le gustó, y ahora es más difícil que se lo cuente."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p6-05",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Tercer turno. Usted ya la escuchó, y tiene una preocupación de verdad: no sabe si en Turismo hay trabajo estable. ¿Cómo se lo dice?",
+      "nota": "No se guarda.",
+      "opciones": [
+        {
+          "id": "p6-05a",
+          "texto": "«Turismo no da plata, hija.»",
+          "reaccion": [
+            {
+              "id": "p6-05ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Ya sabía que ibas a decir eso». La preocupación es legítima, pero llegó como un veredicto, y sin un dato detrás."
+            }
+          ]
+        },
+        {
+          "id": "p6-05b",
+          "texto": "«A mí me preocupa si hay trabajo estable. ¿Lo vemos juntos?»",
+          "reaccion": [
+            {
+              "id": "p6-05br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Bueno. En la plataforma sale cuánto ganan». Usted dijo lo que piensa, como algo suyo, y la conversación sigue. Su opinión entró, y entró después de escuchar."
+            }
+          ]
+        },
+        {
+          "id": "p6-05c",
+          "texto": "No le digo nada, para no arruinar el momento.",
+          "reaccion": [
+            {
+              "id": "p6-05cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Se entiende: la conversación va bien y da pena tocarla. Pero la preocupación sigue ahí y va a salir otro día, quizá de peor manera. Hoy, después de escucharla, es el mejor momento para decirla."
+            }
+          ]
+        },
+        {
+          "id": "p6-05d",
+          "texto": "«¿Y por qué no Administración, que también sirve para eso?»",
+          "reaccion": [
+            {
+              "id": "p6-05dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Andrea responde: «Es que no es lo mismo». La idea es sensata y vale la pena ponerla sobre la mesa. Dicha así, ella escucha «eso no»; dicha después de mirar los datos juntos, es una opción más."
+            }
+          ]
         }
       ]
     },
     {
       "id": "p6-06",
       "tipo": "diapositiva",
-      "titulo": "Para llevarse",
+      "etiqueta": "En la práctica",
+      "titulo": "El orden que funciona",
       "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Eso que acaba de hacer en tres turnos tiene un orden. No le quita a usted la palabra: la pone al final, que es donde más se escucha."
+        },
         {
           "tipo": "pasos",
           "pasos": [
             {
-              "titulo": "Esta semana",
-              "texto": "Una conversación de quince minutos, un solo tema, sin público, con una pregunta de la columna derecha. Termine con un acuerdo pequeño."
+              "titulo": "Pregunte algo que no sabe",
+              "texto": "«¿Qué te llamó la atención de eso?»"
+            },
+            {
+              "titulo": "Escuche hasta el final",
+              "texto": "Sin completar la frase ni corregir a mitad de camino."
+            },
+            {
+              "titulo": "Devuelva lo que entendió",
+              "texto": "«O sea que te gustó cómo organizaba todo». Si entendió mal, se lo va a decir."
+            },
+            {
+              "titulo": "Pida un ejemplo",
+              "texto": "«¿Qué más hacía?», «¿cómo fue esa vez?»."
+            },
+            {
+              "titulo": "Diga lo que usted piensa",
+              "texto": "Como algo suyo y con una propuesta: «a mí me preocupa… ¿lo vemos juntos?»."
             }
           ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3 y actividad 12, talleres con madres y padres. Las preguntas abiertas y devolver lo escuchado son técnicas de la entrevista motivacional (Miller y Rollnick, 2013). El orden es una adaptación del equipo de orientación."
+        }
+      ]
+    },
+    {
+      "id": "p6-07",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "No todas las conversaciones salen como la de Andrea.",
+      "enunciado": "Hay hijos que a todo responden «no sé». Usted pregunta «¿qué te gustaría estudiar?» y la respuesta es esa, una y otra vez. ¿Qué ayuda más?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Darle tiempo y volver a hacerle la misma pregunta la otra semana.",
+          "correcta": false,
+          "retroalimentacion": "Darle tiempo está bien. Pero la misma pregunta va a traer la misma respuesta: es demasiado grande para contestarla de golpe."
+        },
+        {
+          "id": "b",
+          "texto": "Proponerle usted dos o tres carreras, para que tenga de dónde elegir.",
+          "correcta": false,
+          "retroalimentacion": "Puede servir más adelante, como ideas. Si llega primero, lo más probable es que elija una para salir del paso, y usted no sepa si le interesa."
+        },
+        {
+          "id": "c",
+          "texto": "Preguntar por algo más pequeño y concreto, que sí pueda responder.",
+          "correcta": true,
+          "retroalimentacion": "Sí. «¿Qué curso se te pasa más rápido?», «¿qué video viste entero esta semana?». De respuestas pequeñas se arma la grande."
+        },
+        {
+          "id": "d",
+          "texto": "Decirle con calma que a estas alturas ya debería tener una idea.",
+          "correcta": false,
+          "retroalimentacion": "Es lo que uno siente, y la preocupación se entiende. Pero «no sé» casi nunca es desgano: es que todavía no lo sabe. Y oír que ya debería saberlo le quita las ganas de seguir hablando."
         }
       ],
-      "etiqueta": "Resumen",
-      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+      "explicacion": "«No sé» es una respuesta honesta, y casi siempre es la respuesta a una pregunta demasiado grande. Si a usted le pasa esto, pruebe con preguntas chicas y con otro momento: muchos hijos hablan más mientras hacen otra cosa a su lado, como cocinar, caminar o ir en el carro, que sentados frente a frente.",
+      "pistas": [
+        {
+          "id": "p6-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Piense en el tamaño de la pregunta, no en la actitud de quien responde."
+        }
+      ]
+    },
+    {
+      "id": "p6-08",
+      "tipo": "diapositiva",
+      "etiqueta": "En la práctica",
+      "titulo": "Lo que rodea a una buena conversación",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Un tema por vez, de quince o veinte minutos. Las conversaciones largas sobre «el futuro» agotan a los dos.",
+            "Sin público: ni delante de los hermanos ni en una reunión familiar.",
+            "No tiene que ser sentados frente a frente. Sirve la cocina, el camino al paradero, el carro.",
+            "Termine con algo pequeño: averiguar un dato, visitar un lugar, conversar con alguien que trabaje en eso."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Si usted ya conversa así con su hijo o hija, siga. Lo que acaba de practicar solo le pone nombre a lo que ya le funciona."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Recomendaciones del equipo de orientación."
+        }
+      ]
+    },
+    {
+      "id": "p6-09",
+      "tipo": "diapositiva",
+      "etiqueta": "En la plataforma",
+      "titulo": "Las conversaciones guiadas",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Cuando termine su ruta se le abre algo más: una serie de temas para conversar con su hijo o hija. No se los vamos a adelantar todos. Solo dos pistas: en uno, él o ella le pregunta por algo de su trabajo que quizá nunca le contó; en otro, le dice cómo quiere que usted lo acompañe. Los demás los va a descubrir al entrar."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cómo funcionan",
+          "pasos": [
+            {
+              "titulo": "Se abren al terminar su ruta",
+              "texto": "Las encuentra en Conversaciones. Su hijo o hija va abriendo los temas con su avance; usted puede adelantar sus respuestas."
+            },
+            {
+              "titulo": "Cada uno responde por separado",
+              "texto": "Usted tiene su pregunta y su hijo o hija la suya, cada uno en su pantalla."
+            },
+            {
+              "titulo": "Con las dos respuestas, aparece una guía",
+              "texto": "Ve lo que respondió el otro y recibe preguntas para conversarlo en casa."
+            }
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Responder en la plataforma no es conversar. La conversación pasa en casa; la plataforma solo le da por dónde empezar."
+        }
+      ]
+    },
+    {
+      "id": "p6-10",
+      "tipo": "diapositiva",
+      "etiqueta": "Para llevarse",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Conversar no es convencer. Es enterarse de lo que su hijo o hija piensa, y que se entere de lo que usted siente."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Le dejamos una sola cosa para esta semana."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Esta semana",
+          "pasos": [
+            {
+              "titulo": "Una pregunta cuya respuesta no conoce",
+              "texto": "Hágala en un momento tranquilo, escuche hasta el final y devuelva lo que entendió. Su opinión puede esperar a la siguiente conversación."
+            }
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar recibe la ficha «Cómo conversar con su hijo o hija». Queda en Mis actividades, con más preguntas para empezar y qué hacer cuando la conversación se traba."
+        }
+      ]
     }
   ],
   "recompensa": {

@@ -3,76 +3,88 @@
   "codigo": "p4",
   "tipo": "encuentro",
   "audiencia": "apoderado",
-  "titulo": "El sueño del chef",
-  "subtitulo": "Cuando la familia descubre tarde",
+  "titulo": "Lo que no se dice en casa",
+  "subtitulo": "Por qué los hijos callan y cómo dejar la puerta abierta",
   "bloque": 1,
   "orden": 4,
   "obligatoria": true,
   "requisitos": [
     "p3"
   ],
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 12,
   "personajeIds": [
     "orientacion"
   ],
-  "objetivoAprendizaje": "Al terminar, el apoderado conoce la historia de Gastón Acurio y el papel de su familia, entiende por qué los hijos esconden lo que quieren y reconoce las señales.",
+  "objetivoAprendizaje": "Al terminar, el apoderado entiende que lo que sabe de su hijo o hija depende de lo que le cuenta, reconoce cómo sus reacciones abren o cierran esa puerta, sabe por qué los hijos callan y tiene frases y pasos para cuando le cuenten algo que no esperaba.",
   "nodos": [
     {
       "id": "p4-01",
       "tipo": "diapositiva",
-      "titulo": "Una historia conocida",
+      "etiqueta": "Para empezar",
+      "titulo": "Empecemos por cuando usted tenía esa edad",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Gastón Acurio estudió Derecho en Lima y luego en Madrid, con buenas notas. Lo que leía con amor no eran tratados jurídicos sino libros de cocina. Su padre, ingeniero y político, lo supo recién en un almuerzo en España, cuando el hijo le confesó que soñaba con ser cocinero."
+          "texto": "Esta actividad trata de lo que los hijos no cuentan. Para entenderlo, le proponemos volver un momento a sus propios diecisiete años."
         },
         {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, actividad 12 y Anexo 12.2, «El sueño del chef» (texto de Mario Vargas Llosa, 2009)."
+          "tipo": "parrafo",
+          "texto": "La pregunta que sigue es solo para usted. No se guarda y no la ve nadie."
         }
-      ],
-      "etiqueta": "Para empezar"
+      ]
     },
     {
       "id": "p4-02",
       "tipo": "eleccion",
       "registrar": false,
-      "enunciado": "Si su hijo o hija le confesara algo así, ¿cuál cree que sería su primera reacción?",
-      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "enunciado": "A esa edad, ¿hubo algo que usted quería hacer o ser y no se lo dijo a sus padres?",
+      "nota": "Elija la que más se le acerque.",
       "opciones": [
         {
           "id": "p4-02a",
-          "texto": "Sorpresa: ¿cómo no me di cuenta?",
+          "texto": "Sí, y nunca lo supieron.",
           "reaccion": [
             {
               "id": "p4-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Es la del padre de Acurio. Esta actividad es sobre cómo darse cuenta antes."
+              "texto": "Entonces usted sabe desde adentro cómo es. Piense un momento por qué no lo dijo: casi siempre es por la respuesta que uno imaginaba. Esa misma cuenta la puede estar haciendo hoy su hijo o hija."
             }
           ]
         },
         {
           "id": "p4-02b",
-          "texto": "Preocupación por el tiempo y el dinero invertidos.",
+          "texto": "Sí, y se enteraron tarde.",
           "reaccion": [
             {
               "id": "p4-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Legítima. Y por eso conviene que la conversación ocurra antes de invertirlos."
+              "texto": "Usted conoce las dos partes: lo que costó callarlo y lo que pasó cuando se supo. Quédese con esta pregunta: ¿qué habría necesitado escuchar para decirlo antes?"
             }
           ]
         },
         {
           "id": "p4-02c",
-          "texto": "Alivio de que me lo cuente.",
+          "texto": "No, yo les contaba todo.",
           "reaccion": [
             {
               "id": "p4-02cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Esa reacción es la que mantiene abierta la puerta. Veamos cómo lograr que la confesión no llegue tarde."
+              "texto": "Eso habla de una casa donde se podía hablar. Vale preguntarse qué hacían sus padres para que fuera así, porque es lo mismo que le va a servir a usted."
+            }
+          ]
+        },
+        {
+          "id": "p4-02d",
+          "texto": "No tenía nada que contar: no sabía qué quería.",
+          "reaccion": [
+            {
+              "id": "p4-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "También pasa, y mucho. No todo silencio es un secreto: a veces todavía no hay nada decidido. Téngalo presente cuando su hijo o hija le responda «no sé»."
             }
           ]
         }
@@ -81,176 +93,339 @@
     {
       "id": "p4-03",
       "tipo": "diapositiva",
-      "titulo": "Tres papeles en una misma familia",
+      "etiqueta": "Una situación",
+      "titulo": "Tres veces que Mateo casi lo dice",
       "bloques": [
-        {
-          "tipo": "tabla",
-          "columnas": [
-            "Persona",
-            "Qué hizo",
-            "Qué efecto tuvo"
-          ],
-          "filas": [
-            [
-              "La madre",
-              "Notó desde niño la afición y la alentó, en silencio",
-              "Mantuvo viva la vocación, pero a escondidas"
-            ],
-            [
-              "El padre",
-              "No supo nada durante años; creía al hijo encaminado a la abogacía",
-              "Perdió la oportunidad de acompañar, y la sorpresa fue grande"
-            ],
-            [
-              "El hijo",
-              "Fingió hasta que no pudo más",
-              "Años en una carrera que no era la suya"
-            ]
-          ]
-        },
         {
           "tipo": "parrafo",
-          "texto": "El padre terminó inclinándose ante la vocación del hijo y nunca se arrepintió. Pero vale la pena mirar el costo: una vocación escondida por miedo a la reacción de la familia. En el Perú de los años ochenta la cocina «podía ser una afición, pero no una profesión». Hoy es una de las carreras más visibles del país."
-        }
-      ],
-      "etiqueta": "Concepto"
-    },
-    {
-      "id": "p4-04",
-      "tipo": "diapositiva",
-      "titulo": "Por qué los hijos esconden, y cómo se nota",
-      "bloques": [
-        {
-          "tipo": "lista",
-          "items": [
-            "Porque intuyen que la respuesta será «eso no es carrera», «eso es un hobby», «eso es cosa de mujeres» o «de hombres».",
-            "Porque no quieren decepcionar, sobre todo cuando sienten que la familia ya invirtió ilusión en otra opción.",
-            "Porque la familia nunca preguntó y ellos nunca encontraron el momento."
-          ],
-          "titulo": "Por qué esconden"
-        },
-        {
-          "tipo": "lista",
-          "items": [
-            "Cambia de tema cuando se habla del futuro, o responde siempre lo mismo.",
-            "Habla con entusiasmo de una actividad «de pasatiempo» y con desgano de «lo que va a estudiar».",
-            "Alguien más de la familia o del colegio sabe cosas que usted no."
-          ],
-          "titulo": "Señales de que su hijo o hija guarda algo"
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Si reconoce alguna, no la enfrente con un interrogatorio. Abra la puerta: «Si algún día quisieras hacer algo distinto a lo que hemos conversado, me gustaría saberlo»."
-        }
-      ]
-    },
-    {
-      "id": "p4-05",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Carla habla con entusiasmo de los videos que edita para su grupo de amigos y con desgano de la Contabilidad «que va a estudiar». Su mamá se da cuenta. ¿Qué conviene hacer?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Preguntarle directamente: «¿Estás segura de Contabilidad? ¿No será que quieres otra cosa?».",
-          "correcta": false,
-          "retroalimentacion": "Es un interrogatorio con respuesta incluida. Puede cerrarla más."
-        },
-        {
-          "id": "b",
-          "texto": "Abrir la puerta sin presionar: «Me gusta cómo hablas de tus videos. Si alguna vez quisieras explorar algo por ahí, me gustaría saberlo».",
-          "correcta": true,
-          "retroalimentacion": "Sí. Nombra lo que vio, sin juzgar, y deja la puerta abierta para que ella decida cuándo entrar."
-        },
-        {
-          "id": "c",
-          "texto": "No decir nada: ya eligió Contabilidad.",
-          "correcta": false,
-          "retroalimentacion": "La señal está ahí. Callar es repetir el papel del padre de Acurio."
-        }
-      ],
-      "explicacion": "Las señales no se enfrentan con interrogatorios: se abren puertas. La madre de Acurio alentó en silencio; el padre no supo. Lo que falta en esa historia es alguien que haya preguntado a tiempo.",
-      "pistas": [
-        {
-          "id": "p4-05p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "Relea la idea clave: ¿con qué se responde a una señal?"
-        }
-      ],
-      "transicion": "Un caso."
-    },
-    {
-      "id": "p4-06",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "«Lo que mi hijo no me cuenta no es asunto mío; cuando tenga algo que decir, lo dirá.» ¿Qué le diría a este padre?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Que tiene razón: hay que esperar.",
-          "correcta": false,
-          "retroalimentacion": "Acurio esperó años. Lo que el hijo no cuenta no desaparece: se decide sin usted."
-        },
-        {
-          "id": "b",
-          "texto": "Que lo que su hijo no le cuenta no desaparece, solo se decide sin él; preguntar abierto y a tiempo evita descubrirlo tarde.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. No se trata de forzar la confesión, sino de que haya un momento para contarla."
-        },
-        {
-          "id": "c",
-          "texto": "Que debería revisar sus redes para saber qué quiere.",
-          "correcta": false,
-          "retroalimentacion": "Eso rompe la confianza que justamente hace falta. La puerta se abre conversando, no vigilando."
-        }
-      ],
-      "explicacion": "Lo que su hijo no le cuenta no desaparece: solo se decide sin usted. La respuesta no es vigilar ni esperar, sino preguntar abierto.",
-      "pistas": [
-        {
-          "id": "p4-06p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "La frase final de la ficha: «Lo que su hijo no le cuenta…»."
-        }
-      ]
-    },
-    {
-      "id": "p4-07",
-      "tipo": "diapositiva",
-      "titulo": "Para llevarse",
-      "bloques": [
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Lo que su hijo no le cuenta no desaparece: solo se decide sin usted."
+          "texto": "Silvia es profesora de primaria, y en su familia todos pasaron por la universidad. Su hijo Mateo está en quinto de secundaria. Lea tres escenas, a lo largo de cuatro años."
         },
         {
           "tipo": "pasos",
           "pasos": [
             {
-              "titulo": "Una película para ver en familia",
-              "texto": "El programa sugiere ver juntos La sociedad de los poetas muertos y conversar después: ¿qué esperaba cada padre de su hijo en la película?, ¿qué habrían hecho ustedes?"
+              "titulo": "A los trece",
+              "texto": "Mateo pasa la tarde desarmando la moto de su tío y llega a casa feliz, con las manos negras. Silvia le dice: «Qué bien, hijo. Ahora lávate, que mañana tienes examen»."
             },
             {
-              "titulo": "Esta semana",
-              "texto": "Diga la frase de la puerta abierta, con sus palabras, en algún momento tranquilo."
+              "titulo": "A los quince",
+              "texto": "Pide pasar las vacaciones ayudando en el taller del tío. Silvia acepta: «Está bien para distraerte. Pero acuérdate de que tú vas a ir a la universidad»."
+            },
+            {
+              "titulo": "A los diecisiete",
+              "texto": "En el colegio le preguntan qué va a estudiar y escribe «Ingeniería Industrial». De los sábados en el taller ya no habla en casa. Silvia se entera por el tío de que Mateo quiere ser técnico automotriz."
+            }
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Silvia nunca le prohibió nada, y querer que un hijo vaya a la universidad es de lo más razonable. Aun así, Mateo dejó de contarle."
+        }
+      ]
+    },
+    {
+      "id": "p4-04",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué explica mejor que Mateo haya dejado de contarlo?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que a esa edad los hijos se vuelven reservados con sus padres.",
+          "correcta": false,
+          "retroalimentacion": "Es cierto que a esa edad guardan más cosas para sí. Pero Mateo sí lo contó, dos veces. Lo que cambió fue lo que pasó después de contarlo."
+        },
+        {
+          "id": "b",
+          "texto": "Que Silvia nunca le preguntó de frente qué quería estudiar.",
+          "correcta": false,
+          "retroalimentacion": "Preguntar habría ayudado. Pero Mateo ya había mostrado lo que le gustaba sin que nadie preguntara; lo que faltó fue otra cosa."
+        },
+        {
+          "id": "c",
+          "texto": "Que cada vez que lo mostró, la respuesta lo dejó como un pasatiempo.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Ninguna respuesta fue dura, pero las dos dijeron lo mismo: esto no cuenta como futuro. A la tercera, Mateo ya sabía qué iba a escuchar."
+        },
+        {
+          "id": "d",
+          "texto": "Que él mismo no estaba seguro de quererlo como una carrera.",
+          "correcta": false,
+          "retroalimentacion": "Puede que dudara, como cualquiera. Pero cuatro años de sábados en el taller dicen que el interés iba en serio."
+        }
+      ],
+      "explicacion": "Los hijos no dejan de contar de un día para otro. Prueban, miran la reacción y sacan la cuenta. Silvia no hizo nada grave, y esperar la universidad para un hijo no tiene nada de malo. Lo que pasó es que el taller nunca llegó a ser un tema de conversación: quedó como pasatiempo antes de que nadie lo mirara. Si reconoce alguna de esas respuestas en usted, no es tarde: lo que se cerró de a pocos se abre igual, de a pocos.",
+      "pistas": [
+        {
+          "id": "p4-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Mire las dos primeras escenas: ¿qué le dijo Silvia cada vez sobre el taller?"
+        }
+      ]
+    },
+    {
+      "id": "p4-05",
+      "tipo": "diapositiva",
+      "etiqueta": "La idea",
+      "titulo": "Usted sabe de su hijo o hija lo que le cuenta",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Uno pensaría que para saber qué quiere un hijo hay que preguntar más o vigilar más. Lo que se ha encontrado es otra cosa: lo que los padres saben de sus hijos adolescentes viene sobre todo de lo que ellos deciden contar. Y lo que deciden contar depende mucho de cómo les fue la última vez."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Cuando cuenta algo y usted…",
+            "Lo que su hijo o hija aprende"
+          ],
+          "filas": [
+            [
+              "Se interesa y pregunta más",
+              "«Vale la pena contarle»"
+            ],
+            [
+              "Lo minimiza: «eso es un pasatiempo»",
+              "«Mejor me lo guardo»"
+            ],
+            [
+              "Se alarma o da un sermón",
+              "«Mejor se lo digo cuando ya esté decidido»"
+            ],
+            [
+              "Lo usa después en una discusión",
+              "«No vuelvo a contarle»"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "En un seguimiento a 982 adolescentes, cuando los padres reaccionaban mal a algo que el hijo contaba, él se sentía más controlado y menos cercano a ellos, y después contaba menos y ocultaba más. Cuando reaccionaban bien, se sentía más cercano y contaba más."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Stattin y Kerr (2000), Parental monitoring: a reinterpretation, Child Development. Tilton-Weaver y otros (2010), Open up or close down, Journal of Adolescence. Los dos estudios tratan de lo que los adolescentes cuentan de su vida diaria; aquí se aplica a lo que cuentan de su futuro.",
+          "url": "https://www.pubmed.gov/19716171/"
+        }
+      ]
+    },
+    {
+      "id": "p4-06",
+      "tipo": "diapositiva",
+      "etiqueta": "Para entender",
+      "titulo": "Por qué callan",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "items": [
+            "Porque ya imaginan la respuesta: «eso no es carrera», «eso es un pasatiempo», «eso no es para ti».",
+            "Porque no quieren decepcionar, sobre todo si sienten que la familia ya puso su ilusión en otra cosa.",
+            "Porque todavía no lo tienen claro, y creen que solo se puede contar lo que ya está decidido.",
+            "Porque nunca hubo un momento: nadie preguntó y no supieron cómo empezar."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Callar no es mentir ni desconfiar de usted. Casi siempre es cuidarse de una respuesta, o cuidarlo a usted de una preocupación."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Hay algo más. Lo que hoy suena a ocurrencia puede ser un trabajo dentro de unos años. En el Perú de los años ochenta, cocinar se veía como una afición y no como una profesión; hoy se estudia en institutos y universidades."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 12 y Anexo 12.2."
+        }
+      ]
+    },
+    {
+      "id": "p4-07",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Ahora piense en la última vez que su hijo o hija le contó algo que usted no esperaba, de cualquier tema. ¿Qué fue lo primero que hizo?",
+      "nota": "No se guarda ni la ve nadie.",
+      "opciones": [
+        {
+          "id": "p4-07a",
+          "texto": "Le pregunté más, para entender.",
+          "reaccion": [
+            {
+              "id": "p4-07ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Esa es la reacción que hace que vuelva a contarle. Si le sale así, cuídela, sobre todo el día en que lo que le cuente no le guste."
+            }
+          ]
+        },
+        {
+          "id": "p4-07b",
+          "texto": "Le dije lo que yo pensaba.",
+          "reaccion": [
+            {
+              "id": "p4-07br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es natural, y su opinión importa. Pruebe la próxima vez a dejarla para el final: primero dos preguntas, después lo que usted piensa."
+            }
+          ]
+        },
+        {
+          "id": "p4-07c",
+          "texto": "Me preocupé, y se me notó.",
+          "reaccion": [
+            {
+              "id": "p4-07cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Preocuparse es parte de querer. Lo que ayuda es decirlo: «esto me preocupa un poco, pero quiero entenderlo». Así su hijo o hija no tiene que adivinar qué significa su cara."
+            }
+          ]
+        },
+        {
+          "id": "p4-07d",
+          "texto": "No recuerdo que me haya contado algo así últimamente.",
+          "reaccion": [
+            {
+              "id": "p4-07dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Puede que no haya tenido nada que contar, o que no haya encontrado el momento. No hace falta alarmarse ni salir a investigar. Un poco más adelante le proponemos una frase para abrir esa puerta."
             }
           ]
         }
+      ]
+    },
+    {
+      "id": "p4-08",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Volvamos con Silvia.",
+      "enunciado": "Silvia ya sabe, por el tío, que Mateo quiere ser técnico automotriz. Ella sigue pensando que la universidad le daría más seguridad. ¿Qué le conviene hacer?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Preguntarle esa misma noche por qué no se lo contó a ella primero.",
+          "correcta": false,
+          "retroalimentacion": "Es lo que el dolor pide, y se entiende. Pero pone a Mateo a defenderse por haber callado, en vez de hablar de lo que quiere."
+        },
+        {
+          "id": "b",
+          "texto": "Esperar a que él mismo lo cuente, sin decirle que ella ya lo sabe.",
+          "correcta": false,
+          "retroalimentacion": "Respeta su tiempo, y eso vale. El riesgo es que él siga callando justo porque cree que ella no lo aceptaría."
+        },
+        {
+          "id": "c",
+          "texto": "Decirle que se enteró, que le interesa, y pedirle que le muestre el taller.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Le dice que ya lo sabe, sin reproche, y hace lo que faltó las otras veces: tomar en serio lo que a él le importa."
+        },
+        {
+          "id": "d",
+          "texto": "Decirle que puede seguir en el taller, mientras no deje la universidad.",
+          "correcta": false,
+          "retroalimentacion": "Suena a acuerdo, pero repite el mensaje de siempre: el taller es un pasatiempo. Mateo va a oír lo mismo que a los quince."
+        }
       ],
-      "etiqueta": "Resumen",
-      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+      "explicacion": "Querer la universidad para Mateo no es el problema: buscar un camino más seguro para un hijo es razonable, y puede que Silvia tenga razón. El problema fue que lo otro no se podía ni nombrar. Si ahora se interesa, después puede decir lo que piensa, con sus razones, y mirar datos con él: qué se gana y dónde se trabaja por cada camino. Uno no cierra el otro: quien estudia una carrera técnica puede continuar luego en la universidad. Y pasaría lo mismo al revés, con un padre que espera que su hijo siga el negocio de la familia y un hijo que quiere ir a la universidad.",
+      "pistas": [
+        {
+          "id": "p4-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Busque la opción en la que Silvia no le reprocha el silencio ni vuelve a tratar el taller como un pasatiempo."
+        }
+      ]
+    },
+    {
+      "id": "p4-09",
+      "tipo": "diapositiva",
+      "etiqueta": "En la práctica",
+      "titulo": "Cómo dejar la puerta abierta",
+      "bloques": [
+        {
+          "tipo": "lista",
+          "titulo": "Frases que abren",
+          "items": [
+            "«Si algún día quisieras algo distinto de lo que hemos hablado, me gustaría saberlo.»",
+            "«No tienes que tenerlo claro para contármelo.»",
+            "«Prometo escuchar primero y opinar después.»"
+          ]
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Cuando por fin se lo cuente",
+          "pasos": [
+            {
+              "titulo": "Agradezca que se lo diga",
+              "texto": "Antes de cualquier otra cosa. Contarlo le costó."
+            },
+            {
+              "titulo": "Pregunte antes de opinar",
+              "texto": "Qué le atrae, desde cuándo, qué ha averiguado."
+            },
+            {
+              "titulo": "No decidan nada ese día",
+              "texto": "Dígale que quiere pensarlo y volver a conversar. Lo que usted opine puede esperar un día; la confianza, no."
+            }
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Lo que no ayuda es salir a buscar: revisar su celular o interrogar a sus amigos. Si usted lo descubre así, su hijo o hija aprende a esconder mejor, no a contar."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Recomendaciones del equipo de orientación."
+        }
+      ]
+    },
+    {
+      "id": "p4-10",
+      "tipo": "diapositiva",
+      "etiqueta": "Para llevarse",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Lo que su hijo o hija no le cuenta no desaparece: solo se decide sin usted."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Le dejamos dos cosas para esta semana. La segunda es solo para usted."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Esta semana",
+          "pasos": [
+            {
+              "titulo": "Diga una de las frases que abren",
+              "texto": "Una sola vez y sin esperar respuesta. No es una pregunta: es un aviso de que la puerta está abierta."
+            },
+            {
+              "titulo": "Vuelva a sus diecisiete",
+              "texto": "Si usted calló algo a esa edad, piense qué habría necesitado escuchar para decirlo. Eso mismo puede decirlo usted ahora."
+            }
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar recibe la ficha «Lo que no se dice en casa». Queda en Mis actividades, con las señales para darse cuenta y qué hacer cuando se lo cuente."
+        }
+      ]
     }
   ],
   "recompensa": {
-    "mensajeFin": "Lo que su hijo no le cuenta no desaparece: solo se decide sin usted."
+    "mensajeFin": "Lo que su hijo o hija no le cuenta no desaparece: solo se decide sin usted."
   }
 }

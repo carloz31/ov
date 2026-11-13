@@ -689,3 +689,20 @@ test('editorial transitions appear only at the eight approved moments and stay s
   )
   assert.ok(app.content.parentActivities.every((activity) => !activity.nodos[0].transicion))
 })
+
+// Ajuste coherencia-apoderado: el contenido cambió y el nodo guardado ya no existe.
+test('a saved node that no longer exists restarts the activity and drops its old attempts', () => {
+  const app = fixture(),
+    first = app.content.parentActivities[0]
+  let state = app.parent.startParentActivity(first, app.logic.initialJourney(), 'account-a')
+  const question = first.nodos.find((node) => node.tipo === 'pregunta')
+  state.progress[first.id].nodoActualId = question.id
+  state = app.parent.answerParentQuestion(first, question, ['a'], state, 'account-a')
+  state.progress[first.id].nodoActualId = 'nodo-que-ya-no-existe'
+  assert.equal(app.parent.progresoObsoleto(first, state), true)
+  const restarted = app.parent.startParentActivity(first, state, 'account-a')
+  assert.equal(restarted.progress[first.id].nodoActualId, first.nodos[0].id)
+  assert.equal(restarted.attempts.filter((attempt) => attempt.actividadId === first.id).length, 0)
+  assert.equal(app.parent.progresoObsoleto(first, restarted), false)
+  assert.equal(app.parent.startParentActivity(first, restarted, 'account-a'), restarted)
+})

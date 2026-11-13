@@ -16,6 +16,7 @@ import { avanceConFamilia } from '@/features/parent/lib/familia'
 import {
   advanceParentActivity,
   nextParentPendingNode,
+  progresoObsoleto,
   readyToCompleteOnServer,
   retreatParentActivity,
   startParentActivity,
@@ -114,7 +115,9 @@ export function useParentActivitySession(activity: Actividad, review: boolean) {
     if (
       !review &&
       accountId &&
-      (!progress || (serverCompletion && !progress.nodoActualId && progress.estado === 'no_iniciada'))
+      (!progress ||
+        progresoObsoleto(activity, state) ||
+        (serverCompletion && !progress.nodoActualId && progress.estado === 'no_iniciada'))
     )
       updateParentJourney(
         (current) =>
