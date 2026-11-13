@@ -48,9 +48,9 @@ def test_los_casos_se_abren_con_la_ciudad(cliente_contenido):
     # La regla de cada caso pide lo mismo que la del bloque; mientras la ciudad está cerrada, el motor responde con
     # el mensaje del bloque.
     bloqueo = resolver(cliente, 6, [], esperado=409)
-    assert bloqueo['detail']['mensaje'] == 'Calibra el artefacto con Iván para recorrer la ciudad.'
+    assert bloqueo['detail']['mensaje'] == 'Completa la misión «Las voces y la mía», en el camino.'
     assert {r[2]: r[3] for r in contenido.REGLAS if r[1] == 'ACTIVIDAD' and r[2] in CASOS} == {
-        c: 'Calibra el artefacto con Iván para entrar a la Central de casos.' for c in CASOS}
+        c: 'Completa la misión «Las voces y la mía», en el camino.' for c in CASOS}
     completar(cliente, 'b1-3')
     assert {c['estado'] for c in casos(cliente).values()} == {'DISPONIBLE'}
 
