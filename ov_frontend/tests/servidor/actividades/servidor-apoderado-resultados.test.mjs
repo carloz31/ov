@@ -85,7 +85,7 @@ test('la tarjeta del hijo muestra la clave y el enlace a la explicada con el dip
     new RegExp(`href="/parent/children/${conDiploma.estudiantes[0].codigo}/questionnaires/TEST-RIASEC"`),
   )
   assert.match(marcado, /Estos resultados son exploratorios/)
-  assert.doesNotMatch(marcado, /Verás su resultado|puntaje|correlaci/)
+  assert.doesNotMatch(marcado, /Verá su resultado|puntaje|correlaci/)
   const sinDiploma = familia(false)
   const bloqueado = html(ParentChildServerSummary, {
     familia: sinDiploma,
@@ -94,7 +94,7 @@ test('la tarjeta del hijo muestra la clave y el enlace a la explicada con el dip
     resultados: { habilitado: false, resultados: null, error: '', reintentar() {} },
   })
   assert.match(bloqueado, /Completado · /)
-  assert.match(bloqueado, /Verás su resultado cuando completes tus actividades/)
+  assert.match(bloqueado, /Verá su resultado cuando complete sus actividades/)
   assert.doesNotMatch(bloqueado, /questionnaires|Lo que más destaca|exploratorios/)
 })
 

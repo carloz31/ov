@@ -35,7 +35,7 @@ export function ParentDiplomaView() {
           <p className="pa-kicker">
             Ruta completada · {total} de {total} actividades
           </p>
-          <h1>Su diploma de compromiso</h1>
+          <h1>Su Diploma de compromiso</h1>
           <p>Emitido por la plataforma a su nombre. Puede descargarlo o imprimirlo.</p>
         </div>
         <div className="pa-diploma-acciones">

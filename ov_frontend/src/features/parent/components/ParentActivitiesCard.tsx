@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/Progress'
 import { CardIcon } from '@/components/ui/Status'
 import { appPaths } from '@/routes/paths'
 
-// Ajuste inicio-apoderado (bocetos A y B): «Tus actividades», compacta. Es la ruta del apoderado (una sola, no
+// Ajuste inicio-apoderado (bocetos A y B): «Sus actividades», compacta. Es la ruta del apoderado (una sola, no
 // cambia con el hijo): incompleta, lo que falta y «Continuar»; completa, el diploma y un botón secundario.
 export function ParentActivitiesCard({
   ruta,
@@ -27,7 +27,7 @@ export function ParentActivitiesCard({
           icon={ruta.complete ? Award : ClipboardCheck}
           className={ruta.complete ? 'bg-success-soft text-success-text' : 'rounded-xl'}
         />
-        <h2 className="text-lg font-bold">Tus actividades</h2>
+        <h2 className="text-lg font-bold">Sus actividades</h2>
         {ruta.complete ? (
           <Badge variant="success" className="ml-auto">
             Ruta completada
@@ -35,7 +35,7 @@ export function ParentActivitiesCard({
         ) : (
           faltan > 0 && (
             <Badge variant="outline" className="parent-home-aviso ml-auto">
-              Te falta {faltan}
+              {faltan === 1 ? 'Le falta 1' : `Le faltan ${faltan}`}
             </Badge>
           )
         )}
@@ -47,15 +47,15 @@ export function ParentActivitiesCard({
           className={`parent-diploma-recognition rounded-lg ${resaltarDiploma ? 'parent-diploma-highlight' : ''}`}
         >
           <p className="text-muted-foreground">
-            Completaste tus {ruta.total} actividades. Tu diploma ya está listo.
+            Completó sus {ruta.total} actividades. Su diploma ya está listo.
           </p>
         </div>
       ) : (
         <div className="space-y-2">
           {ruta.next && <p className="text-muted-foreground">Siguiente: {ruta.next.titulo}</p>}
-          <Progress value={ruta.percent} aria-label="Avance de tus actividades" />
+          <Progress value={ruta.percent} aria-label="Avance de sus actividades" />
           <p className="text-sm text-muted-foreground">
-            {ruta.completed} de {ruta.total} actividades · hacia tu diploma
+            {ruta.completed} de {ruta.total} actividades · hacia su diploma
           </p>
         </div>
       )}

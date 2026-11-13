@@ -19,6 +19,7 @@
 - Si el `nodoActualId` guardado de una actividad del apoderado en curso ya no existe en su contenido, la actividad empieza de nuevo y se descartan sus intentos guardados (`progresoObsoleto`), sin migración: antes quedaba trabada en el primer nodo.
 - `ResourceText` pinta una lista numerada con viñetas sangradas debajo de un ítem (FP05) como lista anidada; las fichas del estudiante no usan ese formato y no cambian.
 - Las descripciones de p6 y p7 llevan las comillas rectas del texto de observaciones («"no sé"», «"quiero esperar"», «"no ingresé"»), tal cual.
+- Tras la revisión en el navegador, a pedido del usuario: todo el Inicio del apoderado trata de usted (encabezado, frase del día, «Sus actividades», «Le falta n», la tarjeta del hijo, la de conversaciones, el candado de los cuestionarios y, en local, el resumen de la ruta con «Completó su ruta»); «Diploma de compromiso» va con mayúscula en todo el portal; y el título de la retroalimentación cita la opción una sola vez y sin su punto final («…a nadie».), aunque la opción ya traiga comillas (`citarOpcion`). Los textos comunes (`parentMotivation`, `evaluateParentQuestion`) valen también en local, como excepción aprobada. Se adaptan las pruebas que los comparaban.
 
 ## Ajuste coherencia-lumi
 

@@ -2508,7 +2508,7 @@ test('family home unites own route and shared child summary with no private stud
   assert.equal(parentChildren.length,1)
   assert.equal(parentChildren[0].id,'ejemplo-07')
   assert.match(html,/Hola, José|Hola, Jos/)
-  assert.match(html,/Diploma de compromiso|Completaste tu ruta/)
+  assert.match(html,/Diploma de compromiso|Completó su ruta/)
   assert.match(html,/Repasar mis actividades|Seguir con las conversaciones/)
   assert.match(html,/Gabriela García Muñoz|Avance de su recorrido|Resultados de sus cuestionarios/)
   assert.doesNotMatch(html,/Último avance|Hitos del proceso|Intereses destacados|Próximo hito|Conversación sugerida|Último acceso|Avance prioritario|Seguridad y diario|role="tab"/)

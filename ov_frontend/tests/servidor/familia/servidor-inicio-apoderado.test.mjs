@@ -109,21 +109,21 @@ test('la clave carga dentro de su fila y su error ofrece reintentar', () => {
   assert.match(error, /Reintentar/)
 })
 
-test('«Tus actividades»: lo que falta y «Continuar»; completa, el diploma con un botón secundario', () => {
+test('«Sus actividades»: lo que falta y «Continuar»; completa, el diploma con un botón secundario', () => {
   const app = fixtureApoderado()
   const { ParentActivitiesCard } = app.load('src/features/parent/components/ParentActivitiesCard.tsx')
   const mitad = html(ParentActivitiesCard, {
     ruta: { completed: 1, total: 2, percent: 50, complete: false, next: { id: 't-apo-2', titulo: 'Segunda' } },
   })
-  assert.match(mitad, /Te falta 1/)
+  assert.match(mitad, /Le falta 1/)
   assert.match(mitad, /Siguiente: Segunda/)
-  assert.match(mitad, /1 de 2 actividades · hacia tu diploma/)
+  assert.match(mitad, /1 de 2 actividades · hacia su diploma/)
   assert.match(mitad, /href="\/parent\/activities\/t-apo-2"[^>]*>Continuar/)
   const completa = html(ParentActivitiesCard, { ruta: { completed: 2, total: 2, percent: 100, complete: true } })
   assert.match(completa, /Ruta completada/)
-  assert.match(completa, /Completaste tus 2 actividades\. Tu diploma ya está listo\./)
+  assert.match(completa, /Completó sus 2 actividades\. Su diploma ya está listo\./)
   assert.match(completa, /data-variant="outline"[^>]*href="\/parent\/activities"|href="\/parent\/activities"[^>]*>Ver mis actividades y diploma/)
-  assert.doesNotMatch(completa, /Continuar|Te falta/)
+  assert.doesNotMatch(completa, /Continuar|Le falta/)
 })
 
 test('«Conversaciones con {hijo}»: textos y acción de cada estado del boceto C', () => {
@@ -135,10 +135,10 @@ test('«Conversaciones con {hijo}»: textos y acción de cada estado del boceto 
   assert.match(bloqueada, /Completa tus actividades para conversar en familia\./)
   assert.match(bloqueada, /href="\/parent\/conversations"[^>]*>Ver conversaciones/)
   assert.doesNotMatch(bloqueada, /se habilitarán a medida/)
-  assert.match(tarjeta({ tipo: 'carta' }), /Antes de conversar, escríbele una carta a Ana\./)
+  assert.match(tarjeta({ tipo: 'carta' }), /Antes de conversar, escríbale una carta a Ana\./)
   assert.match(tarjeta({ tipo: 'carta' }), /href="\/parent\/conversations\/carta"[^>]*>Escribir mi carta/)
   const teToca = tarjeta({ tipo: 'te_toca', completadas: 2, total: 6, esperan: 1 })
-  assert.match(teToca, /Ana te espera en 1/)
+  assert.match(teToca, /Ana le espera en 1/)
   assert.match(teToca, /2 de 6 conversaciones</)
   assert.match(teToca, />Seguir conversando/)
   const enCurso = tarjeta({ tipo: 'en_curso', completadas: 2, total: 6 })
@@ -150,7 +150,7 @@ test('«Conversaciones con {hijo}»: textos y acción de cada estado del boceto 
   assert.match(completas, /Respondieron todos los temas\. Hay un regalo esperándolos\./)
   assert.match(completas, /href="\/parent\/conversations\/regalo"[^>]*>Abrir el regalo/)
   const error = tarjeta({ tipo: 'error' })
-  assert.match(error, /No pudimos cargar las conversaciones\. Revisa tu conexión e inténtalo de nuevo\./)
+  assert.match(error, /No pudimos cargar las conversaciones\. Revise su conexión e inténtelo de nuevo\./)
   assert.match(error, />Reintentar</)
   assert.match(tarjeta({ tipo: 'cargando' }), /aria-busy="true"/)
 })

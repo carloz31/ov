@@ -17,7 +17,7 @@ export function ParentRouteSummary({ model }: { model: ReturnType<typeof usePare
         <CardIcon icon={route.complete ? Award : BookOpenCheck} />
         <h2 className="text-lg font-bold">Mis actividades</h2>
         <Badge variant={route.complete ? 'success' : 'default'} className="ml-auto">
-          {route.complete ? 'Ruta completada' : 'Tu ruta'}
+          {route.complete ? 'Ruta completada' : 'Su ruta'}
         </Badge>
       </div>
       {route.complete ? (
@@ -29,15 +29,15 @@ export function ParentRouteSummary({ model }: { model: ReturnType<typeof usePare
         >
           <Award className="size-10 shrink-0 text-primary" aria-hidden />
           <div>
-            <p className="text-xs text-muted-foreground">Diploma de tu recorrido</p>
+            <p className="text-xs text-muted-foreground">Diploma de su recorrido</p>
             <h3 id="parent-diploma-title" className="font-bold">
               Diploma de compromiso
             </h3>
-            <p className="mt-1 text-sm">Completaste tu ruta</p>
+            <p className="mt-1 text-sm">Completó su ruta</p>
           </div>
         </div>
       ) : (
-        <ol className="flex flex-wrap items-center gap-3" aria-label="Pasos de tu ruta">
+        <ol className="flex flex-wrap items-center gap-3" aria-label="Pasos de su ruta">
           {route.assigned.map((activity, index) => (
             <li key={activity.id} className="flex items-center gap-2 text-xs">
               <span

@@ -92,7 +92,7 @@ export function ParentActivityFinish({
         {!review && cierreServidor && (
           <>
             <section className="parent-route-progress" aria-label="Avance hacia el diploma">
-              <p>Su avance hacia el diploma de compromiso</p>
+              <p>Su avance hacia el Diploma de compromiso</p>
               <strong>
                 {route.completed} de {route.total} actividades
               </strong>

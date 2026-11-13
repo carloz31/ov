@@ -4,6 +4,13 @@ import type { Actividad, NodoPregunta } from '@/types/activities'
 
 type ParentActivityOptions = { disponible?: boolean; servidor?: boolean }
 
+// Ajuste coherencia-apoderado: la opción va entre comillas una sola vez y sin su punto final, que pone la frase
+// («…a nadie».), aunque la opción ya traiga sus propias comillas.
+function citarOpcion(texto: string) {
+  const limpio = texto.trim()
+  const interior = limpio.startsWith('«') && limpio.endsWith('»') ? limpio.slice(1, -1) : limpio
+  return `«${interior.replace(/\.$/, '')}»`
+}
 export function evaluateParentQuestion(node: NodoPregunta, selected: string[], previousAttempts: number) {
   const correctOptions = node.opciones.filter((option) => option.correcta)
   const correct =
@@ -11,7 +18,7 @@ export function evaluateParentQuestion(node: NodoPregunta, selected: string[], p
     correctOptions.every((option) => selected.includes(option.id))
   const wrongOptions = node.opciones.filter((option) => !option.correcta && selected.includes(option.id))
   const final = correct || node.opciones.length === 2 || previousAttempts >= 1
-  const answers = correctOptions.map((option) => `«${option.texto}»`).join(' y ')
+  const answers = correctOptions.map((option) => citarOpcion(option.texto)).join(' y ')
   const plural = correctOptions.length > 1
   const someCorrect = correctOptions.some((option) => selected.includes(option.id))
   const title = final

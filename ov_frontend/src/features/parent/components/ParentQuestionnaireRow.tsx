@@ -47,7 +47,7 @@ export function ParentQuestionnaireRow({
       {accion?.tipo === 'candado' && (
         <p className="flex items-start gap-2 text-muted-foreground">
           <LockKeyhole className="mt-1 size-4 shrink-0" aria-hidden="true" />
-          Verás su resultado cuando completes tus actividades
+          Verá su resultado cuando complete sus actividades
         </p>
       )}
     </li>

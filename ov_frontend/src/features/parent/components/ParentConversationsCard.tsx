@@ -46,7 +46,7 @@ export function ParentConversationsCard({
   if (estado.tipo === 'carta')
     return (
       <Tarjeta icono={<CardIcon icon={Mail} className="rounded-xl" />} titulo={titulo}>
-        <p className="text-muted-foreground">Antes de conversar, escríbele una carta a {nombre}.</p>
+        <p className="text-muted-foreground">Antes de conversar, escríbale una carta a {nombre}.</p>
         <Accion enlace={appPaths.parent.conversationLetter} texto="Escribir mi carta" principal />
       </Tarjeta>
     )
@@ -69,7 +69,7 @@ export function ParentConversationsCard({
     return (
       <Tarjeta icono={<CardIcon icon={CircleAlert} className="rounded-xl bg-danger-soft text-danger-text" />} titulo={titulo}>
         <p role="alert" className="text-muted-foreground">
-          No pudimos cargar las conversaciones. Revisa tu conexión e inténtalo de nuevo.
+          No pudimos cargar las conversaciones. Revise su conexión e inténtelo de nuevo.
         </p>
         <div className="parent-home-card-action">
           <Button type="button" variant="outline" className="min-h-12 px-6" onClick={onReintentar}>
@@ -86,7 +86,7 @@ export function ParentConversationsCard({
       insignia={
         teToca && (
           <Badge variant="outline" className="parent-home-aviso ml-auto">
-            {nombre} te espera en {estado.esperan}
+            {nombre} le espera en {estado.esperan}
           </Badge>
         )
       }
