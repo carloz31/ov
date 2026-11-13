@@ -35,7 +35,8 @@ export function LumiBondPanel({
       />
       {faltan > 0 && (
         <p className="sx-j-lumi-card-next">
-          Faltan <strong>{faltan === 1 ? '1 carta' : `${faltan} cartas`}</strong> para que Lumi te cuente{' '}
+          {faltan === 1 ? 'Falta' : 'Faltan'} <strong>{faltan === 1 ? '1 carta' : `${faltan} cartas`}</strong> para que Lumi te
+          cuente{' '}
           {siguienteRecuerdo ? <em>«{siguienteRecuerdo}»</em> : 'su siguiente recuerdo'}.
         </p>
       )}

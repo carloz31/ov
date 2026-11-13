@@ -122,12 +122,12 @@ test('tarjeta de Lumi: nivel, cartas enviadas, siguiente nivel y el texto fijo d
   assert.match(html, /Nivel 3 · Compañía de ruta/)
   assert.match(html, /3 cartas enviadas/)
   assert.match(html, /Siguiente nivel: 4/)
-  assert.match(html, /Faltan <strong>1 carta<\/strong> para que Lumi te cuente su siguiente recuerdo\./)
+  assert.match(html, /Falta <strong>1 carta<\/strong> para que Lumi te cuente su siguiente recuerdo\./)
   assert.match(html, /Hoy cuentan hasta 3 cartas · la amistad nunca se pierde/)
   assert.doesNotMatch(html, /conversaciones|Guardar en mi memoria/)
   assert.match(
     render('LumiBondPanel', { bond, siguienteRecuerdo: 'Cómo llegué' }),
-    /Faltan <strong>1 carta<\/strong> para que Lumi te cuente <em>«Cómo llegué»<\/em>\./,
+    /Falta <strong>1 carta<\/strong> para que Lumi te cuente <em>«Cómo llegué»<\/em>\./,
   )
 })
 
