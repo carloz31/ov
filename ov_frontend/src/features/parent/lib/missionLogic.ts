@@ -98,8 +98,7 @@ export function completedParentActivities(activities: Actividad[], state: Journe
     .map((activity) => activity.id)
 }
 // Ajuste coherencia-apoderado: si el contenido cambió y el nodo guardado ya no existe, la actividad empieza de nuevo.
-export function progresoObsoleto(activity: Actividad, state: JourneyState) {
-  const progress = state.progress[activity.id]
+export function progresoObsoleto(activity: Actividad, progress: JourneyState['progress'][string] | undefined) {
   return (
     progress?.estado === 'en_curso' &&
     !!progress.nodoActualId &&
@@ -114,7 +113,7 @@ export function startParentActivity(
   opciones?: ParentActivityOptions,
 ): JourneyState {
   const progress = state.progress[activity.id]
-  const obsoleto = progresoObsoleto(activity, state)
+  const obsoleto = progresoObsoleto(activity, progress)
   if (
     !(opciones?.disponible ?? parentActivityAvailable(activity, state)) ||
     (progress && !obsoleto && (!opciones?.servidor || progress.nodoActualId || progress.estado !== 'no_iniciada'))

@@ -116,7 +116,7 @@ export function useParentActivitySession(activity: Actividad, review: boolean) {
       !review &&
       accountId &&
       (!progress ||
-        progresoObsoleto(activity, state) ||
+        progresoObsoleto(activity, progress) ||
         (serverCompletion && !progress.nodoActualId && progress.estado === 'no_iniciada'))
     )
       updateParentJourney(
