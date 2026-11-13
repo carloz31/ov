@@ -1023,3 +1023,310 @@ En el archivo va como una sola cadena, con `\n` y con las comillas escapadas com
 - Lumi pregunta; la lámina va después de las preguntas y no la presenta Marina.
 - F22 se reordena en los mismos tres momentos y remite a «Licenciamiento y acreditación» en vez de repetirla. Suma qué hacer si no hay feria (página web, ferias virtuales, Ruta 18 del Pronabec).
 - Los consejos salen de la cartilla del MINEDU y de guías de orientadores (NACAC y College Board).
+
+---
+
+## Ajuste · coherencia-investigador y coherencia-ma2
+
+
+## Contexto
+
+Dos textos más, decididos por el usuario, para la rama `ajuste/coherencia-bloque5` y la spec en curso `ov_backend/docs/specs/ajuste-coherencia-misiones-helena.md` (se agregan como secciones `## Ajuste · coherencia-investigador` y `## Ajuste · coherencia-ma2`, con sus textos como anexo). Textos **tal cual**. Primero se cierra la F11 de feria (suites completas en curso).
+
+## F12 · coherencia-investigador
+- Front:
+  - `plataforma/investigador.json` e `investigador_cierre.json` se reemplazan por los adjuntos (investigador 11 → 13 nodos, título «Una entrevista para Anselmo», 8 min; cierre 5 → 9 nodos, subtítulo «Una carpeta en el estante», 5 min). Anselmo usa `neutral` y `contento`, que existen en su catálogo.
+  - `catalogo.json`, `investigador`: solo `descripcion` (§3.1).
+  - Tres cadenas de `src/features/discovery/components/investigaciones/` (§3.2), sin cambiar comportamiento: `TarjetaEnCurso.tsx` l. 51 («tres» → «cuatro preguntas base»), `PublicarEntrevista.tsx` l. 98 (Anselmo te espera…), `CaminoLeyenda.tsx` l. 58–59 (sin registro ni eco). Ninguna prueba del front espera esas cadenas.
+- Backend `datos/contenido.py` (script de reemplazos exactos):
+  - `ACTIVIDADES`: investigador título «Una entrevista para Anselmo» y 10 → 8; investigador-cierre 6 → 5.
+  - `DESCRIPCIONES` de las dos (§2.2).
+  - `FICHAS` F18: resumen y contenido nuevos (entre las líneas de guiones); título, tema y audiencia iguales. Reglas sin cambios.
+- Ya comprobado: las cuatro preguntas de F18 son, palabra por palabra, `PREGUNTAS_BASE_GUION` (`datos/fijos.py`); `FAVORITOS_LEYENDA = 3` (`app/core/parametros.py`), como dicen la lámina y el diálogo del cierre. Ningún id de nodo viejo se usa fuera de los JSON.
+
+## F13 · coherencia-ma2
+- Front: `plataforma/ma2.json` solo `ubicacion` («Aurelio, otra vez» → «Desierto, el oasis») y `duracionEstimadaMin` (6 → 5). El desafío no cambia.
+- Backend: `DESCRIPCIONES` de ma2 (§2.1) y `PREGUNTAS_BATALLA`: las diez `ma2-p01..p10` se reemplazan por las doce de `PREGUNTAS_MA2` de `bancos_opcionales (2).py` (leídas con `ast.literal_eval`). `CONFIGURACION_BATALLAS['ma2']` igual; F05 no se toca. Ninguna prueba cuenta las preguntas de ma2.
+
+## Docs
+- `decisiones.md`: las de §6 de cada texto.
+- `contenidos-actividades.md`: quitar `ma2` de «Textos que no siguen los criterios» y el desfase «F18 e `investigador.json` hablan de “cinco preguntas base”»; «Continuidad»: la premisa nueva de Anselmo (archivo de todos los trabajos, una entrevista para conseguir apoyo; sale el techo caído) y Aurelio, que recae en su pregón.
+
+## Qué no cambia
+El flujo de Investigaciones (pantallas, reglas, preguntas base, parámetro de favoritos), reglas y lo que abre cada actividad, cantidad de fichas, F05, el banco de b1-5, el desafío de Aurelio, el conjunto `ruta`.
+
+## Pruebas y verificación
+- Por fase: `verificar_contenido_front.py`, fixtures re-exportados, impacto (`tests/integration/datos`, `escenarios`, `fichas`, `batallas`, `investigaciones`; front `tests/local/actividades`, `tests/servidor/actividades`, `tests/servidor/investigaciones`, `tests/servidor/batallas`), commit (`Ajuste coherencia-investigador · F12: …`, `Ajuste coherencia-ma2 · F13: …`).
+- Búsquedas: «techo», «teja», «gotera», «colecta» en los dos JSON y en `catalogo.json` (investigador); «orientadora» solo en las láminas; en F18 «20 a 30», «veinte», «cinco preguntas»; en ma2 «IRC» y «Central»: ninguna.
+- F14 · cierre: suites completas; navegador con `contenido` (backend aparte en 8010, base temporal): investigador tras b3-10 (elección con dos reacciones, tres preguntas, lámina de cuatro pasos también a 375 px; al cerrar se abre Investigaciones y F18 queda en la mochila); el flujo contra la lámina («Iniciar investigación» → «Lo que pienso»; «Mis preguntas» con cuatro base; «Guía lista» con 15 minutos y «No listado»); los tres textos de 3.2; investigador-cierre al publicar la primera entrevista (si el flujo de publicar se puede completar con datos de prueba; si no, abriéndola tras publicar por el servidor); ma2 tras b1-6 adecuado con «Desierto, el oasis» y 5 min, jugada dos veces; «Anterior» en investigador e investigador-cierre. Decisiones y docs; borrar lo provisional. Commit.
+
+La spec queda en curso.
+
+---
+
+### Anexo · texto de observaciones de coherencia-investigador
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-feria.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026).
+
+## Qué es
+
+Reescritura de las dos informativas de Anselmo, `investigador` (se abre al completar `b3-10` y abre la sección Investigaciones) e `investigador-cierre` (se abre al publicar la primera entrevista), de la ficha F18 y de tres textos del front de Investigaciones que contradicen el flujo. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento, dos JSON finales: `investigador.json` e `investigador_cierre.json`. La ficha F18 va completa en la sección 2.4.
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`). **No cambia el flujo de Investigaciones**: ni pantallas, ni reglas, ni preguntas base, ni el parámetro de favoritos.
+
+## 1. JSON de las actividades
+
+**Hoy:** `ov_frontend/src/data/activities/contenidos/plataforma/investigador.json` e `investigador_cierre.json`.
+**Pasará a:** cada uno se reemplaza, completo, por el archivo del mismo nombre de esta carpeta.
+
+| Actividad | Nodos (hoy → queda) | Lo que conviene saber |
+|---|---|---|
+| investigador | 11 → 13 | Una elección sin registro, **tres preguntas de opción única que hace Lumi y una sola lámina después de las preguntas** (`investigador-11`), sin presentador: lleva `etiqueta`, un bloque `pasos` de cuatro pasos, un destacado y la fuente con `url`. Salen las tres láminas del inicio. Cambian `titulo` («Misión del investigador: necesita tu ayuda» → «Una entrevista para Anselmo»), `duracionEstimadaMin` (10 → 8), `objetivoAprendizaje` y `recompensa.mensajeFin` |
+| investigador-cierre | 5 → 9 | Una elección sin registro, una pregunta de opción única que hace Lumi y una lámina (`investigador-cierre-08`), sin presentador: lleva `etiqueta`, una tabla de dos columnas y cuatro filas y un destacado. Cambian `subtitulo` («Una teja más en el techo» → «Una carpeta en el estante»), `duracionEstimadaMin` (6 → 5), `objetivoAprendizaje` y `recompensa.mensajeFin` |
+
+Además:
+
+- Anselmo usa las expresiones que tiene en el catálogo de personajes: `neutral` y `contento`.
+- En las preguntas, las opciones tienen un largo parecido y la correcta varía de posición. Los textos van tal cual.
+- Las láminas nombran pantallas de Investigaciones tal como se ven hoy: «Iniciar investigación», «Lo que pienso», «Mis preguntas», «Guía lista», «No listado», «Lo que dicen de tu entrevista», «Camino a Leyenda», «De mi salón», «Leyendas»; y del catálogo, «Qué hacen». Si alguno no coincide con lo que se ve, avisar antes de cambiar el texto.
+- La lámina del cierre dice «3 favoritos de compañeros», que es el valor de `FAVORITOS_LEYENDA` en `app/core/parametros.py`. Si ese parámetro cambia, cambia también ese texto y el diálogo `investigador-cierre-07` («tres compañeros»).
+- Los identificadores de nodo cambian. Comprobar con una búsqueda que ninguno se use fuera de estos archivos.
+- `ubicacion`, `requisitos`, `mapa`, `personajeIds`, `escenario`, `bloque` y `orden` no cambian. El título de `investigador-cierre` tampoco.
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+### 2.1 Actividades (`ACTIVIDADES`)
+
+| Actividad | Campo | Hoy | Queda |
+|---|---|---|---|
+| investigador | Título | «Misión del investigador: necesita tu ayuda» | «Una entrevista para Anselmo» |
+| investigador | Duración | 10 | 8 |
+| investigador-cierre | Duración | 6 | 5 |
+
+### 2.2 Descripciones cortas (`DESCRIPCIONES`)
+
+| Actividad | Hoy | Queda |
+|---|---|---|
+| investigador | «Anselmo, el investigador de la ciudad, tiene el techo caído. Aprende a entrevistar a un profesional y ayúdalo con la colecta.» | «Anselmo quiere armar un archivo de todos los trabajos y no tiene ni una entrevista. Aprende a hacer una y ayúdalo a empezar.» |
+| investigador-cierre | «Tu entrevista entró al archivo. Anselmo agradece y te enseña a contrastar lo que escuchaste.» | «Tu entrevista llegó al centro. Anselmo agradece y te cuenta qué hacer con ella ahora.» |
+
+### 2.3 Reglas
+
+No cambia ninguna regla ni ningún mensaje (`R-investigador`, `R-investigador-cierre`, `R-SEC-INVESTIGACIONES`, `R-F18`).
+
+### 2.4 Ficha F18 (`FICHAS`)
+
+El título («Cómo entrevistar a un profesional»), el tema («Mis opciones») y el destinatario no cambian.
+
+**Resumen, hoy:** «A quién buscar, cómo pedir una entrevista de veinte minutos, qué preguntar y qué hacer con lo que escuches.»
+**Queda:** «Qué escribir antes, a quién buscar, cómo pedir quince minutos, qué preguntar y qué hacer con lo que escuches.»
+
+**Contenido:** se reemplaza completo por este texto (entre las dos líneas de guiones, sin incluirlas):
+
+----------
+
+Nada reemplaza hablar con alguien que hace el trabajo que te interesa. Una conversación de quince minutos puede confirmar o desarmar una idea que tenías hace años.
+
+### Antes: escribe lo que crees
+
+Antes de buscar a nadie, anota tres cosas sobre ese trabajo:
+
+1. Qué crees que hace esa persona en un día normal.
+2. Qué crees que se necesita para trabajar en eso.
+3. Una duda que quieres resolver.
+
+No importa si aciertas. Sirve para después: lo que no coincida con lo que te cuenten es lo que aprendiste.
+
+### A quién buscar
+
+- Familia extendida, vecinos y padres de amigos: pregunta en casa «¿conocemos a alguien que trabaje en…?». Es la red más rápida.
+- Docentes del colegio: muchos conocen egresados o colegas de otros campos.
+- Egresados del colegio y estudiantes de la carrera: saben cómo es empezar.
+- Instituciones: colegios profesionales, universidades e institutos suelen tener contactos de egresados.
+- Redes profesionales: un mensaje breve y respetuoso a alguien que publica sobre su trabajo funciona más de lo que crees.
+
+Si más adelante puedes hacer una segunda entrevista, busca a alguien en otra etapa: una persona que lleve pocos años y otra con experiencia cuentan cosas distintas del mismo trabajo.
+
+### Cómo pedirla
+
+Un mensaje de cuatro líneas:
+
+1. Quién eres.
+2. Por qué te interesa su trabajo.
+3. Qué pides: unos quince minutos, en persona o por videollamada, y permiso para grabar.
+4. Cuándo podrías.
+
+Deja claro que no pides trabajo ni prácticas: pides información. Agradece aunque te digan que no.
+
+### Qué preguntar
+
+Cuatro preguntas van siempre:
+
+1. ¿Cómo es un día normal en tu trabajo?
+2. ¿Qué estudiaste o aprendiste para llegar a donde estás?
+3. ¿Qué es lo que más te gusta de tu trabajo y qué lo que menos?
+4. ¿Qué consejo le darías a alguien de mi edad que quiere dedicarse a esto?
+
+A esas súmale al menos una tuya. La mejor sale de la duda que anotaste, y pide que te cuenten algo: una pregunta que se responde con sí o no deja poco. Si no se te ocurre ninguna, estos temas ayudan:
+
+| Tema | Una pregunta posible |
+| --- | --- |
+| Cómo hay que ser | ¿A quién no le recomendarías este trabajo? |
+| Ingresos | ¿Cómo cambia el ingreso desde que uno empieza? ¿De qué depende que suba? |
+| Rutina | ¿Qué parte del trabajo se repite todos los días y cuál no? |
+| Cambios | ¿Cómo cambió este trabajo en diez años? ¿Qué tareas nuevas aparecieron? |
+| El camino | ¿Qué habrías estudiado distinto? |
+
+### Durante la entrevista
+
+1. **Rompe el hielo.** Cuéntale por qué te interesa su trabajo antes de la primera pregunta.
+2. **Conversa, no interrogues.** Lleva tus preguntas, pero sigue lo que te cuente.
+3. **Repregunta.** «¿Y cómo fue eso?», «¿Me das un ejemplo?». Ahí salen las mejores historias.
+4. **Pide lo malo también.** Qué no le gusta, qué le costó. Es lo que nadie cuenta.
+5. **Graba solo con permiso**, y di para qué es el video y quién lo va a ver.
+6. **Cierra agradeciendo.** Al terminar, y de nuevo por escrito.
+
+### Después
+
+Una entrevista es una voz: vale mucho y prueba poco. Para usarla bien:
+
+- Vuelve a lo que escribiste antes y mira qué cambió.
+- Compárala con otra entrevista de la misma familia de carreras, o con lo que dice el catálogo.
+- Ten cuidado con las redes sociales: muestran la parte vistosa de algunos trabajos. Una entrevista muestra la rutina.
+
+> La mejor pregunta nace de lo que ya pensabas. Compara lo que creías con lo que te cuentan.
+
+**Para tu viaje.** En Investigaciones haces todo esto en tres pasos: «Lo que pienso», «Mis preguntas» y «Guía lista». Después subes el video a YouTube como «No listado» y publicas la entrevista con un resumen; la ven tu salón y tu orientadora. Puedes hacerla con compañeros que investigan la misma familia de carreras. Y en «De mi salón» y «Leyendas» están las entrevistas de otros estudiantes.
+
+**Fuentes:** MINEDU (2013), cartilla, actividad 8 y actividad 15 (ficha de registro de la visita y entrevista). [CareerOneStop, Entrevista informativa (U.S. Department of Labor)](https://cloudfront.careeronestop.org/TridionMultimedia/tcm24-47717_PDF_infointerviewSP.pdf).
+
+----------
+
+En el archivo va como una sola cadena, con `\n` y con las comillas escapadas como en las demás fichas.
+
+Las cuatro preguntas de «Qué preguntar» son, palabra por palabra, las de `PREGUNTAS_BASE_GUION` (`ov_backend/datos/fijos.py`). Si alguna no coincide, avisar antes de cambiar el texto.
+
+## 3. Frontend
+
+### 3.1 Personaje (`ov_frontend/src/data/activities/catalogo.json`, `investigador`)
+
+| Campo | Hoy | Queda |
+|---|---|---|
+| `descripcion` | «Investigador del centro de investigación de la ciudad, con el techo caído por la última lluvia. Investiga a la gente que trabaja; la isla paga por cada entrevista nueva del archivo y con eso repara el centro. Despistado, entusiasta, agradecido.» | «Investigador del centro de investigación de la ciudad. Quiere armar un archivo de todos los trabajos, contado por quienes los hacen, y busca apoyo para sostenerlo. Despistado, entusiasta, agradecido.» |
+
+### 3.2 Textos de Investigaciones que contradicen el flujo
+
+Son tres cadenas; no cambia ningún comportamiento.
+
+| Archivo | Hoy | Queda |
+|---|---|---|
+| `investigaciones/TarjetaEnCurso.tsx` | «Termina tu guion para salir a entrevistar: las tres preguntas base y al menos una tuya.» | «Termina tu guion para salir a entrevistar: las cuatro preguntas base y al menos una tuya.» |
+| `investigaciones/PublicarEntrevista.tsx` («Al publicar») | «Tu salón y tu orientadora la verán de inmediato. Si es tu primera entrevista, en la Ciudad se abre una misión para contrastar lo que pensabas con lo que descubriste.» | «Tu salón y tu orientadora la verán de inmediato. Si es tu primera entrevista, Anselmo te espera en el centro de investigación de la Ciudad.» |
+| `investigaciones/CaminoLeyenda.tsx` (nota de permisos, segundo párrafo) | «Lo que pensaban antes no se muestra aquí: la primera entrevista publicada abre en la Ciudad una misión de registro que lo trae como eco para contrastarlo.» | «Lo que pensaban antes no se muestra aquí. Con la primera entrevista publicada, Anselmo los espera en el centro de investigación de la Ciudad.» |
+
+Por qué: las preguntas base son cuatro (`PREGUNTAS_BASE_GUION`), y `investigador-cierre` es una informativa, sin registro ni eco. Si hay otra cadena que diga lo mismo, avisar.
+
+## 4. Pruebas y lo que no cambia
+
+- Si alguna prueba o fixture compara el título, las descripciones, las duraciones, la cantidad de nodos de las dos actividades o el texto de F18, se actualiza con los valores de este documento.
+- Ninguna pregunta de batalla usa F18. No cambian la cantidad de fichas, las reglas, lo que abre cada actividad ni nada del módulo de Investigaciones fuera de las tres cadenas de 3.2. El conjunto `ruta` y sus pruebas no se tocan.
+
+## 5. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar en los dos JSON y en `catalogo.json` «techo», «teja», «gotera», «colecta» y «orientadora» en boca de un personaje: no aparecen (la palabra «orientadora» solo está en las dos láminas).
+- Buscar en F18 «20 a 30», «veinte» y «cinco preguntas»: no aparecen.
+- En el navegador, con el conjunto `contenido`:
+  - **investigador:** aparece al completar `b3-10`. La elección con sus dos reacciones, las tres preguntas con pista y explicación, y la lámina con sus cuatro pasos, también en pantalla angosta. Al cerrar se abre Investigaciones y F18 queda en la mochila.
+  - **Flujo, contra la lámina:** «Iniciar investigación» lleva a «Lo que pienso» (familia, día normal, qué se necesita, duda); «Mis preguntas» muestra cuatro preguntas base y pide al menos una propia; «Guía lista» dice unos 15 minutos y «No listado».
+  - **investigador-cierre:** al publicar la primera entrevista, aparece en la Ciudad. La elección, la pregunta y la lámina con su tabla.
+  - **Textos de 3.2:** la tarjeta «Tu investigación en curso» con el guion a medias dice «cuatro preguntas base»; en publicar, «Al publicar» nombra a Anselmo; en una entrevista propia, la nota de permisos ya no habla de registro ni de eco.
+  - **«Anterior»:** recorrer las dos actividades de inicio a fin y de fin a inicio.
+
+## 6. Decisiones ya tomadas (para `decisiones.md`)
+
+- **Premisa nueva de Anselmo:** quiere armar un archivo de todos los trabajos, pidió apoyo y le dijeron «muéstranos una entrevista y vemos». Necesita una para demostrar que la idea funciona. Salen el techo caído, las tejas, las goteras y «la isla paga por cada entrevista».
+- En el cierre, Anselmo consiguió el apoyo con esa entrevista. Es informativa: agradece, anima a llegar al Salón de Leyendas y enseña a contrastar una sola voz.
+- `investigador` enseña la entrevista **tal como se hace en Investigaciones**: escribir antes lo que se piensa, cuatro preguntas base y al menos una propia, unos quince minutos, video con permiso. Antes decía 20 a 30 minutos y cinco preguntas base más dos propias.
+- Lumi pregunta; la lámina va después de las preguntas y no la presenta Anselmo. Ningún personaje nombra a la orientadora: Anselmo dice «en tu colegio la destacan» y la lámina, «destacada por tu orientadora», como la pantalla.
+- F18 se alinea con el flujo. Los temas de la cartilla del MINEDU quedan como ideas para la pregunta propia, y los consejos de «Durante la entrevista» son los de la pantalla «Guía lista».
+- Se corrigen tres textos del front que contradecían el flujo («tres preguntas base», «misión de registro» y «eco»).
+- Título: «Una entrevista para Anselmo» (sin «Misión del investigador:»).
+
+---
+
+### Anexo · texto de observaciones de coherencia-ma2
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-investigador.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026). Es el último texto de las actividades opcionales.
+
+## Qué es
+
+Banco nuevo de la batalla opcional `ma2` (con Aurelio, «Profesiones sin género», cuelga de `b1-6`) y tres campos de su actividad. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento, `bancos_opcionales.py`: el banco está en `PREGUNTAS_MA2`, en el formato de `PREGUNTAS_BATALLA`. (El mismo archivo trae `PREGUNTAS_MA7_B`, que es de `ajuste-coherencia-ma1-ma7.md`.)
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`). **No cambia ninguna ficha:** las doce preguntas se responden con F05 como está en `main`.
+
+## 1. JSON de la actividad (`ov_frontend/src/data/activities/contenidos/plataforma/ma2.json`)
+
+No se reemplaza. Cambian dos campos:
+
+| Campo | Hoy | Queda |
+|---|---|---|
+| `ubicacion` | «Aurelio, otra vez» (repite el subtítulo) | «Desierto, el oasis» (como el desafío) |
+| `duracionEstimadaMin` | 6 | 5 (como el backend y el desafío) |
+
+El título («Batalla: profesiones sin género») no cambia: las demás batallas también llevan «Batalla:».
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+### 2.1 Descripción corta (`DESCRIPCIONES`)
+
+| Actividad | Hoy | Queda |
+|---|---|---|
+| ma2 | «Aurelio volvió con su pregón favorito. Déjalo sin público.» | «Aurelio recayó en su pregón favorito y trae números a medias. Complétalos.» |
+
+El título, la duración y la regla `R-ma2` no cambian.
+
+### 2.2 Banco de la batalla (`PREGUNTAS_BATALLA`)
+
+El banco está en `bancos_opcionales.py` (`PREGUNTAS_MA2`). Reemplaza, completas, las preguntas de hoy:
+
+| Batalla | Hoy | Queda | Ficha |
+|---|---|---|---|
+| ma2 | 10 (`ma2-p01` a `p10`) | 12 (`ma2-p01` a `p12`) | Las doce con F05 |
+
+- `CONFIGURACION_BATALLAS` de ma2, `(3, 3, 5)`, no cambia.
+- En cada pregunta las cuatro opciones tienen la misma forma y un largo parecido, y la correcta cae tres veces en cada posición. Los textos van tal cual.
+- Las preguntas 9 y 10 tienen las mismas cuatro opciones (las cuatro preguntas de la ficha), en distinto orden. Es a propósito.
+- Si alguna prueba cuenta las preguntas de ma2 (10), pasa a 12.
+- `bancos_opcionales.py` es solo el material para copiar: no se agrega al código ni se importa.
+
+## 3. Desafío (`ov_frontend/src/data/content/challenges.ts`, `desafio-aurelio-genero`)
+
+No cambia: la presentación («Aurelio volvió con un solo pregón… Esta vez trae números a medias») y el mensaje final calzan con el banco nuevo.
+
+## 4. Pruebas y lo que no cambia
+
+- Si alguna prueba o fixture compara la descripción o la cantidad de preguntas de `ma2`, se actualiza con los valores de este documento.
+- No cambian la ficha F05, el banco de `b1-5`, las reglas ni lo que abre la actividad. El conjunto `ruta` y sus pruebas no se tocan.
+
+## 5. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar en las preguntas de `ma2` «IRC» y «Central»: no aparecen.
+- En el navegador, con el conjunto `contenido`:
+  - **ma2:** con el registro de `b1-6` adecuado, aparece colgada de `b1-6`, con «Desierto, el oasis» y 5 minutos. Las preguntas salen del banco nuevo, con cuatro opciones parejas y su explicación.
+  - Jugar la batalla al menos dos veces para ver preguntas distintas. La presentación de Aurelio y el mensaje final son los de hoy.
+
+## 6. Decisiones ya tomadas (para `decisiones.md`)
+
+- El banco de `ma2` se rehízo con F05. Aurelio afirma con un número a medias y el estudiante lo completa. Calza con b1-6, donde Aurelio dice que «la costumbre es terca».
+- No repite las preguntas de género del banco de `b1-5` (el 54 % de egresadas, los 0,5 hombres por cada 100, la mujer por cada diez en mecánica, de dónde sale el estereotipo). Pregunta lo que ese banco no: la diferencia de ingresos, lo que encontró la investigación, la versión al revés del mito y las cuatro preguntas aplicadas a este pregón.
+- Salen las preguntas que hablaban de cosas que el estudiante no tiene a la vista («una chica con código IRC», «en la Central hay una voz de…») y las opciones de relleno.
+- El título conserva «Batalla:», como las demás batallas.
+- La ficha F05 no se toca. La cifra que el banco pregunta (entre 20 % y 22 % menos) se volvió a comprobar en la fuente que la ficha ya cita.

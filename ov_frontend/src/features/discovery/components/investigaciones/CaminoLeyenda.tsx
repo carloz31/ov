@@ -55,8 +55,8 @@ export function CaminoLeyenda({ entrevista }: { entrevista: EntrevistaDetalle })
           Ninguno reacciona a la propia.
         </p>
         <p>
-          Lo que pensaban antes no se muestra aquí: la primera entrevista publicada abre en la Ciudad una
-          misión de registro que lo trae como eco para contrastarlo.
+          Lo que pensaban antes no se muestra aquí. Con la primera entrevista publicada, Anselmo los espera
+          en el centro de investigación de la Ciudad.
         </p>
       </section>
     </div>

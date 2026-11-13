@@ -95,7 +95,7 @@ export function PublicarEntrevista() {
               <p>
                 {m.editar
                   ? 'Tus compañeros verán la ficha actualizada. Los autores no cambian.'
-                  : 'Tu salón y tu orientadora la verán de inmediato. Si es tu primera entrevista, en la Ciudad se abre una misión para contrastar lo que pensabas con lo que descubriste.'}
+                  : 'Tu salón y tu orientadora la verán de inmediato. Si es tu primera entrevista, Anselmo te espera en el centro de investigación de la Ciudad.'}
               </p>
               <small>
                 Los coautores reciben la entrevista como suya, con los mismos permisos: editar la ficha o

@@ -3,103 +3,178 @@
   "codigo": "investigador-cierre",
   "tipo": "encuentro",
   "titulo": "El investigador agradece",
-  "subtitulo": "Una teja más en el techo",
+  "subtitulo": "Una carpeta en el estante",
   "escenario": "ciudad",
   "bloque": 7,
   "orden": 21,
   "obligatoria": false,
-  "requisitos": ["investigador"],
+  "requisitos": [
+    "investigador"
+  ],
   "ubicacion": "Ciudad, centro de investigación",
-  "duracionEstimadaMin": 6,
-  "personajeIds": ["investigador", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué fuentes son confiables para conocer una profesión, por qué las redes muestran imágenes parciales de algunas ocupaciones y cómo contrastar lo que escuchó en su entrevista.",
+  "duracionEstimadaMin": 5,
+  "personajeIds": [
+    "investigador",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe que una entrevista es una sola voz y cómo contrastarla, dónde ver lo que su salón dijo de la suya y qué hace falta para que llegue al Salón de Leyendas.",
   "nodos": [
     {
-      "id": "invc-01",
+      "id": "investigador-cierre-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "El centro ya no está vacío: en el estante hay una carpeta nueva."
+    },
+    {
+      "id": "investigador-cierre-02",
       "tipo": "dialogo",
       "hablanteId": "investigador",
       "expresion": "contento",
-      "texto": "¡Entró tu entrevista al archivo! La isla ya pagó por ella: con eso compré las tejas de la gotera del norte. Mira, ya no gotea. Gracias, de verdad."
+      "texto": "¡La vi! Tres veces. Fui con ella a pedir el apoyo y me lo dieron: ya tengo para más estantes. Gracias."
     },
     {
-      "id": "invc-02",
+      "id": "investigador-cierre-03",
       "tipo": "dialogo",
       "hablanteId": "investigador",
-      "texto": "Y ahora que tienes una voz de primera mano, te enseño lo último: qué hacer con ella. Porque una entrevista es una sola persona, y las otras fuentes también tienen sus trampas."
+      "texto": "Una cosa. Lo que escribiste antes de entrevistar, lo que creías: ¿se parece a lo que te contaron?"
     },
     {
-      "id": "invc-03",
+      "id": "investigador-cierre-04",
+      "tipo": "eleccion",
+      "enunciado": "¿Qué le respondes?",
+      "registrar": false,
+      "opciones": [
+        {
+          "id": "investigador-cierre-04a",
+          "texto": "Se parece bastante.",
+          "reaccion": [
+            {
+              "id": "investigador-cierre-04ar",
+              "tipo": "dialogo",
+              "hablanteId": "investigador",
+              "texto": "Entonces ibas bien. Igual vale: ahora lo sabes por alguien que lo vive."
+            }
+          ]
+        },
+        {
+          "id": "investigador-cierre-04b",
+          "texto": "Me contaron otra cosa.",
+          "reaccion": [
+            {
+              "id": "investigador-cierre-04br",
+              "tipo": "dialogo",
+              "hablanteId": "investigador",
+              "texto": "Eso es lo que más vale de una entrevista: lo que no esperabas."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "investigador-cierre-05",
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "nuevoMomento": true,
+      "texto": "Y ojo: es una sola voz. A otra persona del mismo trabajo le puede ir distinto."
+    },
+    {
+      "id": "investigador-cierre-06",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Una viajera entrevistó a una contadora que le dijo que su trabajo es aburrido. ¿Qué le conviene hacer?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Descartar la carrera: lo dijo alguien que la ejerce.",
+          "correcta": false,
+          "retroalimentacion": "Es una voz. Vale mucho, pero no alcanza para descartar."
+        },
+        {
+          "id": "b",
+          "texto": "Compararlo con otra entrevista o con el catálogo.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Con dos voces y el catálogo ya se ve qué es de la persona y qué es del trabajo."
+        },
+        {
+          "id": "c",
+          "texto": "No hacerle caso: es la opinión de una sola persona.",
+          "correcta": false,
+          "retroalimentacion": "Tampoco. Lo que contó es real para ella; falta ver si se repite."
+        }
+      ],
+      "explicacion": "Una entrevista muestra lo que no se ve desde afuera, pero es una sola persona. Se compara con otra entrevista y con lo que dice el catálogo.",
+      "pistas": [
+        {
+          "id": "investigador-cierre-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de lo que acaba de decir Anselmo: una sola voz."
+        }
+      ]
+    },
+    {
+      "id": "investigador-cierre-07",
+      "tipo": "dialogo",
+      "hablanteId": "investigador",
+      "nuevoMomento": true,
+      "texto": "Tu entrevista la ve tu salón. Si a tres compañeros les sirve y la marcan como favorita, y en tu colegio la destacan, pasa al Salón de Leyendas. Ahí la ven todos los salones, y los que vengan después."
+    },
+    {
+      "id": "investigador-cierre-08",
       "tipo": "diapositiva",
-      "presentadorId": "investigador",
-      "titulo": "Fuentes para conocer una profesión",
+      "etiqueta": "El estante de Anselmo",
+      "titulo": "Después de publicar",
       "bloques": [
         {
           "tipo": "tabla",
-          "columnas": ["Fuente", "Qué da bien", "Qué esconde"],
+          "columnas": [
+            "Qué mirar",
+            "Dónde"
+          ],
           "filas": [
-            ["Una entrevista a quien la ejerce", "La rutina, lo que no se ve desde afuera, cómo se llega", "Es una sola voz, con su suerte y su contexto"],
-            ["El catálogo (MTPE, O*NET)", "Qué se hace, qué se estudia, ingresos de muchas personas, dónde", "No dice si te va a gustar"],
-            ["Egresados recientes", "Cómo es empezar, la admisión, el primer empleo", "Todavía no saben cómo sigue"],
-            ["Redes sociales e influencers de carreras", "Que una ocupación existe; la parte vistosa", "El sueldo del primer año, las horas, la rutina; muestran lo que da clics"],
-            ["Tu familia", "Lo que te conoce a ti", "Su información del mercado suele ser de cuando ellos eligieron"]
+            [
+              "Lo que tu salón dijo de tu entrevista",
+              "En tu entrevista, «Lo que dicen de tu entrevista»"
+            ],
+            [
+              "Si va camino al Salón de Leyendas",
+              "En «Camino a Leyenda»: destacada por tu orientadora y 3 favoritos de compañeros"
+            ],
+            [
+              "Otras voces de la familia que te interesa",
+              "En Investigaciones, «De mi salón» y «Leyendas». Puedes dejar tu reacción"
+            ],
+            [
+              "Lo que dice el catálogo de ese trabajo",
+              "En la ocupación, «Qué hacen»"
+            ]
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Ninguna fuente sola alcanza. Lo que creías, lo que te contaron y lo que dicen los datos, puestos lado a lado: eso es investigar."
+          "texto": "Una entrevista es una voz. Con otra voz y el catálogo ya puedes comparar."
         }
       ]
     },
     {
-      "id": "invc-04",
-      "tipo": "pregunta",
-      "hablanteId": "investigador",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un video de «un día en la vida de un piloto de drones» tiene dos millones de vistas y muestra viajes, playas y equipo caro. ¿Qué te dice y qué no?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Te dice que esa ocupación existe y qué parte es vistosa; no te dice el sueldo del primer año, las horas ni la rutina.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Es una pista para verificar en el catálogo o con una entrevista, no una prueba."
-        },
-        {
-          "id": "b",
-          "texto": "Te dice cómo es esa ocupación: dos millones de personas no se equivocan.",
-          "correcta": false,
-          "retroalimentacion": "Las vistas miden qué da clics, no qué es verdad. Lo vistoso se muestra; la rutina no."
-        },
-        {
-          "id": "c",
-          "texto": "No te dice nada; las redes no sirven para esto.",
-          "correcta": false,
-          "retroalimentacion": "Sirven para descubrir que una ocupación existe. El problema es quedarse ahí."
-        }
-      ],
-      "explicacion": "Las redes muestran imágenes parciales de algunas ocupaciones: la parte que da clics. Úsalas para descubrir y luego verifica con el catálogo, una entrevista o egresados.",
-      "pistas": [
-        {
-          "id": "invc-04p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "En la tabla, la fila de redes dice exactamente qué dan bien y qué esconden."
-        }
-      ]
-    },
-    {
-      "id": "invc-05",
-      "nuevoMomento": true,
+      "id": "investigador-cierre-09",
       "tipo": "dialogo",
       "hablanteId": "investigador",
       "expresion": "contento",
-      "texto": "Tu entrevista ya la ven tus compañeros; si les sirve, lo dirán. Y si tu orientadora la destaca y junta suficientes favoritos, pasa al salón de Leyendas, donde la ve toda la isla. Sigue investigando: quedan goteras."
+      "texto": "Quedan muchos estantes. Si entrevistas a alguien más, ya sabes dónde traerlo."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Una teja más en el techo de Anselmo. Lo que creías, lo que te contaron y lo que dicen los datos, lado a lado."
+    "mensajeFin": "Una entrevista es una voz. Compárala con otra y con el catálogo."
   },
-  "mapa": { "x": 180, "y": 160, "icono": "informativa", "origen": "investigador" }
+  "mapa": {
+    "x": 180,
+    "y": 160,
+    "icono": "informativa",
+    "origen": "investigador"
+  }
 }

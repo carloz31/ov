@@ -48,7 +48,7 @@ export function TarjetaEnCurso({
       <p>
         {lista
           ? '¿Ya conversaste con esa persona? Comparte lo que descubriste con tu salón. Si la hiciste en grupo, podrás agregar a tus compañeros al publicar.'
-          : 'Termina tu guion para salir a entrevistar: las tres preguntas base y al menos una tuya.'}
+          : 'Termina tu guion para salir a entrevistar: las cuatro preguntas base y al menos una tuya.'}
       </p>
       <div className="sx-i-acciones">
         {lista ? (

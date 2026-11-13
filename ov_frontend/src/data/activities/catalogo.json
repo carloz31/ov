@@ -240,7 +240,7 @@
       "id": "investigador",
       "nombre": "Anselmo",
       "rol": "npc",
-      "descripcion": "Investigador del centro de investigación de la ciudad, con el techo caído por la última lluvia. Investiga a la gente que trabaja; la isla paga por cada entrevista nueva del archivo y con eso repara el centro. Despistado, entusiasta, agradecido.",
+      "descripcion": "Investigador del centro de investigación de la ciudad. Quiere armar un archivo de todos los trabajos, contado por quienes los hacen, y busca apoyo para sostenerlo. Despistado, entusiasta, agradecido.",
       "ubicacion": "Ciudad, centro de investigación",
       "avatarUrl": "/images/personajes/investigador.png",
       "expresiones": {
