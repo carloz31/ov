@@ -93,7 +93,7 @@ export function fechaRelativa(iso: string, ahora: Date): string {
 export const nivelesAmistad = [
   'Conociéndonos',
   'Ganando confianza',
-  'Compañeras de ruta',
+  'Compañía de ruta',
   'Amistad de viaje',
   'Lumi te conoce de verdad',
 ] as const

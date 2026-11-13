@@ -9,7 +9,7 @@ export const lumiMemoryThresholds = [1, 5, 10, 15, 20] as const
 const levels = [
   { minimum: 0, label: 'Conociéndonos' },
   { minimum: 5, label: 'Ganando confianza' },
-  { minimum: 10, label: 'Compañeras de ruta' },
+  { minimum: 10, label: 'Compañía de ruta' },
   { minimum: 15, label: 'Amistad de viaje' },
 ]
 export type LumiBond = {

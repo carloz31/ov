@@ -118,15 +118,16 @@ test('Hoy: con pregunta, contada, sin pregunta y mientras llega', () => {
 
 test('tarjeta de Lumi: nivel, cartas enviadas, siguiente nivel y el texto fijo del día', () => {
   const html = render('LumiBondPanel', { bond })
-  assert.match(html, /Nivel 1 · Conociéndonos/)
+  // Ajuste coherencia-lumi: con los umbrales 1–5, 3 cartas son el nivel 3 y falta 1 para el siguiente.
+  assert.match(html, /Nivel 3 · Compañía de ruta/)
   assert.match(html, /3 cartas enviadas/)
-  assert.match(html, /Siguiente nivel: 5/)
-  assert.match(html, /Faltan <strong>2 cartas<\/strong> para que Lumi te cuente su siguiente recuerdo\./)
+  assert.match(html, /Siguiente nivel: 4/)
+  assert.match(html, /Faltan <strong>1 carta<\/strong> para que Lumi te cuente su siguiente recuerdo\./)
   assert.match(html, /Hoy cuentan hasta 3 cartas · la amistad nunca se pierde/)
   assert.doesNotMatch(html, /conversaciones|Guardar en mi memoria/)
   assert.match(
     render('LumiBondPanel', { bond, siguienteRecuerdo: 'Cómo llegué' }),
-    /Faltan <strong>2 cartas<\/strong> para que Lumi te cuente <em>«Cómo llegué»<\/em>\./,
+    /Faltan <strong>1 carta<\/strong> para que Lumi te cuente <em>«Cómo llegué»<\/em>\./,
   )
 })
 

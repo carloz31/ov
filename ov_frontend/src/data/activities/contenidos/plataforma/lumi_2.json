@@ -1,0 +1,49 @@
+{
+  "id": "lumi-2",
+  "codigo": "lumi-2",
+  "tipo": "encuentro",
+  "titulo": "Lo que escribí en el tronco",
+  "bloque": 8,
+  "orden": 2,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "lumi-2-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "La noche antes de ocupar mi lugar, me solté. No sé explicarlo mejor: me solté y caí."
+    },
+    {
+      "id": "lumi-2-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Caí en el bosque de las voces. Con lo poco de luz que me quedaba escribí una frase en un tronco. Aquí le dicen tallar."
+    },
+    {
+      "id": "lumi-2-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Te dije que algún día te la iba a contar. Es esta: «Nadie me preguntó»."
+    },
+    {
+      "id": "lumi-2-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Me quedé en la isla porque aquí a nadie le asignan un lugar. La gente llega buscando el suyo. Pensé: perfecto, aquí nadie me va a decir dónde ir."
+    },
+    {
+      "id": "lumi-2-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Lo que no pensé es que yo tampoco lo iba a decidir."
+    }
+  ]
+}

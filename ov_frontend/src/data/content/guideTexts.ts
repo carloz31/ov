@@ -183,7 +183,7 @@ export const sectionIntros: Record<StudentView, string[]> = {
   ],
   // Ajuste del diario: el contenido del antiguo cuadro «Un espacio para ti y Lumi», dicho por Lumi.
   journal: [
-    'Este es un espacio para ti y para mí: tu diario se convierte en conversaciones con tu compañera de viaje. No hay respuestas automáticas: tú decides qué contar.',
+    'Este es un espacio para ti y para mí: tu diario se convierte en conversaciones con Lumi. No hay respuestas automáticas: tú decides qué contar.',
     'Es privado para siempre. Nadie lee lo que escribes aquí. Ni tu orientadora, ni nadie del programa. Nunca.',
     'Escríbelo a tu manera: no hay respuestas correctas. Puedes escribir una frase o una página.',
     'Y hay una señal separada: de vez en cuando te preguntaremos qué tan seguro te sientes de tu próximo paso. Tu orientadora ve solo esa respuesta corta, nunca lo que escribes.',

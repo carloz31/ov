@@ -122,6 +122,11 @@ import p5 from './contenidos/plataforma/p5.json'
 import p6 from './contenidos/plataforma/p6.json'
 import p7 from './contenidos/plataforma/p7.json'
 import p8 from './contenidos/plataforma/p8.json'
+import lumi1 from './contenidos/plataforma/lumi_1.json'
+import lumi2 from './contenidos/plataforma/lumi_2.json'
+import lumi3 from './contenidos/plataforma/lumi_3.json'
+import lumi4 from './contenidos/plataforma/lumi_4.json'
+import lumi5 from './contenidos/plataforma/lumi_5.json'
 import c1 from './contenidos/plataforma/c1.json'
 import c2 from './contenidos/plataforma/c2.json'
 import c3 from './contenidos/plataforma/c3.json'
@@ -252,6 +257,11 @@ export const contenidos: Record<string, ContenidoActividad> = {
   p6,
   p7,
   p8,
+  lumi_1: lumi1,
+  lumi_2: lumi2,
+  lumi_3: lumi3,
+  lumi_4: lumi4,
+  lumi_5: lumi5,
   c1,
   c2,
   c3,

@@ -98,7 +98,7 @@ function GuideDialogue({
               <X className="size-4" />
             </button>
             <div className="absolute left-1/2 top-0 grid size-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-4 border-[var(--family-guide-border)] bg-[var(--family-guide-badge)] shadow-lg">
-              <svg role="img" aria-label="Lumi, tu compañero guía" viewBox="0 0 64 64" className="size-16">
+              <svg role="img" aria-label="Lumi, quien te guía" viewBox="0 0 64 64" className="size-16">
                 <path d="M12 52L16 20L30 30L48 15L54 52Z" fill="var(--family-character-base)" />
                 <path d="M17 31L29 39L47 28L44 51L31 59L19 48Z" fill="var(--family-character-face)" />
                 <circle cx="24" cy="41" r="3" fill="var(--family-character-detail)" />
@@ -115,7 +115,7 @@ function GuideDialogue({
               <Compass className="absolute -bottom-1 -right-1 size-5 text-[var(--family-guide-compass)]" />
             </div>
             <p className="mb-2 text-center text-xs font-bold uppercase tracking-[0.14em] text-[var(--family-guide-label)]">
-              {audience === 'student' ? 'Lumi · Tu compañero de viaje' : 'Guía para familias'}
+              {audience === 'student' ? 'Lumi · Quien te acompaña' : 'Guía para familias'}
             </p>
             <div className="mx-auto mb-5 h-1 w-24 rounded-full bg-[var(--family-guide-divider)]" />
             <p

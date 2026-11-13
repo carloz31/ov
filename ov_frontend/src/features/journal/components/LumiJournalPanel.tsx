@@ -33,7 +33,7 @@ export function LumiJournalPanel({
             </span>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#8c6b2c]">
-                Tu compañera de viaje
+                Quien te acompaña
               </p>
               <h2 className="mt-2 text-2xl font-bold text-[#4b4066]">Amistad con Lumi</h2>
               <p className="mt-1 text-sm text-[#5c5a54]">{friendship.level}</p>

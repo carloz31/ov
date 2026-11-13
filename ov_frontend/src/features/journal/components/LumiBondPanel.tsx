@@ -23,7 +23,7 @@ export function LumiBondPanel({
           <LumiPortrait />
         </span>
         <div>
-          <p className="sx-d-eyebrow">Tu compañera de viaje</p>
+          <p className="sx-d-eyebrow">Quien te acompaña</p>
           <h2>Amistad con Lumi</h2>
           <span className="sx-j-chip sx-j-chip-gold">{`Nivel ${bond.levelIndex + 1} · ${bond.level}`}</span>
         </div>

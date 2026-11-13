@@ -26,15 +26,16 @@ test('los capítulos son las 5 actividades LUMI, con su título y el requisito d
   const h = useHistoriaDePrueba(app)
   assert.deepEqual(copia(h.capitulos.map((c) => [c.numero, c.codigo, c.desbloqueado, c.requisito])), [
     [1, 't-lumi-1', false, 1],
-    [2, 't-lumi-2', false, 5],
-    [3, 't-lumi-3', false, 12],
-    [4, 't-lumi-4', false, 25],
-    [5, 't-lumi-5', false, 45],
+    [2, 't-lumi-2', false, 2],
+    [3, 't-lumi-3', false, 3],
+    [4, 't-lumi-4', false, 4],
+    [5, 't-lumi-5', false, 5],
   ])
   assert.equal(h.capitulos[0].titulo, 'Cómo llegué a este mundo')
   assert.equal(h.siguienteRecuerdo, 'Cómo llegué a este mundo')
-  // El umbral del capítulo n es el del nivel n de amistad: el siguiente de 3 puntos es 5, el del capítulo 2.
-  assert.equal(h.capitulos[1].requisito, amistad.siguiente_en)
+  // El umbral del capítulo n es el del nivel n de amistad (ajuste coherencia-lumi: umbrales 1–5): el siguiente
+  // umbral de la amistad es el requisito del capítulo que sigue a su nivel.
+  assert.equal(h.capitulos[amistad.nivel].requisito, amistad.siguiente_en)
   const actividad = h.actividad('t-lumi-1')
   assert.equal(actividad.id, 't-lumi-1')
   assert.ok(actividad.nodos.length >= 2 && actividad.nodos.every((n) => n.tipo === 'dialogo'))
@@ -61,7 +62,7 @@ test('«La historia de Lumi»: de 3 en 3 con flechas, abiertos con «Volver a ve
   assert.match(html, /1 de 5/)
   assert.equal((html.match(/class="sx-j-capitulo"/g) ?? []).length, 3)
   assert.match(html, /Volver a ver/)
-  assert.match(html, /Al llegar a 5 cartas/)
+  assert.match(html, /Al llegar a 2 cartas/)
   assert.match(html, /aria-label="Capítulos siguientes"/)
   assert.doesNotMatch(html, /Guardar en mi memoria/)
 })

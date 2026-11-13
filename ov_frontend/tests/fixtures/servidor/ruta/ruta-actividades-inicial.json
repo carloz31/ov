@@ -906,14 +906,14 @@
                 "actual": 0,
                 "cumplida": false,
                 "referencia": null,
-                "requerido": 5,
+                "requerido": 2,
                 "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
             ],
             "evaluador_especial": null,
-            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (5 cartas).",
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (2 cartas).",
             "regla": "R-t-lumi-2"
           }
         ],
@@ -937,14 +937,14 @@
                 "actual": 0,
                 "cumplida": false,
                 "referencia": null,
-                "requerido": 12,
+                "requerido": 3,
                 "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
             ],
             "evaluador_especial": null,
-            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (12 cartas).",
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (3 cartas).",
             "regla": "R-t-lumi-3"
           }
         ],
@@ -968,14 +968,14 @@
                 "actual": 0,
                 "cumplida": false,
                 "referencia": null,
-                "requerido": 25,
+                "requerido": 4,
                 "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
             ],
             "evaluador_especial": null,
-            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (25 cartas).",
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (4 cartas).",
             "regla": "R-t-lumi-4"
           }
         ],
@@ -999,14 +999,14 @@
                 "actual": 0,
                 "cumplida": false,
                 "referencia": null,
-                "requerido": 45,
+                "requerido": 5,
                 "texto": null,
                 "tipo_conteo": "EVENTOS_TOPE_DIARIO",
                 "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
               }
             ],
             "evaluador_especial": null,
-            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (45 cartas).",
+            "mensaje": "Escríbele a Lumi para que te cuente su recuerdo (5 cartas).",
             "regla": "R-t-lumi-5"
           }
         ],
