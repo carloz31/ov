@@ -373,8 +373,8 @@ export const desafiosPlataforma: Challenge[] = [
     nombre: 'Doña Cifra (brechas)',
     titulo: 'Más allá del promedio',
     presentacionEnemigo:
-      'Doña Cifra saca los números que nunca muestra: por región, por edad y por formalidad. Cada brecha que leas bien es un promedio ' +
-      'que deja de engañar. Corta y opcional.',
+      'Doña Cifra trae más números a la plaza y dice lo que significan, a su manera. Cada vez que la corrijas con lo que ya sabes ' +
+      'leer, un promedio deja de engañar. Corta y opcional.',
     ilustracion: '/images/student/cifra.png',
     bloque: 3, orden: 38, obligatoria: false,
     ubicacion: 'Puerto, plaza del mercado',
@@ -384,8 +384,8 @@ export const desafiosPlataforma: Challenge[] = [
     vidasEnemigo: 3, vidasEstudiante: 3, opcionesPorPregunta: 4,
     requisitos: [{ tipo: 'ficha', id: 'F13', titulo: 'Salarios, demanda e informalidad' }],
     banco: [],
-    recompensa: { titulo: 'Las brechas, leídas', lugar: 'el puerto', href: '/student/map',
-      mensajeFin: 'Un promedio nacional es cuatro promedios mezclados. Léelo por partes.' },
+    recompensa: { titulo: 'Los números, leídos', lugar: 'el puerto', href: '/student/map',
+      mensajeFin: 'Un promedio se lee por partes: de dónde es, de qué edad y de quiénes.' },
   },
 ]
 

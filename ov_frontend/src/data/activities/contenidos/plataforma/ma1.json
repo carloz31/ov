@@ -11,7 +11,7 @@
   "requisitos": [
     "b1-1"
   ],
-  "ubicacion": "Una carta privada",
+  "ubicacion": "Nevado, taller de la cartógrafa",
   "duracionEstimadaMin": 4,
   "personajeIds": [
     "cartografa",
@@ -22,42 +22,42 @@
       "id": "ma1-01",
       "tipo": "dialogo",
       "hablanteId": "cartografa",
-      "texto": "Leí tu punto de origen y me quedé pensando. Hay un ejercicio que hago con los viajeros que cuentan su historia con ejemplos de verdad: escribirle una carta al niño o a la niña que fueron.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Te quedaste mirando por la ventana. Le pasa a casi todos después de contar su historia: quedan cosas dando vueltas."
     },
     {
       "id": "ma1-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Horna, el autor que cita el programa del MINEDU, lo describe así: hablarle al niño que uno fue, consolarlo y darle consejo con lo que hoy sabes de ti."
+      "hablanteId": "cartografa",
+      "texto": "Yo hice algo con eso. Le escribí una carta a la niña que fui, la que dibujaba planos de su casa y los guardaba en un cajón porque no parecían cosa seria. Le conté que esos planos iban a servir."
     },
     {
       "id": "ma1-03",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le preguntas?",
       "registrar": false,
       "opciones": [
         {
           "id": "ma1-03a",
-          "texto": "¿Y quién la lee?",
+          "texto": "¿Y qué le diría yo?",
           "reaccion": [
             {
               "id": "ma1-03ar",
               "tipo": "dialogo",
-              "hablanteId": "companero",
-              "texto": "Nadie más que yo, y yo solo escucho. Es una carta de tu diario: privada y voluntaria."
+              "hablanteId": "cartografa",
+              "texto": "Lo que le hubiera servido saber. Lo que hoy entiendes de lo que le gustaba, de lo que le costaba o de lo que esperaban de ti."
             }
           ]
         },
         {
           "id": "ma1-03b",
-          "texto": "¿Qué le diría?",
+          "texto": "¿Para qué, si ya pasó?",
           "reaccion": [
             {
               "id": "ma1-03br",
               "tipo": "dialogo",
               "hablanteId": "cartografa",
-              "texto": "Lo que le hubiera servido saber. Lo que hoy entiendes de lo que le gustaba, de lo que le costaba, de lo que esperaban de él."
+              "texto": "Porque al escribirle te enteras de lo que piensas tú hoy. A mí me pasó."
             }
           ]
         }
@@ -67,13 +67,13 @@
       "id": "ma1-04",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Te dejé la carta abierta en el diario: «Carta al niño que fui». Escríbela cuando quieras, o no la escribas.",
       "expresion": "animado",
-      "nuevoMomento": true
+      "nuevoMomento": true,
+      "texto": "Te dejé el papel en el diario: «Carta al niño que fui». Escríbela cuando quieras, o no la escribas."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Una carta al niño que fuiste te espera en el diario."
+    "mensajeFin": "En tu diario te espera una carta para el niño o la niña que fuiste."
   },
   "mapa": {
     "x": 0,

@@ -3,7 +3,7 @@
   "codigo": "ma7",
   "tipo": "encuentro",
   "titulo": "Más allá del promedio",
-  "subtitulo": "Doña Cifra y las regiones",
+  "subtitulo": "Un solo número",
   "escenario": "playa",
   "bloque": 7,
   "orden": 37,
@@ -11,7 +11,7 @@
   "requisitos": [
     "b3-4"
   ],
-  "ubicacion": "Doña Cifra y las regiones",
+  "ubicacion": "Puerto, mercado",
   "duracionEstimadaMin": 6,
   "personajeIds": [
     "cifra",
@@ -21,101 +21,209 @@
     {
       "id": "ma7-01",
       "tipo": "dialogo",
-      "hablanteId": "cifra",
-      "texto": "Volviste. Tu registro del mercado estuvo bien hecho, lo admito. Entonces te muestro lo que no muestro a nadie: los números por región, por edad y por formalidad. Ahí es donde los promedios mienten de verdad.",
-      "expresion": "neutral"
+      "hablanteId": "companero",
+      "texto": "El puesto de las cortinas moradas otra vez. Hoy no hay fila."
     },
     {
       "id": "ma7-02",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "expresion": "neutral",
+      "texto": "Tú. La persona que lee demasiado. Hoy traje un solo número, a ver qué le encuentras: tres mil quinientos soles. Promedio de una familia de carreras, en todo el país."
+    },
+    {
+      "id": "ma7-03",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "texto": "Con ese número, un viajero de Loreto ya armó su presupuesto. Va a trabajar en Iquitos y cuenta con sus tres mil quinientos."
+    },
+    {
+      "id": "ma7-04",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué le falta mirar al viajero de Loreto?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "El promedio de Lima, que es el más alto.",
+          "correcta": false,
+          "retroalimentacion": "Más alto no le sirve si no va a trabajar ahí."
+        },
+        {
+          "id": "b",
+          "texto": "El promedio de su departamento, donde va a trabajar.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Una misma familia paga distinto según el lugar."
+        },
+        {
+          "id": "c",
+          "texto": "El promedio de todo el país, que es el más completo.",
+          "correcta": false,
+          "retroalimentacion": "Es el que ya tiene. Junta lugares que pagan muy distinto."
+        }
+      ],
+      "explicacion": "Una misma familia de carreras paga distinto en un departamento y en otro. El dato que sirve es el del lugar donde se va a trabajar.",
+      "pistas": [
+        {
+          "id": "ma7-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Fíjate en dónde va a trabajar el viajero."
+        }
+      ]
+    },
+    {
+      "id": "ma7-05",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "nuevoMomento": true,
+      "texto": "Bien. Su prima egresa este año. El número dice tres mil quinientos: eso gana el primer año."
+    },
+    {
+      "id": "ma7-06",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "El promedio junta a jóvenes y adultos. ¿Qué dato le sirve a la prima para su primer año?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "El de jóvenes, que es el de recién egresados.",
+          "correcta": true,
+          "retroalimentacion": "Sí. El de adultos es para pensar más adelante."
+        },
+        {
+          "id": "b",
+          "texto": "El de adultos, que muestra a dónde puede llegar.",
+          "correcta": false,
+          "retroalimentacion": "Sirve para más adelante, no para el primer año."
+        },
+        {
+          "id": "c",
+          "texto": "El máximo, que es lo que debería esperar.",
+          "correcta": false,
+          "retroalimentacion": "Uno de cada diez gana más que el máximo. No es lo esperable."
+        }
+      ],
+      "explicacion": "«Jóvenes» son egresados recientes; «adultos», gente con más experiencia. El primero sirve para pensar el inicio y el segundo, para más adelante.",
+      "pistas": [
+        {
+          "id": "ma7-06p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "La prima recién egresa: busca el dato de quienes están como ella."
+        }
+      ]
+    },
+    {
+      "id": "ma7-07",
+      "tipo": "dialogo",
+      "hablanteId": "cifra",
+      "nuevoMomento": true,
+      "texto": "Última. Este número es de quienes tienen planilla. Con eso ya sabes todo lo que hay que saber."
+    },
+    {
+      "id": "ma7-08",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Si el promedio es solo de quienes tienen planilla, ¿qué no te dice?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Cuánto ganan quienes tienen empleo en planilla.",
+          "correcta": false,
+          "retroalimentacion": "Eso es justo lo que dice."
+        },
+        {
+          "id": "b",
+          "texto": "Cuánto pagan las empresas más grandes del país.",
+          "correcta": false,
+          "retroalimentacion": "No separa por empresa, pero tampoco es lo que falta."
+        },
+        {
+          "id": "c",
+          "texto": "Cuántos egresados consiguen un empleo en planilla.",
+          "correcta": true,
+          "retroalimentacion": "Eso. No todos lo consiguen, ni lo consiguen pronto."
+        }
+      ],
+      "explicacion": "El promedio cuenta a quienes ya tienen empleo en planilla. No dice cuántos egresados lo consiguen ni cuánto tardan.",
+      "pistas": [
+        {
+          "id": "ma7-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Piensa en quienes egresaron y no aparecen en ese número."
+        }
+      ]
+    },
+    {
+      "id": "ma7-09",
       "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "Tres brechas que el promedio esconde",
+      "nuevoMomento": true,
+      "etiqueta": "El tablero de Doña Cifra",
+      "titulo": "Un promedio, por partes",
       "bloques": [
         {
           "tipo": "tabla",
           "columnas": [
-            "Brecha",
-            "Qué pasa",
-            "Cómo leerla"
+            "Pregunta",
+            "Qué cambia",
+            "Dónde mirarlo"
           ],
           "filas": [
             [
-              "Lima y regiones",
-              "Una misma familia de carreras paga distinto en Arequipa, Loreto o Lima; también cambia la oferta de trabajo",
-              "Mira el ingreso del departamento donde vas a trabajar, no el nacional"
+              "¿De dónde es?",
+              "Una misma familia paga distinto en Arequipa, en Loreto o en Lima",
+              "En «Cuánto ganan sus egresados», «Por lugar»: elige el departamento"
             ],
             [
-              "Jóvenes y adultos",
-              "La diferencia es el crecimiento típico de la carrera: en Geología se duplica y más; en Obstetricia casi no cambia",
-              "Jóvenes para pensar el primer año, adultos para pensar a diez"
+              "¿De qué edad?",
+              "En Geología, de S/ 4 200 de jóvenes a S/ 10 800 de adultos; en Obstetricia, de S/ 4 500 a S/ 5 300",
+              "Las tarjetas «Jóvenes» y «Adultos»"
             ],
             [
-              "Formal e informal",
-              "Las tablas son de la minoría en planilla; más de ocho de cada diez ocupados de 14 a 24 años tienen empleo informal",
-              "El título vale por la puerta al empleo formal, no solo por la cifra"
+              "¿De quiénes?",
+              "Solo de quienes tienen empleo en planilla. Entre los 14 y los 24 años, el 84,8 % de quienes trabajan tiene un empleo informal",
+              "El catálogo no muestra cuántos lo consiguen"
             ]
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Un promedio nacional de jóvenes y adultos, formales, es cuatro promedios mezclados. Léelo por partes."
+          "texto": "Antes de creerle a un promedio, pregúntale de dónde es, de qué edad y de quiénes."
         },
         {
           "tipo": "fuente",
-          "texto": "Catálogo de la plataforma (Ponte en Carrera, MTPE). INEI (2026), mercado laboral, abril 2025–marzo 2026."
+          "texto": "Catálogo de la plataforma, con datos de Ponte en Carrera (MTPE y Minedu), consultados en 2026. INEI (2026), Comportamiento de los indicadores de mercado laboral a nivel nacional, abril 2025–marzo 2026.",
+          "url": "https://www.inei.gob.pe/media/MenuRecursivo/boletines/empleo-nacional-i-trimestre-2026.pdf"
         }
       ]
     },
     {
-      "id": "ma7-03",
-      "tipo": "pregunta",
-      "hablanteId": "cifra",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un viajero de Loreto mira el ingreso nacional de su familia de carreras y arma su presupuesto con ese dato. ¿Qué le falta?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Mirar el ingreso de Loreto, o del departamento donde trabajaría: Lima no es el Perú",
-          "correcta": true,
-          "retroalimentacion": "Exacto. El catálogo lo muestra por lugar."
-        },
-        {
-          "id": "b",
-          "texto": "Nada: el nacional es el más confiable",
-          "correcta": false,
-          "retroalimentacion": "Es el más agregado, no el más útil para él."
-        },
-        {
-          "id": "c",
-          "texto": "Mirar el de Lima, que es más alto",
-          "correcta": false,
-          "retroalimentacion": "Más alto no es más real si no va a trabajar en Lima."
-        }
-      ],
-      "explicacion": "La brecha entre Lima y regiones puede ser grande en la misma familia. El dato útil es el del lugar donde se va a trabajar.",
-      "pistas": [
-        {
-          "id": "ma7-03p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Primera fila de la tabla."
-        }
-      ]
-    },
-    {
-      "id": "ma7-04",
+      "id": "ma7-10",
       "tipo": "dialogo",
       "hablanteId": "cifra",
-      "texto": "Ahora sí, la revancha de verdad: en la plaza, con las brechas. Si las lees bien, te quedas con el puesto.",
-      "expresion": "neutral",
-      "nuevoMomento": true
+      "texto": "Me dejas sin número. En la plaza tengo más, por si quieres seguir leyendo."
+    },
+    {
+      "id": "ma7-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo de leer salarios ya lo tienes en la mochila: «Salarios, demanda e informalidad»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un promedio nacional es cuatro promedios mezclados. Doña Cifra te espera con las brechas."
+    "mensajeFin": "Un promedio se lee por partes: de dónde es, de qué edad y de quiénes."
   },
   "mapa": {
     "x": 0,
@@ -123,5 +231,6 @@
     "icono": "informativa",
     "origen": "b3-4",
     "adicional": true
-  }
+  },
+  "objetivoAprendizaje": "Al terminar, el estudiante lee un promedio de ingresos por partes: de qué lugar es, de qué edad y de quiénes, y sabe dónde mirar cada cosa en el catálogo."
 }

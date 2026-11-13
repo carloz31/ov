@@ -10,9 +10,10 @@ from datos import contenido
 
 
 JSON_PLATAFORMA = Path(__file__).parents[4] / 'ov_frontend/src/data/activities/contenidos/plataforma'
-# La posición de la correcta antes del ajuste: cambiar el texto no la mueve. Salen b1-5-p05 y las de b3-5:
-# los ajustes coherencia-bloque1 y coherencia-bloque3 reemplazaron todo el banco de b1-5 y de b3-5.
-CORRECTAS = {'ma7-b-p03': 0, 'ma7-b-p07': 3}
+# Salen b1-5-p05, las de b3-5 y las de ma7-b: los ajustes coherencia-bloque1, coherencia-bloque3 y
+# coherencia-ma1-ma7 reemplazaron todo el banco de b1-5, de b3-5 y de ma7-b. Del banco nuevo de ma7-b se comprueba
+# lo que dice su texto de observaciones: doce preguntas de F13, y la correcta tres veces en cada posición.
+BANCO_MA7_B = [f'ma7-b-p{n:02d}' for n in range(1, 13)]
 
 
 def test_carga_las_diez_conversaciones_completas(sesion_contenido):
@@ -54,9 +55,9 @@ def test_ninguna_cifra_vieja_en_fichas_batallas_ni_json():
         assert '85 %' not in texto and '75,7' not in texto, nombre
 
 
-def test_las_batallas_tocadas_conservan_la_correcta_y_una_explicacion():
-    preguntas = {p[0]: p for p in contenido.PREGUNTAS_BATALLA}
-    for codigo, correcta in CORRECTAS.items():
-        _, _, _, enunciado, opciones, posicion, explicacion = preguntas[codigo]
-        assert posicion == correcta, codigo
-        assert enunciado and len(opciones) == 4 and isinstance(explicacion, str) and explicacion, codigo
+def test_el_banco_de_ma7_b_reparte_la_correcta_y_trae_explicacion():
+    preguntas = [p for p in contenido.PREGUNTAS_BATALLA if p[1] == 'ma7-b']
+    assert [p[0] for p in preguntas] == BANCO_MA7_B
+    for codigo, _, ficha, enunciado, opciones, _, explicacion in preguntas:
+        assert ficha == 'F13' and enunciado and len(opciones) == 4 and isinstance(explicacion, str) and explicacion, codigo
+    assert sorted(p[5] for p in preguntas) == [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3]

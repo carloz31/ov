@@ -615,3 +615,237 @@ En el archivo va como una sola cadena, con `\n` y con las comillas escapadas com
 - F23 corrige la lectura del GEM: el 5,3 % es la parte de los adultos con un negocio de más de tres años y medio, no la parte de emprendedores que «consolida». Sale «entre los países con más emprendimiento del mundo».
 - Salen de F23 dos afirmaciones sin fuente: que el negocio por oportunidad «sobrevive más» y que uno abierto después de una carrera «tiene mejores probabilidades». El negocio por necesidad se trata sin desmerecerlo.
 - Las cifras del GEM se leyeron en notas de prensa, no en el reporte.
+
+---
+
+## Ajuste · coherencia-ma1-ma7
+
+
+## Contexto
+
+Reescritura, decidida por el usuario, de las informativas opcionales `ma1` (Nadia, cuelga de b1-1) y `ma7` (Doña Cifra, cuelga de b3-4), del banco de la batalla `ma7-b`, de la ficha F13 y de tres textos del desafío de Doña Cifra. Textos **tal cual** del texto de observaciones y de los adjuntos (`ma1 (1).json`, `ma7 (1).json`, `bancos_opcionales (1).py`). Se suma a la spec en curso `ov_backend/docs/specs/ajuste-coherencia-misiones-helena.md` como sección `## Ajuste · coherencia-ma1-ma7` (con el texto como anexo), en `ajuste/coherencia-bloque5`. Se aplica sobre ma5 ya hecho (no hay archivos en común salvo `contenido.py`, en entradas distintas).
+
+## Qué cambia (hoy → pasará a)
+
+### F8 · contenido
+- Front:
+  - `plataforma/ma1.json` y `ma7.json` se reemplazan por los adjuntos (ma1: 4 nodos, ubicación «Nevado, taller de la cartógrafa»; ma7: 4 → 11 nodos, tres preguntas y una lámina final, subtítulo «Un solo número», ubicación «Puerto, mercado», `objetivoAprendizaje`).
+  - `plataforma/ma7_b.json`: solo `ubicacion` «Doña Cifra y las brechas» → «Puerto, plaza del mercado».
+  - `src/data/content/challenges.ts`, `desafio-cifra-brechas` (l. 375–388): `presentacionEnemigo`, `recompensa.titulo` y `recompensa.mensajeFin` (§3). Nada más del desafío.
+- Backend `datos/contenido.py` (script de un solo uso en el scratchpad, reemplazos exactos):
+  - `DESCRIPCIONES` de ma1, ma7 y ma7-b (§2.1).
+  - `PREGUNTAS_BATALLA`: las diez tuplas `ma7-b-p01..p10` (l. 502–511) se reemplazan por las doce de `PREGUNTAS_MA7_B` del adjunto (leídas con `ast.literal_eval`, escritas con `repr`). `CONFIGURACION_BATALLAS['ma7-b'] = (3, 3, 5)` no cambia.
+  - `FICHAS` F13: contenido completo de §2.3 (entre las líneas de guiones); título, resumen, tema «Mundo laboral» y audiencia iguales.
+- Ya comprobado: los nombres de la lámina («Cuánto ganan sus egresados», «Por lugar», «Jóvenes», «Adultos») están en `features/discovery/components/IngresoCarrera.tsx`. Ningún id de nodo `ma1-0x`/`ma7-0x` se usa fuera de los JSON.
+
+### Prueba que se adapta (autorizada por §4: prueba que compara el banco de ma7-b)
+- `tests/integration/datos/test_conversaciones_contenido.py` fija la posición de la correcta de `ma7-b-p03` (0) y `ma7-b-p07` (3) «antes del ajuste». El banco se reemplaza entero (p03 y p07 pasan a la tercera opción), como ya pasó con b1-5 y b3-5 en ajustes anteriores, donde esas entradas se sacaron. Se sacan también estas dos y, para no dejar la prueba vacía, `test_las_batallas_tocadas…` pasa a comprobar el banco nuevo con los valores del texto: doce preguntas `ma7-b-p01..p12`, todas de F13, cuatro opciones, explicación, y la correcta tres veces en cada posición. Se anota en `decisiones.md`.
+- `test_ninguna_cifra_vieja…` ya cubre F13 y el banco (no contienen «85 %» ni «75,7»).
+
+### Docs
+- `decisiones.md`: las de §6 y la adaptación de la prueba.
+- `contenidos-actividades.md`: «Pendientes»: quitar `ma1` de «Textos que no siguen los criterios» (ya no dice «Leí tu punto de origen») y la batalla ma7-b de «Por revisar con el mismo patrón» si ya no aplica; sumar a «Datos que envejecen» la Encuesta de Demanda Ocupacional 2026 y el INEI abril 2025–marzo 2026 en F13, ma7 y ma7-b; «Por confirmar en la fuente»: cifras de la encuesta leídas en la nota del MTPE y en prensa. «Continuidad»: Nadia escribió una carta a la niña que fue (calza con b1-2); nadie en la historia lee lo que el viajero escribe.
+
+## Qué no cambia
+Títulos, duraciones, reglas (`R-ma1`, `R-ma7`, `R-ma7-b`, `R-d-nino`), lo que abre cada actividad, la cantidad de fichas, la pregunta del diario «Carta al niño que fui», `b3_3.json`, el banco de b3-5, el resto del desafío. El conjunto `ruta`.
+
+## Pruebas y verificación
+- `verificar_contenido_front.py`; re-exportar fixtures; impacto: `tests/integration/datos`, `escenarios`, `batallas`, `fichas`; front `tests/local/actividades`, `tests/servidor/actividades`, `tests/servidor/batallas`, `tests/servidor/registro`. Commit `Ajuste coherencia-ma1-ma7 · F8: …`.
+- Búsquedas: «MINEDU» y «Horna» en `ma1.json`; «revancha» y «registro» en `ma7.json`; «Puno» en F13: ninguna.
+- F9 · cierre: suites completas; navegador con `contenido` (backend aparte en 8010 sobre base temporal; avanzar hasta b3-4 adecuado): ma1 colgada de b1-1 (diálogos, elección con dos reacciones, cierre; la carta queda en el diario), ma7 colgada de b3-4 (tres preguntas con retroalimentación y explicación, lámina con tabla también a 375 px; al cerrar se abre ma7-b), ma7-b con el banco nuevo y los textos nuevos de presentación y final, F13 en la mochila (lista de cinco, párrafo nuevo, enlaces), «Anterior» en ma1 y ma7 de inicio a fin y de fin a inicio. Decisiones y docs; borrar lo provisional. Commit.
+
+La spec queda en curso.
+
+## Preguntas abiertas
+Ninguna.
+
+---
+
+### Anexo · texto de observaciones de coherencia-ma1-ma7
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-registros-ma.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026).
+
+## Qué es
+
+Reescritura de dos informativas opcionales, `ma1` (con Nadia, cuelga de `b1-1`) y `ma7` (con Doña Cifra, cuelga de `b3-4`), del banco de preguntas de la batalla opcional `ma7-b` y dos agregados a la ficha F13. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento:
+
+- Dos JSON finales: `ma1.json` y `ma7.json`.
+- `bancos_opcionales.py`: el banco de la batalla `ma7-b`, en el formato de `PREGUNTAS_BATALLA`.
+
+La ficha F13 va completa en la sección 2.3.
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`).
+
+## 1. JSON de las actividades
+
+**Hoy:** `ov_frontend/src/data/activities/contenidos/plataforma/ma1.json` y `ma7.json`.
+**Pasará a:** cada uno se reemplaza, completo, por el archivo del mismo nombre de esta carpeta.
+
+| Actividad | Nodos (hoy → queda) | Lo que conviene saber |
+|---|---|---|
+| ma1 Carta al niño que fui | 4 → 4 | Solo diálogos y una elección. Cambia `ubicacion` («Una carta privada» → «Nevado, taller de la cartógrafa»). Título y subtítulo no cambian |
+| ma7 Más allá del promedio | 4 → 11 | **Tres preguntas de opción única, que hace Lumi, y una lámina después de las preguntas** (`ma7-09`), sin presentador: lleva `etiqueta`, una tabla de tres columnas y tres filas, un destacado y la fuente con `url`. Cambian `subtitulo` («Doña Cifra y las regiones» → «Un solo número») y `ubicacion` (→ «Puerto, mercado»). Se suma `objetivoAprendizaje` |
+
+Además:
+
+- En las tres preguntas de `ma7`, las opciones tienen un largo parecido y la correcta varía de posición (segunda, primera, tercera). Los textos van tal cual.
+- Los nombres entre comillas de la lámina son los de la pantalla de ingresos del catálogo (`IngresoCarrera.tsx`): «Cuánto ganan sus egresados», «Por lugar», «Jóvenes» y «Adultos». Si alguno no coincide con lo que se ve, avisar antes de cambiar el texto.
+- Las cifras de la lámina son las de F13 (Geología, Obstetricia y el 84,8 % del INEI), que no cambian.
+- Los identificadores de nodo cambian. Comprobar con una búsqueda que ninguno se use fuera de estos archivos.
+- `requisitos`, `mapa` (con `origen` y `adicional`), `personajeIds`, `duracionEstimadaMin`, `escenario`, `bloque` y `orden` no cambian.
+
+### `ma7_b.json`
+
+No se reemplaza. Solo cambia un campo:
+
+| Campo | Hoy | Queda |
+|---|---|---|
+| `ubicacion` | «Doña Cifra y las brechas» (repite el subtítulo) | «Puerto, plaza del mercado» (como el desafío) |
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+### 2.1 Descripciones cortas (`DESCRIPCIONES`)
+
+| Actividad | Hoy | Queda |
+|---|---|---|
+| ma1 | «Nadia te propone escribirle una carta al niño o la niña que fuiste.» | «Nadia cuenta la carta que le escribió a la niña que fue, y te propone escribir la tuya en el diario.» |
+| ma7 | «Doña Cifra muestra lo que nunca muestra: los números por región, edad y formalidad.» | «Doña Cifra trae un solo promedio. Léelo por partes: de dónde es, de qué edad y de quiénes.» |
+| ma7-b | «La revancha con las brechas.» | «Doña Cifra dice lo que significan sus números. Corrígela con lo que ya sabes leer.» |
+
+Títulos, duraciones y reglas (`R-ma1`, `R-ma7`, `R-ma7-b`, `R-d-nino`) no cambian.
+
+### 2.2 Banco de la batalla ma7-b (`PREGUNTAS_BATALLA`)
+
+El banco está en `bancos_opcionales.py` (`PREGUNTAS_MA7_B`), en el mismo formato de tuplas del archivo. Reemplaza, completas, las preguntas de hoy:
+
+| Batalla | Hoy | Queda | Ficha |
+|---|---|---|---|
+| ma7-b | 10 (`ma7-b-p01` a `p10`) | 12 (`ma7-b-p01` a `p12`) | Las doce con F13 |
+
+- `CONFIGURACION_BATALLAS` de ma7-b, `(3, 3, 5)`, no cambia.
+- En cada pregunta las cuatro opciones tienen la misma forma y un largo parecido, y la correcta cae tres veces en cada posición. Los textos van tal cual.
+- Cuatro preguntas (6, 7, 9 y 10) se responden con los agregados a F13 de la sección 2.3: el banco y la ficha entran juntos.
+- Ninguna repite una pregunta de b3-3 ni del banco de b3-5, que también usa F13.
+- Si alguna prueba cuenta las preguntas de ma7-b (10), pasa a 12.
+- `bancos_opcionales.py` es solo el material para copiar: no se agrega al código ni se importa.
+
+### 2.3 Ficha F13 (`FICHAS`)
+
+El título, el resumen, el tema y el destinatario no cambian. **No se quita nada de lo que la ficha dice hoy**, así que `b3-3` y el banco de `b3-5` siguen valiendo. Cambian tres partes:
+
+| Parte | Qué cambia |
+|---|---|
+| «Las carreras "más demandadas"» | Dice a qué empresas se les pregunta, cuántos puestos anunciaron para 2026, que casi cuatro de cada cinco son temporales y en qué regiones se concentran (antes, «Puno no es Piura», sin dato). La lista pasa de cuatro puntos a cinco, y se suma que los negocios de menos de 20 trabajadores no entran |
+| «El empleo sin planilla» | Un párrafo nuevo: la informalidad según el nivel de estudios (37,6 % con educación universitaria; 94,7 % con primaria o menos) |
+| Fuentes | La Encuesta de Demanda Ocupacional se cita con su edición (puestos previstos para 2026) y con la nota del MTPE |
+
+Todo lo de demanda sale de una sola edición de la encuesta del MTPE, la misma que alimenta la lista de Mi Carrera a la que manda la ficha.
+
+**Contenido:** se reemplaza completo por este texto (entre las dos líneas de guiones, sin incluirlas):
+
+----------
+
+Los números del mercado laboral sirven si sabes de quién son y de qué año. Mal leídos, un promedio puede hacerte elegir una carrera por un sueldo que gana una minoría.
+
+### Cómo se lee un salario
+
+- **Promedio, mínimo y máximo van juntos.** El promedio es el centro de mucha gente distinta. El mínimo y el máximo dejan fuera los extremos: uno de cada diez gana menos que el mínimo y uno de cada diez, más que el máximo.
+- **Jóvenes y adultos.** «Jóvenes» son egresados recientes, de 18 a 29 años; «adultos», personas con más experiencia. La diferencia entre los dos muestra cuánto suele crecer el ingreso: en Geología, de S/ 4 200 a S/ 10 800; en Obstetricia, de S/ 4 500 a S/ 5 300.
+- **Por familia, no por carrera.** El dato es de la familia de carreras y del tipo de institución, no de una carrera exacta.
+- **Por departamento.** Una misma familia paga distinto en Arequipa o en Loreto; el catálogo lo muestra por lugar.
+- **Solo empleo en planilla.** Son sueldos de quienes trabajan para un empleador, antes de los descuentos de ley, y ganan al menos el sueldo mínimo. Quien trabaja sin contrato o por su cuenta no está contado.
+
+### Qué familias pagan más al inicio
+
+Ingreso promedio mensual de egresados jóvenes con empleo en planilla, en todo el país, con los mismos datos del catálogo:
+
+| Universidades | S/ | Institutos y escuelas | S/ |
+| --- | --- | --- | --- |
+| Medicina | 7 030 | Minería, metalurgia y petróleo | 6 804 |
+| Odontología | 4 732 | Ingeniería eléctrica | 3 757 |
+| Obstetricia | 4 480 | Hidrografía | 3 641 |
+| Ingeniería de sistemas y cómputo | 4 320 | Suboficiales de las Fuerzas Armadas | 3 561 |
+| Ingeniería de telecomunicaciones | 4 227 | Ingeniería industrial | 3 551 |
+
+Estas son la excepción. La mitad de las familias universitarias está por debajo de S/ 3 100, y la mitad de las de institutos, por debajo de S/ 2 600. Y el sueldo no dice nada de lo que cuesta llegar: Medicina paga más, pero dura siete años.
+
+### Universidad e instituto: lo que dicen los datos
+
+- La familia de instituto mejor pagada (minería, metalurgia y petróleo) supera al inicio a casi todas las universitarias.
+- En la mayoría de las familias que se estudian en los dos tipos de institución (18 de 22), la universitaria paga más al inicio.
+
+Las dos cosas son ciertas a la vez. Ni «el instituto es la opción B» ni «da lo mismo»: depende de la familia. Míralo en el catálogo para la que te interesa.
+
+### Las carreras «más demandadas»
+
+Cada año, el Ministerio de Trabajo les pregunta a las empresas privadas formales de 20 o más trabajadores cuánta gente piensan contratar y de qué carreras. De ahí salen las listas de carreras más demandadas, que puedes ver en Mi Carrera. Para 2026, las empresas anunciaron cerca de 425 mil puestos nuevos. Al leer la lista:
+
+1. Muy pedida no es empleo seguro. Administración está entre las primeras casi todos los años, y también es la carrera universitaria con más estudiantes: hay muchos puestos y muchísima gente que los busca.
+2. Casi cuatro de cada cinco puestos anunciados para 2026 son temporales o por temporada.
+3. La lista cambia de un año a otro. La de hoy no es la de cuando egreses.
+4. Cambia por región: casi ocho de cada diez puestos de 2026 están en cinco regiones (Lima Metropolitana, Ica, Lambayeque, Piura y La Libertad).
+5. Pedida no es bien pagada.
+
+Los negocios con menos de 20 trabajadores no entran en la encuesta. El catálogo de la plataforma no incluye la demanda.
+
+### El empleo sin planilla
+
+En el Perú, el 69,8 % de las personas que trabajaban tenía un empleo informal entre abril de 2025 y marzo de 2026; entre quienes tenían de 14 a 24 años, el 84,8 % (INEI). Un empleo es informal cuando no da seguridad social; suele venir sin contrato, sin pensión y sin vacaciones pagadas.
+
+Estudiar baja ese riesgo, pero no lo elimina: en el mismo periodo, de quienes tenían educación universitaria, el 37,6 % trabajaba en la informalidad; de quienes tenían primaria o menos, el 94,7 %.
+
+Para tu decisión importa por una razón: los sueldos que ves en el catálogo son de quienes consiguieron empleo en planilla. No todos los egresados lo consiguen, ni lo consiguen pronto.
+
+Otro dato para tener en cuenta: menos de la mitad de los egresados trabaja en algo vinculado a lo que estudió, el 44 % de los técnicos y el 38,4 % de los universitarios (Minedu y UNESCO, 2026).
+
+> Un salario promedio es un dato de otras personas. Sirve para ubicarte, no para saber cuánto vas a ganar tú.
+
+**Para tu viaje.** En el detalle de cada carrera, «Cuánto ganan sus egresados» muestra los ingresos de su familia por lugar y por institución. Usa el dato de jóvenes para pensar tus primeros años y el de adultos para más adelante.
+
+**Fuentes:** Catálogo de la plataforma, con datos de Ponte en Carrera (MTPE y Minedu), consultados en 2026; [nota técnica de Ponte en Carrera sobre mínimos y máximos](https://ponteencarrera.minedu.gob.pe/pec-portal-web/assets/archivos/cuanto-ganan-tecnicos.pdf). MTPE, Encuesta de Demanda Ocupacional con los puestos previstos para 2026, en [Mi Carrera](https://micarrera.trabajo.gob.pe/) y en la [nota del MTPE (2026)](https://www.gob.pe/institucion/mtpe/noticias/1309892-peru-generaria-mas-de-425-mil-nuevas-oportunidades-laborales-en-2026). [Sunedu, en Gestión (2023), las carreras con más estudiantes](https://gestion.pe/peru/sunedu-educacion-al-futuro-universidades-que-estudian-los-peruanos-la-12-carreras-con-mayor-poblacion-profesionales-peruanos-noticia/). [INEI (2026), Comportamiento de los indicadores de mercado laboral a nivel nacional, abril 2025–marzo 2026](https://www.inei.gob.pe/media/MenuRecursivo/boletines/empleo-nacional-i-trimestre-2026.pdf). Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú, en [Andina](https://andina.pe/agencia/noticia-peru-tecnicos-superan-a-universitarios-trabajos-afines-a-sus-estudios-revela-unesco-1080082.aspx).
+
+----------
+
+En el archivo va como una sola cadena, con `\n` y con las comillas escapadas como en las demás fichas.
+
+## 3. Desafío de Doña Cifra (`ov_frontend/src/data/content/challenges.ts`, `desafio-cifra-brechas`)
+
+| Campo | Hoy | Queda |
+|---|---|---|
+| `presentacionEnemigo` | «Doña Cifra saca los números que nunca muestra: por región, por edad y por formalidad. Cada brecha que leas bien es un promedio que deja de engañar. Corta y opcional.» | «Doña Cifra trae más números a la plaza y dice lo que significan, a su manera. Cada vez que la corrijas con lo que ya sabes leer, un promedio deja de engañar. Corta y opcional.» |
+| `recompensa.titulo` | «Las brechas, leídas» | «Los números, leídos» |
+| `recompensa.mensajeFin` | «Un promedio nacional es cuatro promedios mezclados. Léelo por partes.» | «Un promedio se lee por partes: de dónde es, de qué edad y de quiénes.» |
+
+Lo demás del desafío no cambia.
+
+## 4. Pruebas y lo que no cambia
+
+- Si alguna prueba o fixture compara las descripciones, la cantidad de nodos de `ma1` o `ma7`, o la cantidad de preguntas de `ma7-b`, se actualiza con los valores de este documento.
+- Si alguna prueba o fixture compara el texto de F13, se actualiza con el de la sección 2.3.
+- No cambian las reglas, lo que abre cada actividad, la cantidad de fichas ni la pregunta del diario «Carta al niño que fui». Tampoco `b3_3.json` ni el banco de `b3-5`. El conjunto `ruta` y sus pruebas no se tocan.
+
+## 5. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar «MINEDU» y «Horna» en `ma1.json`, y «revancha» y «registro» en `ma7.json`: no aparecen. Buscar «Puno» en F13: no aparece.
+- En el navegador, con el conjunto `contenido`:
+  - **ma1:** con el registro de `b1-1` adecuado, aparece colgada de `b1-1`. Los dos diálogos de Nadia, la elección con sus dos reacciones y el cierre de Lumi. Al cerrar, la carta «Carta al niño que fui» está en el diario.
+  - **ma7:** con el registro de `b3-4` adecuado, aparece colgada de `b3-4`. Las tres preguntas con pista y explicación, y la lámina con su tabla, también en pantalla angosta. Al cerrar se abre `ma7-b`.
+  - **ma7-b:** las preguntas salen del banco nuevo, con cuatro opciones y su explicación. La presentación de Doña Cifra y el mensaje final muestran los textos nuevos.
+  - **Ficha F13:** en la mochila, «Las carreras "más demandadas"» muestra la lista de cinco puntos y «El empleo sin planilla» el párrafo nuevo; los enlaces de las fuentes abren.
+  - **«Anterior»:** recorrer `ma1` y `ma7` de inicio a fin y de fin a inicio.
+
+## 6. Decisiones ya tomadas (para `decisiones.md`)
+
+- `ma1`: Nadia ya no dice «Leí tu punto de origen» (nadie en la historia lee lo que el viajero escribe). Cuenta la carta que le escribió a la niña que fue, que calza con lo que contó en b1-2. Sale la cita de la fuente en boca de Lumi y la opción «¿Y quién la lee?», que repetía b0-2.
+- `ma7` es práctica, no repaso de b3-3: Doña Cifra trae un solo promedio y tres personas que lo usaron mal. El estudiante corrige cada caso (el lugar, la edad, quiénes están contados) y la lámina dice dónde mirar cada cosa en el catálogo.
+- En `ma7`, Doña Cifra afirma y Lumi pregunta; la lámina va después de las preguntas y no la presenta Lumi.
+- Salen de `ma7` «tu registro del mercado estuvo bien hecho», «la revancha de verdad… te quedas con el puesto» y «cuatro promedios mezclados».
+- El banco de `ma7-b` se rehízo con F13: Doña Cifra afirma y el estudiante corrige. No repite las preguntas de b3-3, del banco de b3-5 ni los casos de `ma7`.
+- F13 suma solo datos verificables y útiles para el estudiante: a quién se le pregunta por la demanda, cuántos puestos son temporales, dónde se concentran y la informalidad según el nivel de estudios. Todo lo de demanda sale de una sola edición de la encuesta del MTPE (puestos previstos para 2026), la que muestra Mi Carrera.
+- Se dejó fuera de F13 lo que no se pudo confirmar o no aportaba: cuántos puestos suma la carrera más pedida, los ingresos del INEI por nivel de estudios y las listas regionales de 2023.
+- La plataforma no tiene la demanda: la ficha lo dice y ninguna pregunta manda a buscarla en el catálogo.
+- Las cifras de la encuesta se leyeron en la nota del MTPE y en prensa; el informe completo no se pudo abrir.
