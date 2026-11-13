@@ -106,7 +106,12 @@ Decididos por el usuario en los ajustes de coherencia de los bloques 0 a 4; vale
 - Familia se nombra en los diálogos de b1-3 sin explicar el módulo ni la carta.
 - Rosa dice quién guarda las preguntas de cada página: Dora (b2-1), Bruno (b2-2) y Sol (b2-5).
 - Alejandra calza con su carta de b0-5: lo que le gustaba existe como trabajo, se lo dijo a sus papás y esta vez averiguó antes. La familia no queda como culpable.
-- Helena sigue haciéndose la que no sabe dónde está el pergamino; hace los libros preguntando y escuchando, y no sabe estar quieta (b4-1).
+- Helena sigue haciéndose la que no sabe dónde está el pergamino; hace los libros preguntando y escuchando, y no sabe estar quieta (b4-1). En la sala de la luz admite que sabía y que calló (b5-4), y da su razón: vio a muchos subir derecho al faro el primer día, leer la frase sin que les dijera nada y bajar creyendo que la isla los había engañado (b5-5).
+- El guardián se despide en la puerta de la sala de la luz, donde la aguja deja de apuntar a la luz y señala la puerta, como dijo en b1-7 (b5-4).
+- El pergamino trae una sola frase: «Quien llega hasta mí ya trae lo que vino a buscar.» En la plataforma es la ficha F24, que se entrega al completar b5-5; no lleva secciones, «Para tu viaje» ni fuentes.
+- Teresa, la vigía, llegó a ayudar al vigía anterior por un invierno y se quedó; cuenta qué tan segura estaba cuando le ofrecieron el faro (b5-1) y qué le hizo cambiar de idea sobre el trabajo (b5-3).
+- En el faro, Lumi solo insinúa su historia: no cuenta cómo llegó a la isla ni anuncia que la deja; su historia queda para el diario. Iván nunca llegó al faro y no le hizo falta.
+- El bloque 5 no nombra el informe de viaje, que todavía no existe.
 - El Eco no tiene voz propia: repite lo que los viajeros trajeron de casa (b4-4) y, en ma8, las cinco objeciones del ítem con sus mismas palabras.
 - Los testimonios se nombran por su título («Cocinar a escondidas»); la historia de la persona queda en el testimonio.
 
