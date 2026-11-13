@@ -23,65 +23,71 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Falta un capítulo del libro, el último. Y me acabo de dar cuenta de que sé cómo se abre: con las mismas preguntas que te hizo Helena en la cabaña, el primer día. Las recuerdo todas."
+      "texto": "La escalera. En el primer descanso hay una hoja sujeta con una piedra. Es la letra de Helena. Son las preguntas de la cabaña. Las mismas."
     },
     {
       "id": "b5-2-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "¿Crees que esté aquí por algo? Yo no lo sé. Pero ya que están… ¿qué tal si vemos qué responderías ahora, comparado con el primer día?"
+    },
+    {
+      "id": "b5-2-03",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le dices a Lumi?",
       "registrar": false,
       "opciones": [
         {
-          "id": "b5-2-02a",
-          "texto": "¿Las mismas? ¿Para qué repetirlas?",
+          "id": "b5-2-03a",
+          "texto": "¿Para qué responderlas otra vez?",
           "reaccion": [
             {
-              "id": "b5-2-02ar",
+              "id": "b5-2-03ar",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Para ponerlas al lado. Tu punto de partida y tu punto de llegada, con el mismo instrumento. Es la única forma de ver cuánto caminaste."
+              "texto": "No sé para qué las dejó. A mí me da curiosidad: las preguntas no cambiaron; puede que tú sí."
             }
           ]
         },
         {
-          "id": "b5-2-02b",
-          "texto": "¿Y si respondo distinto?",
+          "id": "b5-2-03b",
+          "texto": "¿Y si las respondo igual que antes?",
           "reaccion": [
             {
-              "id": "b5-2-02br",
+              "id": "b5-2-03br",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Ojalá. Y si en algo respondes igual, también es información: dice qué quedó por trabajar."
+              "texto": "También vale. Hay cosas que ya tenías claras al bajar del barco."
             }
           ]
         }
       ]
     },
     {
-      "id": "b5-2-03",
+      "id": "b5-2-04",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Marca cuánto te describe cada frase hoy: bastante, regular, poco o nada. Como la primera vez: sin apuro y sin respuestas correctas."
+      "texto": "Son frases sobre cómo ves hoy tu futuro. Marca qué tan de acuerdo estás con cada una, de «Nada de acuerdo» a «Muy de acuerdo». Sin apuro: no hay respuestas correctas."
     },
     {
-      "id": "b5-2-04",
+      "id": "b5-2-05",
       "tipo": "item",
       "instrumentoId": "TEST-PARTIDA-LLEGADA",
       "itemId": "plantilla",
       "hablanteId": "companero",
-      "etiqueta": "Marca cuánto te describe hoy:"
+      "etiqueta": "¿Qué tan de acuerdo estás hoy?"
     },
     {
-      "id": "b5-2-05",
+      "id": "b5-2-06",
       "tipo": "dialogo",
       "hablanteId": "companero",
+      "nuevoMomento": true,
       "expresion": "animado",
-      "texto": "Listo. El último capítulo ya se puede abrir en el libro de Helena: ahí vas a ver tu partida y tu llegada lado a lado, en palabras, y cuántas actividades de cada zona completaste. Subamos al faro.",
-      "nuevoMomento": true
+      "texto": "Listo. Espera… mira tu libro. La primera página, la de cómo llegaste, tiene un sello otra vez. Rómpelo cuando quieras ver qué hay."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu punto de llegada quedó registrado. Revélalo junto al de partida en el libro de Helena."
+    "mensajeFin": "Tu punto de llegada quedó guardado en el libro de Helena, junto al de partida. Rompe su sello cuando quieras verlos."
   },
   "mapa": {
     "x": 240,

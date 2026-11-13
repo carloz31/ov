@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b5-1",
   "codigo": "b5-1",
   "tipo": "registro",
@@ -13,7 +12,7 @@
     "b4-5"
   ],
   "ubicacion": "Faro, la casa de la vigía",
-  "duracionEstimadaMin": 12,
+  "duracionEstimadaMin": 8,
   "personajeIds": [
     "vigia",
     "companero"
@@ -26,43 +25,43 @@
       "id": "b5-1-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "El faro. Se ve desde el nevado, ¿te acuerdas? Ahora estamos debajo. En la casa de la base vive Teresa, la vigía: la que enciende la luz cada noche para los que todavía están en el mar.",
-      "expresion": "animado"
+      "expresion": "animado",
+      "texto": "El faro. La aguja no se despegó de esa luz desde el acantilado. La vimos desde el nevado, ¿te acuerdas? Ahora la tenemos encima. En la casa de la base está Teresa, la vigía: la enciende cada noche."
     },
     {
       "id": "b5-1-02",
       "tipo": "dialogo",
       "hablanteId": "vigia",
-      "texto": "Llegaron. Casi nadie llega. Antes de que suban, una cosa que les digo a todos: lo que van a escribir hoy no es una promesa ni una sentencia. Es la ruta que eligen, por ahora. Yo enciendo esta luz cada noche porque los barcos cambian de rumbo; nadie navega en línea recta.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Lumi. Hasta aquí no habías llegado con nadie. Pasen. Estaba limpiando el lente: de noche hay barcos que dependen de esta luz."
     },
     {
       "id": "b5-1-03",
       "tipo": "eleccion",
-      "enunciado": "¿Qué le respondes?",
+      "enunciado": "¿Qué le preguntas?",
       "registrar": false,
       "opciones": [
         {
           "id": "b5-1-03a",
-          "texto": "¿Y si me equivoco?",
+          "texto": "¿Y si un barco se equivoca de rumbo?",
           "reaccion": [
             {
               "id": "b5-1-03ar",
               "tipo": "dialogo",
               "hablanteId": "vigia",
-              "texto": "Vas a saber más de tu carrera cuando la estudies que ahora; el mercado cambia; tú cambias. Una decisión vocacional es provisional y revisable. Tener un plan B no es falta de compromiso: es poder corregir."
+              "texto": "Pasa todas las noches. Ven la luz, corrigen y llegan. Les cuesta unas horas."
             }
           ]
         },
         {
           "id": "b5-1-03b",
-          "texto": "¿Qué pasa después de decidir?",
+          "texto": "¿Y si un barco no logra entrar al puerto?",
           "reaccion": [
             {
               "id": "b5-1-03br",
               "tipo": "dialogo",
               "hablanteId": "vigia",
-              "texto": "Meses de preparación, admisión y ajustes. Conviene saber desde hoy cómo se ven. Mira."
+              "texto": "Espera la marea, o busca otro muelle. En el puerto hay más de uno."
             }
           ]
         }
@@ -70,106 +69,123 @@
     },
     {
       "id": "b5-1-04",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "texto": "Con quienes suben hasta aquí pasa parecido. Llegan creyendo que elegir un rumbo es no poder tocarlo más. Yo misma no vine a quedarme."
+    },
+    {
+      "id": "b5-1-05",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
       "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "vigia",
-      "titulo": "Lo que suele pasar en los meses siguientes",
-      "bloques": [
+      "texto": "Vine a ayudar al vigía viejo por un invierno, y me quedé otro. Cuando él se fue y me ofrecieron el faro, me pregunté qué tan segura estaba. Más o menos."
+    },
+    {
+      "id": "b5-1-06",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "texto": "Me daba seguridad que ya había pasado dos inviernos aquí: conocía el mecanismo. Me la quitaba que nunca había estado sola una noche de tormenta."
+    },
+    {
+      "id": "b5-1-07",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Cuál de estas frases dice qué le daba seguridad a Teresa?",
+      "opciones": [
         {
-          "tipo": "tabla",
-          "columnas": [
-            "Mes",
-            "Qué pasa",
-            "Qué conviene"
-          ],
-          "filas": [
-            [
-              "Ahora",
-              "Terminar el colegio con el mejor promedio posible",
-              "Algunas modalidades de admisión y Beca 18 lo miran"
-            ],
-            [
-              "Verano",
-              "Preparación: academia, CEPRE o estudio por tu cuenta",
-              "Averiguar temario y calendario en la página oficial"
-            ],
-            [
-              "Marzo a abril",
-              "Primeros exámenes de admisión y convocatorias de becas",
-              "Tener los documentos listos y un plan B"
-            ],
-            [
-              "Agosto",
-              "Segunda vuelta de admisión en muchas instituciones",
-              "Si no ingresaste, volver a postular con lo aprendido"
-            ],
-            [
-              "Todo el año",
-              "Mantener la opción en revisión",
-              "Hablar con gente de la carrera, revisar el presupuesto"
-            ]
-          ]
+          "id": "a",
+          "texto": "«Me siento segura, nomás.»",
+          "correcta": false,
+          "retroalimentacion": "No nombra nada: ni qué hizo, ni qué tiene, ni quién la apoya."
         },
         {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, estación 5 y actividad 17. Pronabec, Beca 18. Leyes 30220 y 30512 (traslados y convalidación)."
+          "id": "b",
+          "texto": "«Ya pasé dos inviernos aquí.»",
+          "correcta": true,
+          "retroalimentacion": "Eso: algo que ya había hecho."
+        },
+        {
+          "id": "c",
+          "texto": "«Voy a esforzarme mucho.»",
+          "correcta": false,
+          "retroalimentacion": "Dice lo que hará, no lo que hoy le da o le quita seguridad."
+        }
+      ],
+      "explicacion": "Lo que da o quita seguridad tiene nombre: algo que ya hiciste o averiguaste, algo que todavía no sabes, una persona, la plata, el examen. Con nombrar una cosa alcanza.",
+      "pistas": [
+        {
+          "id": "b5-1-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca la frase que nombra algo que Teresa ya había hecho."
         }
       ]
     },
     {
-      "id": "b5-1-05",
+      "id": "b5-1-08",
       "tipo": "diapositiva",
       "presentadorId": "vigia",
-      "titulo": "Y si no ingreso",
+      "titulo": "Cuánta seguridad, y de qué",
       "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "No ingresar a la primera es lo más común en las universidades públicas más demandadas, y le pasa a mucha gente que luego termina la carrera. Lo que marca la diferencia es qué haces con ese año."
-        },
         {
           "tipo": "pasos",
           "pasos": [
             {
-              "titulo": "Postular de nuevo",
-              "texto": "Con una preparación más larga. La mayoría de postulantes a públicas lo hace."
+              "titulo": "Lo que ya hiciste pesa más",
+              "texto": "Haber averiguado, probado o conversado da más seguridad que proponérselo."
             },
             {
-              "titulo": "Otra modalidad o institución",
-              "texto": "Donde sí ingresas, y evaluar luego un traslado."
+              "titulo": "Lo que te la quita suele tener nombre",
+              "texto": "El examen, la plata, lo que dirán en casa. Con nombre, se puede averiguar o preparar."
             },
             {
-              "titulo": "Empezar por la ruta técnica",
-              "texto": "Y continuar en la universidad convalidando."
-            },
-            {
-              "titulo": "Un año de transición con sentido",
-              "texto": "Trabajar, un idioma, un curso corto, la entrevista que no hiciste. Lo que no sirve es un año sin estructura."
+              "titulo": "Poca seguridad no es mal plan",
+              "texto": "Y mucha no es plan resuelto. Las dos dicen qué mirar ahora."
             }
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Elegir es el primer paso de un camino, no el último. Lo que hagas en los próximos seis meses pesa más que la elección misma. Un proyecto sin pasos es un deseo: tres acciones con plazo."
+          "texto": "Elegir un rumbo no cierra nada: se corrige con lo que vas sabiendo."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Bandura (1997), Self-efficacy: The exercise of control."
         }
       ]
     },
     {
-      "id": "b5-1-06",
+      "id": "b5-1-09",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora y es el corazón de tu informe de viaje. Te voy a recordar tu opción inicial, tu orden de la mesa, tus valores y lo que dijiste que harías si un dato no te favorece.",
-      "eco": "b5-1-ref-planes"
+      "hablanteId": "vigia",
+      "texto": "Ahora tú. Aquí está lo que traes armado."
     },
     {
       "id": "b5-1-seguridad",
       "tipo": "consigna",
       "hablanteId": "vigia",
       "item": "b5-1-seguridad"
+    },
+    {
+      "id": "b5-1-10",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "nuevoMomento": true,
+      "texto": "Yo ya pasé muchas noches de tormenta, y siguen sin gustarme. Si algo te quita seguridad, míralo de cerca: suele decirte qué averiguar."
+    },
+    {
+      "id": "b5-1-11",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo que viene después de elegir, y qué hacer si no se ingresa a la primera, te lo dejé en la mochila: «Después de decidir»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu ruta, por ahora, con pasos y plazos. Lumi te invita a actualizar tu línea de tiempo del desierto. Se abrió la conversación «Ayúdame como lo necesito»."
+    "mensajeFin": "Tu proyecto es lo que hoy tienes delante, y se corrige con lo que vas sabiendo. Sigue en «Mis planes»."
   },
   "mapa": {
     "x": 400,

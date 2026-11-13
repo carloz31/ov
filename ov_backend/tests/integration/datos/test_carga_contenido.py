@@ -66,9 +66,10 @@ def test_misiones_de_helena_partidas(base):
 def test_fichas_con_temas_y_sin_la_carta_anunciada(base):
     _, sesion = base
     fichas = {f.codigo: f for f in sesion.scalars(select(m.Ficha))}
-    assert len(fichas) == 31
+    assert len(fichas) == 32
     assert fichas['F20'].tema == 'Mis opciones' and fichas['FP03'].tema == 'Acompañar a mi hijo'
     assert fichas['FP01'].audiencia == m.Audiencia.APODERADO and fichas['F23'].audiencia == m.Audiencia.ESTUDIANTE
+    assert fichas['F24'].audiencia == m.Audiencia.ESTUDIANTE
     assert 'carta para usted' not in fichas['FP08'].contenido
     assert all('####' not in f.contenido and not f.contenido.startswith('#') for f in fichas.values())
 

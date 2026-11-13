@@ -8,96 +8,111 @@
   "bloque": 5,
   "orden": 4,
   "obligatoria": true,
-  "requisitos": ["b5-3"],
+  "requisitos": [
+    "b5-3"
+  ],
   "ubicacion": "Faro, la escalera y la sala de la luz",
   "duracionEstimadaMin": 6,
-  "personajeIds": ["helena", "companero"],
-  "objetivoAprendizaje": "Al terminar, el estudiante llega al pergamino con el recorrido completo detrás, y la pregunta de qué va a encontrar queda abierta.",
+  "personajeIds": [
+    "helena",
+    "guardian",
+    "companero"
+  ],
+  "objetivoAprendizaje": "Al terminar, el estudiante llega al pergamino con el recorrido completo detrás: la aguja lo señala, el guardián se despide y Helena admite que sabía dónde estaba. El pergamino queda cerrado.",
   "nodos": [
     {
       "id": "b5-4-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Última escalera. Desde abajo se escucha el mecanismo de la luz girando. Yo he pasado por este faro cien veces y nunca subí: no tenía con qué."
+      "texto": "Última escalera. Se oye el mecanismo de la luz girando. Hasta el balcón subí alguna vez. Esta puerta nunca la abrí."
     },
     {
       "id": "b5-4-02",
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Antes de abrir la puerta, mira hacia atrás un segundo. El muelle y el capitán. El árbol de las voces. Helena en la cabaña. Mara, Nico, Nadia en el nevado. Iván y el artefacto. Aurelio y su puente. Rosa y la brigada. Dora, Bruno, Sol. El puerto: Ulises, Doña Cifra, el Feriante, Clotilde, Alejandra. El acantilado y el Eco. Teresa, abajo, con la luz encendida."
+      "texto": "Mira la aguja: ya no apunta a la luz. Apunta a la puerta. Y hay alguien delante."
     },
     {
       "id": "b5-4-03",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "expresion": "neutral",
+      "texto": "Te dije que, cuando llegara el momento, iba a señalarlo. Está detrás de esta puerta. Yo llego hasta aquí: lo cuidé para que llegara a quien supiera qué hacer con él."
+    },
+    {
+      "id": "b5-4-04",
       "tipo": "eleccion",
       "registrar": false,
       "enunciado": "¿Qué sientes antes de abrir la puerta?",
-      "nota": "No se guarda.",
       "opciones": [
         {
-          "id": "b5-4-03a",
+          "id": "b5-4-04a",
           "texto": "Nervios. Esto es lo que vine a buscar.",
           "reaccion": [
             {
-              "id": "b5-4-03ar",
+              "id": "b5-4-04ar",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Yo también. Aunque creo que ya no es exactamente lo mismo que viniste a buscar."
+              "texto": "Yo también. Y eso que no es mío."
             }
           ]
         },
         {
-          "id": "b5-4-03b",
+          "id": "b5-4-04b",
           "texto": "Curiosidad. Quiero ver qué dice.",
           "reaccion": [
             {
-              "id": "b5-4-03br",
+              "id": "b5-4-04br",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Curiosidad es la mejor forma de abrir una puerta. Nadia lo diría mejor que yo."
+              "texto": "Yo también. Llevo mucho tiempo preguntándomelo."
             }
           ]
         },
         {
-          "id": "b5-4-03c",
-          "texto": "Calma. Ya no estoy seguro de que exista una respuesta ahí adentro.",
+          "id": "b5-4-04c",
+          "texto": "Calma. Ya no espero que me lo resuelva todo.",
           "reaccion": [
             {
-              "id": "b5-4-03cr",
+              "id": "b5-4-04cr",
               "tipo": "dialogo",
               "hablanteId": "companero",
-              "texto": "Esa es, creo, la forma correcta de llegar hasta aquí."
+              "texto": "Entonces llegas con más de lo que traías en el muelle."
             }
           ]
         }
       ]
     },
     {
-      "id": "b5-4-04",
-      "nuevoMomento": true,
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "La sala de la luz. El mecanismo gira sobre nosotros. Y en el centro, sobre un atril de madera, un pergamino enrollado, sellado, con tu nombre escrito en la cinta. Es él. Después de todo este camino… es él."
-    },
-    {
       "id": "b5-4-05",
       "tipo": "dialogo",
-      "hablanteId": "helena",
-      "expresion": "neutral",
-      "texto": "Llegaste. Sí: siempre estuvo aquí, y sí, yo lo sabía desde el primer día en la cabaña. No me preguntes todavía por qué no te lo dije. Primero descansa un momento. Lo abrimos juntos cuando estés listo."
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "expresion": "animado",
+      "texto": "La sala de la luz. El mecanismo gira sobre nosotros. Y en el centro, sobre un atril de madera, un pergamino enrollado, atado con una cinta."
     },
     {
       "id": "b5-4-06",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "pensativo",
-      "texto": "Está aquí. Toma aire. Cuando quieras, lo abrimos."
+      "hablanteId": "helena",
+      "expresion": "neutral",
+      "texto": "Llegaste. Sí, estaba aquí. Y sí, yo lo sabía cuando me preguntaste por él en la cabaña, y en el mirador también. Me lo callé."
+    },
+    {
+      "id": "b5-4-07",
+      "tipo": "dialogo",
+      "hablanteId": "helena",
+      "texto": "Ya te voy a decir por qué. Antes siéntate un momento: subiste muchas escaleras."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El pergamino está frente a ti, sellado, con tu nombre. Falta abrirlo."
+    "mensajeFin": "El pergamino está frente a ti, cerrado, sobre el atril."
   },
-  "mapa": { "x": 150, "y": 230, "icono": "informativa" }
+  "mapa": {
+    "x": 150,
+    "y": 230,
+    "icono": "informativa"
+  }
 }

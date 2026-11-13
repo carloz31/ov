@@ -229,7 +229,7 @@
       "id": "vigia",
       "nombre": "Teresa, la vigía",
       "rol": "npc",
-      "descripcion": "Enciende la luz del faro cada noche para los que todavía están en el mar. Sabe que nadie navega en línea recta. Serena; habla de la decisión como ruta provisional.",
+      "descripcion": "Enciende la luz del faro cada noche para los que todavía están en el mar. Llegó a ayudar al vigía anterior por un invierno y se quedó. Ve a los barcos corregir el rumbo toda la noche. Serena, de pocas palabras.",
       "ubicacion": "Faro, la casa de la base",
       "avatarUrl": "/images/personajes/vigia.png",
       "expresiones": {

@@ -84,7 +84,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 
 | Conjunto | Para qué |
 |---|---|
-| `contenido` (`datos/contenido.py` + `datos/fijos.py`) | El contenido real de la plataforma: el que se despliega y con el que se hace la prueba manual. Actividades del estudiante (B0–B5, ciudad, misiones adicionales) y del apoderado, las 31 fichas, las batallas y sus reglas definitivas. Lo que aún no tiene contenido real se toma de `ruta` y se lista en `PROVISIONALES` (qué, de dónde, qué ajuste lo reemplaza); ninguna regla de `contenido` nombra una actividad `t-` del camino. |
+| `contenido` (`datos/contenido.py` + `datos/fijos.py`) | El contenido real de la plataforma: el que se despliega y con el que se hace la prueba manual. Actividades del estudiante (B0–B5, ciudad, misiones adicionales) y del apoderado, las 32 fichas, las batallas y sus reglas definitivas. Lo que aún no tiene contenido real se toma de `ruta` y se lista en `PROVISIONALES` (qué, de dónde, qué ajuste lo reemplaza); ninguna regla de `contenido` nombra una actividad `t-` del camino. |
 | `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Banco de pruebas de mecánicas, congelado: lo justo para demostrar cada mecánica (`docs/plan-iteraciones.md`, «Ruta mínima de prueba»). Todo lo de `ruta.py` es `DATO DE PRUEBA`; las pruebas existentes corren contra él. `fijos.py` se carga en todo conjunto. |
 
 - `ruta.py` y `contenido.py` son datos puros con la misma forma; el cargador común (`datos/cargador.py`) los interpreta, y una tupla que un conjunto no declara es vacía. `CONJUNTOS` (`datos/cargar.py`) los registra.

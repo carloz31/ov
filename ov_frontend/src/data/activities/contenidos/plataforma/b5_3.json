@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "b5-3",
   "codigo": "b5-3",
   "tipo": "registro",
@@ -13,8 +12,9 @@
     "b5-2"
   ],
   "ubicacion": "Faro, el balcón",
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 5,
   "personajeIds": [
+    "vigia",
     "companero"
   ],
   "plantilla": {
@@ -25,24 +25,82 @@
       "id": "b5-3-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Desde el balcón del faro se ve todo: el muelle donde bajaste, el bosque, la cabaña, el nevado, la ciudad, el desierto, el volcán, el puerto, el acantilado. Cuando llegaste tenías una idea, o no tenías ninguna. Me acuerdo.",
-      "expresion": "pensativo"
+      "expresion": "pensativo",
+      "texto": "El balcón del faro. Desde aquí se ve todo: el muelle donde bajaste, la cabaña, el nevado, la ciudad, el desierto, el volcán, el puerto, el acantilado."
     },
     {
       "id": "b5-3-02",
       "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "expresion": "neutral",
+      "texto": "A esta hora subo a revisar la luz. ¿Mirando por dónde vinieron? Yo también lo hago. Cuando llegué pensaba que cuidar un faro era aburrido: prender una luz y sentarse a esperar."
+    },
+    {
+      "id": "b5-3-03",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "texto": "Cambié de idea la primera semana. Ayudando al vigía viejo vi todo lo que se hace: limpiar el lente, anotar cada barco que pasa, avisar al puerto cuando viene la niebla."
+    },
+    {
+      "id": "b5-3-04",
+      "tipo": "pregunta",
       "hablanteId": "companero",
-      "texto": "Dos preguntas, nada más. Esto lo lee tu orientadora y cierra tu informe."
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué hizo que Teresa dejara de pensar que el trabajo era aburrido?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Que hoy le gusta mucho su trabajo.",
+          "correcta": false,
+          "retroalimentacion": "Eso es lo que piensa hoy, no lo que la hizo cambiar."
+        },
+        {
+          "id": "b",
+          "texto": "Que con el tiempo cambió de opinión.",
+          "correcta": false,
+          "retroalimentacion": "Dice que cambió, pero no qué la hizo cambiar."
+        },
+        {
+          "id": "c",
+          "texto": "Que vio de cerca todo lo que se hace.",
+          "correcta": true,
+          "retroalimentacion": "Eso: algo que vio."
+        }
+      ],
+      "explicacion": "Para ver un cambio no alcanza con decir qué piensas hoy. Sirve nombrar qué viste, qué supiste o qué te pasó. Y si algo sigue igual, también vale decir qué te lo confirmó.",
+      "pistas": [
+        {
+          "id": "b5-3-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Busca la frase que cuenta algo que Teresa vio."
+        }
+      ]
+    },
+    {
+      "id": "b5-3-05",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "texto": "Ahora tú. Desde aquí se ve mejor."
     },
     {
       "id": "b5-3-cambio",
       "tipo": "consigna",
-      "hablanteId": "companero",
+      "hablanteId": "vigia",
       "item": "b5-3-cambio"
+    },
+    {
+      "id": "b5-3-06",
+      "tipo": "dialogo",
+      "hablanteId": "vigia",
+      "nuevoMomento": true,
+      "texto": "Hay cosas que cambian y cosas que no. Las dos se ven mejor desde arriba. Los dejo: la luz no se revisa sola."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El camino visto desde la llegada. Falta subir al faro."
+    "mensajeFin": "Miraste el camino desde la llegada: lo que cambió, lo que sigue igual y qué te hizo verlo así."
   },
   "mapa": {
     "x": 210,
