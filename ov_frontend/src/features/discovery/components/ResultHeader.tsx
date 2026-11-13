@@ -6,12 +6,10 @@ import type { HelenaPage, TipoResultadoHelena } from '@/types/profile'
 export function ResultHeader({
   page,
   tipo,
-  soloPartida = false,
   encuadre,
 }: {
   page: HelenaPage & { etiquetaDemo: string }
   tipo: TipoResultadoHelena
-  soloPartida?: boolean
   // Ajuste resultados-intereses (api): la línea de encuadre del instrumento reemplaza la de Helena.
   encuadre?: string
 }) {
@@ -27,15 +25,12 @@ export function ResultHeader({
       <h1>{page.title}</h1>
       {encuadre ? (
         <p className="sx-r-encuadre">{encuadre}</p>
-      ) : (
+      ) : tipo === 'COMPARACION' ? null : (
+        // Partida y llegada (solo api) no lleva frase propia: debajo va la `lectura` del instrumento.
         <p>
           {tipo === 'COINCIDENCIAS'
             ? 'Helena leyó tus respuestas y encontró los tipos de actividad que más te llaman. No es un veredicto: es una pista para explorar ocupaciones y carreras que podrías no haber considerado.'
-            : tipo === 'COMPARACION'
-              ? soloPartida
-                ? 'Helena leyó cómo te sientes al empezar el camino. Son zonas, no notas: muestran desde dónde partes. Al final volverás a responder y verás qué cambió.'
-                : 'Helena leyó cómo te sentías al empezar el camino y cómo te sientes al llegar. Son zonas, no notas: muestran dónde estás hoy y qué puedes seguir trabajando.'
-              : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
+            : 'No hay una sola forma de ser inteligente. Helena leyó tus respuestas y encontró las capacidades que más usas para aprender, crear y resolver. Todas se pueden desarrollar.'}
         </p>
       )}
       {page.demo && (

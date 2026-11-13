@@ -44,7 +44,7 @@ def test_los_casos_se_abren_con_la_ciudad(cliente_contenido):
     antes = casos(cliente)
     assert list(antes) == list(CASOS) and {c['estado'] for c in antes.values()} == {'BLOQUEADA'}
     assert [(c['puntaje_minimo'], c['puntaje_maximo']) for c in antes.values()] == [
-        (6, 8), (8, 10), (6, 8), (6, 8), (6, 8), (8, 10)]
+        (5, 8), (7, 10), (5, 8), (5, 8), (5, 8), (7, 10)]
     # La regla de cada caso pide lo mismo que la del bloque; mientras la ciudad está cerrada, el motor responde con
     # el mensaje del bloque.
     bloqueo = resolver(cliente, 6, [], esperado=409)
@@ -58,10 +58,10 @@ def test_los_casos_se_abren_con_la_ciudad(cliente_contenido):
 def test_superar_c1_abre_sus_dos_voces_y_solo_esas(cliente_contenido):
     cliente = cliente_contenido
     llegar_a_la_ciudad(cliente)
-    fallido = resolver(cliente, 5, [ARQUEOLOGO])
+    fallido = resolver(cliente, 4, [ARQUEOLOGO])
     assert fallido['nuevos_desbloqueos'] == [] and fallido['ocupaciones_nuevas'] == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/coleccion') == []
-    superado = resolver(cliente, 6, [ARQUEOLOGO, CONSERVADOR])
+    superado = resolver(cliente, 5, [ARQUEOLOGO, CONSERVADOR])
     assert {d['regla'] for d in superado['nuevos_desbloqueos']} == {'R-tc1-1', 'R-tc1-2'}
     assert [(o['ocupacion'], o['caso']) for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == [
         (ARQUEOLOGO, 'c1'), (CONSERVADOR, 'c1')]

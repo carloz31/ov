@@ -59,10 +59,10 @@ test('solo partida: la vista pide ítems y respuestas y muestra un banderín y �
   )
   const marcado = vista(app)
   assert.match(marcado, /Página I · descifrada · Cómo te sientes frente a tu futuro/)
-  assert.match(
-    marcado,
-    /Helena leyó cómo te sientes al empezar el camino\. Son zonas, no notas: muestran desde dónde partes\./,
-  )
+  // Bajo el título solo va la `lectura` del instrumento, sin la frase de Helena del front.
+  assert.doesNotMatch(marcado, /Helena leyó/)
+  assert.match(marcado, /<h1>[^<]*<\/h1><\/header>/)
+  assert.match(marcado, /class="sx-d-result-lectura">Cada dimensión te muestra/)
   assert.match(marcado, /Tu punto de partida.*Así empiezas el camino\./)
   assert.match(marcado, /<li>1 fuerte<\/li><li>1 en camino<\/li><li>3 por trabajar<\/li>/)
   assert.match(marcado, /<strong>Tu punto de llegada<\/strong> Se revela al final del camino\./)
@@ -99,7 +99,8 @@ test('completo: contadores, dos banderines, ítems cambiados primero y los igual
   const app = preparar()
   libroServidor(app, AMBAS(), { comparacion: jsonServidor('ruta/ruta-comparacion-partida-llegada') })
   const marcado = vista(app)
-  assert.match(marcado, /muestran dónde estás hoy y qué puedes seguir trabajando\./)
+  assert.doesNotMatch(marcado, /Helena leyó/)
+  assert.match(marcado, /class="sx-d-result-lectura">Cada dimensión te muestra/)
   assert.match(marcado, /Tu recorrido.*Avanzaste de zona en 2 de las 5 partes de tu camino\./)
   assert.match(marcado, /<li>2 avanzaron<\/li><li>3 se mantuvieron o cambiaron<\/li>/)
   assert.match(marcado, /Lo que más cambió fue <strong>Conocimiento de mí y Conocimiento de las opciones<\/strong>/)

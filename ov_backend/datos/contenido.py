@@ -136,13 +136,14 @@ ACTIVIDADES = (
     ('p7', 'FAMILIA', 'Cuando mi hijo duda o cambia de opinión', 'INFORMATIVA', None, 8),
     ('p8', 'FAMILIA', 'Mi carta para mi hijo', 'INFORMATIVA', None, 8),
     # Ajuste carga-casos: los seis casos de la Central, al final de la ciudad. Cada uno juega el JSON de
-    # ov_frontend/src/data/cases/plataforma/ que nombra su contenido (`caso`).
-    ('c1', 'CIUDAD', 'La plaza que esconde otra historia', 'CASO', 6, 15),
-    ('c2', 'CIUDAD', 'Las becas que nadie puede explicar', 'CASO', 8, 18),
-    ('c3', 'CIUDAD', 'La cosecha contra el reloj', 'CASO', 6, 15),
-    ('c4', 'CIUDAD', 'El festival de las mil voces', 'CASO', 6, 15),
-    ('c5', 'CIUDAD', 'El torneo de los equipos imposibles', 'CASO', 6, 15),
-    ('c6', 'CIUDAD', 'La laguna que amaneció en silencio', 'CASO', 8, 18),
+    # ov_frontend/src/data/cases/plataforma/ que nombra su contenido (`caso`). El mínimo para superarlo es el
+    # máximo (CONFIGURACION_CASOS) menos 3.
+    ('c1', 'CIUDAD', 'La plaza que esconde otra historia', 'CASO', 5, 15),
+    ('c2', 'CIUDAD', 'Las becas que nadie puede explicar', 'CASO', 7, 18),
+    ('c3', 'CIUDAD', 'La cosecha contra el reloj', 'CASO', 5, 15),
+    ('c4', 'CIUDAD', 'El festival de las mil voces', 'CASO', 5, 15),
+    ('c5', 'CIUDAD', 'El torneo de los equipos imposibles', 'CASO', 5, 15),
+    ('c6', 'CIUDAD', 'La laguna que amaneció en silencio', 'CASO', 7, 18),
     *(a for a in ruta.ACTIVIDADES if a[0] in _DE_RUTA),
 )
 

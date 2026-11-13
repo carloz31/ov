@@ -100,7 +100,7 @@ def test_referencias_de_los_json(base):
 
 
 # Ajuste carga-casos: los seis casos de la Central, con su escala y temática C, al final de la ciudad.
-CASOS = {'c1': (6, 8, 15), 'c2': (8, 10, 18), 'c3': (6, 8, 15), 'c4': (6, 8, 15), 'c5': (6, 8, 15), 'c6': (8, 10, 18)}
+CASOS = {'c1': (5, 8, 15), 'c2': (7, 10, 18), 'c3': (5, 8, 15), 'c4': (5, 8, 15), 'c5': (5, 8, 15), 'c6': (7, 10, 18)}
 
 
 def test_casos_de_la_central(base):
