@@ -104,9 +104,10 @@ PESO_BASE_DIMENSION = 0.5
 
 N_SIN_REPETIR_DIARIA = 11
 
-# Amistad con el asistente: escrituras que cuentan por día y puntos para alcanzar cada nivel (provisionales).
+# Amistad con el asistente: escrituras que cuentan por día y puntos para alcanzar cada nivel. Desde el ajuste
+# coherencia-lumi, un nivel por carta: la historia de Lumi (cinco recuerdos) se abre en dos días.
 TOPE_ENTRADAS_AMISTAD_DIA = 3
-UMBRALES_AMISTAD = (1, 5, 12, 25, 45)
+UMBRALES_AMISTAD = (1, 2, 3, 4, 5)
 
 # B17 · Acceso.
 DURACION_TOKEN_HORAS = 24

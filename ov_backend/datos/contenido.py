@@ -12,7 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as m
-from app.core.parametros import ITEMS_PIEZAS
+from app.core.parametros import ITEMS_PIEZAS, UMBRALES_AMISTAD
 
 from datos import cargador, ruta, tarjetas_registros
 from datos.fijos import validar_distribucion_items
@@ -25,7 +25,6 @@ PROVISIONALES = (
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
 
-    ('Recuerdos de Lumi t-lumi-1..5 y sus reglas por amistad', 'ruta.ACTIVIDADES, PROPIEDADES, REGLAS', 'contenido de Lumi'),
     ('Insignias, grupos, textos, pistas y evaluadores de vistas', 'ruta.INSIGNIAS, GRUPOS_INSIGNIA, PAGINAS_INSIGNIAS, TEXTOS_INSIGNIAS, PISTAS_INSIGNIAS, REGLAS, EVALUADORES_REGLAS, TEXTOS_CONDICIONES', 'ajuste de logros'),
     ('Niveles y citas de Lumi', 'ruta.NIVELES, CITAS_LUMI', 'ajuste de logros'),
 )
@@ -51,9 +50,6 @@ BLOQUES = (
     ('LUMI', 8, 'La historia de Lumi', 'LUMI', 'ESTUDIANTE'),
     ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'),
 )
-
-# PROVISIONAL: actividades que se toman de `ruta` (recuerdos de Lumi).
-_DE_RUTA = ruta.RECUERDOS_LUMI
 
 # (código, bloque, título, tipo, puntaje mínimo de un CASO, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
@@ -144,8 +140,14 @@ ACTIVIDADES = (
     ('c4', 'CIUDAD', 'El festival de las mil voces', 'CASO', 5, 15),
     ('c5', 'CIUDAD', 'El torneo de los equipos imposibles', 'CASO', 5, 15),
     ('c6', 'CIUDAD', 'La laguna que amaneció en silencio', 'CASO', 7, 18),
-    *(a for a in ruta.ACTIVIDADES if a[0] in _DE_RUTA),
+    # Ajuste coherencia-lumi: la historia de Lumi, un recuerdo por nivel de amistad.
+    ('lumi-1', 'LUMI', 'De dónde vengo', 'INFORMATIVA', None, 3),
+    ('lumi-2', 'LUMI', 'Lo que escribí en el tronco', 'INFORMATIVA', None, 3),
+    ('lumi-3', 'LUMI', 'Un poco de todo', 'INFORMATIVA', None, 3),
+    ('lumi-4', 'LUMI', 'Hasta la mitad', 'INFORMATIVA', None, 3),
+    ('lumi-5', 'LUMI', 'Lo que elijo yo', 'INFORMATIVA', None, 3),
 )
+RECUERDOS_LUMI = tuple(codigo for codigo, bloque, *_ in ACTIVIDADES if bloque == 'LUMI')
 
 # Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE). Una opcional nunca es requisito de una
 # requerida; las de AL_DESBLOQUEAR aparecen en el mapa al desbloquearse.
@@ -189,7 +191,7 @@ PROPIEDADES = {
     'c4': {'requerida': False},
     'c5': {'requerida': False},
     'c6': {'requerida': False},
-    **{c: ruta.PROPIEDADES[c] for c in ruta.RECUERDOS_LUMI},
+    **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI},
 }
 
 # Texto de presentación de cada actividad (`descripcion`).
@@ -1147,6 +1149,15 @@ CITAS_LUMI = ruta.CITAS_LUMI
 
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición: (evento, referencia,
 # conteo, mínimo). Principios en `docs/sistema/motor.md` («Reglas del contenido»).
+# Ajuste coherencia-lumi: lo que dice cada recuerdo de Lumi mientras está cerrado, en el orden de RECUERDOS_LUMI.
+MENSAJES_RECUERDOS_LUMI = (
+    'Escríbele tu primera carta a Lumi para que te cuente de dónde viene.',
+    'Escríbele 2 cartas a Lumi para que te cuente el siguiente recuerdo.',
+    'Escríbele 3 cartas a Lumi para que te cuente el siguiente recuerdo.',
+    'Escríbele 4 cartas a Lumi para que te cuente el siguiente recuerdo.',
+    'Escríbele 5 cartas a Lumi para que te cuente el último recuerdo.',
+)
+
 REGLAS = (
     # Camino: cada tramo se abre con la última requerida del anterior (COMPLETA_BLOQUE); dentro, cadena lineal. B0 y b0-1 están abiertos desde el inicio.
     ('R-b0-2', 'ACTIVIDAD', 'b0-2', 'Primero conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
@@ -1326,8 +1337,10 @@ REGLAS = (
     ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
     ('R-NIV-2', 'NIVEL', 2, 'Termina el primer tramo para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
     ('R-NIV-3', 'NIVEL', 3, 'Termina el primer tramo y mira tres carreras para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 3))),
-    # PROVISIONAL: recuerdos de Lumi por amistad e insignias de vistas, tal cual en `ruta`.
-    *(r for r in ruta.REGLAS if r[2] in ruta.RECUERDOS_LUMI),
+    # Ajuste coherencia-lumi: el recuerdo n se abre al llegar al nivel n de amistad (mismo umbral y mismo conteo).
+    *((f'R-{codigo}', 'ACTIVIDAD', codigo, mensaje, (('ESCRIBE_ENTRADA_DIARIO', None, 'EVENTOS_TOPE_DIARIO', umbral),))
+      for codigo, umbral, mensaje in zip(RECUERDOS_LUMI, UMBRALES_AMISTAD, MENSAJES_RECUERDOS_LUMI, strict=True)),
+    # PROVISIONAL: insignias de vistas, tal cual en `ruta`.
     *(r for r in ruta.REGLAS if r[1] == 'INSIGNIA' and r[2] != 't-ins-1'),
 )
 

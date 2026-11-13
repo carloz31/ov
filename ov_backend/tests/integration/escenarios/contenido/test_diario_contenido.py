@@ -1,6 +1,6 @@
 """Ajuste cartas-diario: las cartas del diario de `contenido` en el recorrido, sin LLM."""
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import select
 
@@ -9,7 +9,7 @@ from app.core.contexto import usar_contexto
 from app.services.diario.cartas import armar_carta
 from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
 from soporte_contenido import avanzar, completar
-from soporte_ruta import eleccion_minima, item_de, leer_registro, pedir, responder_item, terminar
+from soporte_ruta import FECHA, eleccion_minima, item_de, leer_registro, pedir, responder_item, terminar
 from datos import contenido
 
 
@@ -146,3 +146,33 @@ def test_la_pregunta_del_dia_no_repite_en_doce_dias(cliente_contenido):
     preguntas = [e['pregunta'] for e in entradas if e['origen'] == 'RECOMENDACION_DIA']
     pool = {p[2] for p in contenido.PREGUNTAS_DIARIO if p[3] == 'DIARIA'}
     assert len(preguntas) == 12 and set(preguntas) == pool
+
+
+# Ajuste coherencia-lumi: todos los niveles de amistad se alcanzan escribiendo, en dos días.
+def test_los_cinco_recuerdos_de_lumi_se_abren_con_cinco_cartas_en_dos_dias(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b0-2')
+
+    def escribir(fecha):
+        return pedir(cliente, 'POST', '/acciones/escribir-entrada',
+                     {'cuenta': 'est-ana', 'fecha_hora': fecha, 'texto': 'DATO DE PRUEBA'})
+
+    def abiertos(respuesta):
+        return [d['objetivo']['codigo'] for d in respuesta['nuevos_desbloqueos'] if d['tipo_objetivo'] == 'ACTIVIDAD']
+
+    def amistad():
+        return pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')
+
+    hoy = datetime.fromisoformat(FECHA)
+    manana = (hoy + timedelta(days=1)).isoformat()
+    assert [abiertos(escribir(hoy.isoformat())) for _ in range(3)] == [['lumi-1'], ['lumi-2'], ['lumi-3']]
+    assert amistad()['nivel'] == 3
+    assert abiertos(escribir(hoy.isoformat())) == []
+    assert [abiertos(escribir(manana)) for _ in range(2)] == [['lumi-4'], ['lumi-5']]
+    assert amistad() == {'puntos': 5, 'nivel': 5, 'siguiente_en': None}
+    [lumi] = [b for b in pedir(cliente, 'GET', '/cuentas/est-ana/actividades') if b['codigo'] == 'LUMI']
+    assert [a['codigo'] for a in lumi['actividades']] == list(contenido.RECUERDOS_LUMI)
+    resumen = pedir(cliente, 'GET', '/cuentas/est-ana/resumen')
+    for codigo in contenido.RECUERDOS_LUMI:
+        assert completar(cliente, codigo)['nuevos_desbloqueos'] == []
+    assert pedir(cliente, 'GET', '/cuentas/est-ana/resumen') == resumen

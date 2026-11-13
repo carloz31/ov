@@ -46,14 +46,17 @@ def test_el_conteo_tiene_el_tope_diario_de_la_amistad(cliente):
     completar(cliente, 't-inicio')
     for _ in range(TOPE_ENTRADAS_AMISTAD_DIA + 2):
         escribir(cliente)
+    # Ajuste coherencia-lumi: con los umbrales 1–5, el primero que supera el tope diario es el 4.º.
+    primero_tras_el_tope = next(i for i, umbral in enumerate(UMBRALES_AMISTAD) if umbral > TOPE_ENTRADAS_AMISTAD_DIA)
+    recuerdo = RECUERDOS_LUMI[primero_tras_el_tope]
     _, actividades = recuerdos(cliente)
-    assert actividades['t-lumi-2']['bloqueo'][0]['condiciones_faltantes'][0]['actual'] == TOPE_ENTRADAS_AMISTAD_DIA
+    assert actividades[recuerdo]['bloqueo'][0]['condiciones_faltantes'][0]['actual'] == TOPE_ENTRADAS_AMISTAD_DIA
     assert pedir(cliente, 'GET', '/cuentas/est-ana/diario/amistad')['puntos'] == TOPE_ENTRADAS_AMISTAD_DIA
     otro_dia = (datetime.fromisoformat(FECHA) + timedelta(days=1)).isoformat()
-    faltan = UMBRALES_AMISTAD[1] - TOPE_ENTRADAS_AMISTAD_DIA
+    faltan = UMBRALES_AMISTAD[primero_tras_el_tope] - TOPE_ENTRADAS_AMISTAD_DIA
     for indice in range(faltan):
         respuesta = escribir(cliente, otro_dia)
-    assert [d['objetivo']['codigo'] for d in respuesta['nuevos_desbloqueos']] == ['t-lumi-2']
+    assert [d['objetivo']['codigo'] for d in respuesta['nuevos_desbloqueos']] == [recuerdo]
 
 
 def test_ver_un_recuerdo_no_cuenta_en_avances_ni_desbloquea_nada(cliente):

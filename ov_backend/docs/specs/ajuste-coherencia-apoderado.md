@@ -63,3 +63,48 @@ Los componentes del reproductor y `ParentChildrenSummary`/`ParentRouteSummary` s
 
 - `uv run python scripts/verificar_contenido_front.py` sin discrepancias; `uv run pytest -n auto -q`; `npm test`, `npm run build`, `npm run lint`, `npm run check:estructura` (por el subagente `pruebas`).
 - Navegador: Mis actividades con títulos/duraciones/descripciones nuevos; recorrer p1–p8 (etiquetas, tablas y comparaciones en pantalla angosta, reacciones, «Anterior»); reintento en `p1-05` (única) y `p1-08` (múltiple), hasta agotar intentos; repaso de una completada; las ocho fichas (FP04 y FP05 con título nuevo, la lista anidada de FP05); dos o tres fichas del estudiante con listas numeradas se ven igual que antes (`ResourceText` es común); cierre con «Diploma de compromiso»; Inicio con trato de usted; al completar p8 se abre Conversaciones.
+
+## Ajuste · coherencia-lumi
+
+### Contexto
+
+En `contenido`, los recuerdos de Lumi son hoy los cinco de prueba de `ruta` (`t-lumi-1`…`t-lumi-5`, «Recuerdo de prueba 2»…), con umbrales de amistad `(1, 5, 12, 25, 45)`. El texto de observaciones (`ajuste-coherencia-lumi.md`) trae la historia real en cinco JSON (`lumi_1`…`lumi_5`, textos decididos, van tal cual), baja los umbrales a 1–5 y quita el género de Lumi en el diario. Por pedido del usuario se hace en la misma rama `ajuste/coherencia-apoderado`. Como hay una spec en curso (`ov_backend/docs/specs/ajuste-coherencia-apoderado.md`), este ajuste se agrega a ella como sección `## Ajuste · coherencia-lumi`, con fases F5–F7.
+
+### Qué cambia y por qué
+
+1. **Umbrales** (`ov_backend/app/core/parametros.py:109`): hoy `UMBRALES_AMISTAD = (1, 5, 12, 25, 45)` → `(1, 2, 3, 4, 5)`. Compartido por los dos conjuntos (`ruta` también pasa a 1–5). `TOPE_ENTRADAS_AMISTAD_DIA` sigue en 3.
+2. **`ov_backend/datos/contenido.py`**:
+   - `ACTIVIDADES` (l. 147): sale `*(a for a in ruta.ACTIVIDADES if a[0] in _DE_RUTA)` y `_DE_RUTA` (l. 55–56) → entran `lumi-1`…`lumi-5` en `LUMI`, `INFORMATIVA`, 3 min, con los títulos de la tabla.
+   - `PROPIEDADES` (l. 192): sale el `**{… ruta.RECUERDOS_LUMI}` → `**{c: {'requerida': False} for c in RECUERDOS_LUMI}`, con `RECUERDOS_LUMI` local derivado del bloque `LUMI` (como en `ruta`).
+   - `REGLAS` (l. 1330): sale la línea de `ruta.RECUERDOS_LUMI` → cinco `R-lumi-n` con `zip(RECUERDOS_LUMI, UMBRALES_AMISTAD, MENSAJES, strict=True)` y los cinco mensajes de la tabla 2.1. El comentario «PROVISIONAL» de esa línea queda solo para las insignias.
+   - `PROVISIONALES` (l. 28): sale la fila de los recuerdos.
+3. **Front, contenido**: los cinco JSON se copian tal cual a `ov_frontend/src/data/activities/contenidos/plataforma/lumi_1.json`…`lumi_5.json` y se registran en `src/data/activities/contenidos.ts` (import explícito + clave `lumi_n`). `useHistoriaLumi` ya toma el bloque `LUMI` del servidor; nada del diario en api supone `t-lumi-*` (solo `capitulosLumi.ts`, modo local, que no se toca). `bloque: 8` no lo lee el front en api.
+4. **Front, sin género** (los cinco lugares de la tabla 4.2): `lib/servidor/adaptadoresDiario.ts` («Compañía de ruta»), `LumiBondPanel.tsx` y `LumiJournalPanel.tsx` («Quien te acompaña»), `JournalHome.tsx` y `data/content/guideTexts.ts` («…con Lumi…»). Además, el único otro texto con género que apareció: `features/journal/lib/lumiBond.ts:12`, nivel local «Compañeras de ruta» → «Compañía de ruta» (el texto pide corregir «igual» cualquier otro; es solo texto, sin cambiar umbrales locales). Es del modo local congelado: el usuario lo aprobó como excepción, para que Lumi no tenga género en ningún modo; se anota en `decisiones.md` y en la lista de excepciones de `ov_frontend/AGENTS.md`.
+
+### Qué no cambia
+
+- Conteo de la amistad, tope de 3 por día, que nunca baje; cómo se abre un recuerdo y «Volver al diario»; que ver un recuerdo no cuente.
+- `ruta`: sus `t_lumi_*`, sus reglas y su texto (solo cambia su umbral por el parámetro compartido). Modo local: `capitulosLumi.ts` y `lumiMemoryThresholds` `[1, 5, 10, 15, 20]`.
+- Cartas del diario, pregunta del día, conversaciones.
+
+### Modelo de datos
+
+Sin cambios.
+
+### Pruebas
+
+- **Backend, adaptadas** (autorizado por 2.2): `tests/integration/diario/test_recuerdos_lumi.py::test_el_conteo_tiene_el_tope_diario_de_la_amistad` pasa a probarlo con el 4.º umbral (`t-lumi-4`: 3 el primer día, 1 al día siguiente lo abre). Las demás que leen `UMBRALES_AMISTAD` se corren; si alguna supone un umbral alto, se ajusta y se anota.
+- **Backend, nueva** (sección 3): en `tests/integration/escenarios/contenido/test_diario_contenido.py`, con `cliente_contenido`: completar b0-1 y b0-2; tres entradas el mismo día abren `lumi-1`, `lumi-2`, `lumi-3`, cada una en su acción (`nuevos_desbloqueos`) y la amistad en nivel 3; la cuarta no abre nada; al día siguiente dos entradas abren `lumi-4` y `lumi-5`, nivel 5 y `siguiente_en` `None`; completar los cinco no abre nada ni cambia el avance. Más un caso en `test_carga_contenido.py` o `test_reglas_contenido.py` si comprueban los recuerdos de `ruta`.
+- **Fixtures del front**: `ruta` cambia (umbrales), así que se regeneran (`scripts/exportar_fixtures_front.py`). `tests/servidor/diario/servidor-historia-lumi.test.mjs` (l. 28–32, requisitos 1/5/12/25/45) se adapta a 1–5.
+- **Front**: `tests/local/actividades/contenidos.test.mjs` cuenta los contenidos registrados; se adapta con los cinco nuevos. Si alguna prueba compara los textos con género, se adapta.
+
+### Fases
+
+- **F5 · Backend:** umbrales, `contenido.py`, prueba adaptada y prueba nueva; `verificar_contenido_front.py` (fallará hasta F6 por los JSON; se corre al cerrar F6). `tests/integration/diario`, `tests/integration/datos`, `tests/integration/escenarios`. Commit `Ajuste coherencia-lumi · F5: …`.
+- **F6 · Front:** JSON y registro, textos sin género, fixtures regenerados y pruebas adaptadas. `verificar_contenido_front.py`, `npm run test:servidor`, `tests/local/actividades`, `tests/local/aventura`, `tests/servidor/diario`. Commit F6.
+- **F7 · Cierre:** decisiones (sección 7) en `decisiones.md`; `contenidos-actividades.md` (continuidad: qué es Lumi; el criterio «Lumi… su historia solo se insinúa» no se reemplaza: se le agrega «En el camino, la historia de Lumi solo se insinúa; se cuenta en los cinco recuerdos del diario, que se abren por amistad»); `integracion.md`/`motor.md` si describen los umbrales; suites completas; navegador (sección 6). Commit F7. Sin push.
+
+### Verificación
+
+- `verificar_contenido_front.py` sin discrepancias; `uv run pytest -n auto -q`; `npm test`, `build`, `lint`, `check:estructura`.
+- Navegador, conjunto `contenido` (recarga con `--vaciar` y reinicio del servidor, como en el ajuste anterior), cuenta `est-ana`: «La historia de Lumi» con cinco capítulos bloqueados y «Al llegar a 1 carta»…«5 cartas»; la primera carta abre «De dónde vengo» al volver al diario sin taparse con el cierre; recorrer los cinco ida y vuelta en 375 px; con tres cartas en un día se abren los tres primeros y la cuarta no abre «Hasta la mitad»; tarjeta de amistad con los umbrales nuevos y sin siguiente en el nivel 5 (el segundo día se simula con `fecha_hora`, que el servidor acepta en desarrollo); ningún texto del diario dice «compañera».
