@@ -23,6 +23,19 @@
 - `ma4` y `ma3` siguen el molde corto de h1 a h3. En `ma4`, Dora cuenta a quién mira para aprender a escuchar sin interrumpir (a Sol); sale el reto de siete días. En `ma3`, el guardián no cuenta nada de sí: habla de una viajera, y el cierre vale también para quien marca «Todavía nada»; salen «línea de tiempo», «partir el primer hito» y «acción, plazo, recurso».
 - Los títulos de los JSON de `ma4` y `ma3` se alinean con los del backend. Sale «Esto lo lee tu orientadora…» de los dos.
 
+## Ajuste coherencia-investigador
+
+- Premisa nueva de Anselmo: quiere armar un archivo de todos los trabajos, pidió apoyo y le dijeron «muéstranos una entrevista y vemos». Salen el techo caído, las tejas, las goteras y «la isla paga por cada entrevista». En el cierre consiguió el apoyo con esa entrevista: agradece, anima a llegar al Salón de Leyendas y enseña a contrastar una sola voz.
+- `investigador` enseña la entrevista tal como se hace en Investigaciones: escribir antes lo que se piensa, cuatro preguntas base y al menos una propia, unos quince minutos, video con permiso (antes decía 20 a 30 minutos y cinco preguntas base más dos propias). Título «Una entrevista para Anselmo», 8 min; el cierre, 5 min.
+- Lumi pregunta; las láminas van después de las preguntas y no las presenta Anselmo. Ningún personaje nombra a la orientadora: Anselmo dice «en tu colegio la destacan» y la lámina, «destacada por tu orientadora», como la pantalla. La lámina y el diálogo del cierre dicen «tres» favoritos porque `FAVORITOS_LEYENDA = 3`; si el parámetro cambia, cambian esos textos.
+- F18 se alinea con el flujo (las cuatro preguntas son, palabra por palabra, `PREGUNTAS_BASE_GUION`); los temas de la cartilla quedan como ideas para la pregunta propia y los consejos de «Durante la entrevista» son los de «Guía lista».
+- Se corrigen tres textos del front que contradecían el flujo, sin cambiar comportamiento: `TarjetaEnCurso.tsx` («cuatro preguntas base»), `PublicarEntrevista.tsx` y `CaminoLeyenda.tsx` (Anselmo espera en la Ciudad; ya no hay «misión de registro» ni «eco»).
+
+## Ajuste coherencia-ma2
+
+- El banco de `ma2` se rehízo con F05 (doce preguntas, la correcta tres veces en cada posición): Aurelio afirma con un número a medias y el estudiante lo completa. No repite las preguntas de género del banco de b1-5. Salen las que hablaban de cosas que el estudiante no tiene a la vista («código IRC», «la Central») y las opciones de relleno. F05 no se toca.
+- `ma2.json` pasa a «Desierto, el oasis» y 5 min, como el desafío y el backend; el título conserva «Batalla:», como las demás batallas.
+
 ## Ajuste coherencia-feria
 
 - `feria` enseña a planear la visita en tres momentos (antes, en la feria, esa misma noche). Ya no repite `b3-6`: salen la licencia, «dato o promesa» y las frases del Faro Dorado. Tres preguntas de Lumi y una sola lámina al final, sin presentador. Duración 6 min.
