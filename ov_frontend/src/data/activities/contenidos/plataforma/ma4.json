@@ -2,8 +2,8 @@
   "id": "ma4",
   "codigo": "ma4",
   "tipo": "registro",
-  "titulo": "El reto de la semana",
-  "subtitulo": "Dora apunta en su libreta",
+  "titulo": "Alguien que ya lo hace",
+  "subtitulo": "A quién mirar",
   "escenario": "ciudad",
   "bloque": 7,
   "orden": 33,
@@ -11,8 +11,8 @@
   "requisitos": [
     "h1"
   ],
-  "ubicacion": "Dora apunta en su libreta",
-  "duracionEstimadaMin": 6,
+  "ubicacion": "Ciudad, taberna de Dora",
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "dora",
     "companero"
@@ -22,24 +22,37 @@
       "id": "ma4-01",
       "tipo": "dialogo",
       "hablanteId": "dora",
-      "texto": "Elegiste una habilidad y una acción concreta. Eso casi nadie lo hace bien. Te propongo lo que hago con mis mozos nuevos: practícala siete días y vuelve a contarme qué pasó. Yo apunto la fecha.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "¿Otra vez tú? Así me gusta. Ya elegiste qué practicar. Yo, cuando quiero aprender algo, busco a alguien a quien le salga bien y lo miro."
     },
     {
       "id": "ma4-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora. Vuelve dentro de una semana, o cuando lo hayas hecho; no antes."
+      "hablanteId": "dora",
+      "texto": "Para lo mío, escuchar sin interrumpir, miro a Sol, la de la biblioteca. ¿Sabes qué hace? Espera. Terminas de hablar, deja pasar un momento y recién contesta. Yo ya estaría en la tercera frase."
+    },
+    {
+      "id": "ma4-03",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Ahora dime tú."
     },
     {
       "id": "ma4-modelo",
       "tipo": "consigna",
       "hablanteId": "dora",
       "item": "ma4-modelo"
+    },
+    {
+      "id": "ma4-04",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "nuevoMomento": true,
+      "texto": "Mirar a alguien no es copiarlo. Es saber cómo se ve cuando sale bien."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Una habilidad se desarrolla practicando. Siete días ya son un dato."
+    "mensajeFin": "Ya sabes cómo se ve esa habilidad cuando sale bien."
   },
   "mapa": {
     "x": 0,
@@ -50,6 +63,5 @@
   },
   "plantilla": {
     "tipo": "secuencial"
-  },
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido."
+  }
 }

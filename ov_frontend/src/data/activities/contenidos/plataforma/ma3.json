@@ -2,8 +2,8 @@
   "id": "ma3",
   "codigo": "ma3",
   "tipo": "registro",
-  "titulo": "De la meta a los pasos",
-  "subtitulo": "El guardián vuelve a hablar",
+  "titulo": "Lo que ya tengo de ese día",
+  "subtitulo": "Una pregunta más del guardián",
   "escenario": "desierto",
   "bloque": 7,
   "orden": 32,
@@ -11,8 +11,8 @@
   "requisitos": [
     "b1-7"
   ],
-  "ubicacion": "El guardián vuelve a hablar",
-  "duracionEstimadaMin": 6,
+  "ubicacion": "Desierto, las piedras del límite",
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "guardian",
     "companero"
@@ -22,24 +22,37 @@
       "id": "ma3-01",
       "tipo": "dialogo",
       "hablanteId": "guardian",
-      "texto": "Tu línea de tiempo tenía hitos de verdad, no deseos. Por eso vuelvo: un hito a un año se cumple en meses, y los meses se olvidan. Vamos a partir el primero.",
-      "expresion": "neutral"
+      "expresion": "neutral",
+      "texto": "Sigues aquí. Bien: quiero preguntarte una cosa más sobre ese día que imaginaste."
     },
     {
       "id": "ma3-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora. Es la práctica de la meta útil: acción, plazo, recurso."
+      "hablanteId": "guardian",
+      "texto": "Una viajera se imaginaba curando animales. Le pregunté qué de ese día ya hacía. «Nada», me dijo. Después se acordó: cada tarde les daba de comer a los perros de su calle."
+    },
+    {
+      "id": "ma3-03",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "texto": "Lo lejano suele tener algo pequeño que ya empezó. Mira el tuyo."
     },
     {
       "id": "ma3-hoy",
       "tipo": "consigna",
       "hablanteId": "guardian",
       "item": "ma3-hoy"
+    },
+    {
+      "id": "ma3-04",
+      "tipo": "dialogo",
+      "hablanteId": "guardian",
+      "nuevoMomento": true,
+      "texto": "Lo que ya haces es lo más firme que tienes de ese día. Y si todavía no hay nada, ya sabes por dónde probar."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un hito partido en meses deja de ser un deseo."
+    "mensajeFin": "De ese día que imaginaste, ya sabes qué parte existe hoy, o qué probar primero."
   },
   "mapa": {
     "x": 0,
@@ -50,6 +63,5 @@
   },
   "plantilla": {
     "tipo": "secuencial"
-  },
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido."
+  }
 }
