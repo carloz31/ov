@@ -23,6 +23,14 @@
 - `ma4` y `ma3` siguen el molde corto de h1 a h3. En `ma4`, Dora cuenta a quién mira para aprender a escuchar sin interrumpir (a Sol); sale el reto de siete días. En `ma3`, el guardián no cuenta nada de sí: habla de una viajera, y el cierre vale también para quien marca «Todavía nada»; salen «línea de tiempo», «partir el primer hito» y «acción, plazo, recurso».
 - Los títulos de los JSON de `ma4` y `ma3` se alinean con los del backend. Sale «Esto lo lee tu orientadora…» de los dos.
 
+## Ajuste coherencia-ma1-ma7
+
+- `ma1`: Nadia ya no dice «Leí tu punto de origen» (nadie en la historia lee lo que el viajero escribe). Cuenta la carta que le escribió a la niña que fue, que calza con b1-2. Salen la cita de la fuente en boca de Lumi y la opción «¿Y quién la lee?», que repetía b0-2.
+- `ma7` es práctica, no repaso de b3-3: Doña Cifra trae un solo promedio y tres personas que lo usaron mal; el estudiante corrige cada caso (el lugar, la edad, quiénes están contados) y la lámina dice dónde mirar cada cosa en el catálogo. Doña Cifra afirma y Lumi pregunta; la lámina va después de las preguntas y no la presenta Lumi. Salen «tu registro del mercado estuvo bien hecho», «la revancha de verdad… te quedas con el puesto» y «cuatro promedios mezclados».
+- El banco de `ma7-b` se rehízo con F13 (doce preguntas, la correcta tres veces en cada posición): Doña Cifra afirma y el estudiante corrige. No repite b3-3, el banco de b3-5 ni los casos de `ma7`. `test_conversaciones_contenido.py` fijaba la correcta de `ma7-b-p03` y `p07` del banco viejo; como el banco se reemplazó entero (igual que b1-5 y b3-5 antes), esas entradas salen y la prueba pasa a comprobar el banco nuevo con los valores del texto de observaciones (autorizado en su §4).
+- F13 suma solo datos verificables: a quién se le pregunta por la demanda, cuántos puestos de 2026 son temporales, dónde se concentran y la informalidad según el nivel de estudios, todo de una sola edición de la Encuesta de Demanda Ocupacional (la que muestra Mi Carrera). Quedan fuera lo que no se pudo confirmar o no aportaba. La plataforma no tiene la demanda: la ficha lo dice. Las cifras de la encuesta se leyeron en la nota del MTPE y en prensa.
+- El desafío de Doña Cifra cambia su presentación, el título de la recompensa («Los números, leídos») y su mensaje final; `ma7_b.json` pasa a la ubicación «Puerto, plaza del mercado». En api el cierre de una batalla no muestra ese título ni ese mensaje (ya era así; anotado en «Pendientes» de `contenidos-actividades.md`).
+
 ## Ajuste coherencia-ma5
 
 - `ma5` es práctica: un viajero dejó en el taller una lista de «profesiones del futuro» e Iván la abre con el estudiante (carrera o especialización, de qué mercado habla). Tres preguntas de Lumi y una sola lámina al final. Emprender sale de la historia de Iván en b1-3: la bomba, el molino y los faroles. Duración 6 min.
@@ -30,4 +38,4 @@
 - La plataforma no tiene pantalla de carreras del futuro: se muestran desde la ficha F23. «Cómo se llega aquí» se presenta como guía y no como lista definitiva, en la lámina y en la ficha.
 - F23 pasa al informe de 2025 del Foro Económico Mundial (39 %, ya no 44 %) y suma la diferencia entre crecer rápido y sumar más puestos. Corrige la lectura del GEM: el 5,3 % es la parte de los adultos con un negocio de más de tres años y medio. Salen «entre los países con más emprendimiento del mundo» y dos afirmaciones sin fuente («sobrevive más», «mejores probabilidades»); el negocio por necesidad se trata sin desmerecerlo. Las cifras del GEM se leyeron en notas de prensa.
 - `R-F23` dice «Revisa con Iván la lista de profesiones del futuro.». El texto de observaciones pedía revisar «las tres tablas» de F23; el contenido de F23 trae dos (la tercera es la de la lámina `ma5-09`), y las tres se revisaron.
-- No se incluyó `ajuste-coherencia-ma1-ma7.md`, que el texto de ma5 nombra como previo: el usuario decidió aplicar solo ma5.
+- `ajuste-coherencia-ma1-ma7.md`, que el texto de ma5 nombra como previo, se aplicó después de ma5 por decisión del usuario; no comparten archivos salvo `contenido.py`, en entradas distintas.
