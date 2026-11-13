@@ -58,8 +58,8 @@
     "mensajeFin": "Un resultado se pone a prueba con lo que sabes de ti. Acabas de hacerlo."
   },
   "mapa": {
-    "x": 470,
-    "y": 285,
+    "x": 370,
+    "y": 495,
     "icono": "registro",
     "origen": "h-inteligencias-5"
   }

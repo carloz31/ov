@@ -58,8 +58,8 @@
     "mensajeFin": "Elegiste una familia para mirar más de cerca. Puedes buscarla en el catálogo."
   },
   "mapa": {
-    "x": 670,
-    "y": 500,
+    "x": 548,
+    "y": 572,
     "icono": "registro",
     "origen": "h-intereses-6"
   }
