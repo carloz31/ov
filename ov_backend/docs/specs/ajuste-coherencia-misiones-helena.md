@@ -849,3 +849,177 @@ Lo demás del desafío no cambia.
 - Se dejó fuera de F13 lo que no se pudo confirmar o no aportaba: cuántos puestos suma la carrera más pedida, los ingresos del INEI por nivel de estudios y las listas regionales de 2023.
 - La plataforma no tiene la demanda: la ficha lo dice y ninguna pregunta manda a buscarla en el catálogo.
 - Las cifras de la encuesta se leyeron en la nota del MTPE y en prensa; el informe completo no se pudo abrir.
+
+---
+
+## Ajuste · coherencia-feria
+
+
+## Contexto
+
+Reescritura, decidida por el usuario, de la informativa opcional `feria` (Marina, se abre al completar b3-6) y de su ficha F22. Textos **tal cual** del texto de observaciones y del `feria.json` adjunto. Se suma a la spec en curso `ov_backend/docs/specs/ajuste-coherencia-misiones-helena.md` como sección `## Ajuste · coherencia-feria` (con el texto como anexo), en `ajuste/coherencia-bloque5`. Mismo patrón que coherencia-ma5.
+
+## Qué cambia (hoy → pasará a)
+
+### F10 · feria y F22
+- Front: `plataforma/feria.json` se reemplaza por el adjunto (8 → 11 nodos: tres preguntas de Lumi y una lámina final sin presentador; subtítulo «El plano de la plaza», 6 min, `objetivoAprendizaje` y `mensajeFin` nuevos; `mapa` igual).
+- Backend `datos/contenido.py`, con un script de reemplazos exactos en el scratchpad (como el de ma5) que toma el contenido de F22 del texto de observaciones (entre las líneas de guiones):
+  - `ACTIVIDADES` l. 121: duración de feria 8 → 6.
+  - `DESCRIPCIONES` l. 256: feria → «Marina cuelga el plano de la feria. Planea tu visita: qué preparar, qué preguntar y qué anotar al salir.»
+  - `REGLAS` l. 1257: `R-F22` «Prueba la guía de Marina.» → «Planea con Marina tu visita a la feria.» (condición igual).
+  - `FICHAS` F22: resumen y contenido nuevos; título, tema «Mis opciones» y audiencia iguales.
+- Ya comprobado: «Mis favoritos» existe en el catálogo (`CatalogoServidor.tsx`), «Página web» en el detalle de institución (`DetalleInstitucionServidor.tsx`), y «Mis dudas» dentro de «Qué tanto la conozco» en el plan. Ningún id de nodo `feria-0x` se usa fuera del JSON. Ninguna prueba compara textos de feria o F22.
+
+### Docs
+- `decisiones.md`: las de §5.
+- `contenidos-actividades.md`: «Continuidad»: Marina fue a su primera feria a los diecisiete y volvió con dos bolsas de folletos; feria ya no repite b3-6 (licencia, «dato o promesa», Faro Dorado). F22 remite a «Licenciamiento y acreditación».
+
+## Qué no cambia
+Título de feria, `R-feria`, requisitos, `mapa`, cantidad de fichas y reglas, `b3_6.json` y sus fichas, el conjunto `ruta`.
+
+## Pruebas y verificación
+- `verificar_contenido_front.py`, re-exportar fixtures, impacto (`tests/integration/datos`, `escenarios`, `fichas`; front `tests/local/actividades`, `tests/servidor/actividades`, `tests/servidor/registro`), commit `Ajuste coherencia-feria · F10: …`.
+- Búsquedas en `feria.json`: «guía», «Faro Dorado», «licenci», «promesa»: ninguna.
+- F11 · cierre: suites completas; navegador con `contenido` (backend aparte en 8010 sobre base temporal avanzada hasta b3-6): feria aparece, tres preguntas (con un error para la retroalimentación y la explicación), lámina con tabla también a 375 px, «Anterior» de inicio a fin y de fin a inicio, F22 en la mochila al cerrar (tabla, listas, cita, enlaces), y los nombres «Mis favoritos», «Página web», «Mis dudas»/«Qué tanto la conozco». Decisiones y docs; borrar lo provisional. Commit.
+
+La spec queda en curso.
+
+---
+
+### Anexo · texto de observaciones de coherencia-feria
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-ma5.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026).
+
+## Qué es
+
+Reescritura de la informativa opcional `feria` (con Marina, se abre al completar `b3-6`) y de su ficha F22. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento, el JSON final `feria.json`. La ficha F22 va completa en la sección 2.3.
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`).
+
+## 1. JSON de la actividad
+
+**Hoy:** `ov_frontend/src/data/activities/contenidos/plataforma/feria.json`.
+**Pasará a:** se reemplaza, completo, por `feria.json` de esta carpeta.
+
+| Actividad | Nodos (hoy → queda) | Lo que conviene saber |
+|---|---|---|
+| feria La feria vocacional | 8 → 11 | **Tres preguntas de opción única, que hace Lumi, y una sola lámina después de las preguntas** (`feria-09`), sin presentador: lleva `etiqueta`, una tabla de dos columnas y tres filas, un destacado y la fuente con `url`. Salen las dos láminas del inicio, la elección y la pregunta de selección múltiple. Cambian `subtitulo` («La plaza de la ciudad en día de feria» → «El plano de la plaza»), `duracionEstimadaMin` (8 → 6), `objetivoAprendizaje` y `recompensa.mensajeFin` |
+
+Además:
+
+- En las tres preguntas, las opciones tienen un largo parecido y la correcta varía de posición (segunda, tercera, primera). Los textos van tal cual.
+- La lámina nombra pantallas de la plataforma: «Mis favoritos» (catálogo) y «Mis dudas» (en el plan, dentro de «Qué tanto la conozco»). Si alguno no coincide con lo que se ve, avisar antes de cambiar el texto.
+- Los identificadores de nodo cambian. Comprobar con una búsqueda que ninguno se use fuera de este archivo.
+- `titulo`, `ubicacion`, `requisitos`, `mapa`, `personajeIds`, `escenario`, `bloque` y `orden` no cambian.
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+### 2.1 Actividad (`ACTIVIDADES` y `DESCRIPCIONES`)
+
+| Campo | Hoy | Queda |
+|---|---|---|
+| Duración de feria | 8 | 6 |
+| Descripción de feria | «Marina abre la feria de la plaza. Qué preguntar y cómo separar un dato de una promesa.» | «Marina cuelga el plano de la feria. Planea tu visita: qué preparar, qué preguntar y qué anotar al salir.» |
+
+El título y la regla `R-feria` no cambian.
+
+### 2.2 Regla de la ficha
+
+| Regla | Mensaje de hoy | Queda |
+|---|---|---|
+| `R-F22` | «Prueba la guía de Marina.» | «Planea con Marina tu visita a la feria.» |
+
+La condición no cambia.
+
+### 2.3 Ficha F22 (`FICHAS`)
+
+El título («Cómo aprovechar una feria»), el tema («Mis opciones») y el destinatario no cambian.
+
+**Resumen, hoy:** «Qué llevar a una feria o a la web de una institución, qué preguntar y cómo separar un dato de una promesa.»
+**Queda:** «Cómo planear tu visita a una feria vocacional: qué preparar antes, qué preguntar y a quién, y qué hacer con lo que averiguaste.»
+
+**Contenido:** se reemplaza completo por este texto (entre las dos líneas de guiones, sin incluirlas):
+
+----------
+
+Una feria vocacional junta en un solo lugar a muchas instituciones que quieren que estudies con ellas. Ir no alcanza: sirve si vas con un plan. Sin plan, se sale con una bolsa de folletos y las mismas dudas.
+
+### Antes de ir
+
+1. **Elige tus paradas.** Revisa tus favoritos y anota qué instituciones los dictan. Si la feria publica la lista de participantes o un plano, marca esos puestos. Lo demás es paseo.
+2. **Escribe tres preguntas.** Que sean de las que la página web no responde. Si puedes, ármalas con alguien de tu casa o con un compañero: se les ocurrirán cosas que a ti no.
+3. **Lleva lapicero y libreta.** De lo que no se apunta, al día siguiente queda poco.
+4. **Calcula el tiempo.** Con veinte puestos y una mañana no alcanza para todos. Con cuatro o cinco paradas, sí alcanza para conversar.
+
+### En la feria
+
+- **Ve primero a tus paradas.** Después, si queda tiempo, pasea.
+- **Pregunta lo que escribiste.** Quien atiende tiene un discurso listo; tus preguntas lo sacan de ahí.
+- **Busca a un estudiante de la carrera.** Muchas instituciones llevan estudiantes a su puesto. Para saber cómo es estudiar ahí, nadie responde mejor.
+- **Apunta al salir de cada puesto.** Dos líneas bastan: qué te dijeron y qué quedó sin responder.
+- **Deja un rato para un puesto que no estaba en tu lista.** A veces aparece una opción que no habías mirado.
+- **Si hay charlas u orientación gratuita, aprovéchalas.** Varias ferias las incluyen.
+
+### Preguntas que valen
+
+| Pregunta | Para qué sirve |
+| --- | --- |
+| ¿Qué curso es el que más cuesta en primer año? | Para saber cómo es estudiar la carrera, no solo qué se estudia |
+| ¿Dónde hacen prácticas los estudiantes de esta carrera? | Pide nombres de lugares, no «tenemos convenios» |
+| ¿Cuánto se paga en total por ciclo, con matrícula y otros pagos? | Las ferias suelen decir la pensión «desde»; pide el total |
+| ¿Qué becas o escalas de pensión hay, y con qué requisitos? | Si la beca exige un promedio, pregunta cuántos la mantienen |
+| ¿Cuándo es la admisión y qué modalidades tiene? | Fechas, costo de inscripción y qué se evalúa |
+| A un estudiante: ¿cómo es una semana normal?, ¿qué te sorprendió al empezar? | Lo que no sale en ningún folleto |
+
+### Esa misma noche
+
+Antes de que se mezcle todo: por cada institución que te interesó, anota qué averiguaste y qué te falta saber. Lo que falta lo buscas después en su página web, o se lo preguntas a alguien que estudie ahí.
+
+Una buena impresión no es una respuesta. Un puesto bonito o un promotor simpático no dicen nada de la carrera.
+
+### Lo que te digan, compruébalo
+
+Si en un puesto te hablan de licencia, de acreditación o de «empleo asegurado», no lo tomes como dato hasta comprobarlo fuera de la institución. Cómo hacerlo está en la ficha «Licenciamiento y acreditación».
+
+### Si no hay feria donde vives
+
+- Haz lo mismo con la página web de cada institución: tus paradas, tus tres preguntas y tus apuntes.
+- Algunas ferias son virtuales, y hay colegios que se conectan a ellas desde el aula.
+- El Pronabec organiza la feria Ruta 18 en varias regiones, gratuita y sin inscripción previa, con información de la Beca 18 y de las instituciones donde se puede usar.
+- Pregunta en tu colegio: muchas ferias se organizan para cuarto y quinto de secundaria.
+
+> A una feria se va con preguntas. Lo que cuenta es lo que anotas al salir.
+
+**Para tu viaje.** Tus paradas salen de «Mis favoritos», en el catálogo. Cada institución del catálogo tiene el enlace a su «Página web». Y lo que te quede por averiguar puede ir a «Mis dudas», en tu plan, dentro de «Qué tanto la conozco».
+
+**Fuentes:** MINEDU (2013), cartilla, actividad 11 (feria vocacional). [NACAC, College Fair Tip Sheet](https://macac.wildapricot.org/resources/Documents/SOTR%20Toolkit/P5/Early%20High%20School%20SBS5%20Activity%20-%20Campus%20Visits%20and%20College%20Fairs.pdf). [College Board (2012), College Counseling Sourcebook, «How to get the most out of a college fair»](https://secure-media.collegeboard.org/digitalServices/pdf/membership/counselor-workshops/conduct.pdf). [Pronabec, feria Ruta 18](https://www.pronabec.gob.pe/feria-ruta-18/).
+
+----------
+
+En el archivo va como una sola cadena, con `\n` y con las comillas escapadas como en las demás fichas.
+
+## 3. Pruebas y lo que no cambia
+
+- Si alguna prueba o fixture compara la descripción, la duración, la cantidad de nodos de `feria`, el mensaje de `R-F22` o el texto de F22, se actualiza con los valores de este documento.
+- Ninguna pregunta de batalla usa F22. No cambian la cantidad de fichas, las reglas ni lo que abre la actividad. `b3_6.json` y sus fichas no se tocan. El conjunto `ruta` y sus pruebas no se tocan.
+
+## 4. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar en `feria.json` «guía», «Faro Dorado», «licenci» y «promesa»: no aparecen.
+- En el navegador, con el conjunto `contenido`:
+  - **feria:** aparece al completar `b3-6`. Las tres preguntas con pista y explicación, y la lámina con su tabla, también en pantalla angosta.
+  - **Ficha:** al cerrar, F22 queda en la mochila con el texto nuevo; la tabla y los enlaces de las fuentes se ven bien.
+  - **Nombres de pantalla:** en el catálogo existe «Mis favoritos»; en el detalle de una institución, «Página web»; en un plan, «Mis dudas» dentro de «Qué tanto la conozco».
+  - **«Anterior»:** recorrer `feria` de inicio a fin y de fin a inicio.
+
+## 5. Decisiones ya tomadas (para `decisiones.md`)
+
+- `feria` enseña a planear la visita en tres momentos (antes, en la feria, esa misma noche). Ya no repite `b3-6`: salen la licencia, «dato o promesa» y las frases del Faro Dorado.
+- Marina cuenta su primera feria, a los diecisiete: volvió con dos bolsas de folletos y sin saber nada nuevo. Sale «¿Me ayudas a probar la guía antes de abrir?».
+- Lumi pregunta; la lámina va después de las preguntas y no la presenta Marina.
+- F22 se reordena en los mismos tres momentos y remite a «Licenciamiento y acreditación» en vez de repetirla. Suma qué hacer si no hay feria (página web, ferias virtuales, Ruta 18 del Pronabec).
+- Los consejos salen de la cartilla del MINEDU y de guías de orientadores (NACAC y College Board).

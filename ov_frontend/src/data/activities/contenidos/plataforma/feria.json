@@ -3,7 +3,7 @@
   "codigo": "feria",
   "tipo": "encuentro",
   "titulo": "La feria vocacional",
-  "subtitulo": "La plaza de la ciudad en día de feria",
+  "subtitulo": "El plano de la plaza",
   "escenario": "ciudad",
   "bloque": 7,
   "orden": 22,
@@ -12,242 +12,214 @@
     "b3-6"
   ],
   "ubicacion": "Ciudad, plaza",
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 6,
   "personajeIds": [
     "organizadora",
     "companero"
   ],
-  "objetivoAprendizaje": "Al terminar, el estudiante sabe qué llevar a una feria o a la web de una institución, qué tres preguntas hacer, cómo separar un dato verificable de una promesa y qué hacer con el material que recoge.",
+  "objetivoAprendizaje": "Al terminar, el estudiante sabe planear su visita a una feria vocacional: qué preparar antes, qué preguntar y a quién durante la visita, y qué hacer con lo que averiguó esa misma noche.",
   "nodos": [
     {
       "id": "feria-01",
       "tipo": "dialogo",
-      "hablanteId": "organizadora",
-      "expresion": "neutral",
-      "texto": "Soy Marina, organizo la feria de la plaza. Veinte stands, cuarenta folletos por cabeza, y la mitad de los chicos sale con una bolsa de publicidad y ninguna respuesta. Este año quiero que sea distinto. ¿Me ayudas a probar la guía antes de abrir?"
+      "hablanteId": "companero",
+      "texto": "La plaza está llena de mesas vacías y banderines sin colgar. Una señora clava un plano en un poste."
     },
     {
       "id": "feria-02",
-      "tipo": "eleccion",
-      "registrar": false,
-      "enunciado": "¿Cómo sueles ir a una feria?",
-      "nota": "No se guarda.",
-      "opciones": [
-        {
-          "id": "feria-02a",
-          "texto": "Paseo y recojo lo que me dan.",
-          "reaccion": [
-            {
-              "id": "feria-02ar",
-              "tipo": "dialogo",
-              "hablanteId": "organizadora",
-              "texto": "Como casi todos. Así se sale con una bolsa y sin respuestas. Mira la guía."
-            }
-          ]
-        },
-        {
-          "id": "feria-02b",
-          "texto": "Voy directo a las dos o tres que me interesan.",
-          "reaccion": [
-            {
-              "id": "feria-02br",
-              "tipo": "dialogo",
-              "hablanteId": "organizadora",
-              "texto": "Buen comienzo. Falta saber qué preguntar cuando llegas al stand."
-            }
-          ]
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "organizadora",
+      "texto": "Mañana es la feria. Yo fui a mi primera feria a los diecisiete: volví con dos bolsas de folletos y sin saber nada nuevo. Por eso organizo esta."
     },
     {
       "id": "feria-03",
-      "nuevoMomento": true,
-      "tipo": "diapositiva",
-      "presentadorId": "organizadora",
-      "titulo": "Antes de ir y qué preguntar",
-      "bloques": [
-        {
-          "tipo": "pasos",
-          "titulo": "Antes de ir",
-          "pasos": [
-            {
-              "titulo": "Revisa tus favoritos",
-              "texto": "Anota qué instituciones los ofrecen. Esas son tus paradas; el resto es paseo."
-            },
-            {
-              "titulo": "Verifica si están licenciadas",
-              "texto": "Para no gastar tiempo en un stand que no deberías considerar."
-            },
-            {
-              "titulo": "Lleva tres preguntas escritas",
-              "texto": "Al menos una sobre licenciamiento, costos o empleabilidad."
-            }
-          ]
-        },
-        {
-          "tipo": "tabla",
-          "columnas": [
-            "Pregunta",
-            "Lo que revela"
-          ],
-          "filas": [
-            [
-              "¿Está licenciada la institución y esta sede?",
-              "Si la respuesta es vaga, es la primera señal"
-            ],
-            [
-              "¿Cuánto cuesta el ciclo completo: matrícula, pensión y otros pagos?",
-              "Las ferias dicen la pensión «desde»; pide el total"
-            ],
-            [
-              "¿Qué escalas de pensión o becas hay y con qué requisitos?",
-              "Si la beca exige un promedio, pregunta cuántos la mantienen"
-            ],
-            [
-              "¿Dónde hacen prácticas los estudiantes de esta carrera?",
-              "Nombres concretos, no «convenios»"
-            ],
-            [
-              "¿Qué porcentaje de egresados trabaja en su campo y cuánto gana?",
-              "Si no tienen el dato, lo buscas en el catálogo"
-            ],
-            [
-              "¿Cómo es el proceso de admisión y cuándo?",
-              "Modalidad, costo de inscripción y fechas"
-            ]
-          ]
-        }
-      ]
+      "tipo": "dialogo",
+      "hablanteId": "organizadora",
+      "texto": "Mira el plano. Veinte puestos y cuatro horas. Si te paras diez minutos en cada uno, no te alcanza."
     },
     {
       "id": "feria-04",
-      "tipo": "diapositiva",
-      "presentadorId": "organizadora",
-      "titulo": "Dato o promesa",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué hace primero quien quiere aprovechar la mañana?",
+      "opciones": [
         {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Dato",
-            "texto": "Se puede verificar en una fuente que no es la institución: la Sunedu, el Minedu, el catálogo, un egresado. «Estamos licenciados por resolución N.° …», «la pensión es S/ 900 al mes en la escala 2», «las prácticas son en el hospital X»."
-          },
-          "derecha": {
-            "titulo": "Promesa",
-            "texto": "No se puede verificar. «Nuestros egresados son los más buscados», «bolsa de trabajo garantizada», «acreditación internacional», «la carrera del futuro»."
-          }
+          "id": "a",
+          "texto": "Recorre los puestos en orden, del primero al último.",
+          "correcta": false,
+          "retroalimentacion": "En orden no le alcanza la mañana, y se queda sin tiempo para los que le importan."
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Cuando escuches una promesa, pregunta: «¿dónde puedo verificarlo?». La reacción te dice más que la respuesta. Y la misma noche, por cada institución, anota tres cosas que confirmaste y una por verificar; tira el resto."
+          "id": "b",
+          "texto": "Marca antes los puestos que dictan lo que le interesa.",
+          "correcta": true,
+          "retroalimentacion": "Eso. Esas son sus paradas; lo demás es paseo."
         },
         {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, actividad 11. Sunedu, consulta de licenciamiento. Minedu, institutos licenciados.",
-          "url": "https://www.gob.pe/institucion/sunedu/tramites-y-servicios"
+          "id": "c",
+          "texto": "Empieza por el puesto que tenga la fila más larga.",
+          "correcta": false,
+          "retroalimentacion": "La fila dice cuál llama más la atención, no cuál le sirve."
+        }
+      ],
+      "explicacion": "Antes de ir se eligen las paradas: las instituciones que dictan lo que te interesa. Con eso alcanza el tiempo para preguntar.",
+      "pistas": [
+        {
+          "id": "feria-04p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Mira otra vez las cuentas de Marina: veinte puestos y cuatro horas."
         }
       ]
     },
     {
       "id": "feria-05",
-      "tipo": "pregunta",
+      "tipo": "dialogo",
       "hablanteId": "organizadora",
-      "formato": "opcion_multiple",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Frases que escuché en los stands del año pasado. ¿Cuáles son datos verificables? Marca todas las que correspondan.",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "«La pensión de esta carrera es S/ 1 200 en la escala 3; aquí está el tarifario.»",
-          "correcta": true,
-          "retroalimentacion": "Dato: un monto concreto con documento que se puede contrastar con la web oficial."
-        },
-        {
-          "id": "b",
-          "texto": "«Somos la mejor opción de la región.»",
-          "correcta": false,
-          "retroalimentacion": "Promesa: no hay dónde verificar «la mejor»."
-        },
-        {
-          "id": "c",
-          "texto": "«Nuestros estudiantes de Enfermería hacen prácticas en el Hospital Regional desde quinto ciclo.»",
-          "correcta": true,
-          "retroalimentacion": "Dato: un lugar con nombre, que un egresado o el propio hospital pueden confirmar."
-        },
-        {
-          "id": "d",
-          "texto": "«Egresas con empleo asegurado.»",
-          "correcta": false,
-          "retroalimentacion": "Promesa: nadie puede asegurar empleo; el catálogo muestra ingresos y tú verificas con egresados."
-        }
-      ],
-      "explicacion": "Un dato tiene nombre, monto o documento, y se verifica afuera. Una promesa suena bien y no se puede comprobar. Las dos primeras de cada stand suelen ser promesas; insiste hasta llegar al dato.",
-      "pistas": [
-        {
-          "id": "feria-05p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Pregúntale a cada frase «¿dónde lo verifico?». Las que tienen respuesta son datos."
-        }
-      ]
+      "nuevoMomento": true,
+      "texto": "En cada puesto hay un promotor con su discurso listo. Si le preguntas «¿qué carreras tienen?», te da el folleto. Eso ya estaba en la página web."
     },
     {
       "id": "feria-06",
       "tipo": "pregunta",
-      "hablanteId": "organizadora",
+      "hablanteId": "companero",
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un stand te dice: «Nuestra sede en tu ciudad está licenciada, por supuesto». ¿Dónde lo verificas?",
+      "enunciado": "¿Cuál de estas preguntas vale la pena hacer en el puesto?",
       "opciones": [
         {
           "id": "a",
-          "texto": "En la consulta de licenciamiento de la Sunedu (o la lista del Minedu si es instituto), revisando la sede específica.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Y la sede, no solo la institución: una puede estar licenciada en Lima y no en una filial."
+          "texto": "¿Qué carreras se pueden estudiar aquí?",
+          "correcta": false,
+          "retroalimentacion": "Eso está en el folleto y en la página web."
         },
         {
           "id": "b",
-          "texto": "Preguntándole al del stand de al lado.",
+          "texto": "¿En qué ciudad queda la sede principal?",
           "correcta": false,
-          "retroalimentacion": "El de al lado también quiere que estudies con él. La fuente tiene que ser externa y oficial."
+          "retroalimentacion": "Eso también está en la página web."
         },
         {
           "id": "c",
-          "texto": "En el folleto que te dieron.",
-          "correcta": false,
-          "retroalimentacion": "El folleto es de la propia institución. Un dato se verifica en una fuente que no sea ella."
+          "texto": "¿Qué curso es el que más cuesta en primer año?",
+          "correcta": true,
+          "retroalimentacion": "Eso no sale en ningún folleto. Y si hay un estudiante en el puesto, mejor preguntárselo a él."
         }
       ],
-      "explicacion": "Licenciamiento: Sunedu para universidades, Minedu para institutos, siempre por sede. Es la primera de las tres preguntas que conviene llevar escritas.",
+      "explicacion": "En la feria se pregunta lo que la página web no responde: cómo es estudiar ahí, dónde son las prácticas, cuánto se paga en total.",
       "pistas": [
         {
           "id": "feria-06p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "¿Te acuerdas del stand del Faro Dorado en el puerto? Mismo filtro: quién licencia a quién."
+          "texto": "Piensa cuál de las tres no vas a encontrar en un folleto."
         }
       ]
     },
     {
       "id": "feria-07",
-      "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "organizadora",
-      "expresion": "neutral",
-      "texto": "La guía funciona. Y sirve igual si no hay feria: con la página web de la institución haces las mismas preguntas y el mismo filtro. Gracias; abro la plaza."
+      "nuevoMomento": true,
+      "texto": "Y la noche de la feria. A mí se me mezcló todo: ya no sabía qué puesto había dicho qué."
     },
     {
       "id": "feria-08",
+      "tipo": "pregunta",
+      "hablanteId": "companero",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "¿Qué conviene hacer esa misma noche?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Anotar, por institución, qué averiguó y qué le falta.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Al día siguiente ya no se acuerda de quién dijo qué."
+        },
+        {
+          "id": "b",
+          "texto": "Guardar los folletos para leerlos con calma después.",
+          "correcta": false,
+          "retroalimentacion": "Los folletos dicen lo de la página web. Lo que escuchó en el puesto se le va a olvidar."
+        },
+        {
+          "id": "c",
+          "texto": "Elegir la institución que le dejó mejor impresión.",
+          "correcta": false,
+          "retroalimentacion": "Una buena impresión no es una respuesta. Primero se ordena lo que averiguó."
+        }
+      ],
+      "explicacion": "Lo que se escucha en una feria se mezcla rápido. Se anota esa misma noche: qué averiguaste de cada institución y qué te falta saber.",
+      "pistas": [
+        {
+          "id": "feria-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "companero",
+          "texto": "Acuérdate de lo que le pasó a Marina con sus dos bolsas."
+        }
+      ]
+    },
+    {
+      "id": "feria-09",
+      "tipo": "diapositiva",
+      "nuevoMomento": true,
+      "etiqueta": "El plano de Marina",
+      "titulo": "La feria, en tres momentos",
+      "bloques": [
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Momento",
+            "Qué hacer"
+          ],
+          "filas": [
+            [
+              "Antes de ir",
+              "Revisa «Mis favoritos» y marca los puestos de las instituciones que los dictan. Escribe tres preguntas que la página web no responda. Lleva lapicero y libreta"
+            ],
+            [
+              "En la feria",
+              "Ve primero a tus paradas. Pregunta lo que escribiste y, si hay un estudiante de la carrera, pregúntale cómo es una semana normal. Apunta al salir de cada puesto. Deja un rato para un puesto que no estaba en tu lista"
+            ],
+            [
+              "Esa misma noche",
+              "Por cada institución que te interesó, anota qué averiguaste y qué te falta. Lo que falta va a «Mis dudas», en tu plan"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "A una feria se va con preguntas. Lo que cuenta es lo que anotas al salir."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), cartilla, actividad 11. NACAC, College Fair Tip Sheet. College Board (2012), College Counseling Sourcebook.",
+          "url": "https://secure-media.collegeboard.org/digitalServices/pdf/membership/counselor-workshops/conduct.pdf"
+        }
+      ]
+    },
+    {
+      "id": "feria-10",
+      "tipo": "dialogo",
+      "hablanteId": "organizadora",
+      "texto": "Con eso ya vas mejor que yo a los diecisiete. Y si en tu ciudad no hay feria, haces lo mismo con la página web de cada institución."
+    },
+    {
+      "id": "feria-11",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "La guía quedó en tu mochila."
+      "texto": "Lo del plano quedó en la mochila: «Cómo aprovechar una feria»."
     }
   ],
   "recompensa": {
-    "mensajeFin": "A una feria se va a verificar, no a convencerse."
+    "mensajeFin": "A una feria se va con preguntas. Lo que cuenta es lo que anotas al salir."
   },
   "mapa": {
     "x": 480,
