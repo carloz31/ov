@@ -1,5 +1,4 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "h2",
   "codigo": "h2",
   "tipo": "registro",
@@ -13,7 +12,7 @@
     "h-inteligencias-5"
   ],
   "ubicacion": "Ciudad, escuela",
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "maestro",
     "companero"
@@ -27,23 +26,36 @@
       "tipo": "dialogo",
       "hablanteId": "maestro",
       "expresion": "neutral",
-      "texto": "Ya viste tu página. Ahora la pregunta que yo le hago a todos mis alumnos cuando les muestro un resultado: ¿te reconoces? Porque un perfil que no te suena de nada es un perfil que vale la pena discutir."
+      "texto": "Ya abriste tu página. No te voy a preguntar qué salió. Te pregunto lo que le pregunto a cualquiera que mira un resultado: ¿te suena a ti?"
     },
     {
       "id": "h2-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones."
+      "hablanteId": "maestro",
+      "texto": "A mí me salió alto lo de las palabras y lo de entender a la gente. Me reconocí en parte. No aparecía que yo pienso dibujando: todavía explico las fracciones con dibujos en la pizarra."
+    },
+    {
+      "id": "h2-03",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "texto": "Te toca."
     },
     {
       "id": "h2-reconozco",
       "tipo": "consigna",
       "hablanteId": "maestro",
       "item": "h2-reconozco"
+    },
+    {
+      "id": "h2-04",
+      "tipo": "dialogo",
+      "hablanteId": "maestro",
+      "nuevoMomento": true,
+      "texto": "Lo que acabas de decir vale tanto como la página. La página no te conoce. Tú sí."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Un resultado es una hipótesis. Tú acabas de ponerla a prueba."
+    "mensajeFin": "Un resultado se pone a prueba con lo que sabes de ti. Acabas de hacerlo."
   },
   "mapa": {
     "x": 470,

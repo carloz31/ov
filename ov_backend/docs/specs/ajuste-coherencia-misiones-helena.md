@@ -224,3 +224,201 @@ Hoy las partes de un mismo cuestionario están en fila o dispersas (las de Dora,
 
 - **La opción «No estoy seguro»** de las escalas de intereses e inteligencias tiene género. Es del instrumento; no se toca aquí.
 - **`h1`, `h2` y `h3`:** sus diálogos siguen con «Esto lo lee tu orientadora…», «bitácora» e «informe de viaje». Se revisan con los registros opcionales.
+
+---
+
+## Ajuste · coherencia-registros-h y coherencia-registros-ma
+
+
+## Contexto
+
+La spec en curso es `ov_backend/docs/specs/ajuste-coherencia-misiones-helena.md` (F1 commiteada en `fd649f7b`). Llegan dos textos más, decididos por el usuario, para sumar en la misma rama `ajuste/coherencia-bloque5`: la escena de los registros opcionales `h1` (Dora), `h2` (Bruno) y `h3` (Sol), y la de `ma4` (Dora) y `ma3` (guardián). Siguen el mismo molde: tres diálogos del personaje, el ítem, un cierre; Lumi ya no habla. Los textos van **tal cual**. Además, el usuario eligió **separar los grupos del mapa de la ciudad** (las etiquetas se tapaban dentro de cada grupo). Según el skill, con una spec en curso estos ajustes entran como fases nuevas: se agregan al final de esa spec como secciones `## Ajuste · coherencia-registros-h` y `## Ajuste · coherencia-registros-ma`, con su texto de observaciones como anexo.
+
+## Qué cambia (hoy → pasará a)
+
+### F2 · registros h1, h2, h3 (`ajuste-coherencia-registros-h`)
+- Front: `plataforma/h1.json`, `h2.json`, `h3.json` se reemplazan por los adjuntos (hoy 3 nodos con Lumi, `_nota`, «Mi reto», «Mis familias», duraciones 8/8/10 → 5 nodos, títulos nuevos, 4 min). Sus `mapa.x/y` se dejan como las de los adjuntos y se reemplazan en F4 por las finales.
+- Backend `datos/contenido.py`: `ACTIVIDADES` h1 «Mi reto» → «Una habilidad para practicar», h3 «Mis familias» → «La familia de carreras que me llama»; `DESCRIPCIONES` de h1, h2, h3 (§2.2); comentarios `# h1 Mi reto…` y `# h3 Mis familias` (l. 664 y 691) con el título nuevo.
+- Ya comprobado: ningún id de nodo viejo (`h1-01`…) se usa fuera de los JSON.
+
+### F3 · registros ma4 y ma3 (`ajuste-coherencia-registros-ma`)
+- Front: `plataforma/ma4.json` y `ma3.json` se reemplazan por los adjuntos (`ma3 (1).json` se copia como `ma3.json`). Títulos alineados con el backend, subtítulo, ubicación, 4 min, 5 nodos; `mapa` igual.
+- Backend: `DESCRIPCIONES` de ma4 y ma3 (§2). Títulos, reglas, ítems y referencias no cambian.
+
+### F4 · posiciones del mapa de la ciudad (decisión del usuario: separar los grupos)
+- Medido en el navegador: cada punto ocupa ~61 de ancho y de −15 a +38 bajo el centro (+53 en Dora, etiqueta de tres líneas) en el lienzo lógico 1080×660, a cualquier zoom.
+- Se abre cada forma lo justo (Dora ~1,5×, Bruno ~1,8×, Sol ~1,9×, misma forma) y se ubica cada grupo con h1, h2 y h3 a su lado, sin tocar `c1`–`c6`, `feria`, `investigador`, `investigador-cierre`, `b1-3`, `ma5`. Primero se calcula con ese modelo (script en el scratchpad) y después se comprueba en el navegador midiendo los rectángulos de círculos y etiquetas (sin solapes al zoom mínimo, 50 %, 100 % y máximo) y mirando que cada grupo caiga en una zona razonable del dibujo.
+- Se editan solo `mapa.x/y` de los quince `h_*.json` y de `h1`–`h3`. Las coordenadas finales van a `decisiones.md` y al resumen.
+
+### Docs
+- `decisiones.md`: las decisiones de §8 (misiones), §6 (registros-h), §5 (registros-ma) y las coordenadas finales.
+- `ov_frontend/docs/contenidos-actividades.md`: en «Pendientes», quitar h1, h2, h3 y ma3 de «Textos que no siguen los criterios» y la frase de h3 sobre el informe de viaje; sumar «No estoy seguro» con género y «ma4.json se revisa en otro ajuste» si sigue aplicando (no: ma4 entra aquí, se omite). En «Continuidad», lo vigente de Sol, Dora, Bruno y del guardián en ma3.
+
+## Qué no cambia
+Ítems (`h1-reto`, `h2-reconozco`, `h3-curiosidad`, `ma4-modelo`, `ma3-hoy`) y sus tarjetas, reglas (`R-h1..3`, `R-ma3`, `R-ma4`), referencias, títulos del backend de h2, ma3 y ma4, duraciones del backend, el conjunto `ruta`. Modelo de datos sin cambios.
+
+## Fases y pruebas
+- F2 y F3: copiar JSON, script de reemplazos exactos en `contenido.py`, `verificar_contenido_front.py`, re-exportar fixtures, pruebas de impacto (`tests/integration/datos`, `escenarios`, `registros`; front `tests/servidor/registro`, `actividades`, `mapa`, `tests/local/actividades`) y un commit por fase (`Ajuste coherencia-registros-h · F2: …`, `Ajuste coherencia-registros-ma · F3: …`).
+- F4: coordenadas, comprobación en el navegador y commit (`Ajuste coherencia-misiones-helena · F4: …`).
+- F5 · cierre: suites completas de ambos repos; navegador con `contenido` (servidores aparte 8010/5180, base temporal): h1, h2, h3 con la página revelada, junto a su grupo, de inicio a fin y de fin a inicio, h1 cada habilidad, h2 las tres respuestas, h3 una familia y «Ninguna me llama», reingreso, `ma4` abierta con h1 adecuado (nombra la habilidad elegida; una persona y «No se me ocurre nadie»), `ma3` colgada de b1-7 (día a los 23 y dentro de un año; «Sí, algo» y «Todavía nada»); búsquedas de «orientadora», «bitácora», «informe», «siete días», «línea de tiempo», «plazo» en los cinco JSON. Decisiones y docs. Apagar los servidores y borrar `.claude/launch.json`, `vite.revision.config.ts` y la base temporal. Commit.
+
+La spec queda en curso; cerrarla es decisión del usuario.
+
+## Preguntas abiertas
+Ninguna.
+
+---
+
+### Anexo · texto de observaciones de coherencia-registros-h
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-misiones-helena.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026).
+
+## Qué es
+
+Reescritura de la escena de los tres registros opcionales que siguen a los cuestionarios de la ciudad: `h1` (con Dora), `h2` (con el maestro Bruno) y `h3` (con Sol). Cambian dos títulos. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento, tres JSON finales: `h1.json`, `h2.json` y `h3.json`.
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`).
+
+## 1. JSON de las actividades
+
+**Hoy:** `ov_frontend/src/data/activities/contenidos/plataforma/h1.json`, `h2.json` y `h3.json`.
+**Pasará a:** cada uno se reemplaza, completo, por el archivo del mismo nombre de esta carpeta.
+
+| Actividad | Nodos (hoy → queda) | `titulo` | `subtitulo` | `duracionEstimadaMin` |
+|---|---|---|---|---|
+| h1 | 3 → 5 | «Mi reto» → «Una habilidad para practicar» | «De vuelta en la taberna» (igual) | 8 → 4 |
+| h2 | 3 → 5 | «¿Me reconozco?» (igual) | «La pregunta del maestro» (igual) | 8 → 4 |
+| h3 | 3 → 5 | «Mis familias» → «La familia de carreras que me llama» | «El contraste de Sol» → «De vuelta en la biblioteca» | 10 → 4 |
+
+Lo que conviene saber:
+
+- Los tres tienen la misma forma: tres diálogos del personaje, el ítem y un diálogo de cierre después del ítem. **Lumi ya no habla en ninguno** (sigue en `personajeIds`).
+- Los ítems (`h1-reto`, `h2-reconozco`, `h3-curiosidad`) no cambian: ni consigna, ni opciones, ni las frases que los presentan. Los sigue pidiendo el mismo personaje.
+- Sale el campo `_nota` de los tres.
+- **`mapa.x` y `mapa.y` ya traen las posiciones nuevas** del ajuste de las misiones de Helena (h1: 700, 432; h2: 470, 285; h3: 670, 500). Si en el navegador se movieron los grupos, usar las coordenadas finales que quedaron ahí.
+- Los identificadores de nodo que no son ítems cambian. Comprobar con una búsqueda que ninguno se use fuera de estos archivos.
+- `requisitos`, `ubicacion`, `personajeIds`, `plantilla` y `mapa.origen` no cambian.
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+### 2.1 Títulos (`ACTIVIDADES`)
+
+| Actividad | Hoy | Queda |
+|---|---|---|
+| h1 | «Mi reto» | «Una habilidad para practicar» |
+| h3 | «Mis familias» | «La familia de carreras que me llama» |
+
+El de h2 y las duraciones (4 minutos) no cambian. Si los comentarios del archivo nombran el título viejo (`# h1 Mi reto…`, `# h3 Mis familias…`), se actualizan.
+
+### 2.2 Descripciones cortas (`DESCRIPCIONES`)
+
+| Actividad | Hoy | Queda |
+|---|---|---|
+| h1 | «Elige una habilidad social para practicar y cuenta en qué situación tuya te serviría.» | «Dora cuenta qué habilidad eligió practicar ella. Elige la tuya y cuenta en qué situación te serviría.» |
+| h2 | «Si te reconoces en tu resultado de inteligencias, y qué dirías tú de cómo aprendes.» | «El maestro Bruno cuenta si se reconoció en su página. Di si te reconoces en la tuya, y cuándo se nota.» |
+| h3 | «De las cinco familias que salieron de tus intereses, la que te da más curiosidad y por qué.» | «Sol cuenta qué familia le dio curiosidad a ella. De las cinco que salieron de tus intereses, elige la tuya y di qué te llama.» |
+
+Las reglas (`R-h1`, `R-h2`, `R-h3`, `R-ma4`), los ítems y `REFERENCIAS` no cambian.
+
+## 3. Pruebas que leen textos que cambian
+
+- Si alguna prueba o fixture compara los títulos de h1 o h3, las descripciones o la cantidad de nodos de estos tres, se actualiza con los valores de este documento.
+- Si `scripts/exportar_fixtures_front.py` exporta títulos o descripciones que cambiaron, se vuelve a exportar.
+
+## 4. Qué no cambia
+
+- Los ítems, sus opciones y sus frases; las reglas y lo que abre cada actividad (`ma4` sigue abriéndose con el registro de h1).
+- `ma4.json`: su diálogo se revisa en otro ajuste.
+- El conjunto `ruta` y sus pruebas.
+
+## 5. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar «orientadora», «bitácora» e «informe» en `h1.json`, `h2.json` y `h3.json`: no aparecen.
+- En el navegador, con el conjunto `contenido`:
+  - Con la página revelada, cada registro aparece junto a su grupo en el mapa, con su título nuevo.
+  - Recorrer los tres de inicio a fin y de fin a inicio: los tres diálogos, el ítem (que muestra el resultado del test) y el diálogo de cierre.
+  - En h1, elegir cada habilidad y ver que la pregunta cambia. En h2, las tres respuestas. En h3, una familia y «Ninguna me llama».
+  - Volver a entrar a uno ya entregado.
+  - Con el registro de h1 adecuado, se abre `ma4`.
+
+## 6. Decisiones ya tomadas (para `decisiones.md`)
+
+- h1, h2 y h3 siguen el mismo molde corto: el personaje ve que el viajero volvió con la página abierta, cuenta qué respondió cuando le tocó, va el ítem y cierra. Sin pregunta ni lámina.
+- Lo que cuenta cada uno muestra cómo se responde y cubre la respuesta menos obvia: Dora eligió practicar escuchar sin interrumpir (no hace falta elegir la habilidad más baja); Bruno se reconoció en parte (no aparecía que piensa dibujando); a Sol le dio curiosidad una familia que no era la primera.
+- Nadie pregunta qué salió en la página ni juzga el resultado.
+- Sale de h1 «lo que importa es qué haces con la que salió más baja», que contradecía al ítem, y el dato sobre Rosa.
+- Sale de h3 la comparación con «lo que tú ya pensabas»: el registro ya no compara con ninguna opción.
+- h1 pasa a llamarse «Una habilidad para practicar» y h3, «La familia de carreras que me llama».
+- Salen «Esto lo lee tu orientadora…», «bitácora», «informe de viaje», «plan de práctica» y las promesas de que algo «vuelve».
+
+---
+
+### Anexo · texto de observaciones de coherencia-registros-ma
+
+
+Para sumar al ajuste en curso, **en la rama actual** (`ajuste/coherencia-bloque5`), después de `ajuste-coherencia-registros-h.md`. Revisado contra `main` del repo `carloz31/ov`, commit `5f49fc3` (13 nov 2026).
+
+## Qué es
+
+Reescritura de la escena de dos registros opcionales: `ma4` (con Dora, cuelga de `h1`) y `ma3` (con el guardián, cuelga de `b1-7`). Sus JSON todavía describían el registro anterior. Los textos ya están decididos por el usuario: **no se reescriben, no se resumen y no se «mejoran»**.
+
+Esta carpeta trae, junto a este documento, dos JSON finales: `ma4.json` y `ma3.json`.
+
+Todo lo del backend va **solo en el conjunto `contenido`** (`ov_backend/datos/contenido.py`).
+
+## 1. JSON de las actividades
+
+**Hoy:** `ov_frontend/src/data/activities/contenidos/plataforma/ma4.json` y `ma3.json`.
+**Pasará a:** cada uno se reemplaza, completo, por el archivo del mismo nombre de esta carpeta.
+
+| Campo | ma4 hoy | ma4 queda | ma3 hoy | ma3 queda |
+|---|---|---|---|---|
+| Nodos | 3 | 5 | 3 | 5 |
+| `titulo` | «El reto de la semana» | «Alguien que ya lo hace» (como el backend) | «De la meta a los pasos» | «Lo que ya tengo de ese día» (como el backend) |
+| `subtitulo` | «Dora apunta en su libreta» | «A quién mirar» | «El guardián vuelve a hablar» | «Una pregunta más del guardián» |
+| `ubicacion` | «Dora apunta en su libreta» | «Ciudad, taberna de Dora» | «El guardián vuelve a hablar» | «Desierto, las piedras del límite» |
+| `duracionEstimadaMin` | 6 | 4 | 6 | 4 |
+
+Lo que conviene saber:
+
+- Los dos tienen la misma forma que `h1`, `h2` y `h3`: tres diálogos del personaje, el ítem y un diálogo de cierre después del ítem. **Lumi ya no habla** (sigue en `personajeIds`).
+- Los ítems (`ma4-modelo`, `ma3-hoy`) no cambian: ni consigna, ni opciones, ni referencias. Los sigue pidiendo el mismo personaje.
+- Sale el campo `_nota` de los dos.
+- `requisitos`, `mapa` (con `origen` y `adicional`), `personajeIds`, `plantilla`, `escenario`, `bloque` y `orden` no cambian.
+- Los identificadores de nodo que no son ítems cambian. Comprobar con una búsqueda que ninguno se use fuera de estos archivos.
+
+## 2. Datos del backend (`ov_backend/datos/contenido.py`)
+
+| Dónde | Hoy | Queda |
+|---|---|---|
+| `DESCRIPCIONES`, ma4 | «Alguien que conoces a quien le sale bien la habilidad que elegiste, y qué hace.» | «Dora cuenta a quién mira ella para aprender. Piensa en alguien a quien le sale bien la habilidad que elegiste, y qué hace.» |
+| `DESCRIPCIONES`, ma3 | «De ese día que imaginaste, lo que ya haces hoy o lo primero que te gustaría probar.» | «El guardián cuenta lo que descubrió una viajera. De ese día que imaginaste, di qué ya haces hoy o qué te gustaría probar primero.» |
+
+Los títulos del backend («Alguien que ya lo hace», «Lo que ya tengo de ese día»), las duraciones, las reglas (`R-ma4`, `R-ma3`), los ítems y `REFERENCIAS` no cambian.
+
+## 3. Pruebas y lo que no cambia
+
+- Si alguna prueba o fixture compara las descripciones o la cantidad de nodos de estos dos, se actualiza con los valores de este documento.
+- No cambian los ítems, las reglas ni lo que abre cada actividad. El conjunto `ruta` y sus pruebas no se tocan.
+
+## 4. Comprobaciones
+
+- `scripts/verificar_contenido_front.py` sin discrepancias y suites completas.
+- Buscar «orientadora», «siete días», «línea de tiempo» y «plazo» en `ma4.json` y `ma3.json`: no aparecen.
+- En el navegador, con el conjunto `contenido`:
+  - Con el registro de `h1` adecuado, `ma4` aparece colgada de `h1` con su título. Con el de `b1-7` adecuado, `ma3` aparece colgada de `b1-7`.
+  - Recorrer los dos de inicio a fin y de fin a inicio: los tres diálogos, el ítem y el diálogo de cierre.
+  - En `ma4`, el ítem nombra la habilidad elegida en `h1`; probar una persona de la lista y «No se me ocurre nadie». En `ma3`, el ítem muestra el día a los 23 y lo de dentro de un año; probar «Sí, algo» y «Todavía nada».
+  - Volver a entrar a uno ya entregado.
+
+## 5. Decisiones ya tomadas (para `decisiones.md`)
+
+- `ma4` y `ma3` siguen el molde corto de `h1` a `h3`: el personaje cuenta algo que muestra cómo se responde, va el ítem y cierra.
+- `ma4`: Dora cuenta a quién mira para aprender a escuchar sin interrumpir (a Sol, que espera antes de contestar). Continúa lo que eligió en `h1`. Sale el reto de siete días.
+- `ma3`: el guardián no cuenta nada de sí; como en b1-7, habla de una viajera que pasó. El caso muestra el «aunque sea en pequeño» del ítem, y el cierre vale también para quien marca «Todavía nada». Salen «línea de tiempo», «partir el primer hito» y «acción, plazo, recurso».
+- Los títulos de los JSON se alinean con los del backend.
+- Sale «Esto lo lee tu orientadora…» de los dos.

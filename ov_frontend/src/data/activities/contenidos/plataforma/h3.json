@@ -1,10 +1,9 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "h3",
   "codigo": "h3",
   "tipo": "registro",
-  "titulo": "Mis familias",
-  "subtitulo": "El contraste de Sol",
+  "titulo": "La familia de carreras que me llama",
+  "subtitulo": "De vuelta en la biblioteca",
   "escenario": "ciudad",
   "bloque": 7,
   "orden": 7,
@@ -13,7 +12,7 @@
     "h-intereses-6"
   ],
   "ubicacion": "Ciudad, biblioteca",
-  "duracionEstimadaMin": 10,
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "bibliotecaria",
     "companero"
@@ -27,23 +26,36 @@
       "tipo": "dialogo",
       "hablanteId": "bibliotecaria",
       "expresion": "neutral",
-      "texto": "Abriste la página. Ahora viene lo que de verdad importa de un test de intereses: ponerlo al lado de lo que tú ya pensabas. Si coinciden, bien; si no, también: ahí hay una conversación."
+      "texto": "Rompiste el sello. Se nota: entras distinto."
     },
     {
       "id": "h3-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora y aparece en tu informe de viaje. Vuelve en el puerto, cuando busques intereses en el catálogo, y al cruzar tu perfil con tus opciones."
+      "hablanteId": "bibliotecaria",
+      "texto": "Cuando yo lo hice me salieron cinco familias de carreras. La que más curiosidad me dio no era la primera: era la de educación. Me llamaba por lo de explicarle algo a una sola persona. Nunca fui maestra. Igual me sirvió saberlo."
+    },
+    {
+      "id": "h3-03",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "texto": "Tu turno."
     },
     {
       "id": "h3-curiosidad",
       "tipo": "consigna",
       "hablanteId": "bibliotecaria",
       "item": "h3-curiosidad"
+    },
+    {
+      "id": "h3-04",
+      "tipo": "dialogo",
+      "hablanteId": "bibliotecaria",
+      "nuevoMomento": true,
+      "texto": "Curiosidad no es compromiso. Si quieres saber más de esa familia, está en el catálogo."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Tu perfil frente a tu opción: ya tienes con qué conversar. Anotado en tu bitácora."
+    "mensajeFin": "Elegiste una familia para mirar más de cerca. Puedes buscarla en el catálogo."
   },
   "mapa": {
     "x": 670,

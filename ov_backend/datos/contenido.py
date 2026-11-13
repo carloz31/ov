@@ -91,9 +91,9 @@ ACTIVIDADES = (
     ('h-intereses-4', 'CIUDAD', 'Mis intereses, 4 de 6', 'CUESTIONARIO', None, 4),
     ('h-intereses-5', 'CIUDAD', 'Mis intereses, 5 de 6', 'CUESTIONARIO', None, 4),
     ('h-intereses-6', 'CIUDAD', 'Mis intereses, 6 de 6', 'CUESTIONARIO', None, 4),
-    ('h1', 'CIUDAD', 'Mi reto', 'REGISTRO', None, 4),
+    ('h1', 'CIUDAD', 'Una habilidad para practicar', 'REGISTRO', None, 4),
     ('h2', 'CIUDAD', '¿Me reconozco?', 'REGISTRO', None, 4),
-    ('h3', 'CIUDAD', 'Mis familias', 'REGISTRO', None, 4),
+    ('h3', 'CIUDAD', 'La familia de carreras que me llama', 'REGISTRO', None, 4),
     ('b3-1', 'B3', 'Caminos después del colegio', 'INFORMATIVA', None, 10),
     ('b3-2', 'B3', 'Mis intereses en el catálogo', 'INFORMATIVA', None, 10),
     ('b3-3', 'B3', 'El mercado laboral', 'INFORMATIVA', None, 12),
@@ -226,9 +226,9 @@ DESCRIPCIONES = {
     'h-intereses-4': 'Cuarta visita a Sol: diez frases más.',
     'h-intereses-5': 'Quinta visita a Sol: diez frases más.',
     'h-intereses-6': 'Última visita a Sol: al terminar, tu página de intereses queda lista.',
-    'h1': 'Elige una habilidad social para practicar y cuenta en qué situación tuya te serviría.',
-    'h2': 'Si te reconoces en tu resultado de inteligencias, y qué dirías tú de cómo aprendes.',
-    'h3': 'De las cinco familias que salieron de tus intereses, la que te da más curiosidad y por qué.',
+    'h1': 'Dora cuenta qué habilidad eligió practicar ella. Elige la tuya y cuenta en qué situación te serviría.',
+    'h2': 'El maestro Bruno cuenta si se reconoció en su página. Di si te reconoces en la tuya, y cuándo se nota.',
+    'h3': 'Sol cuenta qué familia le dio curiosidad a ella. De las cinco que salieron de tus intereses, elige la tuya y di qué te llama.',
     'b3-1': 'Ulises, el práctico del puerto, te muestra los cinco embarcaderos: las cinco rutas después del colegio.',
     'b3-2': 'En la sala del atlas aprendes a leer una ficha del catálogo.',
     'b3-3': 'Doña Cifra lee el futuro en los números del mercado. Aprende a leerlos tú: salarios, demanda e informalidad.',
@@ -661,7 +661,7 @@ ITEMS_REGISTRO = (
      _propias(_op('SI', 'Sí, me gusta', pregunta='¿Qué es lo que te gusta de {primera}?'),
               _op('MAS_O_MENOS', 'Más o menos', pregunta='¿Qué parte de {primera} te gusta y qué parte no tanto?'),
               _op('NO_MUCHO', 'No mucho', pregunta='¿Qué es lo que no te gusta de {primera}?'))),
-    # h1 Mi reto (opcional, sin LLM): las cinco habilidades, con el código de su dimensión del test.
+    # h1 Una habilidad para practicar (opcional, sin LLM): las cinco habilidades, con el código de su dimensión del test.
     ('h1', 'h1-reto', 'La habilidad que quieres practicar',
      _c('Una forma de empezar: decir «no» en algo pequeño. ¿En qué situación tuya te serviría?',
         dialogo='Elige una para ponerla a prueba esta semana. No tiene que ser la más baja: la que tú quieras.',
@@ -688,7 +688,7 @@ ITEMS_REGISTRO = (
               _op('EN_PARTE', 'En parte', pregunta='¿Qué parte tuya no aparece ahí?', arranque='El resultado no vio que yo…'),
               _op('NO_MUCHO', 'No mucho', pregunta='¿Cómo dirías tú que aprendes o resuelves mejor?',
                   arranque='Yo aprendo mejor cuando…'))),
-    # h3 Mis familias (opcional, sin LLM)
+    # h3 La familia de carreras que me llama (opcional, sin LLM)
     ('h3', 'h3-curiosidad', 'La familia que te da curiosidad',
      _c('¿Qué te llama de ella?', dialogo='Estas son las cinco familias que salieron de tus intereses. No hace falta quedarse con todas.',
         pregunta_eleccion='¿Cuál te da más curiosidad?', arranque='Me llama porque…',

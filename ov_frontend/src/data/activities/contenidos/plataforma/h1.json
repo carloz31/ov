@@ -1,9 +1,8 @@
 {
-  "_nota": "Registro (ajuste registros): conserva la apertura; las consignas son las de los ítems definitivos y su texto funcional viene del servidor. La capa narrativa se afina en un ajuste de contenido.",
   "id": "h1",
   "codigo": "h1",
   "tipo": "registro",
-  "titulo": "Mi reto",
+  "titulo": "Una habilidad para practicar",
   "subtitulo": "De vuelta en la taberna",
   "escenario": "ciudad",
   "bloque": 7,
@@ -13,7 +12,7 @@
     "h-habilidades-4"
   ],
   "ubicacion": "Ciudad, taberna de Dora",
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "dora",
     "companero"
@@ -27,23 +26,36 @@
       "tipo": "dialogo",
       "hablanteId": "dora",
       "expresion": "neutral",
-      "texto": "Volviste con la página abierta. Yo ya vi muchas de esas: lo que importa no es cuál habilidad salió más alta, sino qué haces con la que salió más baja. Rosa, la de la brigada, era la más callada de su promoción."
+      "texto": "Volviste, y con la página abierta. No me cuentes qué salió: eso es tuyo. Yo también rompí ese sello hace años."
     },
     {
       "id": "h1-02",
       "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Esto lo lee tu orientadora, y vuelve cuando cruces tu perfil con tus opciones: la habilidad que elijas y tu acción aparecen en la fila de habilidades sociales."
+      "hablanteId": "dora",
+      "texto": "Lo mío para practicar ya lo viste: hablo mucho. Elegí escuchar sin interrumpir. Me serviría con mi hermana, que empieza a contarme algo y yo ya le estoy dando la solución."
+    },
+    {
+      "id": "h1-03",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "texto": "Ahora tú."
     },
     {
       "id": "h1-reto",
       "tipo": "consigna",
       "hablanteId": "dora",
       "item": "h1-reto"
+    },
+    {
+      "id": "h1-04",
+      "tipo": "dialogo",
+      "hablanteId": "dora",
+      "nuevoMomento": true,
+      "texto": "Ya tienes por dónde empezar. Y si me ves interrumpiendo a alguien, me avisas."
     }
   ],
   "recompensa": {
-    "mensajeFin": "Una habilidad baja no es un veto: es tu plan de práctica. Anotado en tu bitácora."
+    "mensajeFin": "Una habilidad se practica en una situación concreta. Ya elegiste la tuya."
   },
   "mapa": {
     "x": 700,
