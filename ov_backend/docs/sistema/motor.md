@@ -232,7 +232,7 @@ Va el respaldo (`pregunta`, con `variante` nula) si ninguna variante cumple, si 
 
 **Lecturas.** Preguntas, entradas y amistad exigen la sección DIARIO (409 con su mensaje); editar y borrar, no. Otros roles reciben listas vacías.
 
-**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`. Se calcula con el conteo EVENTOS_TOPE_DIARIO del motor, el mismo que abre los recuerdos del bloque LUMI. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
+**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`, hoy `(1, 2, 3, 4, 5)` (ajuste coherencia-lumi: un nivel por carta; con el tope de 3 por día, los cinco recuerdos se abren en dos días). Se calcula con el conteo EVENTOS_TOPE_DIARIO del motor, el mismo que abre los recuerdos del bloque LUMI. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
 
 **Invariantes del diario.** Solo el autor lee, edita y borra sus entradas; ningún tipo de referencia lee `entrada_diario`; el diario no llama a ningún modelo; una carta guardada no cambia; la amistad nunca baja; `numero` y `numero_libre` no cambian ni se reutilizan.
 
