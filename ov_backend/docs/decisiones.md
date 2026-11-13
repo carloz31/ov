@@ -22,3 +22,12 @@
 
 - `ma4` y `ma3` siguen el molde corto de h1 a h3. En `ma4`, Dora cuenta a quién mira para aprender a escuchar sin interrumpir (a Sol); sale el reto de siete días. En `ma3`, el guardián no cuenta nada de sí: habla de una viajera, y el cierre vale también para quien marca «Todavía nada»; salen «línea de tiempo», «partir el primer hito» y «acción, plazo, recurso».
 - Los títulos de los JSON de `ma4` y `ma3` se alinean con los del backend. Sale «Esto lo lee tu orientadora…» de los dos.
+
+## Ajuste coherencia-ma5
+
+- `ma5` es práctica: un viajero dejó en el taller una lista de «profesiones del futuro» e Iván la abre con el estudiante (carrera o especialización, de qué mercado habla). Tres preguntas de Lumi y una sola lámina al final. Emprender sale de la historia de Iván en b1-3: la bomba, el molino y los faroles. Duración 6 min.
+- Salen «Sol vio tu registro», «me dijeron que contrastaste tu perfil», «el único de la ciudad que vive de un negocio propio» (Dora tiene la taberna) y «abrí el taller después de años arreglando artefactos para otros», que contradecía b1-3.
+- La plataforma no tiene pantalla de carreras del futuro: se muestran desde la ficha F23. «Cómo se llega aquí» se presenta como guía y no como lista definitiva, en la lámina y en la ficha.
+- F23 pasa al informe de 2025 del Foro Económico Mundial (39 %, ya no 44 %) y suma la diferencia entre crecer rápido y sumar más puestos. Corrige la lectura del GEM: el 5,3 % es la parte de los adultos con un negocio de más de tres años y medio. Salen «entre los países con más emprendimiento del mundo» y dos afirmaciones sin fuente («sobrevive más», «mejores probabilidades»); el negocio por necesidad se trata sin desmerecerlo. Las cifras del GEM se leyeron en notas de prensa.
+- `R-F23` dice «Revisa con Iván la lista de profesiones del futuro.». El texto de observaciones pedía revisar «las tres tablas» de F23; el contenido de F23 trae dos (la tercera es la de la lámina `ma5-09`), y las tres se revisaron.
+- No se incluyó `ajuste-coherencia-ma1-ma7.md`, que el texto de ma5 nombra como previo: el usuario decidió aplicar solo ma5.
