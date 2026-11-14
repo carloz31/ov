@@ -171,6 +171,9 @@ export function montarSeccion(nombre: NombreSeccion) {
   void asegurarSeccion(nombre)
   return () => {
     consumidores[nombre]--
+    // Un error de una vista que ya se cerró no queda en la franja del portal (`errorSeccionesActivas`): al irse el
+    // último consumidor, la sección se vence (sin pedirla) y la próxima vista que la monte la vuelve a pedir.
+    if (consumidores[nombre] === 0 && obtenerEstadoServidor()[nombre].estado === 'error') vencerSeccion(nombre)
   }
 }
 function useSeccion<N extends NombreSeccion>(nombre: N, activo = true): Seccion<DatosSecciones[N]> {
