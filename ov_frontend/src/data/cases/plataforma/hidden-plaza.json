@@ -124,31 +124,31 @@
         {
           "id": "study-and-preserve",
           "titulo": "¿Qué hacer antes de mover una sola pieza?",
-          "detalle": "Registrar y estudiar las estructuras que permanecen enterradas y proteger las piezas que ya se recuperaron. Son dos tareas distintas.",
-          "resultado": "La investigación del descubrimiento y la conservación de sus objetos se organizan como trabajos complementarios; el avance depende de las especialidades convocadas.",
+          "detalle": "Hay dos tareas distintas: estudiar lo que sigue enterrado antes de sacarlo, y cuidar las piezas que ya se sacaron para que no se sigan dañando.",
+          "resultado": "Estudiar el hallazgo y cuidar las piezas avanzan como dos trabajos que se apoyan. Hasta dónde llegó cada uno depende de a quiénes llamaste.",
           "necesidades": [
             {
               "onet": "19-3091.00",
-              "aporte": "Analiza el contexto material del hallazgo y orienta una recuperación sistemática que preserve información sobre su origen y uso.",
-              "siFalta": "Se retiraron o movieron objetos sin documentar adecuadamente su contexto; parte de la historia del lugar quedó difícil de reconstruir."
+              "aporte": "Estudia dónde y cómo está cada pieza antes de moverla, y dirige la excavación paso a paso para no perder pistas sobre quiénes las hicieron y para qué las usaban.",
+              "siFalta": "Se movieron objetos sin anotar dónde ni cómo estaban, y parte de la historia del lugar ya no se pudo reconstruir."
             },
             {
               "onet": "25-4013.00",
-              "aporte": "Evalúa y aplica cuidados de conservación a las piezas ya recuperadas para evitar un deterioro adicional mientras se estudian o almacenan.",
-              "siFalta": "Las piezas recuperadas siguieron agrietándose y algunas perdieron detalles que habría sido posible preservar."
+              "aporte": "Revisa las piezas que ya se sacaron y las trata y guarda de la forma correcta para que no se sigan dañando.",
+              "siFalta": "Las piezas recuperadas siguieron agrietándose y algunas perdieron detalles que se habrían podido salvar."
             }
           ]
         },
         {
           "id": "structural-safety",
           "titulo": "¿Es seguro continuar trabajando cerca?",
-          "detalle": "Determinar si las excavaciones comprometieron la estabilidad del muro y qué medidas de seguridad estructural deben adoptarse antes de reanudar trabajos.",
-          "resultado": "La seguridad del perímetro se evalúa por separado de la importancia arqueológica del hallazgo.",
+          "detalle": "Averiguar si la excavación debilitó el muro y el suelo que lo sostiene, y qué hay que reforzar para que sea seguro volver a trabajar cerca.",
+          "resultado": "La seguridad del muro se revisa aparte: es un problema distinto al valor histórico del hallazgo.",
           "necesidades": [
             {
               "onet": "17-2051.00",
-              "aporte": "Examina las condiciones de la estructura y plantea las verificaciones y medidas técnicas necesarias para decidir si es seguro continuar.",
-              "siFalta": "La comunidad careció de una evaluación técnica sobre el muro y las decisiones se tomaron con incertidumbre acerca de su estabilidad."
+              "aporte": "Revisa el muro y el terreno, y dice qué hay que comprobar y reforzar antes de decidir si es seguro continuar.",
+              "siFalta": "Nadie revisó el muro con conocimiento técnico y se decidió sin saber si podía caerse."
             }
           ]
         }
@@ -216,36 +216,36 @@
         {
           "id": "community-dialogue",
           "titulo": "¿Cómo resolver el desacuerdo?",
-          "detalle": "Comprender las necesidades de grupos que no están siendo escuchados y facilitar una negociación entre quienes tienen prioridades diferentes.",
-          "resultado": "La comunidad obtiene un diagnóstico de necesidades y un espacio de diálogo, aunque el acuerdo final depende de los aportes presentes.",
+          "detalle": "Entender qué necesitan los grupos a los que nadie ha escuchado y ayudar a que quienes piensan distinto se sienten a negociar.",
+          "resultado": "La comunidad ya sabe qué necesita cada grupo y tiene un espacio para conversar. Llegar a un acuerdo depende de quiénes estuvieron en tu equipo.",
           "necesidades": [
             {
               "onet": "19-3041.00",
-              "aporte": "Investiga los intereses y la dinámica de los distintos grupos sociales, incluyendo a quienes han tenido poca participación.",
-              "siFalta": "Las decisiones siguieron basándose en opiniones de los grupos más visibles y quedaron necesidades comunitarias sin considerar."
+              "aporte": "Investiga qué quiere cada grupo de la comunidad y cómo se relacionan entre sí, incluidos los que casi no han participado.",
+              "siFalta": "Se siguió decidiendo según la opinión de quienes más se hacen oír, y quedaron necesidades del barrio sin considerar."
             },
             {
               "onet": "23-1022.00",
-              "aporte": "Facilita el diálogo y ayuda a que las partes construyan acuerdos mediante negociación.",
-              "siFalta": "Las reuniones continuaron bloqueadas por enfrentamientos y fue más difícil alcanzar compromisos compartidos."
+              "aporte": "Dirige las conversaciones y ayuda a que los grupos enfrentados lleguen a acuerdos.",
+              "siFalta": "Las reuniones siguieron trabadas por las peleas y fue más difícil llegar a acuerdos."
             }
           ]
         },
         {
           "id": "plaza-design",
           "titulo": "¿Cómo aprovechar el terreno?",
-          "detalle": "Replantear accesos y recorridos para integrar la plaza con el barrio, y diseñar sus áreas verdes y recreativas; no se construirán nuevos edificios.",
-          "resultado": "El diseño urbano y el diseño paisajístico permiten elaborar una propuesta de plaza compatible con el área protegida.",
+          "detalle": "Repensar las entradas y los caminos para que la plaza se conecte con el barrio, y diseñar sus áreas verdes y de juego. No se construirán edificios nuevos.",
+          "resultado": "Con las entradas, los caminos y las áreas verdes bien pensados, sale una propuesta de plaza que respeta la zona protegida.",
           "necesidades": [
             {
               "onet": "19-3051.00",
-              "aporte": "Analiza cómo encaja la nueva plaza en la ciudad, sus conexiones, accesos y distribución respecto de los usos del entorno.",
-              "siFalta": "Los accesos y recorridos se planificaron sin considerar suficientemente la conexión de la plaza con el barrio."
+              "aporte": "Estudia cómo encaja la plaza en la ciudad: por dónde se entra, cómo se conecta con las calles y qué hay alrededor.",
+              "siFalta": "Las entradas y los caminos se trazaron sin pensar bien cómo se conecta la plaza con el barrio."
             },
             {
               "onet": "17-1012.00",
-              "aporte": "Diseña las áreas abiertas, jardines y zonas recreativas para que el espacio sea agradable y funcional.",
-              "siFalta": "Los espacios recreativos y verdes quedaron poco funcionales para las actividades previstas."
+              "aporte": "Diseña los jardines, las áreas abiertas y las zonas de juego para que el lugar sea agradable y se pueda usar bien.",
+              "siFalta": "Las áreas verdes y de juego quedaron poco prácticas para lo que el barrio quería hacer en ellas."
             }
           ]
         }
@@ -302,13 +302,13 @@
         {
           "id": "cultural-exhibit",
           "titulo": "¿Cómo hacer que la historia sea parte de la plaza?",
-          "detalle": "Gestionar y organizar una colección de objetos e información del hallazgo para una muestra cultural con un relato comprensible.",
-          "resultado": "La colección puede integrarse al proyecto de plaza mediante una muestra que explique su historia.",
+          "detalle": "Ordenar las piezas del hallazgo y decidir cómo exhibirlas en una muestra, con explicaciones que cualquiera entienda.",
+          "resultado": "Las piezas pasan a formar parte de la plaza con una muestra que explica su historia.",
           "necesidades": [
             {
               "onet": "25-4012.00",
-              "aporte": "Organiza la colección y define cómo presentar y contextualizar los objetos y la información para el público.",
-              "siFalta": "Las piezas quedaron protegidas, pero sin una presentación organizada que ayudara a comprender el conjunto del hallazgo."
+              "aporte": "Organiza la colección y decide cómo mostrar y explicar los objetos para que el público los entienda.",
+              "siFalta": "Las piezas quedaron protegidas, pero sin un orden ni una explicación que ayudaran a entender el hallazgo completo."
             }
           ]
         }

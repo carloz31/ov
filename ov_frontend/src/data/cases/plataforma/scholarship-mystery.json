@@ -125,7 +125,7 @@
           "quien": "Responsable técnico",
           "contexto": "Sala de pruebas",
           "mensaje": "Probamos una pantalla más clara y las personas entendieron el formulario, pero esa propuesta todavía no funciona en la versión publicada: faltan cambios en el sitio.",
-          "resumen": "La mejora de interfaz aún no está implementada",
+          "resumen": "El nuevo diseño todavía no está en la página",
           "posicion": {
             "x": 79,
             "y": 75
@@ -136,36 +136,36 @@
         {
           "id": "missing-records",
           "titulo": "Registros que se contradicen",
-          "detalle": "Investigar por qué el flujo de la inscripción produce comprobantes que no coinciden con lo almacenado y revisar la integridad de los registros de la base de datos.",
-          "resultado": "El equipo técnico identifica que el flujo de procesamiento y los registros almacenados deben revisarse por separado.",
+          "detalle": "Averiguar en qué paso falla el sistema, que entrega un comprobante aunque la solicitud no quede guardada, y revisar la base de datos, donde hay solicitudes repetidas e incompletas.",
+          "resultado": "Queda claro que hay dos cosas por revisar: cómo procesa el sistema cada inscripción y cómo quedaron guardados los datos.",
           "necesidades": [
             {
               "onet": "15-1211.00",
-              "aporte": "Analiza el proceso de información entre los componentes de la aplicación e identifica fallas de procesamiento que generan confirmaciones inconsistentes.",
-              "siFalta": "No se entendió por qué una solicitud podía figurar como enviada sin quedar correctamente registrada."
+              "aporte": "Sigue el recorrido de una inscripción por las partes del sistema y encuentra en qué paso falla para que se confirme algo que no se guardó.",
+              "siFalta": "No se entendió por qué una solicitud podía aparecer como enviada sin haber quedado guardada."
             },
             {
               "onet": "15-1242.00",
-              "aporte": "Examina la base de datos, investiga duplicaciones y registros incompletos, y coordina las correcciones y recuperaciones posibles.",
-              "siFalta": "Los datos duplicados o incompletos continuaron sin una revisión especializada, dificultando recuperar inscripciones válidas."
+              "aporte": "Revisa la base de datos, busca las solicitudes repetidas o incompletas, y recupera y corrige lo que se pueda.",
+              "siFalta": "Nadie especializado revisó los datos repetidos o incompletos, y fue más difícil recuperar inscripciones válidas."
             }
           ]
         },
         {
           "id": "mobile-access",
           "titulo": "Una plataforma que no funciona igual para todos",
-          "detalle": "Probar y mejorar la navegación del formulario en teléfonos y luego implementar en la aplicación los cambios acordados.",
-          "resultado": "La experiencia de uso y la implementación técnica se abordan como dos necesidades relacionadas, pero distinguibles.",
+          "detalle": "Rediseñar el formulario para que se pueda usar bien desde un celular y, después, programar esos cambios en la página para que funcionen de verdad.",
+          "resultado": "Una cosa es diseñar un formulario fácil de usar y otra es programarlo para que funcione; aquí se necesitaban las dos.",
           "necesidades": [
             {
               "onet": "15-1255.00",
-              "aporte": "Evalúa la compatibilidad y utilidad de la interfaz en distintos dispositivos y prepara ajustes de navegación que faciliten completar las tareas.",
-              "siFalta": "La navegación siguió siendo difícil en ciertos dispositivos y varios estudiantes no lograron avanzar con claridad."
+              "aporte": "Prueba cómo se ve y se usa el formulario en distintos dispositivos y diseña pantallas y pasos más claros para completarlo.",
+              "siFalta": "El formulario siguió siendo difícil de usar en algunos celulares y varios estudiantes no supieron cómo avanzar."
             },
             {
               "onet": "15-1254.00",
-              "aporte": "Implementa los cambios en el sitio y sus funciones interactivas para que el formulario revisado opere realmente.",
-              "siFalta": "Las mejoras quedaron como una propuesta de interfaz sin incorporarse completamente a la plataforma funcional."
+              "aporte": "Programa los cambios en la página y sus funciones para que el nuevo formulario funcione de verdad.",
+              "siFalta": "Las mejoras quedaron solo como un diseño y nunca llegaron a la página real."
             }
           ]
         }
@@ -233,36 +233,36 @@
         {
           "id": "unexplained-scores",
           "titulo": "Una lista que nadie comprende",
-          "detalle": "Examinar los puntajes y patrones de selección, y contrastar los resultados con las reglas y objetivos oficiales de las becas.",
-          "resultado": "Se diferencia entre investigar números y verificar las reglas con las que se administró el programa.",
+          "detalle": "Analizar los datos de los puntajes para encontrar diferencias sin explicación, y revisar cómo se está aplicando el programa de becas, con sus objetivos y reglas, para corregir lo que haga falta.",
+          "resultado": "Una parte del equipo analiza los números y otra revisa si el programa se aplicó según sus reglas: son dos revisiones distintas.",
           "necesidades": [
             {
               "onet": "15-2041.00",
-              "aporte": "Analiza datos numéricos y métodos de cálculo para detectar inconsistencias o patrones que requieren explicación.",
-              "siFalta": "Las diferencias entre puntajes no se analizaron con herramientas apropiadas y persistieron dudas sobre los cálculos."
+              "aporte": "Analiza los puntajes y la forma en que se calcularon para detectar errores o patrones que necesitan una explicación.",
+              "siFalta": "Las diferencias entre puntajes no se analizaron con las herramientas adecuadas y siguieron las dudas sobre los cálculos."
             },
             {
               "onet": "11-9151.00",
-              "aporte": "Revisa los objetivos, criterios y procedimientos del programa y coordina correcciones institucionales conforme a sus reglas.",
-              "siFalta": "No se verificó adecuadamente la aplicación de las condiciones del programa ni se coordinaron sus correcciones."
+              "aporte": "Revisa los objetivos, los criterios y los pasos del programa de becas, y coordina con la municipalidad las correcciones necesarias.",
+              "siFalta": "Nadie comprobó si las condiciones del programa se aplicaron bien ni organizó las correcciones."
             }
           ]
         },
         {
           "id": "exposed-documents",
           "titulo": "Documentos fuera de control",
-          "detalle": "Contener y corregir el acceso indebido a archivos, y revisar la conformidad de la actuación institucional con las obligaciones aplicables.",
-          "resultado": "La protección técnica y el examen de cumplimiento se tratan por separado; no se asume una norma o obligación concreta sin verificarla.",
+          "detalle": "Cerrar el acceso a los archivos que cualquiera puede abrir y evitar que vuelva a pasar, y revisar qué obligaciones legales tiene la municipalidad con las personas afectadas y si las está cumpliendo.",
+          "resultado": "Proteger los archivos y revisar las obligaciones legales son dos trabajos distintos. Nadie da por hecho que se rompió una norma sin antes comprobarlo.",
           "necesidades": [
             {
               "onet": "15-1212.00",
-              "aporte": "Investiga las fallas de protección de la información, propone medidas de contención y fortalece los controles de acceso.",
-              "siFalta": "Persistieron vulnerabilidades y no se contuvo correctamente el acceso no autorizado a los documentos."
+              "aporte": "Investiga por dónde quedaron expuestos los archivos, propone cómo cerrar ese acceso y refuerza los controles para entrar a ellos.",
+              "siFalta": "Las fallas de seguridad siguieron ahí y no se logró cerrar del todo el acceso no autorizado a los documentos."
             },
             {
               "onet": "13-1041.00",
-              "aporte": "Examina las exigencias normativas que correspondan al incidente y orienta la documentación y revisión de cumplimiento de la institución.",
-              "siFalta": "La entidad careció de una revisión organizada sobre las exigencias legales y de cumplimiento aplicables al incidente."
+              "aporte": "Revisa qué normas se aplican a lo ocurrido y guía a la municipalidad para documentar el caso y comprobar si las cumple.",
+              "siFalta": "La municipalidad no tuvo una revisión ordenada de lo que la ley le exigía frente a lo ocurrido."
             }
           ]
         }
@@ -330,26 +330,26 @@
         {
           "id": "software-verification",
           "titulo": "¿Resisten las correcciones?",
-          "detalle": "Probar de forma sistemática el proceso corregido antes de reabrirlo, incluyendo errores, distintos dispositivos y cambios en la solicitud.",
-          "resultado": "La reapertura técnica requiere pruebas verificables de los cambios realizados.",
+          "detalle": "Antes de reabrir, probar la plataforma corregida de principio a fin y con orden: con errores a propósito, en distintos dispositivos y con solicitudes que se interrumpen o se modifican.",
+          "resultado": "La plataforma solo puede reabrirse cuando hay pruebas que demuestran que los arreglos funcionan.",
           "necesidades": [
             {
               "onet": "15-1253.00",
-              "aporte": "Diseña y realiza pruebas de software, documenta defectos y verifica las modificaciones antes de su implementación definitiva.",
-              "siFalta": "La plataforma reabrió sin comprobar todos sus recorridos y algunos errores podrían repetirse."
+              "aporte": "Diseña y hace pruebas de la plataforma, anota cada error que encuentra y comprueba que los arreglos funcionan antes de publicarlos.",
+              "siFalta": "La plataforma reabrió sin que se probaran todos sus recorridos, y algunos errores podrían repetirse."
             }
           ]
         },
         {
           "id": "educational-guidance",
           "titulo": "¿Qué alternativa educativa elegir?",
-          "detalle": "Brindar orientación a quienes deben elegir entre programas de estudio, considerando sus intereses y objetivos educativos.",
-          "resultado": "La orientación vocacional permite que la reapertura no se limite a que el formulario funcione.",
+          "detalle": "Ayudar a los jóvenes que no saben qué programa de estudios elegir a decidir según sus intereses y lo que quieren lograr.",
+          "resultado": "Reabrir las becas no es solo que el formulario funcione: ahora los jóvenes también tienen con quién conversar su elección.",
           "necesidades": [
             {
               "onet": "21-1012.00",
-              "aporte": "Aconseja y ayuda a los estudiantes a comprender y comparar sus alternativas educativas y vocacionales.",
-              "siFalta": "Varios jóvenes siguieron tomando decisiones sobre programas de formación sin apoyo para analizar sus opciones."
+              "aporte": "Conversa con los estudiantes y los ayuda a entender y comparar sus opciones de estudio y de trabajo.",
+              "siFalta": "Varios jóvenes siguieron eligiendo un programa sin nadie que los ayudara a analizar sus opciones."
             }
           ]
         }

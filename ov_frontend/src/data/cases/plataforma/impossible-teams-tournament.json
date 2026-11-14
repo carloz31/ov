@@ -128,31 +128,31 @@
         {
           "id": "fair-selection-and-training",
           "titulo": "Los mejores no siempre son los más rápidos",
-          "detalle": "Revisar las habilidades pertinentes a cada deporte y organizar talleres formativos y de acondicionamiento para quienes no participarán en equipos competitivos.",
-          "resultado": "La competencia y la participación formativa se consideran objetivos compatibles pero distintos.",
+          "detalle": "Elegir a los equipos según las habilidades que de verdad pide cada deporte, y organizar talleres donde quienes no entren al equipo que compite también aprendan y practiquen deporte.",
+          "resultado": "Competir y aprender deporte son metas distintas, y el torneo puede dar espacio a las dos.",
           "necesidades": [
             {
               "onet": "27-2022.00",
-              "aporte": "Evalúa habilidades deportivas relacionadas con cada disciplina y orienta la selección y preparación para competir.",
-              "siFalta": "Los equipos continuaron seleccionándose mediante pruebas poco pertinentes para sus disciplinas."
+              "aporte": "Observa las habilidades que pide cada deporte y, con eso, orienta a quién seleccionar y cómo prepararse para competir.",
+              "siFalta": "Los equipos se siguieron eligiendo con pruebas que poco tenían que ver con su deporte."
             },
             {
               "onet": "25-1193.00",
-              "aporte": "Organiza actividades formativas sobre recreación y acondicionamiento físico para ampliar la participación de distintos niveles.",
-              "siFalta": "Quienes no clasificaron carecieron de actividades formativas y recreativas adecuadamente organizadas."
+              "aporte": "Organiza talleres de recreación y ejercicio para que participen estudiantes de distintos niveles.",
+              "siFalta": "Quienes no clasificaron se quedaron sin actividades bien organizadas para aprender y recrearse."
             }
           ]
         },
         {
           "id": "accessible-circuit",
           "titulo": "Un circuito que no funciona para todos",
-          "detalle": "Identificar barreras funcionales y adaptar tareas y objetos del circuito para facilitar que estudiantes con diferentes capacidades puedan participar.",
-          "resultado": "Las actividades recreativas se revisan para permitir otras formas de realizar las tareas, sin requerir nuevas estructuras.",
+          "detalle": "Encontrar qué impide participar a algunos estudiantes y adaptar las tareas y los objetos del circuito para que cada uno pueda hacerlas por su cuenta, sin construir nada nuevo.",
+          "resultado": "El circuito ahora permite hacer las tareas de otras maneras, sin tener que construir nada nuevo.",
           "necesidades": [
             {
               "onet": "29-1122.00",
-              "aporte": "Evalúa las dificultades de participación y propone adaptaciones de actividades y elementos del entorno para favorecer la autonomía.",
-              "siFalta": "Varias estaciones conservaron obstáculos evitables que impidieron participar a algunos estudiantes."
+              "aporte": "Observa qué le dificulta participar a cada persona y propone cambios en las actividades y en el entorno para que pueda hacerlas por su cuenta.",
+              "siFalta": "Varias estaciones mantuvieron obstáculos que se podían evitar y que dejaron fuera a algunos estudiantes."
             }
           ]
         }
@@ -220,36 +220,36 @@
         {
           "id": "training-load-and-health",
           "titulo": "Más entrenamiento, peores resultados",
-          "detalle": "Ajustar el acondicionamiento físico de los grupos y evaluar médicamente a quienes presentan fatiga persistente que no puede explicarse solo por el entrenamiento.",
-          "resultado": "La planificación del ejercicio y la evaluación clínica se atienden como tareas diferentes.",
+          "detalle": "Ajustar las rutinas de ejercicio de los grupos para que no se agoten, y examinar la salud de quienes siguen cansados desde hace días, incluso sin entrenar.",
+          "resultado": "Ajustar el entrenamiento y revisar la salud de quien sigue cansado son tareas distintas, y cada una tiene su especialista.",
           "necesidades": [
             {
               "onet": "39-9031.00",
-              "aporte": "Observa la condición física y modifica las rutinas de acondicionamiento para evitar cargas desproporcionadas.",
-              "siFalta": "Los participantes continuaron rutinas demasiado exigentes sin ajustes apropiados a sus capacidades."
+              "aporte": "Observa la condición física de los participantes y cambia las rutinas para que el esfuerzo no sea excesivo.",
+              "siFalta": "Los participantes siguieron con rutinas demasiado exigentes, sin ajustes a lo que cada uno podía hacer."
             },
             {
               "onet": "29-1215.00",
-              "aporte": "Examina los síntomas persistentes y determina si hay problemas de salud que requieren atención o derivación.",
-              "siFalta": "El cansancio inusual permaneció sin evaluación clínica y algunos jóvenes siguieron entrenando sin conocer sus causas."
+              "aporte": "Examina los síntomas que no se van y determina si hay un problema de salud que tratar o que derivar a un especialista.",
+              "siFalta": "Nadie examinó ese cansancio inusual y algunos jóvenes siguieron entrenando sin saber su causa."
             }
           ]
         },
         {
           "id": "rehabilitation-and-school",
           "titulo": "Volver no significa estar preparado",
-          "detalle": "Facilitar la recuperación de la movilidad tras una lesión y atender las dificultades de convivencia y participación escolar relacionadas con el regreso.",
-          "resultado": "La recuperación física no implica automáticamente que todas las dificultades escolares se hayan resuelto.",
+          "detalle": "Ayudar a recuperar el movimiento después de una lesión, y atender en el colegio las burlas y las faltas a clase que aparecieron con el regreso.",
+          "resultado": "Que el cuerpo se recupere no significa que los problemas en el colegio ya se hayan resuelto.",
           "necesidades": [
             {
               "onet": "29-1123.00",
-              "aporte": "Planifica y realiza rehabilitación física para recuperar movilidad, fuerza y función después de una lesión, conforme a la atención médica indicada.",
-              "siFalta": "La recuperación física quedó sin un plan de rehabilitación especializado."
+              "aporte": "Planifica y realiza la rehabilitación para recuperar movimiento y fuerza después de una lesión, siguiendo lo que indicó el médico.",
+              "siFalta": "La recuperación física se quedó sin un plan de rehabilitación hecho por un especialista."
             },
             {
               "onet": "19-3034.00",
-              "aporte": "Desarrolla intervenciones en el contexto escolar para abordar burlas, evitación y otras dificultades que afectan la participación educativa.",
-              "siFalta": "Las dificultades de convivencia y adaptación escolar siguieron afectando la participación de la estudiante."
+              "aporte": "Trabaja dentro del colegio para frenar las burlas y acompañar a quien evita las actividades, de modo que vuelva a participar.",
+              "siFalta": "Los problemas de convivencia siguieron afectando la participación de la estudiante en el colegio."
             }
           ]
         }
@@ -306,13 +306,13 @@
         {
           "id": "schedule-constraints",
           "titulo": "Tres canchas para demasiados partidos",
-          "detalle": "Organizar una programación viable que respete simultáneamente canchas, participantes, duración de pruebas y pausas.",
-          "resultado": "Una programación consistente permite iniciar el torneo respetando las restricciones principales.",
+          "detalle": "Entre muchísimas combinaciones posibles, encontrar un calendario que cumpla todo a la vez: las tres canchas, que nadie juegue en dos lugares al mismo tiempo, la duración de cada prueba y los descansos.",
+          "resultado": "Con un calendario sin choques, el torneo puede empezar respetando las canchas, los horarios y los descansos.",
           "necesidades": [
             {
               "onet": "15-2031.00",
-              "aporte": "Emplea modelos matemáticos y técnicas de optimización para evaluar combinaciones de horarios y recursos.",
-              "siFalta": "Persistieron choques de horario y descansos desiguales que obligaron a cambios improvisados."
+              "aporte": "Usa modelos matemáticos para probar muchas combinaciones de horarios y canchas, y encontrar la que mejor cumple todas las condiciones.",
+              "siFalta": "Siguieron los choques de horario y los descansos desiguales, y hubo que improvisar cambios."
             }
           ]
         }
