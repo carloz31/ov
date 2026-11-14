@@ -73,7 +73,9 @@ export function fechaPanel(fecha: string) {
     day: 'numeric',
     month: 'long',
     timeZone: 'UTC',
-  }).format(new Date(Date.UTC(anio, mes - 1, dia)))
+  })
+    .format(new Date(Date.UTC(anio, mes - 1, dia)))
+    .replace(',', '')
 }
 
 // Orden de las tablas de intereses: `<columna>` ascendente, `-<columna>` descendente.

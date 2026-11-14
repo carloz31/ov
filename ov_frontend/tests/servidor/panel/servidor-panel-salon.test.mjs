@@ -52,7 +52,7 @@ test('los textos del panel se arman con lo que llega: nombres, bandas, instituci
     ]),
     '3 en universidad pública · 3 en privada · 1 sin institución',
   )
-  assert.match(a.fechaPanel('2026-11-13'), /viernes,? 13 de noviembre/)
+  assert.equal(a.fechaPanel('2026-11-13'), 'viernes 13 de noviembre')
   assert.equal(a.alternarOrden('-en_planes', 'en_planes'), 'en_planes')
   assert.equal(a.alternarOrden('en_planes', 'en_planes'), '-en_planes')
   assert.equal(a.alternarOrden('-en_planes', 'solo_favoritos'), '-solo_favoritos')
