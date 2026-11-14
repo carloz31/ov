@@ -1178,3 +1178,221 @@ arranque del cliente ya pide la campana una sola vez (F1).
   que coinciden con las verificaciones.
 - **Lo que esta máquina no reproduce:** la latencia de red a RDS, los créditos de CPU de una `t3` y la memoria real de
   la EC2.
+
+## K. Portal del apoderado: lo que la auditoría no había cubierto (solo medición)
+
+Se midió el código anterior a las correcciones (`e7ae7bb2`) y el actual, sobre la misma copia de la base de medición:
+`apo-rosa` con p1–p8 y su hija `est-ana` al final del camino. El front se tomó de su lectura (sección C).
+
+### Costo por gesto (consultas · KB, sin comprimir)
+
+| Gesto | Qué pide el front | Antes | Después |
+|---|---|---|---|
+| Ingreso, hasta ver Inicio | `sesion/ingresar` 1 · `GET /sesion` · `POST ingresar` · `notificaciones` (antes ×2) · `actividades` · `familia`; en Inicio, `conversaciones?estudiante=`, `familia/resultados?estudiante=` y `/instrumentos` | 46 · ≈ 54 | **32** · ≈ 52 |
+| Completar una actividad | `completar-actividad` · `actividades` · `familia` · `marcar-vistas` | 26–27 · ≈ 4 | **19–20** · ≈ 4 |
+| Escribir una carta | `escribir-carta` · `conversaciones` | 13 · ≈ 5 | **11** · ≈ 5 |
+| Responder una conversación | `responder-conversacion` · `conversaciones` | 15–25 · 5–16 | **13–23** · 5–16 |
+| Abrir el resultado de un cuestionario del hijo | `familia/resultados?estudiante=` · `/instrumentos` (después, solo la primera vez en la sesión) | 10 · ≈ 41 | **8** · ≈ 22 |
+
+Por qué baja:
+- **D-B4:** una consulta menos en cada petición.
+- **D-B3:** `familia` pasa de 10 a 6 consultas.
+- **F1:** la campana se pide una vez.
+- **F6:** `/instrumentos` se pide una vez por sesión.
+
+### `responder-conversacion`
+
+| Respuesta | Consultas (antes → después) |
+|---|---|
+| La primera de un tema (el otro aún no responde) | 8 → 7 |
+| La segunda, que deja el tema conversado | 14 → 13 |
+| La segunda, cuando además deja una entrada en el diario o el regalo (`conv-6`, `conv-10`) | 18 → 17 |
+
+- **No crece:** se respondieron los 10 temas, uno tras otro, con las dos cuentas. Los valores se repiten en cada tema;
+  no dependen de cuántas conversaciones ni cuántas cartas haya.
+- **El tamaño sí crece:** `GET conversaciones` pesa 5,2 KB sin respuestas y 16 KB con los 10 temas respondidos.
+  Las consultas siguen en 6.
+
+### Carga con 2 núcleos sobre PostgreSQL: 25 estudiantes y 25 apoderados a la vez
+
+Cada cuenta hizo su ingreso, su inicio y completó una actividad: `b0-1` el estudiante y `p1` el apoderado. Se usó
+el mismo método que en la sección H, con 2 workers fijados a 2 núcleos.
+
+| Variante | Duración del ingreso | `sesion/ingresar` mediana / máx. | Lecturas del inicio (p95) | Errores |
+|---|---|---|---|---|
+| Los 50 ingresos en el mismo segundo, 4 turnos de Argon2 por worker (lo desplegado) | 40 s | 35,2 s / 39,6 s | ≈ 30,9 s | **3 errores 500 y 1 conexión cortada** |
+| Los 50 en el mismo segundo, 1 turno por worker (solo medido) | 129 s | 4,7 s / 8,8 s, y **7 ingresos sin respuesta en 120 s** | 0,5–0,6 s | 7 tiempos agotados en el cliente |
+| Los 50 repartidos en 20 s (2,5 por segundo), 4 turnos | 20 s | **0,30 s / 0,35 s** | **< 0,1 s** | **Ninguno** |
+| Completar una actividad (las tres variantes) | — | — | `completar-actividad` 0,47–0,50 s; refrescos ≈ 0,7 s | Ninguno |
+
+Los 409 (`conversaciones` y `familia/resultados` antes de que el apoderado termine su ruta) son los esperados y no
+cuentan como errores.
+
+**Problema, a decidir:** 50 verificaciones Argon2 en el mismo segundo saturan los 2 núcleos.
+
+- **Con 4 turnos:** las peticiones que ya tenían conexión avanzan tan lento que el pool de un worker (15 conexiones)
+  se agota y las demás fallan tras 30 s (`QueuePool limit … timeout 30`).
+- **Con 1 turno:** el pool no se agota, pero algunos ingresos esperan su turno más de 2 minutos.
+- **Repartidos en 20 s:** todo responde bien.
+
+El costo de Argon2 es CPU: con 2 núcleos, unas 3 verificaciones por segundo. Ningún ajuste del semáforo lo cambia;
+solo reparte quién espera. Opciones:
+
+1. **Sin código:** que no ingresen todos a la vez. Por ejemplo, los estudiantes por filas y los apoderados en otro
+   momento; en una sesión real, los apoderados no ingresan en el mismo segundo que los estudiantes.
+2. **Instancia con más núcleos** esos días (p. ej. `c7i.xlarge`, 4 vCPU). Una `t3.medium` tiene los mismos 2 núcleos
+   que una `t3.small`.
+3. **Código, con tu decisión:**
+   - Que la espera del turno tenga un límite y responda 503 con «Intenta de nuevo en unos segundos», en lugar de
+     dejar la petición colgada.
+   - O separar el ingreso en un worker propio.
+   - Bajar `time_cost` o `memory_cost` queda descartado por tu decisión anterior.
+
+### Lista J: comprobaciones del apoderado en pantalla, sin recargar
+
+| # | Caso | Con qué cuentas y qué pasos | Qué debes ver |
+|---|---|---|---|
+| A1 | Completar p8: aparece el diploma y se abre «Ver resultado» del hijo | `est-ana` revela intereses (pasos de P1). Luego `apo-rosa` completa p1 a p7 y después **p8**. | En el cierre de p8, el diploma («Diploma de compromiso»). De vuelta en Inicio, en la tarjeta de Ana, los cuestionarios con resultado muestran su clave y «Ver resultado», que abre la vista explicada. |
+| A2 | Antes del diploma, el candado se mantiene | `apo-rosa` con p1 a p7 completas (sin p8) y `est-ana` con intereses revelado. | En Inicio, la fila de intereses de Ana con el candado, sin clave ni «Ver resultado». Al abrir la vista explicada desde la URL: el mensaje «Completa tus actividades para ver los resultados de tu hijo». |
+| A3 | El estudiante escribe una carta y el apoderado la ve; y al revés | `est-ana` con `b1-3` completa (abre Familia) escribe su carta en **Familia**. `apo-rosa` con p1 a p8 abre **Conversaciones** con Ana. Al revés: `apo-rosa` escribe la suya y Ana abre **Familia**. | Cada uno ve la carta del otro al abrir su vista; cada vista se revalida al montarse. Los temas pasan de «bloqueada» a «sin responder». |
+| A4 | Con dos hijos, cambiar de hijo cambia todo | `apo-rosa` tiene a `est-ana` y `est-luis` (`VIN-ANA`, `VIN-LUIS`). En Inicio, usar los chips de hijo. | La tarjeta (título, avance y cuestionarios), los resultados y la tarjeta de conversaciones pasan a Luis, y la URL lleva `?child=est-luis`. Conversaciones muestra las de Luis. |
+
+## L. Front: imágenes y `localStorage` (solo medición)
+
+### Imágenes
+
+`public/` tiene 211 MB en 82 archivos. Todas son PNG; ninguna está en WebP ni tiene versiones reducidas. Las 20 más
+pesadas:
+
+| MB | Archivo | MB | Archivo |
+|---|---|---|---|
+| 4,29 | `images/adventure/journey-map.png` | 3,49 | `images/silent-lagoon-phase-3.png` |
+| 4,00 | `images/hidden-plaza-intro.png` | 3,48 | `images/silent-lagoon-phase-2.png` |
+| 3,81 | `images/hidden-plaza-phase-2.png` | 3,39 | `images/scholarship-mystery-intro.png` |
+| 3,75 | `images/background/ciudad.png` | 3,37 | `images/background/acantilado.png` |
+| 3,72 | `images/silent-lagoon-phase-1.png` | 3,36 | `images/hidden-plaza-phase-3.png` |
+| 3,61 | `images/hidden-plaza-phase-1.png` | 3,30 | `images/background/desierto.png` |
+| 3,59 | `images/background/bosque_volcan.png` | 3,27 | `images/thousand-voices-festival-intro.png` |
+| 3,51 | `images/silent-lagoon-intro.png` | 3,26 | `images/background/playa.png` |
+| 3,21 | `images/harvest-race-phase-2.png` | 3,19 | `images/harvest-race-phase-3.png` |
+| 3,20 | `images/harvest-race-phase-1.png` | 3,16 | `images/harvest-race-intro.png` |
+
+| Qué se carga | Imágenes | Peso |
+|---|---|---|
+| El mapa al ingresar, cuenta nueva: el mapa (`journey-map.png`), el fondo de la presentación (`background/bosque.png`) y Lumi (`personajes/companero.png`) | 3 | **8,8 MB** |
+| Las actividades del tramo 0 (`b0-1` a `b0-6`): fondos de `escenario` y personajes con su expresión | 16 | **27,8 MB** |
+| Las actividades del bloque 1 (`b1-1` a `b1-7`) | 14 | **29,1 MB** |
+
+- **Cómo se calculó:** con los JSON de `contenidos/plataforma/` y el catálogo de personajes (`catalogo.json`,
+  `expresiones` o `avatarUrl`).
+- **Caché:** el navegador guarda las imágenes, así que una que se repite entre actividades se descarga una vez.
+- **Lo que suma una sesión:** un estudiante nuevo que hace el tramo 0 descarga unos 36 MB de imágenes, sin contar el
+  paquete JS (817 KB). Con 25 estudiantes, unos 900 MB por la red del colegio el mismo día.
+- **Es un problema para una red escolar**, aunque el servidor no lo note: las imágenes las sirve la CDN de Amplify. No
+  se cambia nada aquí.
+- **Opciones a decidir:**
+  - convertirlas a WebP o AVIF a 1920 px de ancho, que suele bajarlas a unos 200–400 KB cada una;
+  - o, como mínimo, reducir los fondos y personajes del tramo 0 y del mapa.
+
+### `localStorage`
+
+| Clave | Cuenta nueva | Cuenta que terminó |
+|---|---|---|
+| `ov.missions.v2.api` | 6,6 KB | 6,6 KB |
+
+- **Por qué no cambia:** en api es una proyección de tamaño fijo por actividad, armada desde `GET actividades`; las
+  entregas y respuestas viven en el servidor. Los borradores de texto suman solo lo que se escribe y el envío los
+  borra. El límite habitual es de unos 5 MB por origen.
+- **Si la escritura falla por cuota** (o el almacenamiento está bloqueado):
+  - `updateJourney` captura el error y fija `storageError` («No se pudo guardar. Libera espacio o permite el
+    almacenamiento y vuelve a intentarlo.»), que muestran el reproductor de actividades (`useActivityPlayer.ts:43`) y
+    el de desafíos (`useChallengePlayer.ts:26`).
+  - En una escritura inmediata, el estado en memoria no cambia. En la hidratación desde el servidor, sí cambia
+    (`hidratarJourneyServidor`); en un borrador diferido, también, pero no se guarda.
+  - `adventureStore` marca `storageError` y conserva el estado en memoria (`useServerSession.ts:28`).
+  - En api, nada del servidor depende de ese almacenamiento: el progreso, las respuestas y los resultados ya están en
+    la base.
+
+## M. Cuentas anónimas para la prueba
+
+### Correo `.test`
+
+- **El correo se acepta tal cual.** `normalizar_correo` (`app/services/acceso.py:53`) solo quita espacios y pasa a
+  minúsculas; no valida el dominio, y `IngresoEntrada.usuario` es un `str` sin `EmailStr`.
+- **El ingreso funciona.** Se probó en una base temporal: una cuenta con `nav07@ov.test` ingresa con
+  `  NAV07@ov.TEST ` y responde 200.
+- **Nada envía correo.** No hay SMTP ni servicio de correo en el backend, y el front no recibe el correo: no está en
+  `types/servidor.ts`. El único `mailto:` está en vistas del modo local con datos de demostración
+  (`StudentProfileView.tsx`, `FamilySummary.tsx`).
+
+### Dónde se usa el nombre y cómo se ve «Navegante 07»
+
+**El nombre no viaja en ningún prompt del LLM.** `app/services/registro/llm/mensaje.py:3` lo dice expresamente. Las
+sugerencias del plan y del guion solo envían carrera, institución, familia y los textos del estudiante. Lumi no saluda
+por nombre: los JSON de actividades no tienen marcador de nombre.
+
+| Lugar | Cómo usa el nombre | «Navegante 07» / «Familia 07» |
+|---|---|---|
+| Mensajes de los resultados (`textos_instrumento`, `instrumentos/consultas.py:63`): estudiante, apoderado («No mide la inteligencia de …», «conversar con …») y orientadora | La primera palabra | **«Navegante»**: los 25 estudiantes se llamarían igual |
+| Perfil del estudiante en el panel de la orientadora (`PerfilEstudianteView.tsx:45`, `PestanaResumen`, `AvisosParaConversar`, `PlanCompletoPerfil`, `PestanaAvance`) | La primera palabra | **«lo que Navegante registró»**, «Conversaciones con Navegante» |
+| Avisos del panel del salón (`nombreCorto`, `adaptadoresPanel.ts:13`) | Primera palabra e inicial de la segunda | **«Navegante 0.»** |
+| «Las mismas carreras que ve …» (`FamiliasPortal.tsx:64`, apoderado) | La primera palabra | **«Navegante»** |
+| Saludo del Inicio del apoderado (`ParentOverviewView.tsx:24`) | La primera palabra | **«Hola, Familia»** |
+| Avatares: mapa y menú del estudiante, barra de los portales (`slice(0,2)`); perfil y chips de hijos (iniciales de dos palabras); investigaciones y publicaciones (`iniciales`) | Tres formatos | «NA» · «N0» · «Na» |
+| Carta del apoderado que lee el estudiante (`RegaloCarta.tsx`) | «Escrita por {nombre} · tu {parentesco}» | «Escrita por Familia 07 · tu madre» |
+| Diploma del apoderado (`HojaDiploma.tsx:38`) | A su nombre | «Familia 07» |
+| Lista de estudiantes, «Ver», cabecera del perfil, tarjeta del hijo, conversaciones, autores y coautores | Completo | Bien («Navegante 07») |
+
+**Propuesta: alias sin espacios, con guion:** «Navegante-07» para el estudiante y «Familia-07» para el apoderado.
+
+| Lugar | Cómo se ve |
+|---|---|
+| Lo que toma la primera palabra (resultados, panel, saludo) | «Navegante-07», distinto para cada estudiante; «Hola, Familia-07» |
+| `nombreCorto` | «Navegante-07»: una palabra queda entera |
+| Avatares | «NA» o «Na», igual que con el alias de dos palabras; ya no sale «N0» |
+| Lista y orden | El cero delante mantiene el orden hasta 99 |
+| Carta y diploma | «Escrita por Familia-07 · tu madre» y el diploma a nombre de «Familia-07». Es lo inevitable con un alias; si molesta, el parentesco firma la carta («— Madre») |
+
+- **Alternativa:** una palabra distinta por estudiante («Orión», «Vega»…). Se lee mejor y da iniciales distintas, pero
+  hay que mantener una lista de 25 nombres.
+- **La orientadora** puede usar su nombre real: solo lo ve ella en su barra.
+
+### Las cuentas de `usuarios_prueba.txt` en producción
+
+- **Se pueden desactivar después del paso 6 sin afectar a las cuentas de la prueba.** Están en los salones 5A y 5B,
+  y las cuentas del script quedan en un salón nuevo. El panel y los compañeros del salón nuevo no las cuentan.
+- **Una excepción, las Leyendas:** se arman con todo el colegio, y el salón nuevo también es de `col-piloto`. Si en el
+  recorrido del paso 6 una de esas cuentas publica una entrevista, podría verse como Leyenda en el salón nuevo. En el
+  recorrido, no publiques entrevistas.
+- **Qué deja de funcionar:**
+  - el ingreso de esas cuentas (403 con la contraseña correcta);
+  - sus tokens vigentes (401 desde la siguiente petición, por el guardia).
+- **Cómo hacerlo:** no hay pantalla ni ruta. En la EC2, con psql y la `DATABASE_URL` del `.env`:
+  `UPDATE cuenta SET activa = false WHERE codigo IN ('est-ana','est-luis','est-beto','est-mia','est-teo','est-sol','apo-rosa','ori-carmen');`
+  Se revierte con `activa = true`.
+- **Ojo:** una recarga de contenidos (`--recargar`) vuelve a crearlas activas.
+
+### Orden completo del despliegue
+
+1. **Instantánea manual de RDS** (RDS > Bases de datos > la base > Acciones > Tomar instantánea).
+2. **Integrar e instalar:**
+   - integrar esta rama en `main`, con la suite completa en verde;
+   - abrir el PR de `main` a `deploy`;
+   - con el push a `deploy`, el despliegue (EC2 y Amplify);
+   - después, la recarga de contenidos: Actions > «Pruebas y despliegue» > Run workflow > `deploy` > marcar
+     `recargar_contenido`. **Borra toda la base.**
+3. **Swap y gzip en la EC2** (sección H, pasos 2 y 3).
+4. **Crear las cuentas con el script**, primero con `--simular`. **Pendiente:** el script todavía no existe; se escribe
+   cuando decidas el formato del alias (M). El comando quedará así, con el CSV copiado a la EC2 fuera del repo, por
+   ejemplo en `/home/ov/cuentas-prueba.csv`:
+
+   ```bash
+   cd /opt/ov/ov_backend
+   sudo -u ov /home/ov/.local/bin/uv run --no-sync python scripts/crear_cuentas.py /home/ov/cuentas-prueba.csv --simular
+   sudo -u ov /home/ov/.local/bin/uv run --no-sync python scripts/crear_cuentas.py /home/ov/cuentas-prueba.csv
+   ```
+
+5. **Instantánea de RDS con las cuentas creadas.**
+6. **Recorrido de comprobación en producción** con una cuenta de `datos/usuarios_prueba.txt` (lista J), sin publicar
+   entrevistas. Después, si quieres, desactiva esas cuentas (sección M).
+7. **Instantánea de RDS al terminar la sesión del 18.**
