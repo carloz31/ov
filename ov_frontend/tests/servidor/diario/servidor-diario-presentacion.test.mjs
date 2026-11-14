@@ -61,20 +61,14 @@ test('la portada del diario ya no tiene el cuadro de bienvenida', () => {
   assert.ok(!/Un espacio para ti y Lumi|Entendido, empezar a escribir/.test(portada))
 })
 
-test('la presentación del diario lleva el contenido del antiguo cuadro', () => {
+// Ajuste lumi-mensajes: dos pasos, sin nombrar a la orientadora ni la señal (aún no existe al abrirse el diario).
+test('la presentación del diario dice quién lee y qué se puede escribir', () => {
   const { textos } = preparar('/student/journal')
-  const pasos = textos.sectionIntros.journal.join(' ')
-  for (const frase of [
-    'Un espacio para ti y para mí',
-    'No hay respuestas automáticas: tú decides qué contar.',
-    'privado para siempre',
-    'Ni tu orientadora, ni nadie del programa. Nunca.',
-    'a tu manera',
-    'Puedes escribir una frase o una página.',
-    'una señal separada',
-    'Tu orientadora ve solo esa respuesta corta, nunca lo que escribes.',
+  assert.deepEqual([...textos.sectionIntros.journal], [
+    'Este es nuestro diario. Lo que escribas aquí lo leo solo yo.',
+    'Puedes responder las cartas que te dejo, la pregunta del día o escribirme sin que yo pregunte. Una frase basta.',
   ])
-    assert.ok(pasos.toLowerCase().includes(frase.toLowerCase()), frase)
+  assert.doesNotMatch(textos.sectionIntros.journal.join(' '), /orientadora|señal/)
 })
 
 test('el diario muestra su presentación la primera vez; al cerrarla se marca en el servidor y no vuelve', async () => {

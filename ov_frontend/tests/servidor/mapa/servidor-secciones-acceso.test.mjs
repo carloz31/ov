@@ -92,7 +92,7 @@ test('el ingreso trae las secciones y el panel cierra con candado y Lumi lo que 
   assert.match(texto(tarjeta), /Aún no se abre\. Toca para saber cómo/)
   tarjeta.props.onClick()
   assert.equal(checkIns.length, 0)
-  assert.match(guias.at(-1).at(-1), /^Todavía no puedes registrarla\. /)
+  assert.match(guias.at(-1).at(-1), /^Todavía no puedes marcarla\. /)
   panel.unmount()
 })
 
@@ -180,7 +180,7 @@ test('con el check-in cerrado, «Ver evolución» tampoco se abre: ni desde el p
   // Ajuste del panel (F05): bloqueada, la tarjeta no muestra «Ver evolución»; solo Lumi explica qué falta.
   assert.equal(elementos(senal(tree), (e) => e.props?.to === appPaths.student.signals).length, 0)
   senal(tree).props.onClick()
-  assert.match(guias.at(-1).at(-1), /^Todavía no puedes registrarla\. /)
+  assert.match(guias.at(-1).at(-1), /^Todavía no puedes marcarla\. /)
   panel.unmount()
   // Entrada directa a /student/journal/signal: la tarjeta de bloqueo en lugar de la vista.
   const { SeccionProtegida } = app.load('src/features/adventure/components/SeccionProtegida.tsx')

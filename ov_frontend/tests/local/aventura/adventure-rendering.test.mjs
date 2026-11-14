@@ -828,13 +828,14 @@ test('student overlay queue prioritizes real city arrival, section introductions
   assert.equal(getNextOverlay({ ...args, activityOpen: true }), null)
 })
 
+// Ajuste lumi-mensajes: la presentación del mapa tiene cinco pasos (mapa, candados, panel, perfil y ayuda).
 test('every student section has its purpose introduction and a help guide of one to four steps', () => {
   const { guideSteps, sectionIntros, passportGuideSteps } = load(path.resolve('src/data/content/guideTexts.ts'))
   const { studentViews } = load(path.resolve('src/lib/studentViews.ts'))
   const inRange = (steps) => Array.isArray(steps) && steps.length >= 1 && steps.length <= 4 && steps.every((step) => step.trim())
   for (const view of studentViews) {
     assert.ok(inRange(guideSteps[view]), `ayuda ${view}`)
-    assert.ok(inRange(sectionIntros[view]), `presentación ${view}`)
+    assert.ok(inRange(sectionIntros[view]) || (view === 'missions' && sectionIntros[view].length === 5), `presentación ${view}`)
     assert.notDeepEqual(sectionIntros[view], guideSteps[view], view)
   }
   assert.ok(inRange(passportGuideSteps))
@@ -3003,7 +3004,7 @@ test('phase 9 panel has five direct links, a compact next-step action and the re
   let tree = panel.draw({ adventure, points, recommended: points[0], progress: { label: 'Recorrido', value: 0 }, onSelect: id => { selected = id }, onCheckIn() {} })
   const links = panel.find(tree, element => element.props['aria-label'] === 'Accesos rápidos').props.children
   // Ajuste del panel (F05): Mi perfil es la cabecera; entra Mis planes.
-  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mis planes', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Información'])
+  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mis planes', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Catálogo'])
   assert.deepEqual(Array.from(links, element => element.props.to), ['/student/profile/decisions', '/student/journal', '/student/conversations', '/student/resources', '/student/investigations', '/student/catalog/professions'])
   assert.ok(links.every(element => element.type !== 'button'))
   // Ajuste del panel (F05): el siguiente paso es su propio componente (también en local); se pinta aparte.
