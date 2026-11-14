@@ -21,7 +21,7 @@ from sqlalchemy import select
 from app.core.parametros import INSTRUMENTO_INTERESES
 from app.models import Actividad, Alerta, GrupoAlerta, ProgresoActividad, RespuestaRegistro
 from app.services.panel.comun import (
-    SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, medianas_por_salon, muy_atras, por_revisar,
+    SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, muy_atras, por_revisar,
 )
 from app.services.panel.temas import EVALUADORES_TEMAS
 from app.services.panel.textos import fecha_en_palabras, fechas_en_palabras, resolver_texto, unir
@@ -84,10 +84,10 @@ def _avance_bajo_salon(lecturas: Lecturas, parametros) -> dict[int, dict]:
     nombres = {b.codigo: b.nombre for b in camino.bloques} | dict(parametros["textos_tramo"])
     por_numero = {0: SIN_EMPEZAR, **{i: b.codigo for i, b in enumerate(camino.bloques, start=1)},
                   len(camino.bloques) + 1: TERMINO}
-    medianas = medianas_por_salon(lecturas.alcance.estudiantes, camino)
+    medianas = lecturas.medianas_salon
     salon_de = {e.id: e.salon_id for e in lecturas.alcance.estudiantes}
     datos = {}
-    for cuenta_id in muy_atras(lecturas.alcance.estudiantes, camino, int(parametros["tramos"])):
+    for cuenta_id in muy_atras(lecturas.alcance.estudiantes, camino, int(parametros["tramos"]), medianas):
         mediana = por_numero[floor(medianas[salon_de[cuenta_id]])]
         datos[cuenta_id] = {"tramo": nombres[camino.posiciones[cuenta_id].codigo], "tramo_salon": nombres[mediana]}
     return datos

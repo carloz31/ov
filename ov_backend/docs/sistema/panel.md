@@ -33,7 +33,7 @@ Ninguna respuesta lleva texto del diario ni de registros.
 
 ### Lista y perfil del estudiante (ajuste panel-estudiantes)
 
-Todas las rutas del perfil pasan por `perfil_acceso.estudiante_de_orientadora` (orientadora y `es_de_su_salon`; si no, 404 «Estudiante no encontrado»). Cada vista pide solo lo que muestra.
+Todas las rutas del perfil pasan por `perfil_acceso.estudiante_de_orientadora` (orientadora y `es_de_su_salon`; si no, 404 «Estudiante no encontrado»). Cada vista pide solo lo que muestra. En el perfil, los avisos se evalúan solo para ese estudiante: `Lecturas` tiene como alcance al estudiante y, aparte, `companeros` (su salón), del que solo se lee el tramo actual para la mediana de `avance-bajo` (`Lecturas.medianas_salon`); ningún otro evaluador recibe datos de otros estudiantes y el criterio es el mismo del Inicio y la lista.
 
 | Ruta | Respuesta |
 |---|---|

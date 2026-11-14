@@ -1,6 +1,6 @@
 """Ajuste panel-estudiantes §4–§6: lista de estudiantes, cabecera y Resumen del perfil, notas y acceso."""
 
-from sqlalchemy import func, select
+from sqlalchemy import event, func, select
 
 from app import models as m
 from app.models import TipoEventoUso
@@ -198,3 +198,69 @@ def test_estudiante_de_otro_salon_o_cuenta_no_orientadora_responde_404(aplicacio
     for nombre, cuerpo in (('escribir-nota', {'texto': 'x'}), ('editar-nota', {'nota': 1, 'texto': 'x'}),
                            ('borrar-nota', {'nota': 1})):
         accion(cliente, nombre, esperado=404, estudiante='est-beto', **cuerpo)
+
+
+def test_el_mismo_estudiante_da_los_mismos_avisos_en_perfil_lista_e_inicio(aplicacion, cliente, sesion):
+    from soporte_ruta import avanzar
+    fijar_ahora(aplicacion)
+    for codigo in ('est-ana', 'est-luis', 'est-mia'):
+        avanzar(cliente, cuenta=codigo)  # T2; est-teo y est-sol quedan muy atrás (avance-bajo)
+    evento(sesion, 'est-ana', TipoEventoUso.INGRESO, 1)
+    evento(sesion, 'est-luis', TipoEventoUso.INGRESO, 2)
+    evento(sesion, 'apo-rosa', TipoEventoUso.INGRESO, 1)
+    senales(sesion, 'est-luis', 1, 2, 2)
+    resultado(sesion, 'est-mia', plano=True)
+    sesion.commit()
+    filas = {f['codigo']: f for f in lista(cliente, limite=50)['items']}
+    inicio = {}
+    for codigo in ('respuesta-sensible', 'seguridad-baja', 'sin-ingreso', 'avance-bajo', 'test-por-revisar',
+                   'familia-pendiente'):
+        respuesta = cliente.get('/cuentas/ori-carmen/panel/estudiantes', params={'salon': '5A', 'conjunto': 'alerta',
+                                                                              'valor': codigo})
+        inicio[codigo] = {e['codigo'] for e in respuesta.json()}
+    vistos = set()
+    for codigo, fila in filas.items():
+        avisos = [a for g in perfil(cliente, codigo)['avisos'] for a in g['avisos']]
+        vistos |= {a['codigo'] for a in avisos}
+        assert {a['codigo'] for a in avisos} == {c for c, quienes in inicio.items() if codigo in quienes}, codigo
+        assert fila['aviso'] == (avisos[0]['nombre'] if avisos else None), codigo
+        assert fila['avisos_mas'] == max(len(avisos) - 1, 0), codigo
+    assert {'seguridad-baja', 'sin-ingreso', 'avance-bajo', 'test-por-revisar', 'familia-pendiente'} <= vistos
+
+
+def test_las_consultas_del_perfil_no_crecen_con_el_salon(aplicacion, cliente, sesion):
+    fijar_ahora(aplicacion)
+    evento(sesion, 'est-ana', TipoEventoUso.INGRESO, 1)
+    senales(sesion, 'est-ana', 2, 3)
+    sesion.commit()
+    with ContadorConsultas(aplicacion.state.motor_bd) as pocos:
+        perfil(cliente)
+    actividad = sesion.scalar(select(m.Actividad.id).where(m.Actividad.codigo == 't-inicio'))
+    for i in range(15):
+        # DATO DE PRUEBA: compañeros con ingresos, señales y una actividad completada (su tramo sí se lee).
+        estudiante = nuevo_estudiante(sesion, f'est-extra-{i}', f'Extra {i}')
+        sesion.add_all([m.EventoUso(cuenta_id=estudiante.id, tipo=TipoEventoUso.INGRESO, fecha_hora=AHORA),
+                        m.CheckIn(cuenta_id=estudiante.id, fecha=AHORA.date(), nivel_seguridad=1),
+                        m.ProgresoActividad(cuenta_id=estudiante.id, actividad_id=actividad,
+                                            estado=m.EstadoProgreso.COMPLETADA)])
+    sesion.commit()
+    extras = set(sesion.scalars(select(m.Cuenta.id).where(m.Cuenta.codigo.like('est-extra-%'))))
+    con_extras = []
+
+    def espiar(conexion, cursor, sentencia, parametros, contexto, varios):
+        valores = parametros.values() if isinstance(parametros, dict) else parametros or ()
+        # Una consulta sobre los compañeros lleva sus quince ids (un id suelto puede coincidir con el de otra tabla).
+        if extras <= {v for v in valores if isinstance(v, int)}:
+            con_extras.append(' '.join(sentencia.split()))
+
+    event.listen(aplicacion.state.motor_bd, 'before_cursor_execute', espiar)
+    try:
+        with ContadorConsultas(aplicacion.state.motor_bd) as muchos:
+            perfil(cliente)
+        assert cliente.get('/cuentas/ori-carmen/panel/estudiantes/est-ana/avance').status_code == 200
+    finally:
+        event.remove(aplicacion.state.motor_bd, 'before_cursor_execute', espiar)
+    assert muchos.cantidad == pocos.cantidad, muchos.diagnostico
+    # De los compañeros solo se lee su tramo (sus actividades completadas), una vez por lectura, nada más.
+    assert len(con_extras) == 2, con_extras
+    assert all(c.startswith('SELECT progreso_actividad.cuenta_id, progreso_actividad.actividad_id') for c in con_extras)

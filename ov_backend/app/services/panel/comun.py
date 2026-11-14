@@ -132,9 +132,11 @@ def medianas_por_salon(estudiantes: list[Estudiante], camino: Camino) -> dict[in
     return {salon_id: median(numeros) for salon_id, numeros in por_salon.items()}
 
 
-def muy_atras(estudiantes: list[Estudiante], camino: Camino, tramos: int) -> set[int]:
-    """Su número de tramo es ≤ la mediana de su propio salón − `tramos`."""
-    medianas = medianas_por_salon(estudiantes, camino)
+def muy_atras(estudiantes: list[Estudiante], camino: Camino, tramos: int,
+              medianas: dict[int, float] | None = None) -> set[int]:
+    """Su número de tramo es ≤ la mediana de su propio salón − `tramos`. Sin `medianas`, se calculan con los mismos
+    `estudiantes` (el alcance es el salón entero)."""
+    medianas = medianas_por_salon(estudiantes, camino) if medianas is None else medianas
     return {e.id for e in estudiantes if camino.posiciones[e.id].numero <= medianas[e.salon_id] - tramos}
 
 
@@ -284,11 +286,16 @@ def con_conversacion(sesion: Session, ids: list[int]) -> set[int]:
 # --- Lecturas compartidas --------------------------------------------------------------------------
 
 class Lecturas:
-    """Lo que leen el resumen y los evaluadores del alcance, cada cosa una sola vez por petición."""
+    """Lo que leen el resumen y los evaluadores del alcance, cada cosa una sola vez por petición.
 
-    def __init__(self, sesion: Session, alcance: Alcance):
+    Ajuste panel-estudiantes: en el perfil, el alcance es solo el estudiante consultado y `companeros` es su salón
+    entero, del que únicamente se lee el tramo actual (`medianas_salon`, para `avance-bajo`); sin `companeros`, el
+    alcance es el salón o los salones (Inicio, lista)."""
+
+    def __init__(self, sesion: Session, alcance: Alcance, companeros: list[Estudiante] | None = None):
         self.sesion = sesion
         self.alcance = alcance
+        self.companeros = companeros
 
     @cached_property
     def completadas(self) -> dict[int, set[int]]:
@@ -297,6 +304,16 @@ class Lecturas:
     @cached_property
     def camino(self) -> Camino:
         return posiciones_en_camino(self.sesion, self.alcance.estudiantes, self.completadas)
+
+    @cached_property
+    def medianas_salon(self) -> dict[int, float]:
+        """La mediana del tramo de cada salón del alcance. En el perfil, con los compañeros: es la única lectura de
+        otros estudiantes (sus completadas, para su tramo)."""
+        if self.companeros is None:
+            return medianas_por_salon(self.alcance.estudiantes, self.camino)
+        ids = [e.id for e in self.companeros]
+        camino = posiciones_en_camino(self.sesion, self.companeros, completadas_por_estudiante(self.sesion, ids))
+        return medianas_por_salon(self.companeros, camino)
 
     @cached_property
     def senales_con_fecha(self) -> dict[int, list[tuple[int, datetime]]]:

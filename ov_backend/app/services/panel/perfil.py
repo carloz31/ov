@@ -189,13 +189,14 @@ def partida_resumen(sesion: Session, cuenta_id: int) -> PartidaResumen:
 def perfil(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahora: datetime) -> PerfilEstudiante:
     acceso = estudiante_de_orientadora(sesion, codigo_cuenta, codigo_estudiante, ahora)
     parametros = leer_parametros(sesion)
-    lecturas = Lecturas(sesion, acceso.salon)
+    # Solo el estudiante consultado; del salón, únicamente el tramo de sus compañeros (`avance-bajo`).
+    lecturas = Lecturas(sesion, acceso.solo, companeros=acceso.salon.estudiantes)
     cuenta_id = acceso.estudiante.id
-    estados, motivos = estados_del_test(Lecturas(sesion, acceso.solo), parametros)
+    estados, motivos = estados_del_test(lecturas, parametros)
     return PerfilEstudiante(
         cabecera=_cabecera(acceso, lecturas),
         avisos=_avisos(calcular_alertas(lecturas), cuenta_id),
-        temas=_temas(Lecturas(sesion, acceso.solo), cuenta_id),
+        temas=_temas(lecturas, cuenta_id),
         intereses=_intereses(lecturas, acceso, parametros, estados, motivos),
         planes=_planes(sesion, cuenta_id, parametros),
         partida=partida_resumen(sesion, cuenta_id),

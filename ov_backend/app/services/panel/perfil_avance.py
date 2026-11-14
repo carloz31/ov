@@ -93,7 +93,7 @@ def avance(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahora: d
     acceso = estudiante_de_orientadora(sesion, codigo_cuenta, codigo_estudiante, ahora)
     parametros = leer_parametros(sesion)
     cuenta_id = acceso.estudiante.id
-    lecturas = Lecturas(sesion, acceso.salon)
+    lecturas = Lecturas(sesion, acceso.solo, companeros=acceso.salon.estudiantes)
     completadas = lecturas.completadas.get(cuenta_id, set())
     entradas, ultima = sesion.execute(select(func.count(EntradaDiario.id), func.max(EntradaDiario.fecha_hora)).where(
         EntradaDiario.cuenta_id == cuenta_id)).one()
