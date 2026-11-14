@@ -2,10 +2,12 @@
 
 Alcance: las rutas GET y `POST /acciones/*` que usan el estudiante y el apoderado, y el front de los dos portales en
 modo `api`. Quedan fuera el panel de la orientadora (ya auditado y corregido), el motor de reglas (ya tiene su prueba de
-presupuesto) y el cálculo de resultados. Es solo el informe: no se corrigió nada.
+presupuesto) y el cálculo de resultados. Las fases A y B fueron solo de medición; el 14 de noviembre se aplicaron las
+correcciones aprobadas (sección G), con el estado de cada una en la sección D.
 
 **Estado:** fases A y B entregadas. El 14 de noviembre se aplicaron las correcciones aprobadas en la rama
-`ajuste/auditoria-plataforma` (sección G); R2 se detuvo (sección G, «Lo que se detuvo»). Las pruebas del 18 y el 19 de
+`ajuste/auditoria-plataforma` (sección G). D-B2 queda mitigado con R1: lo que resta crece con la definición del
+registro, con tope, y una prueba de techo lo fija; R2 queda como opción abierta. Las pruebas del 18 y el 19 de
 noviembre, con más de 20 estudiantes a la vez y cuentas nuevas, guían las prioridades: ver la sección H («Operación para
 el 18 y el 19») y la sección I («Despliegue»).
 
@@ -289,6 +291,10 @@ Recortarlas cambia el contrato de `ActividadCuenta` (D-B7). Con gzip, la respues
 mucho menor.
 
 ### Resultado de intereses: cuándo cambia y dónde se vuelve a pedir
+
+> **Corrección (14 de noviembre):** la lectura «en cada refresco» depende de `act-tip-final`, que no existe en
+> `contenido` ni en `ruta`. Con los datos desplegados, el refresco nunca pedía el resultado. Los costos de esta
+> sección que lo suman están corregidos en la sección G.
 
 - **Cuándo cambia de verdad:** solo con `revelar-resultado` y `reiniciar-instrumento`. Las respuestas de los ítems no
   lo cambian hasta que se revela, y cada revelado crea un resultado nuevo con su `calculado_en`.
@@ -669,39 +675,38 @@ Columnas:
 - **Riesgo:** bajo, medio o alto.
 - **Lógica validada:** si toca el motor, el flujo del registro o el cálculo de resultados.
 - **Contrato:** si cambia la respuesta de una ruta.
-- **Cuándo:** antes del 18 solo entran correcciones de front de bajo riesgo, que no cambian contratos ni lógica
-  validada.
+- **Estado:** lo que se hizo el 14 de noviembre (con su commit), lo que quedó en parte y lo que no se hace.
 
 ### Backend
 
-| # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Riesgo | Lógica validada | Contrato | Cuándo |
+| # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Riesgo | Lógica validada | Contrato | Estado |
 |---|---|---|---|---|---|---|---|---|---|
-| D-B1 | **Alta (operación)** | Argon2 usa 64 MiB por verificación; 25 ingresos simultáneos llegan a 1,6 GB. | `app/services/acceso.py:20` | Sin código, para el 18 y el 19: comprobar la instancia, agregar swap o subir a `t3.medium`, y escalonar el ingreso del salón. Con código: (a) un semáforo que limite las verificaciones simultáneas (p. ej. 4 por worker); (b) bajar `memory_cost` (los hashes guardan sus parámetros, así que los viejos siguen verificando, y `check_needs_rehash` permite migrarlos al ingresar). (b) es una decisión de seguridad. | (a) 1 h; (b) 1 h más la decisión | (a) bajo; (b) medio | No | No | Operación: antes del 18. Código: después del 19. |
-| D-B2 | **Alta (consultas)** | Registro: de 16 a 65 consultas por ítem; crece con los ítems y sus piezas (tope de 5 ítems, unas 115 consultas). El contexto del ítem guardado se resuelve 2 veces y `validar_registro` corre 3 veces. | `registro/consultas.py:64`, `:93`; `flujo.py:176`, `:219`; `contexto.py:488-504` | Opciones R1 a R4 de la sección 3. | R1 2 h; R2 1 a 1,5 días; R3 1 día; R4 1 día con el front | R1 bajo; R2 medio; R3 alto; R4 medio | **Sí** (flujo del registro) | R4 sí | Después del 19, una por una |
-| D-B3 | Media | `familia` hace 2 consultas por hijo. | `app/services/familia.py:154-168` | Cargar los progresos y desbloqueos de todos los hijos en una lectura del contexto antes del bucle. | 1 h | Bajo | No | No | Después del 19 (es backend) |
-| D-B4 | Media | Gasto fijo: la cuenta se lee 2 veces en cada petición. | `app/dependencies.py:55-69`, `:110` | Opciones 1 a 3 de 1c. Toca el acceso. | 1 a 2 h | Medio | No | No | Después del 19 |
-| D-B5 | Baja | `guardar-seccion` crece con dudas y pasos, **solo en SQLite**. | Dialecto (`insertmanyvalues`) | Nada en producción. En la prueba de presupuesto, contar los `INSERT` aparte. | — | — | No | No | — |
-| D-B6 | Media (red) | Ninguna respuesta JSON viaja comprimida (según el repo). | `despliegue/ec2/nginx-ov.conf` | `gzip on; gzip_types application/json; gzip_min_length 1024;` en nginx, o `GZipMiddleware`. Primero comprobar si Amplify ya comprime (1d). | 0,5 h | Bajo | No | No | Es configuración, no código del front: decides tú si entra antes del 18. |
-| D-B7 | Baja | `actividades` manda unos 25 KB de `condiciones_faltantes` que el front no lee (cuenta nueva). | `app/schemas/actividades.py:10-31` (`bloqueo: list[MotivoBloqueo]`) | Recortar `bloqueo` a `mensaje`, `evaluador_especial` y el `requerido` de la primera condición, o mandarlo solo en `progreso`. Con gzip pierde importancia. | 2 h más fixtures | Medio | No (el cálculo no cambia) | **Sí** | Después del 19 |
-| D-B8 | Baja | El detalle de una entrevista trae todas las reacciones sin paginar (8,6 KB con 24). | `entrevistas/{e}` | Nada por ahora. | — | — | No | Sí, si se pagina | — |
-| — | Anotación | `diario/entradas` pesa 28 KB con 61 entradas (1,4 KB comprimido). | | Sin propuesta, como se pidió. | | | | | |
+| D-B1 | **Alta (operación)** | Argon2 usa 64 MiB por verificación; 25 ingresos simultáneos llegan a 1,6 GB. | `app/services/acceso.py:20` | Sin código, para el 18 y el 19: comprobar la instancia, agregar swap o subir a `t3.medium`, y escalonar el ingreso del salón. Con código: (a) un semáforo que limite las verificaciones simultáneas (p. ej. 4 por worker); (b) bajar `memory_cost` (los hashes guardan sus parámetros, así que los viejos siguen verificando, y `check_needs_rehash` permite migrarlos al ingresar). (b) es una decisión de seguridad. | (a) 1 h; (b) 1 h más la decisión | (a) bajo; (b) medio | No | No | Hecha (a), `d8ff4d37`. (b), bajar `memory_cost`: no se hace. |
+| D-B2 | **Alta (consultas)** | Registro: de 16 a 65 consultas por ítem; crece con los ítems y sus piezas (tope de 5 ítems, unas 115 consultas). El contexto del ítem guardado se resuelve 2 veces y `validar_registro` corre 3 veces. | `registro/consultas.py:64`, `:93`; `flujo.py:176`, `:219`; `contexto.py:488-504` | Opciones R1 a R4 de la sección 3. | R1 2 h; R2 1 a 1,5 días; R3 1 día; R4 1 día con el front | R1 bajo; R2 medio; R3 alto; R4 medio | **Sí** (flujo del registro) | R4 sí | Mitigado con R1 (`8068fd84`): crecimiento acotado por la definición, fijado por la prueba de techo (`8e721c7e`). R2: opción abierta. R3 y R4: no se hacen. |
+| D-B3 | Media | `familia` hace 2 consultas por hijo. | `app/services/familia.py:154-168` | Cargar los progresos y desbloqueos de todos los hijos en una lectura del contexto antes del bucle. | 1 h | Bajo | No | No | Hecha, `224354b6`. |
+| D-B4 | Media | Gasto fijo: la cuenta se lee 2 veces en cada petición. | `app/dependencies.py:55-69`, `:110` | Opciones 1 a 3 de 1c. Toca el acceso. | 1 a 2 h | Medio | No | No | Hecha (opción 1), `8d9604ff`. |
+| D-B5 | Baja | `guardar-seccion` crece con dudas y pasos, **solo en SQLite**. | Dialecto (`insertmanyvalues`) | Nada en producción. En la prueba de presupuesto, contar los `INSERT` aparte. | — | — | No | No | No se hace. |
+| D-B6 | Media (red) | Ninguna respuesta JSON viaja comprimida (según el repo). | `despliegue/ec2/nginx-ov.conf` | `gzip on; gzip_types application/json; gzip_min_length 1024;` en nginx, o `GZipMiddleware`. Primero comprobar si Amplify ya comprime (1d). | 0,5 h | Bajo | No | No | Hecha, `9c0d02b6`; se aplica a mano en la EC2 (sección H). |
+| D-B7 | Baja | `actividades` manda unos 25 KB de `condiciones_faltantes` que el front no lee (cuenta nueva). | `app/schemas/actividades.py:10-31` (`bloqueo: list[MotivoBloqueo]`) | Recortar `bloqueo` a `mensaje`, `evaluador_especial` y el `requerido` de la primera condición, o mandarlo solo en `progreso`. Con gzip pierde importancia. | 2 h más fixtures | Medio | No (el cálculo no cambia) | **Sí** | No se hace. |
+| D-B8 | Baja | El detalle de una entrevista trae todas las reacciones sin paginar (8,6 KB con 24). | `entrevistas/{e}` | Nada por ahora. | — | — | No | Sí, si se pagina | No se hace. |
+| — | Anotación | `diario/entradas` pesa 28 KB con 61 entradas (1,4 KB comprimido). | | Sin propuesta, como se pidió. | | | | | No se hace (no se pagina el diario). |
 
 ### Front
 
-| # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Riesgo | Lógica validada | Contrato | Cuándo |
+| # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Riesgo | Lógica validada | Contrato | Estado |
 |---|---|---|---|---|---|---|---|---|---|
-| F1 | Media | Notificaciones 2 veces en cada ingreso, en el estudiante y en el apoderado. | `operaciones.ts:70` y `useNoveltyQueue.ts:90`; `apoderado.ts:115` y `useParentOverview.ts:56` | No volver a pedir si la lista ya está cargada en esta sesión (o compartir la promesa resuelta). | 0,5 h y una prueba | Bajo | No | No | **Antes del 18** |
-| F2a | **Alta (frecuencia)** | `ver-*` dispara el refresco completo al abrir cada detalle del catálogo (unas 15 consultas y 55 KB). | `catalogo.ts:307-315`, `useCatalogVisit.ts:19` | Refrescar solo si la respuesta trae `nuevos_desbloqueos`. Medido: sin desbloqueos no cambia nada en actividades, avance, resumen ni secciones. | 1 h y una prueba | Bajo | No | No | **Antes del 18** |
-| F2b | Alta | Todas las demás acciones refrescan actividades, avance y RIASEC aunque no cambien nada (diario, cartas, medidores, pasos, investigaciones). | `refresco.ts:38-48`, `:101-122` | Refresco condicional: actividades y avance solo con desbloqueos o eventos `COMPLETA_ACTIVIDAD` o `COMPLETA_BLOQUE`, o en la primera respuesta de un cuestionario. Mantener el refresco tras `completar-actividad`, batallas y casos. | 2 a 3 h y pruebas | Medio (toca la frescura del mapa en todas las acciones) | No | No | Después del 19 (o antes, limitado a diario, cartas y medidores, si lo apruebas) |
-| F3 | **Alta (frecuencia)** | El resultado RIASEC (7 consultas y 22 KB) se pide en cada ingreso y en cada refresco; al revelar o reiniciar, 2 veces; sin caché. | `refresco.ts:81-85`, `resultado.ts:15-22`, `instrumentos.ts:41-47`, `:153-182` | Pedirlo solo si no está cargado, y forzarlo solo tras `revelar-resultado` o `reiniciar-instrumento`. Tras un 409, no repetir hasta el próximo revelado. | 1 h y una prueba | Bajo | No (solo cuándo se lee) | No | **Antes del 18** |
-| F4 | Media | El libro de Helena se pide entero con cada recarga de actividades. | `useHelenaPages.ts:72-93` | Depender de un indicador de cambio (revelado o reinicio) y no de `actividades.datos`. | 1 h | Medio (pantalla de resultados) | No | No | Después del 19 |
-| F5 | Baja | `GET batallas` doble, `GET casos` hasta 4 veces por caso, `catalogo/familias` sin caché. | `useChallengePlayer.ts:43-62`, `useFichasBatalla.ts:16-35`; `useCasoServidor.ts:24`, `useProgresoCaso.ts:26`, `useForestFireCase.ts:113`; `useBuscadorFamilia.ts:21-31`, `useGuionInvestigacion.ts:59` | Compartir la petición en vuelo y reutilizar lo cargado. Para familias, usar `useOpcionesCatalogo`. | 1,5 h | Bajo | No | No | Antes del 18 (familias y batallas); casos después |
-| F6 | Baja | El apoderado pide `/instrumentos` (estático, 18,8 KB) y `familia/resultados` en cada visita a Inicio, y `fichas` en cada montaje sin deduplicar. | `apoderado.ts:263`, `apoderadoResultados.ts:110-115`, `apoderadoFichas.ts:53-66` | Guardar `/instrumentos` por sesión; deduplicar `fichas` en vuelo. | 1 h | Bajo | No | No | **Antes del 18** |
-| F7 | Media | Planes: cada medidor o paso hace el refresco completo más `GET planes` (39–41 consultas y unos 76 KB por clic); `planes` doble con SECCION_PLAN. | `planes.ts:8-12` | Medidores y orden: aplicar lo enviado al almacén sin `GET planes`. Lo demás, con F2b. | 1,5 h | Medio | No | No | Después del 19 |
-| F8 | Media | `localStorage` reescrito entero en cada GET actividades y en cada tecla de un texto. | `journeyStore.ts:52-71`, `secciones.ts:122`, `SubmissionNode.tsx:218-223`, `adventureStore.ts:160-182` | Escribir con espera (300 ms) y solo si cambió. | 1,5 h | Medio (borradores) | No | No | Después del 19 |
-| F9 | Media | Un solo paquete de 817 KB comprimido, con las páginas de la orientadora y los 132 JSON de contenido (incluidos los de `ruta`). | `routes/AppRoutes.tsx`, `data/activities/contenidos.ts`, `vite.config.ts` | `React.lazy` por portal y carga de contenidos por actividad (`import.meta.glob` perezoso). | 1 a 2 días | Medio | No | No | Después del 19 |
-| F10 | Baja | Repintados globales: almacén entero en 38 consumidores; el mapa recalcula sus puntos sin memo; el diario repinta en cada tecla. | K | Selectores por sección; `useMemo` en el mapa; bajar el estado del texto. | 1 a 2 días | Medio | No | No | Después del 19 |
-| F11 | Baja | `fichas.ts` y `favoritos.ts` acumulan entre sesiones. | `fichas.ts:26`, `favoritos.ts:38` | Vaciar al cambiar de sesión, como `catalogo.ts`. | 0,5 h | Bajo | No | No | Antes del 18 (opcional) |
+| F1 | Media | Notificaciones 2 veces en cada ingreso, en el estudiante y en el apoderado. | `operaciones.ts:70` y `useNoveltyQueue.ts:90`; `apoderado.ts:115` y `useParentOverview.ts:56` | No volver a pedir si la lista ya está cargada en esta sesión (o compartir la promesa resuelta). | 0,5 h y una prueba | Bajo | No | No | Hecha, `903a04cb`. |
+| F2a | **Alta (frecuencia)** | `ver-*` dispara el refresco completo al abrir cada detalle del catálogo (unas 15 consultas y 55 KB). | `catalogo.ts:307-315`, `useCatalogVisit.ts:19` | Refrescar solo si la respuesta trae `nuevos_desbloqueos`. Medido: sin desbloqueos no cambia nada en actividades, avance, resumen ni secciones. | 1 h y una prueba | Bajo | No | No | Hecha, `9d012942`. |
+| F2b | Alta | Todas las demás acciones refrescan actividades, avance y RIASEC aunque no cambien nada (diario, cartas, medidores, pasos, investigaciones). | `refresco.ts:38-48`, `:101-122` | Refresco condicional: actividades y avance solo con desbloqueos o eventos `COMPLETA_ACTIVIDAD` o `COMPLETA_BLOQUE`, o en la primera respuesta de un cuestionario. Mantener el refresco tras `completar-actividad`, batallas y casos. | 2 a 3 h y pruebas | Medio (toca la frescura del mapa en todas las acciones) | No | No | Hecha, `2a79ef13` y `721a589c`. |
+| F3 | **Alta (frecuencia)** | El resultado RIASEC (7 consultas y 22 KB) se pide en cada ingreso y en cada refresco; al revelar o reiniciar, 2 veces; sin caché. | `refresco.ts:81-85`, `resultado.ts:15-22`, `instrumentos.ts:41-47`, `:153-182` | Pedirlo solo si no está cargado, y forzarlo solo tras `revelar-resultado` o `reiniciar-instrumento`. Tras un 409, no repetir hasta el próximo revelado. | 1 h y una prueba | Bajo | No (solo cuándo se lee) | No | Hecha, `3667d9f3` (en `contenido` no hay `act-tip-final`: ver la corrección en G). |
+| F4 | Media | El libro de Helena se pide entero con cada recarga de actividades. | `useHelenaPages.ts:72-93` | Depender de un indicador de cambio (revelado o reinicio) y no de `actividades.datos`. | 1 h | Medio (pantalla de resultados) | No | No | Hecha, `5611137d`. |
+| F5 | Baja | `GET batallas` doble, `GET casos` hasta 4 veces por caso, `catalogo/familias` sin caché. | `useChallengePlayer.ts:43-62`, `useFichasBatalla.ts:16-35`; `useCasoServidor.ts:24`, `useProgresoCaso.ts:26`, `useForestFireCase.ts:113`; `useBuscadorFamilia.ts:21-31`, `useGuionInvestigacion.ts:59` | Compartir la petición en vuelo y reutilizar lo cargado. Para familias, usar `useOpcionesCatalogo`. | 1,5 h | Bajo | No | No | Hecha en parte, `5ed42fea`: batallas y familias. Los casos no se hacen ahora (después del 19). |
+| F6 | Baja | El apoderado pide `/instrumentos` (estático, 18,8 KB) y `familia/resultados` en cada visita a Inicio, y `fichas` en cada montaje sin deduplicar. | `apoderado.ts:263`, `apoderadoResultados.ts:110-115`, `apoderadoFichas.ts:53-66` | Guardar `/instrumentos` por sesión; deduplicar `fichas` en vuelo. | 1 h | Bajo | No | No | Hecha, `0b341c67`. |
+| F7 | Media | Planes: cada medidor o paso hace el refresco completo más `GET planes` (39–41 consultas y unos 76 KB por clic); `planes` doble con SECCION_PLAN. | `planes.ts:8-12` | Medidores y orden: aplicar lo enviado al almacén sin `GET planes`. Lo demás, con F2b. | 1,5 h | Medio | No | No | Hecha en parte, `c2dad716`: sin refresco ni `planes` doble. Medidores y orden siguen pidiendo `planes` (haría falta cambiar el contrato). |
+| F8 | Media | `localStorage` reescrito entero en cada GET actividades y en cada tecla de un texto. | `journeyStore.ts:52-71`, `secciones.ts:122`, `SubmissionNode.tsx:218-223`, `adventureStore.ts:160-182` | Escribir con espera (300 ms) y solo si cambió. | 1,5 h | Medio (borradores) | No | No | Hecha, `b417792b`. |
+| F9 | Media | Un solo paquete de 817 KB comprimido, con las páginas de la orientadora y los 132 JSON de contenido (incluidos los de `ruta`). | `routes/AppRoutes.tsx`, `data/activities/contenidos.ts`, `vite.config.ts` | `React.lazy` por portal y carga de contenidos por actividad (`import.meta.glob` perezoso). | 1 a 2 días | Medio | No | No | No se hace ahora (después del 19). |
+| F10 | Baja | Repintados globales: almacén entero en 38 consumidores; el mapa recalcula sus puntos sin memo; el diario repinta en cada tecla. | K | Selectores por sección; `useMemo` en el mapa; bajar el estado del texto. | 1 a 2 días | Medio | No | No | No se hace ahora (después del 19). |
+| F11 | Baja | `fichas.ts` y `favoritos.ts` acumulan entre sesiones. | `fichas.ts:26`, `favoritos.ts:38` | Vaciar al cambiar de sesión, como `catalogo.ts`. | 0,5 h | Bajo | No | No | Hecha, `cd44b0a1`. |
 
 ### Correcciones que tocan lógica validada (se deciden una por una)
 
@@ -849,7 +854,7 @@ medir desde la prueba, así que esta fija el comportamiento (la respuesta tardí
 - **Resultado:** dos corridas del código anterior salen idénticas entre sí, y la del código con R1 sale idéntica a
   ellas.
 
-### Lo que se detuvo: R2
+### R2: opción abierta (decidido: el registro queda con R1)
 
 `LecturaContexto` (`app/services/panel/contexto_lectura.py`) no sirve tal cual para armar la respuesta del estudiante.
 Le faltan dos cosas:
@@ -861,13 +866,19 @@ Le faltan dos cosas:
    lo necesita en `marcador_faltante`.
 
 Para servir al estudiante habría que copiar al módulo del panel la regla de `_opciones` (la base de la fuente sin las
-propias, más las propias con sus marcadores), además de las copias de marcadores y ecos que ya tiene. La instrucción
-era detenerse en ese caso, así que R2 no se hizo.
+propias, más las propias con sus marcadores), además de las copias de marcadores y ecos que ya tiene.
 
-Opciones para decidir:
-- **(a)** Extender `LecturaContexto` con las opciones de lista (llamando a `opciones_por_item` en lote) y con el
-  marcador que falta, y probarla contra `resolver_contexto` en vivo en las tres cuentas.
-- **(b)** Dejar el registro como queda con R1.
+**Decisión: opción (b).** El registro queda con R1 y `LecturaContexto` no se extiende. Con R1, lo que resta crece con
+la definición del registro (sus ítems y piezas), tiene tope y solo pesa en `b4-1`. No crece con la cuenta, que era el
+criterio. Una tercera copia de reglas en el módulo del panel no se justifica por un registro.
+
+**D-B2: mitigado con R1, con el crecimiento acotado por la definición.**
+`tests/integration/registros/test_techo_registros_contenido.py` recorre los 19 registros de `contenido` (el camino
+completo, los opcionales y una reedición de cada uno) y fija el máximo de consultas de `GET registro`, `responder` y
+`entregar` con los valores del 14 de noviembre. Por ejemplo, `b4-1` tiene 34 · 51 · 45 y `b4-5`, 12 · 25 · 28. Si un
+registro nuevo o un cambio de definición supera su techo, la prueba falla y ahí se decide.
+
+R2 sigue abierta, si algún día hiciera falta, con lo que le falta a `LecturaContexto` (los dos puntos de arriba).
 
 ### Pruebas de presupuesto agregadas
 
@@ -890,8 +901,8 @@ Opciones para decidir:
   con 2 o 5 entrevistas, reacciones de 4 compañeros y comentarios. El comentario de la orientadora es una rama del
   detalle, así que se compara con un comentario y con muchos.
 
-Sigue faltando la prueba contra los ítems del registro: hoy fallaría, porque sin R2 `registro_cuenta` resuelve cada
-ítem por separado.
+- `tests/integration/registros/test_techo_registros_contenido.py`: el techo de consultas de cada registro de
+  `contenido`, en lugar de la prueba contra los ítems del registro, que sin R2 no se puede cumplir.
 
 ### Medición después de las correcciones
 
@@ -907,19 +918,28 @@ sección cerrada, de 4 a 3.
 | `GET catalogo/carreras/{c}` (cuenta que terminó) | 21 | 20 |
 | `completar-actividad` | 8–12 | 7–11 |
 
+**Corrección de la fase B, sobre `act-tip-final`:**
+- **Qué estaba mal:** el refresco del front pide el resultado RIASEC solo si existe la actividad `act-tip-final`, y esa
+  actividad no está en `contenido` ni en `ruta`; solo la usan fixtures antiguos del front. Con los datos que se
+  despliegan, el refresco nunca pedía el resultado. La tabla de costo por gesto de la sección 2 sumaba esas 7 consultas
+  y 22 KB en la cuenta que terminó; aquí van sin ellas.
+- **Qué sigue valiendo de F3:** evita la lectura doble al revelar (la del refresco más la del libro) en cualquier
+  contenido que tenga esa actividad.
+- **Dónde se pide el resultado en `contenido`:** el libro, el perfil, el catálogo (si no está cargado) y Mara.
+
 **Costo por gesto del usuario** (la acción más lo que el front vuelve a pedir; KB sin comprimir):
 
 | Gesto | Antes: consultas · KB | Después: consultas · KB |
 |---|---|---|
 | Ingreso, cuenta nueva | 35 · ≈ 59 | **23** · ≈ 59 (la campana, una vez) |
-| Ingreso, cuenta que terminó | 43 · ≈ 66 | **29** · ≈ 61 (el resultado RIASEC, una vez por sesión) |
-| Completar una actividad (cuenta que terminó) | 23–29 · ≈ 55 | **13–17** · ≈ 33 (sin el resultado RIASEC) |
+| Ingreso, cuenta que terminó | 36 · ≈ 44 | **23** · ≈ 39 |
+| Completar una actividad (cuenta que terminó) | 16–22 · ≈ 33 | **13–17** · ≈ 33 |
 | Guardar un ítem de registro | 16–65 · ≤ 8 | **14–51** · ≤ 8 |
-| Abrir un detalle de carrera | 34–43 · ≈ 68 | **17–26** · ≈ 15 (sin refresco si no hay desbloqueo) |
-| Mover un medidor | 39 · ≈ 76 | **22** · ≈ 22 |
-| Marcar un paso | 41 · ≈ 76 | **24** · ≈ 22 |
-| Escribir una entrada | 34–36 · ≈ 86 | **15–17** · ≈ 32 |
-| Escribir una carta | 27–31 · ≈ 60 | **10–14** · ≈ 5 |
+| Abrir un detalle de carrera | 27–36 · ≈ 46 | **17–26** · ≈ 15 (sin refresco si no hay desbloqueo) |
+| Mover un medidor | 32 · ≈ 54 | **22** · ≈ 22 |
+| Marcar un paso | 34 · ≈ 54 | **24** · ≈ 22 |
+| Escribir una entrada | 27–29 · ≈ 64 | **15–17** · ≈ 32 |
+| Escribir una carta | 20–24 · ≈ 38 | **10–14** · ≈ 5 |
 
 Si la respuesta trae un desbloqueo, el gesto suma el refresco del camino (actividades y avance: 6 consultas en la cuenta
 que terminó y 8 en la nueva) y la sección que se abre.
@@ -1085,7 +1105,7 @@ pestaña, salvo que se diga otra cosa.
 | F1 | Ingreso del estudiante → mapa | Ingresar | Un solo `GET …/notificaciones` (antes, dos). La campana muestra sus notificaciones. |
 | F1 | Apoderado → Inicio | Ingresar | Un solo `GET …/notificaciones`. |
 | F2a | Catálogo → detalle de una carrera | Abrir un detalle por primera vez | `POST /acciones/ver-carrera` y **ningún** `GET actividades` ni `avance` después. Si la vista abre algo (p. ej. `t-explorar`), sí aparecen y el mapa lo muestra. |
-| F3 | Mapa con `act-tip-final` abierta | Completar cualquier actividad | Después de `completar-actividad`, `GET actividades` y `avance`, pero **no** `…/TEST-RIASEC/resultado`. Al revelar intereses en el libro, el resultado se lee una vez. |
+| F3 | Libro de Helena → página II (Intereses), lista para revelar | Romper el sello | El resultado se lee una vez (con el libro); en `contenido` no hay `act-tip-final`, así que el refresco nunca lo pedía. |
 | F6 | Apoderado → Inicio, ir y volver dos veces | Navegar entre Inicio y otra vista | `GET /instrumentos` solo la primera vez; `familia/resultados` cada vez. |
 | F6 | Apoderado → Mis actividades | Abrir una actividad | Un solo `GET …/fichas` aunque se monten la lista y la actividad. |
 | F5 | Mapa → drawer de una batalla → Empezar | Abrir el drawer y entrar a la batalla | Un solo `GET …/batallas`. Tras un intento, al volver a entrar, uno nuevo. |
@@ -1104,6 +1124,18 @@ pestaña, salvo que se diga otra cosa.
 | D-B4 | Cualquier vista | Usarla normalmente; luego desactivar la cuenta (en la base de desarrollo) y recargar | Todo responde igual. Con la cuenta desactivada, vuelve al ingreso (401). |
 | F8 | Un registro o entregable de texto | Escribir rápido y salir del campo; recargar la página | El borrador está completo tras recargar. En Aplicación → Almacenamiento local, `ov.missions.v2.api` cambia al dejar de escribir, no con cada tecla. |
 | F8 | Lo mismo | Escribir y cerrar la pestaña de inmediato; volver a abrir | El borrador sigue completo. |
+
+### Comprobaciones en pantalla, sin recargar la página
+
+Con una cuenta de estudiante de `datos/usuarios_prueba.txt` (por ejemplo, `est-mia`) en una base recién recargada.
+«Sin recargar» quiere decir sin F5: se navega dentro de la aplicación.
+
+| # | Caso | Cómo provocarlo | Qué debes ver, sin recargar |
+|---|---|---|---|
+| P1 | Tras revelar intereses | Completa el camino hasta `b2-5` («Intereses y ambientes de trabajo»): `b1-3` abre la Ciudad y `b2-5` abre `h-intereses-1`. En la Ciudad, completa «Mis intereses» 1 a 6 respondiendo con opciones variadas. En el libro de Helena, página II, rompe el sello. | En el **catálogo → Ocupaciones**: el filtro «Afines a mi resultado» y los sellos de letras en las tarjetas (las carreras no muestran RIASEC en api desde el ajuste coherencia-bloque3). En **Mi perfil → capítulo II** y en el **libro**: el resultado. En `contenido` no existe `act-tip-final`: su lugar lo ocupan el libro y el perfil. |
+| P2 | Tras reiniciar y revelar de nuevo | El reinicio solo aparece con perfil plano (HU-095). Con otra cuenta nueva, responde los seis «Mis intereses» con **la misma opción en todos los ítems** y revela: sale el perfil plano con «Volver a realizar». Reinicia, vuelve a responder los seis con opciones variadas y revela. | El resultado nuevo (código de interés y ocupaciones afines) en el libro, en Mi perfil y en el catálogo («Afines a mi resultado»), no el plano anterior. |
+| P3 | Una acción que ya no refresca el camino y da una insignia o sube de nivel | Con la cuenta después de `b0-4` («¿Tienes una opción en mente?»), que abre el catálogo: abre el detalle de **una carrera** por primera vez (sello `t-ins-familias`). Con B0 completo (`b0-1` a `b0-6`), abre **tres carreras distintas** (nivel 3, `R-NIV-3`). También sirven la primera ocupación (`t-ins-letras`) y la primera institución (`t-ins-instituciones`). | El aviso (toast) del sello o del título. En el **pasaporte**, el sello obtenido; en el **panel lateral del mapa**, el título nuevo. La vista registra el desbloqueo y por eso sí refresca el camino. |
+| P4 | Completar una actividad que abre una sección | Con una cuenta nueva, completa `b0-2` («Lo que siento al terminar el colegio y mi diario»). Abre la sección Diario, la actividad `b0-3` y una pregunta del diario. También sirve `b0-4`, que abre Catálogo y Planes. | En el cierre, «Se abrió para ti» con la sección y la actividad. De vuelta en el mapa: el aviso, `b0-3` disponible (antes bloqueada) y el acceso rápido al Diario habilitado; al abrir el Diario, la pregunta nueva en el buzón. |
 
 ## Carga y Argon2 con 2 núcleos, después de las correcciones
 
