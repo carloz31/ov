@@ -115,3 +115,47 @@ def intereses(cliente, salon='5A', esperado=200, **orden):
 def familia_de(sesion, carrera):
     return sesion.scalar(select(m.FamiliaCarrera.codigo).join(m.Carrera, m.Carrera.familia_id == m.FamiliaCarrera.id)
                          .where(m.Carrera.codigo == carrera))
+
+
+# --- Ajuste panel-estudiantes ----------------------------------------------------------------------
+
+ZONAS_PROMEDIO = {'POR_TRABAJAR': 1.0, 'EN_CAMINO': 3.0, 'FUERTE': 4.0}
+
+
+def medicion(sesion, codigo, aplicacion, zonas, hace_dias=0):
+    """DATO DE PRUEBA: un resultado vigente de partida (APL-PARTIDA) o llegada (APL-LLEGADA) con la zona de cada
+    dimensión (`{'AUTO-...': 'FUERTE'}`); las no nombradas quedan EN_CAMINO."""
+    apl = aplicacion_id(sesion, aplicacion)
+    instrumento_id = sesion.scalar(select(m.Aplicacion.instrumento_id).where(m.Aplicacion.id == apl))
+    resultado_fila = m.ResultadoInstrumento(cuenta_id=cuenta(sesion, codigo).id, aplicacion_id=apl,
+                                            calculado_en=AHORA - timedelta(days=hace_dias))
+    sesion.add(resultado_fila)
+    sesion.flush()
+    for dimension in sesion.scalars(select(m.Dimension).where(m.Dimension.instrumento_id == instrumento_id)):
+        cantidad = len(sesion.scalars(select(m.ItemInstrumento.id).where(
+            m.ItemInstrumento.dimension_id == dimension.id)).all())
+        promedio = ZONAS_PROMEDIO[zonas.get(dimension.codigo, 'EN_CAMINO')]
+        sesion.add(m.ResultadoDimension(resultado_id=resultado_fila.id, dimension_id=dimension.id,
+                                        puntaje=promedio * cantidad, puntaje_maximo=4.0 * cantidad))
+    return resultado_fila
+
+
+def conocimiento(sesion, tarjeta_fila, **respuestas):
+    """DATO DE PRUEBA: respuestas de «Qué tanto la conoce» (`DIA_NORMAL='NO'`)."""
+    sesion.add_all(m.ConocimientoTarjeta(tarjeta_id=tarjeta_fila.id, pregunta=m.PreguntaConocimiento(p),
+                                         respuesta=m.RespuestaConocimiento(r)) for p, r in respuestas.items())
+
+
+def alertas_de(sesion, codigo, en_inicio=True, ahora=AHORA):
+    """Las alertas que cumple un estudiante (calculadas sobre su salón): código → (nombre_perfil, descripcion_perfil)."""
+    from app.core.contexto import usar_contexto
+    from app.services.panel.alertas import calcular_alertas
+    from app.services.panel.comun import Lecturas, resolver_alcance
+
+    @usar_contexto
+    def calcular(s):
+        estudiante_id = cuenta(s, codigo).id
+        lecturas = Lecturas(s, resolver_alcance(s, 'ori-carmen', '5A', ahora))
+        return {a.alerta.codigo: (a.nombre_perfil(estudiante_id), a.descripcion_perfil(estudiante_id))
+                for a in calcular_alertas(lecturas, en_inicio) if estudiante_id in a.datos}
+    return calcular(sesion)

@@ -8,12 +8,15 @@ Todo lo que el panel decide sale de tablas de catálogo que llena `datos/fijos.p
 
 | Tabla | Qué guarda |
 |---|---|
-| `grupo_alerta` | `codigo`, `nombre` y `orden` de cada grupo de avisos («Conversar pronto», «Se están quedando atrás»). |
-| `alerta` | `codigo`, `grupo_id`, `nombre`, `descripcion` (nula), `evaluador` (nombre de la función registrada que la calcula), `parametros` (JSON `{clave: valor}`), `orden` dentro del grupo y `activa`. |
+| `grupo_alerta` | `codigo`, `nombre`, `orden` y `en_inicio` de cada grupo de avisos («Conversar pronto», «Se están quedando atrás»; «Para conversar», con `en_inicio = false`, solo aparece en el perfil del estudiante). |
+| `alerta` | `codigo`, `grupo_id`, `nombre`, `descripcion` (nula), `evaluador` (nombre de la función registrada que la calcula), `parametros` (JSON `{clave: valor}`), `orden` dentro del grupo y `activa`; para el perfil de un estudiante, `nombre_perfil` (nulo = `nombre`), `descripcion_perfil` y `destino` (`TESTS`, `PLANES`, `RESPUESTAS`, `AVANCE` o nulo). |
+| `nota_orientadora` | Estado: notas privadas de una orientadora sobre un estudiante (`texto`, `creada_en`, `actualizada_en`). |
 | `parametro` | `codigo`, `valor` (texto; el servidor lo convierte) y `descripcion`. Solo los umbrales y cantidades del panel (`PANEL_*`); los de `app/core/parametros.py` siguen allí. |
 
 - Las alertas no se guardan por estudiante: se calculan al consultar y desaparecen solas cuando la condición deja de cumplirse.
 - Una alerta inactiva no se calcula ni se muestra. Una alerta que es variante de un evaluador existente (otro umbral, otro instrumento, otro texto, otro grupo) es solo una fila; un tipo nuevo de condición necesita un evaluador nuevo en código.
+
+- **Temas «Para conversar»** (`app/services/panel/temas.py`, mismo registro `EVALUADORES_ALERTA`): `plan_idea_ajena` (`origenes`, `textos_origen`), `plan_conoce_poco` (`minimo_no`; preguntas con la lista `CONOCIMIENTO_ORIENTADORA`), `plan_complicaciones`, `plan_fuera_de_areas` (el criterio de «Planes frente al test») y `dimension_por_trabajar` (la medición más reciente de partida y llegada, `textos_momento`). Las zonas de partida y llegada sin exigir las dos están en `app/services/panel/autopercepcion.py`.
 
 ## Alcance y acceso
 
@@ -30,7 +33,7 @@ Ninguna respuesta lleva texto del diario ni de registros.
 
 ## Definiciones
 
-- **Alertas** (`app/services/panel/alertas.py`): cada evaluador recibe las lecturas del alcance y los parámetros de la fila (completados con sus defectos) y devuelve los estudiantes que cumplen; `{clave}` se resuelve en `nombre` y `descripcion`. Una alerta activa con un evaluador desconocido se omite y se avisa en el log. Evaluadores: `respuesta_sensible`, `seguridad_baja` (los `senales` check-ins más recientes ≤ `nivel_maximo`, sin mirar fechas), `sin_ingreso` (sin INGRESO hace `dias` días o más; nunca ingresó también), `avance_bajo_salon` (tramo ≤ mediana de su propio salón − `tramos`), `instrumento_por_revisar` y `familia_pendiente`.
+- **Alertas** (`app/services/panel/alertas.py`): cada evaluador recibe las lecturas del alcance y los parámetros de la fila (completados con sus defectos) y devuelve, por estudiante que cumple, los datos para sus textos de perfil; `{clave}` se resuelve en `nombre` y `descripcion` con los parámetros y en `nombre_perfil` y `descripcion_perfil` con los datos del estudiante y los parámetros. El Inicio y «Ver» solo calculan los grupos con `en_inicio`. Los textos que dependen de un código (motivo de «Por revisar», de familia pendiente, nombres de «Sin empezar»/«Terminó», «nunca») están en los `parametros` de la fila. Una alerta activa con un evaluador desconocido se omite y se avisa en el log. Evaluadores: `respuesta_sensible`, `seguridad_baja` (los `senales` check-ins más recientes ≤ `nivel_maximo`, sin mirar fechas), `sin_ingreso` (sin INGRESO hace `dias` días o más; nunca ingresó también), `avance_bajo_salon` (tramo ≤ mediana de su propio salón − `tramos`), `instrumento_por_revisar` y `familia_pendiente`.
 - **Estado del test:** «Por revisar» (`comun.por_revisar`, compartido con la alerta) es resultado vigente con perfil plano o con `avisos_velocidad` ≥ el umbral en ese intento (el bloque usa `PANEL_AVISOS_VELOCIDAD_PRISA`); plano y prisa cuenta como plano. «Listo»: vigente y no por revisar. «En curso»: respondió algún ítem o completó alguna actividad de sus aplicaciones. Rehacer el test vuelve a «Sin empezar».
 - **Camino:** el tramo actual es el de `avance.tramos_del_camino`; «Sin empezar» es no haber completado ninguna actividad. «Donde más se detienen» es la siguiente requerida pendiente que comparten más estudiantes cuyo último `COMPLETA_ACTIVIDAD` fue hace `PANEL_DIAS_DETENIDO` días o más (solo si son al menos `PANEL_MINIMO_DETENIDOS`).
 - **Familia:** participa si tiene vínculo activo con algún apoderado con INGRESO; «terminó su ruta» es el criterio del diploma (`familia.rutas_completas`); «conversaron», alguna `conversada_en`.

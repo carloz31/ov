@@ -25,7 +25,7 @@ ESTADO = {
     'respuesta_registro', 'favorito',
     'tarjeta_carrera', 'motivo_tarjeta', 'conocimiento_tarjeta', 'duda_tarjeta', 'gasto_tarjeta',
     'financiamiento_tarjeta', 'complicacion_tarjeta', 'sugerencia_tarjeta', 'paso_tarjeta',
-    'investigacion', 'pregunta_guion', 'sugerencia_guion', 'reaccion', 'reporte', 'notificacion',
+    'investigacion', 'pregunta_guion', 'sugerencia_guion', 'reaccion', 'reporte', 'notificacion', 'nota_orientadora',
 }
 
 

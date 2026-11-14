@@ -16,7 +16,7 @@ TABLAS_ESTADO = {
     "respuesta_registro", "favorito",
     "tarjeta_carrera", "motivo_tarjeta", "conocimiento_tarjeta", "duda_tarjeta", "gasto_tarjeta",
     "financiamiento_tarjeta", "complicacion_tarjeta", "sugerencia_tarjeta", "paso_tarjeta",
-    "investigacion", "pregunta_guion", "sugerencia_guion", "reaccion", "reporte", "notificacion",
+    "investigacion", "pregunta_guion", "sugerencia_guion", "reaccion", "reporte", "notificacion", "nota_orientadora",
 }
 
 
@@ -41,7 +41,7 @@ def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
     assert set(inspector.get_table_names()) == esperadas
     # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
     # Ajuste panel-salon: entran `grupo_alerta`, `alerta` y `parametro`.
-    assert len(esperadas) == 97
+    assert len(esperadas) == 98
     assert inspector.get_pk_constraint("entrevista_autor")["constrained_columns"] == [
         "entrevista_id", "cuenta_id",
     ]

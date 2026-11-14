@@ -11,7 +11,7 @@ from app.models.enums import (
     PreguntaConocimiento, RespuestaConocimiento, OrigenDuda, EstadoDuda, EstadoSugerencia, OrigenSugerencia,
     EstadoPaso, OrigenSesion, EstadoInvestigacion, OrigenPreguntaGuion, EstadoSugerenciaGuion, EstadoEntrevista,
     MotivoReporte, EstadoReporte, TipoNotificacion, FuenteOpciones, CampoLoQuePienso,
-    ClaseNovedadPlan,
+    ClaseNovedadPlan, DestinoPerfil,
 )
 
 
@@ -60,7 +60,7 @@ _MODELOS_POR_MODULO = {
         'SugerenciaTarjeta', 'PasoTarjeta',
     ),
     'app.models.panel': (
-        'GrupoAlerta', 'Alerta', 'Parametro',
+        'GrupoAlerta', 'Alerta', 'Parametro', 'NotaOrientadora',
     ),
 }
 
@@ -99,7 +99,7 @@ __all__ = [
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'ClaseNovedadPlan', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'RespaldoPaso', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
     'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
-    'GrupoAlerta', 'Alerta', 'Parametro',
+    'GrupoAlerta', 'Alerta', 'Parametro', 'NotaOrientadora', 'DestinoPerfil',
     'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'CampoLoQuePienso', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
     'MotivoReporte', 'EstadoReporte', 'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion',
     'SugerenciaGuion', 'Reaccion', 'Reporte',

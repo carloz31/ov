@@ -164,6 +164,12 @@ LISTAS_COMUNES = (
       ('CURSOS', '¿Sabes qué cursos se llevan en {carrera}?'),
       ('INGRESO', '¿Sabes cómo se ingresa a {carrera}?'),
       ('CONOCE_ALGUIEN', '¿Conoces a alguien que estudie o trabaje en {carrera}?'))),
+    # Ajuste panel-estudiantes: las mismas cinco preguntas dichas a la orientadora (perfil del estudiante y tema
+    # «Conoce poco su Plan A»), en minúscula para ir dentro de una frase.
+    ('CONOCIMIENTO_ORIENTADORA', 'Qué tanto conoce la carrera (orientadora)',
+     (('DIA_NORMAL', 'cómo es un día normal'), ('DONDE_TRABAJAR', 'dónde podría trabajar'),
+      ('CURSOS', 'qué cursos lleva'), ('INGRESO', 'cómo se ingresa'),
+      ('CONOCE_ALGUIEN', 'si conoce a alguien que la estudie o ejerza'))),
     # Ajuste registros: listas comunes de los registros definitivos (la «otra» la decide cada ítem).
     ('HABILIDADES', 'Habilidades',
      (('ORGANIZAR', 'Organizar'), ('EXPLICAR', 'Explicar o enseñar'), ('CREAR', 'Crear o diseñar'),
@@ -912,7 +918,11 @@ def _cargar_respaldos(sesion, listas):
 
 # Panel del salón de la orientadora (ajuste panel-salon). Grupos de alertas: (código, nombre); el orden es el de la
 # tupla.
-GRUPOS_ALERTA = (('conversar', 'Conversar pronto'), ('atras', 'Se están quedando atrás'))
+GRUPOS_ALERTA = (('conversar', 'Conversar pronto'), ('atras', 'Se están quedando atrás'),
+                 ('para-conversar', 'Para conversar'))
+# Ajuste panel-estudiantes: grupos que no aparecen en el Inicio, en sus conteos ni en la lista de estudiantes (solo en
+# el Resumen del perfil).
+GRUPOS_FUERA_DE_INICIO = frozenset({'para-conversar'})
 
 # Alertas: (código, grupo, nombre, descripción, evaluador, parámetros). El orden dentro del grupo es el de la tupla.
 # `{clave}` en el nombre o la descripción se resuelve con los parámetros. Una alerta de un tipo nuevo necesita un
@@ -923,13 +933,48 @@ ALERTAS = (
     ('seguridad-baja', 'conversar', 'Se sienten poco seguros en sus últimas señales',
      'Sus {senales} últimas señales registradas fueron {nivel_maximo} o menos, sin importar cada cuánto ingresan.',
      'seguridad_baja', {'senales': 3, 'nivel_maximo': 2}),
-    ('sin-ingreso', 'atras', 'No ingresan hace {dias} días o más', None, 'sin_ingreso', {'dias': 7}),
+    ('sin-ingreso', 'atras', 'No ingresan hace {dias} días o más', None, 'sin_ingreso',
+     {'dias': 7, 'texto_nunca': 'nunca'}),
     ('avance-bajo', 'atras', 'Van muy por detrás del salón', '{tramos} tramos o más por debajo de la mayoría.',
-     'avance_bajo_salon', {'tramos': 2}),
+     'avance_bajo_salon', {'tramos': 2, 'textos_tramo': {'SIN_EMPEZAR': 'Sin empezar', 'TERMINO': 'Terminó el camino'}}),
     ('test-por-revisar', 'atras', 'Test de intereses por revisar', 'Perfil plano o respondido con prisa.',
-     'instrumento_por_revisar', {'instrumento': INSTRUMENTO_INTERESES, 'avisos_velocidad': 2}),
-    ('familia-pendiente', 'atras', 'Su familia aún no se registra', None, 'familia_pendiente', {}),
+     'instrumento_por_revisar', {'instrumento': INSTRUMENTO_INTERESES, 'avisos_velocidad': 2, 'textos_motivo': {
+         'PLANO': 'Su resultado salió plano: todas las respuestas parecidas',
+         'PRISA': 'Lo respondió muy rápido (estimado por tiempo)'}}),
+    ('familia-pendiente', 'atras', 'Su familia aún no se registra', None, 'familia_pendiente', {'textos_motivo': {
+        'SIN_VINCULO': 'No tiene un apoderado vinculado',
+        'SIN_INGRESO': 'Su apoderado tiene cuenta, pero no ha ingresado'}}),
+    # Ajuste panel-estudiantes: temas «Para conversar». Entradas a la conversación, no urgencias.
+    ('plan-idea-ajena', 'para-conversar', 'La idea de su Plan A vino de otra persona', None, 'plan_idea_ajena',
+     {'origenes': ['FAMILIA', 'CONOCIDO'],
+      'textos_origen': {'FAMILIA': 'de su familia', 'CONOCIDO': 'de alguien que conoce'}}),
+    ('plan-conoce-poco', 'para-conversar', 'Conoce poco su Plan A', None, 'plan_conoce_poco', {'minimo_no': 3}),
+    ('plan-complicaciones', 'para-conversar', 'Complicaciones de su Plan A', None, 'plan_complicaciones', {}),
+    ('plan-fuera-areas', 'para-conversar', 'Su Plan A no está entre sus áreas sugeridas', None, 'plan_fuera_de_areas',
+     {}),
+    ('dimension-por-trabajar', 'para-conversar', 'Dimensiones por trabajar', None, 'dimension_por_trabajar',
+     {'textos_momento': {'ENTRADA': 'partida', 'SALIDA': 'llegada'}}),
 )
+
+# Ajuste panel-estudiantes: textos cuando se habla de un estudiante (lista y perfil) y pestaña del perfil a la que
+# lleva el enlace: código → (nombre_perfil, descripcion_perfil, destino). `{clave}` se llena con los parámetros de la
+# fila y con los datos que el evaluador devuelve para ese estudiante. Sin nombre de perfil se usa `nombre`.
+TEXTOS_PERFIL_ALERTAS = {
+    'respuesta-sensible': ('Escribió algo que conviene leer',
+                           'En «{registro}», Lumi lo derivó a usted en lugar de seguir preguntando.', 'RESPUESTAS'),
+    'seguridad-baja': ('Poca seguridad en sus últimas señales', 'Marcó {valores} de 5 ({fechas}).', 'AVANCE'),
+    'sin-ingreso': ('No ingresa hace {dias} días o más', 'Último ingreso: {ultimo}.', None),
+    'avance-bajo': ('Va muy por detrás de su salón', 'Va en «{tramo}»; la mayoría del salón va en «{tramo_salon}».',
+                    'AVANCE'),
+    'test-por-revisar': ('Test de intereses por revisar', '{motivo}.', 'TESTS'),
+    'familia-pendiente': ('Su familia aún no se registra', '{motivo}.', 'AVANCE'),
+    'plan-idea-ajena': (None, 'La idea de estudiar {carrera} (su Plan A) vino {origen}.', 'PLANES'),
+    'plan-conoce-poco': (None, 'Dice conocer poco su Plan A: respondió «No» a {cantidad} de {total} preguntas '
+                               '({preguntas}).', 'PLANES'),
+    'plan-complicaciones': (None, 'Ve como posibles complicaciones de su Plan A: {complicaciones}.', 'PLANES'),
+    'plan-fuera-areas': (None, 'Su Plan A ({carrera}) no está entre sus áreas sugeridas.', 'PLANES'),
+    'dimension-por-trabajar': (None, 'En su punto de {momento}, {dimensiones} quedó por trabajar.', 'TESTS'),
+}
 
 # Parámetros del panel: (código, valor, uso). El servidor convierte el valor.
 PARAMETROS_PANEL = (
@@ -943,19 +988,30 @@ PARAMETROS_PANEL = (
     ('PANEL_SEGURIDAD_ALTA_MINIMO', '4', 'Banda «Seguros»: última señal mayor o igual a este valor.'),
     ('PANEL_TOP_INTERESES', '5', 'Filas de las tablas de áreas e instituciones en Inicio.'),
     ('PANEL_TOP_COMPLICACIONES', '5', 'Filas de «Lo que podría complicar sus planes».'),
+    # Ajuste panel-estudiantes.
+    ('PANEL_SENALES_PERFIL', '6', 'Señales de seguridad que se muestran en «Avance y familia» del perfil.'),
+    ('PANEL_OPCIONES_BAJAS', '2', 'Una respuesta de partida o llegada es «baja» si está entre las N opciones '
+                                  'inferiores de su escala (con los ítems inversos ya invertidos).'),
+    ('PANEL_AFIRMACIONES_POR_GRUPO', '5', 'Máximo de afirmaciones por grupo en «Afirmaciones para conversar».'),
+    ('PANEL_DUDAS_VISIBLES', '4', 'Dudas visibles en el plan completo antes de «Ver las N restantes».'),
+    ('PANEL_FILAS_ESTUDIANTES', '20', 'Tamaño de página de la lista de estudiantes.'),
+    ('PANEL_MAXIMO_CARACTERES_NOTA', '1000', 'Tope de caracteres de una nota de la orientadora.'),
 )
 
 
 def _cargar_panel(sesion):
-    grupos = {c: modelos.GrupoAlerta(codigo=c, nombre=n, orden=orden)
+    grupos = {c: modelos.GrupoAlerta(codigo=c, nombre=n, orden=orden, en_inicio=c not in GRUPOS_FUERA_DE_INICIO)
               for orden, (c, n) in enumerate(GRUPOS_ALERTA, start=1)}
     sesion.add_all(grupos.values())
     sesion.flush()
     ordenes = Counter()
     for c, g, n, d, e, p in ALERTAS:
         ordenes[g] += 1
+        nombre_perfil, descripcion_perfil, destino = TEXTOS_PERFIL_ALERTAS[c]
         sesion.add(modelos.Alerta(codigo=c, grupo_id=grupos[g].id, nombre=n, descripcion=d, evaluador=e,
-                                  parametros=dict(p), orden=ordenes[g]))
+                                  parametros=dict(p), orden=ordenes[g], nombre_perfil=nombre_perfil,
+                                  descripcion_perfil=descripcion_perfil,
+                                  destino=modelos.DestinoPerfil(destino) if destino else None))
     sesion.add_all(modelos.Parametro(codigo=c, valor=v, descripcion=d) for c, v, d in PARAMETROS_PANEL)
 
 

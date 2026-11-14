@@ -147,12 +147,13 @@ def ultimo_evento(sesion: Session, ids: list[int], tipo: TipoEventoUso) -> dict[
 
 # --- Check-ins -----------------------------------------------------------------------------------
 
-def senales_recientes(sesion: Session, ids: list[int]) -> dict[int, list[int]]:
-    """Los niveles de seguridad de cada estudiante, del check-in más reciente al más antiguo."""
+def senales_recientes(sesion: Session, ids: list[int]) -> dict[int, list[tuple[int, datetime]]]:
+    """El nivel de seguridad y la fecha de cada check-in de cada estudiante, del más reciente al más antiguo."""
     senales = defaultdict(list)
-    for cuenta_id, nivel in sesion.execute(select(CheckIn.cuenta_id, CheckIn.nivel_seguridad).where(
-            CheckIn.cuenta_id.in_(ids)).order_by(CheckIn.cuenta_id, CheckIn.fecha.desc())):
-        senales[cuenta_id].append(nivel)
+    for cuenta_id, nivel, fecha in sesion.execute(select(CheckIn.cuenta_id, CheckIn.nivel_seguridad, CheckIn.fecha)
+                                                  .where(CheckIn.cuenta_id.in_(ids))
+                                                  .order_by(CheckIn.cuenta_id, CheckIn.fecha.desc())):
+        senales[cuenta_id].append((nivel, fecha))
     return senales
 
 
@@ -293,8 +294,13 @@ class Lecturas:
         return posiciones_en_camino(self.sesion, self.alcance.estudiantes, self.completadas)
 
     @cached_property
-    def senales(self) -> dict[int, list[int]]:
+    def senales_con_fecha(self) -> dict[int, list[tuple[int, datetime]]]:
         return senales_recientes(self.sesion, self.alcance.ids)
+
+    @cached_property
+    def senales(self) -> dict[int, list[int]]:
+        """Solo los niveles, del más reciente al más antiguo."""
+        return {cuenta_id: [nivel for nivel, _ in filas] for cuenta_id, filas in self.senales_con_fecha.items()}
 
     @cached_property
     def ultimo_ingreso(self) -> dict[int, datetime]:
