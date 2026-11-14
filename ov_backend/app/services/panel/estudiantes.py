@@ -13,6 +13,9 @@ from app.services.panel.alertas import calcular_alertas
 from app.services.panel.comun import (
     Lecturas, aplicaciones_de, entero, estados_test, leer_parametros, resolver_alcance,
 )
+from app.services.panel.intereses import (
+    DatosIntereses, frente_test, interesados_en_area, interesados_en_institucion,
+)
 from app.services.panel.seguimiento import bandas_seguridad, detenidos
 
 ESTADOS_TEST = ("LISTO", "POR_REVISAR", "EN_CURSO", "SIN_EMPEZAR")
@@ -56,6 +59,18 @@ def _seguridad_baja(lecturas: Lecturas, parametros, _valor) -> set[int]:
     return bandas_seguridad(lecturas, parametros)["BAJA"]
 
 
+def _area(lecturas: Lecturas, _parametros, valor: str | None) -> set[int]:
+    return interesados_en_area(DatosIntereses(lecturas.sesion, lecturas.alcance), valor or "")
+
+
+def _institucion(lecturas: Lecturas, _parametros, valor: str | None) -> set[int]:
+    return interesados_en_institucion(DatosIntereses(lecturas.sesion, lecturas.alcance), valor or "")
+
+
+def _plan_fuera_test(lecturas: Lecturas, parametros, _valor) -> set[int]:
+    return frente_test(lecturas, DatosIntereses(lecturas.sesion, lecturas.alcance), parametros).no_coinciden
+
+
 CONJUNTOS: dict[str, Callable[[Lecturas, dict, str | None], set[int]]] = {
     "avisos": lambda lecturas, parametros, _valor: _alerta(lecturas, parametros, None),
     "alerta": lambda lecturas, parametros, valor: _alerta(lecturas, parametros, valor or ""),
@@ -63,6 +78,9 @@ CONJUNTOS: dict[str, Callable[[Lecturas, dict, str | None], set[int]]] = {
     "tramo": _tramo,
     "detenidos": _detenidos,
     "seguridad_baja": _seguridad_baja,
+    "area": _area,
+    "institucion": _institucion,
+    "plan_fuera_test": _plan_fuera_test,
 }
 
 

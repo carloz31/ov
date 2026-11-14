@@ -625,6 +625,26 @@ def _recorrido_investigaciones(cliente):
     return fixtures
 
 
+def _recorrer_panel(cliente, aplicacion):
+    """Ajuste panel-salon: el panel de ori-carmen sobre 5A con el estado que dejó el recorrido, a una hora de Lima
+    fija para que `fecha` y los días no cambien al regenerar."""
+    from datetime import datetime
+
+    from app.dependencies import obtener_ahora
+    aplicacion.dependency_overrides[obtener_ahora] = lambda: datetime(2026, 10, 20, 10, 0)  # DATO DE PRUEBA
+    base = '/cuentas/ori-carmen/panel'
+    try:
+        return {
+            'panel-seguimiento': _pedir(cliente, 'GET', f'{base}/seguimiento?salon=5A'),
+            'panel-intereses': _pedir(cliente, 'GET', f'{base}/intereses?salon=5A'),
+            'panel-areas': _pedir(cliente, 'GET', f'{base}/areas?salon=5A'),
+            'panel-instituciones': _pedir(cliente, 'GET', f'{base}/instituciones?salon=5A'),
+            'panel-estudiantes': _pedir(cliente, 'GET', f'{base}/estudiantes?salon=5A&conjunto=avisos'),
+        }
+    finally:
+        aplicacion.dependency_overrides.pop(obtener_ahora, None)
+
+
 def _codigos_notificacion_fijos():
     """Ajuste notificaciones: los códigos `NOT-` salen de `uuid4`; se fijan con su propio contador (no el de
     investigaciones, para no mover sus códigos)."""
@@ -769,6 +789,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
                 fixtures.update(_recorrer_apoderado(cliente))
                 fixtures.update(_recorrer_inesperada(cliente))
                 fixtures.update(_recorrer_investigaciones(cliente))
+                fixtures.update(_recorrer_panel(cliente, aplicacion))
         finally:
             aplicacion.state.motor_bd.dispose()
     contenido = _recorrer_registro_contenido()

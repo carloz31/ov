@@ -16,6 +16,7 @@ from app.schemas.panel import (
     AlertaPanel, AvisosPanel, BandaSeguridad, CuestionarioPanel, DetenidosPanel, GrupoAlertaPanel, IndicadoresPanel,
     SalonPanel, SeguimientoPanel, SeguridadPanel, TestPanel, TramoPanel,
 )
+from app.models.base import sin_tildes
 from app.services.familia import rutas_completas
 from app.services.panel.alertas import calcular_alertas
 from app.services.panel.comun import (
@@ -78,7 +79,7 @@ def _avisos(lecturas: Lecturas, parametros: dict) -> AvisosPanel:
         grupo.alertas.append(AlertaPanel(
             codigo=calculada.alerta.codigo, nombre=calculada.nombre, descripcion=calculada.descripcion,
             cantidad=cantidad,
-            nombres=sorted(nombres[i] for i in calculada.estudiantes) if cantidad <= visibles else None))
+            nombres=sorted((nombres[i] for i in calculada.estudiantes), key=sin_tildes) if cantidad <= visibles else None))
     return AvisosPanel(con_avisos=len(con_avisos), grupos=list(grupos.values()))
 
 

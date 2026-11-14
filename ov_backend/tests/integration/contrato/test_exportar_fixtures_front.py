@@ -11,6 +11,9 @@ from scripts import exportar_fixtures_front as exportador
 from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
+from app.schemas.panel import (
+    EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel,
+)
 from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import (
     RespuestaAccion, RespuestaAgrupada, RespuestaReiniciarInstrumento, RespuestaResolverBatalla, RespuestaResolverCaso,
@@ -101,6 +104,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'referencias-investigador-cierre',
     # F09: en curso con sugerencias, Luis con guía lista, por ocupación y el detalle propio.
     'investigaciones-en-curso', 'investigaciones-luis', 'entrevistas-familia', 'entrevista-detalle-propia',
+    # Ajuste panel-salon: el panel del salón de ori-carmen.
+    'panel-seguimiento', 'panel-intereses', 'panel-areas', 'panel-instituciones', 'panel-estudiantes',
 )}
 
 
@@ -527,6 +532,14 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert propia.propia and [r.reportada_por_mi for r in propia.lista_reacciones if r.tipo] == [True]
     eco, = ReferenciasConsultadas.model_validate(datos['referencias-investigador-cierre']).referencias
     assert eco.tipo == 'LO_QUE_PIENSO' and eco.estado == 'DISPONIBLE'
+    # Ajuste panel-salon: el panel de 5A con el estado del recorrido, a una fecha fija.
+    seguimiento = SeguimientoPanel.model_validate(datos['panel-seguimiento'])
+    assert (seguimiento.fecha.isoformat(), seguimiento.total_estudiantes, seguimiento.test.listo) == ('2026-10-20', 5, 1)
+    panel_intereses = InteresesPanel.model_validate(datos['panel-intereses'])
+    assert panel_intereses.con_planes == 2 and panel_intereses.areas.total == 3
+    assert PaginaAreasPanel.model_validate(datos['panel-areas']).total == 3
+    assert PaginaInstitucionesPanel.model_validate(datos['panel-instituciones']).total == 1
+    assert len(TypeAdapter(list[EstudiantePanel]).validate_python(datos['panel-estudiantes'])) == 5
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')

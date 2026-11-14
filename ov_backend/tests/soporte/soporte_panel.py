@@ -87,3 +87,31 @@ def tarjeta(sesion, codigo, carrera, prioridad, institucion=None, activa=True):
     sesion.add(fila)
     sesion.flush()
     return fila
+
+
+def favorito(sesion, codigo, tipo, referencia):
+    """DATO DE PRUEBA: un favorito de carrera o institución, por código."""
+    modelo = m.Carrera if tipo == m.TipoFavorito.CARRERA else m.Institucion
+    sesion.add(m.Favorito(cuenta_id=cuenta(sesion, codigo).id, tipo=tipo, fecha_hora=AHORA,
+                          id_referencia=sesion.scalar(select(modelo.id).where(modelo.codigo == referencia))))
+
+
+def complicacion(sesion, tarjeta_fila, opcion=None, otro=None, numero=1):
+    opcion_id = None
+    if opcion:
+        opcion_id = sesion.scalar(select(m.OpcionLista.id).join(m.ListaOpciones).where(
+            m.ListaOpciones.codigo == 'DIFICULTADES', m.OpcionLista.codigo == opcion))
+    sesion.add(m.ComplicacionTarjeta(tarjeta_id=tarjeta_fila.id, numero=numero, opcion_id=opcion_id, texto_otro=otro,
+                                     creada_en=AHORA))
+
+
+def intereses(cliente, salon='5A', esperado=200, **orden):
+    respuesta = cliente.get('/cuentas/ori-carmen/panel/intereses', params={**({'salon': salon} if salon else {}),
+                                                                         **orden})
+    assert respuesta.status_code == esperado, respuesta.text
+    return respuesta.json()
+
+
+def familia_de(sesion, carrera):
+    return sesion.scalar(select(m.FamiliaCarrera.codigo).join(m.Carrera, m.Carrera.familia_id == m.FamiliaCarrera.id)
+                         .where(m.Carrera.codigo == carrera))

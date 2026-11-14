@@ -276,14 +276,38 @@ def familia_publica(familia: FamiliaCarrera) -> FamiliaPublica:
                           area_nombre=familia.area_nombre)
 
 
+def _recomendadas(sesion, afines_guardadas, principales):
+    """La selección de afines, la familia principal de cada una y las familias recomendadas (un solo cálculo para
+    el resultado y para el panel del salón)."""
+    definiciones = contexto(sesion).definiciones
+    seleccion = seleccionar_afines([(o.codigo, c.correlacion) for c, o in afines_guardadas])
+    familia_de = {o.codigo: definiciones.obtener(FamiliaCarrera, principales[o.id])
+                  for _, o in afines_guardadas if o.id in principales}
+    return seleccion, familia_de, recomendar_familias(seleccion.ocupaciones,
+                                                      {c: f.codigo for c, f in familia_de.items()})
+
+
+@usar_contexto
+def intereses_por_cuenta(sesion: Session, resultados: list[ResultadoInstrumento]) -> dict[int, tuple[str, list[str]]]:
+    """Por cuenta, el código de interés y los códigos de las familias recomendadas de su resultado de intereses
+    (vigente y no plano), con el mismo cálculo que `representar_resultado`, pero leído por lotes (panel del salón,
+    ajuste panel-salon)."""
+    cargar_representaciones(sesion, resultados)
+    intereses = {}
+    for resultado in resultados:
+        filas, afines, principales = contexto(sesion).representaciones[resultado.id]
+        codigo = calcular_codigo_interes([r.puntaje for d, r in filas], [d.codigo for d, r in filas])
+        _, _, recomendadas = _recomendadas(sesion, afines, principales)
+        intereses[resultado.cuenta_id] = (codigo.codigo, [f.codigo for f in recomendadas])
+    return intereses
+
+
 def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:
     """Lo que el resultado de intereses deriva al leer (ajuste resultados-intereses): las ocupaciones afines que
     se muestran, agrupadas también por área, y las familias recomendadas."""
     definiciones = contexto(sesion).definiciones
     por_codigo = {ocupacion.codigo: ocupacion for _, ocupacion in afines_guardadas}
-    seleccion = seleccionar_afines([(o.codigo, c.correlacion) for c, o in afines_guardadas])
-    familia_de = {codigo: definiciones.obtener(FamiliaCarrera, principales[o.id])
-                  for codigo, o in por_codigo.items() if o.id in principales}
+    seleccion, familia_de, recomendadas = _recomendadas(sesion, afines_guardadas, principales)
     ocupaciones = []
     for posicion, afin in enumerate(seleccion.ocupaciones, start=1):
         ocupacion, familia = por_codigo[afin.codigo], familia_de.get(afin.codigo)
@@ -301,7 +325,6 @@ def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:
                                            else familia.area_nombre, ocupaciones=[])
         areas[clave].ocupaciones.append(ocupacion.codigo)
     por_area = [a for c, a in areas.items() if c is not None] + ([areas[None]] if None in areas else [])
-    recomendadas = recomendar_familias(seleccion.ocupaciones, {c: f.codigo for c, f in familia_de.items()})
     carreras = carreras_por_familia(definiciones)
     # Los totales por familia se leen solo si hay familias que mostrar.
     totales = ocupaciones_principales_por_familia(sesion) if recomendadas else Counter()

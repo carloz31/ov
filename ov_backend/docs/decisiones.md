@@ -43,3 +43,7 @@
 - «Sin empezar» del camino = ninguna actividad completada; «Donde más se detienen» solo cuenta a quien completó alguna (fecha del último `COMPLETA_ACTIVIDAD`), y ante empate elige la actividad que va antes en el camino.
 - Partida y llegada cuentan «respondida completa» (todos los ítems de sus actividades), sin mirar el resultado; los demás cuestionarios, resultado vigente.
 - Tras rehacer el test (reinicio), las respuestas se borran y el estudiante vuelve a «Sin empezar» (no «En curso»).
+- `instrumentos.consultas.intereses_por_cuenta` (código de interés y familias recomendadas por lotes) reutiliza `cargar_representaciones` y el mismo `_recomendadas` que arma el resultado; `_leer_familias_recomendadas` no cambia. «Intereses más frecuentes» cuenta la primera letra de los «Resultado listo»; la base de «Planes frente al test» es Plan A con resultado vigente y no plano (incluye los con prisa).
+- Filtro de las listas completas: en áreas, con `tipo`, cada familia cuenta solo sus carreras de ese tipo; las opciones del filtro son los tipos presentes entre lo que tiene interés. El orden es `<columna>`/`-<columna>`; nombres sin tildes.
+- Los textos de tipo y gestión («Universidad pública», «Técnica») los arma el front con los nombres del catálogo; el servidor manda los códigos.
+- Fixtures: el exportador pide el panel de ori-carmen sobre 5A con la hora de Lima fija en 2026-10-20 (`ruta-panel-*`). Esquemas de página del panel: `PaginaAreasPanel` y `PaginaInstitucionesPanel` (no chocan con los del catálogo).
