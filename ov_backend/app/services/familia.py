@@ -163,6 +163,11 @@ def _estudiante(sesion: Session, hijo: Cuenta, cuestionarios: list[CuestionarioH
 def consultar_familia(sesion: Session, cuenta: Cuenta) -> FamiliaApoderado:
     _exigir_apoderado(cuenta)
     hijos = _hijos(sesion, cuenta)
+    # Auditoría plataforma (D-B3): el avance y el nivel de cada hijo leen sus progresos y desbloqueos; se cargan
+    # juntos para que la consulta no crezca con los hijos.
+    ids = [cuenta.id, *(hijo.id for hijo in hijos)]
+    contexto(sesion).cargar_progresos(ids)
+    contexto(sesion).cargar_desbloqueos(ids)
     cuestionarios = _cuestionarios(sesion, hijos)
     return FamiliaApoderado(avance=avance_ruta(sesion, cuenta), diploma=_diploma(sesion, cuenta),
                             estudiantes=[_estudiante(sesion, hijo, cuestionarios[hijo.id]) for hijo in hijos])

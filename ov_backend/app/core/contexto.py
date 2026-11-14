@@ -68,6 +68,16 @@ class ContextoConsultas:
         self.cargar_desbloqueos([cuenta_id])
         return self.desbloqueos[cuenta_id]
 
+    def cargar_progresos(self, cuentas):
+        """Los progresos de varias cuentas en una consulta (auditoría plataforma, D-B3: los hijos del apoderado)."""
+        faltantes = set(cuentas) - self.progresos.keys()
+        if not faltantes:
+            return
+        for cuenta_id in faltantes:
+            self.progresos[cuenta_id] = {}
+        for progreso in self.sesion.scalars(select(ProgresoActividad).where(ProgresoActividad.cuenta_id.in_(faltantes))):
+            self.progresos[progreso.cuenta_id][progreso.actividad_id] = progreso
+
     def progresos_de(self, cuenta_id):
         if cuenta_id not in self.progresos:
             self.progresos[cuenta_id] = {progreso.actividad_id: progreso for progreso in self.sesion.scalars(
