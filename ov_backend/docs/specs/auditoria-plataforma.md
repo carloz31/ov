@@ -4,18 +4,20 @@ Alcance: las rutas GET y `POST /acciones/*` que usan el estudiante y el apoderad
 modo `api`. Quedan fuera el panel de la orientadora (ya auditado y corregido), el motor de reglas (ya tiene su prueba de
 presupuesto) y el cálculo de resultados. Es solo el informe: no se corrigió nada.
 
-**Estado:** fase A (inventario y ranking) aprobada; fase B entregada en este documento. Las pruebas del 18 y el 19 de
-noviembre, con más de 20 estudiantes a la vez y cuentas nuevas, guían las prioridades.
+**Estado:** fases A y B entregadas. El 14 de noviembre se aplicaron las correcciones aprobadas en la rama
+`ajuste/auditoria-plataforma` (sección G); R2 se detuvo (sección G, «Lo que se detuvo»). Las pruebas del 18 y el 19 de
+noviembre, con más de 20 estudiantes a la vez y cuentas nuevas, guían las prioridades: ver la sección H («Operación para
+el 18 y el 19») y la sección I («Despliegue»).
 
 ## Resumen para las pruebas del 18 y el 19
 
 | Riesgo | Qué | Gravedad | Qué hacer antes |
 |---|---|---|---|
-| **Memoria al ingresar** | Argon2 con los parámetros por defecto usa 64 MiB por verificación. 25 ingresos simultáneos llevaron el proceso a **1,6 GB** en la medición. La EC2 del README es una `t3.small` (2 GB) con 2 workers, o una `t3.micro` (1 GB). | **Alta** si los estudiantes ingresan todos en el mismo segundo | Sin código: comprobar el tipo de instancia, agregar swap o subir a `t3.medium` esos días, y que el salón ingrese de forma escalonada. Las opciones de código son de backend y van después (D-B1). |
+| **Memoria al ingresar** | Argon2 con los parámetros por defecto usa 64 MiB por verificación. 25 ingresos simultáneos llevaron el proceso a **1,6 GB** en la medición. La EC2 del README es una `t3.small` (2 GB) con 2 workers, o una `t3.micro` (1 GB). **Corregido el 14 de noviembre (D-B1(a)):** con 4 turnos por proceso, el pico baja a 281 MB por worker, sin ingreso más lento con 2 núcleos. | Media, con la corrección desplegada | Comprobar el tipo de instancia, agregar swap y que el salón ingrese de forma escalonada (sección H). |
 | Conexiones durante el LLM | Ninguna acción deja una conexión ni una transacción abierta mientras espera al LLM. Medido con 25 esperas simultáneas de 8 s: 0 conexiones en transacción. | Ninguna | Nada. |
 | Pool de conexiones | 15 por worker (5 más 10 de desborde), 30 en total. La prueba de carga llegó a 30 de 30 sin errores ni esperas largas. | Baja | Nada. |
 | Bloqueos de base | En PostgreSQL no hubo esperas por bloqueos. En SQLite las escrituras se serializan y llegan a 4,6 s, cerca del tiempo de espera de 5 s de SQLite; el despliegue usa RDS PostgreSQL. | Ninguna en RDS | Nada. |
-| **Esta rama no está desplegada** | `ajuste/auditoria-panel` lleva 15 commits sin integrar en `main`, y `deploy` tiene 42 commits menos. Las correcciones de la auditoría del panel tampoco están en `deploy`. | — | Ver «Integración y despliegue». |
+| **Esta rama no está desplegada** | `ajuste/auditoria-plataforma` (sobre `ajuste/auditoria-panel`) lleva 32 commits sin integrar en `main`, y a `deploy` le faltan además 27 de `main`. Las correcciones de la auditoría del panel tampoco están en `deploy`. | — | Ver «Integración y despliegue». |
 
 ## Cómo se midió
 
@@ -785,3 +787,362 @@ Columnas:
   `tope = max(MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES)` (hoy 30 y 10, `app/core/parametros.py:12-13`) y
   filtra con `Coincidencia.posicion <= tope` (`:340`, `:344`). No hay un 30 fijo. `tests/integration/panel/
   test_panel_intereses.py` usa esos parámetros.
+
+## G. Correcciones del 14 de noviembre
+
+Rama `ajuste/auditoria-plataforma`, creada desde `ajuste/auditoria-panel`. Hay un commit por corrección, cada uno con
+su prueba. Ninguna corrección cambia el contrato de una ruta, `resolver_contexto`, el motor ni el cálculo de resultados.
+
+Cada prueba se comprobó fallando sin su corrección, salvo la de F11: su efecto es liberar memoria, que no se puede
+medir desde la prueba, así que esta fija el comportamiento (la respuesta tardía de otra sesión no se guarda).
+
+| # | Corrección | Commit | Prueba |
+|---|---|---|---|
+| F1 | La campana no se pide dos veces al entrar (una lista de hace menos de 10 s se reutiliza) | `903a04cb` | `tests/servidor/logros/servidor-notificaciones.test.mjs` |
+| F2a | Ver un detalle del catálogo sin desbloqueos no refresca el camino | `9d012942` | `tests/servidor/catalogo/servidor-catalogo-almacen.test.mjs` |
+| F3 | El resultado RIASEC no se pide en cada refresco (sí tras un error, revelar o reiniciar) | `3667d9f3` | `tests/servidor/instrumentos/servidor-resultados.test.mjs` |
+| F6 | El apoderado pide `/instrumentos` una vez por sesión; las fichas comparten la petición en vuelo | `0b341c67` | `servidor-apoderado-resultados.test.mjs`, `servidor-familia-contrato.test.mjs` |
+| F5 | Batallas compartidas entre el drawer y el reproductor; familias del guion una vez por sesión | `5ed42fea` | `servidor-batallas.test.mjs`, `servidor-investigaciones-familias-cache.test.mjs` |
+| F11 | Las cachés de fichas y favoritos conservan solo la sesión actual | `cd44b0a1` | `tests/servidor/testimonios/servidor-fichas-sesion.test.mjs` |
+| D-B3 | `familia` lee progresos y desbloqueos de todos los hijos juntos (antes, 8 consultas más 2 por hijo; ahora, 8 fijas) | `224354b6` | `tests/integration/familia/test_presupuesto_familia.py` |
+| D-B1(a) | Hasta 4 verificaciones Argon2 a la vez por proceso; el turno se toma antes de abrir la transacción del ingreso | `d8ff4d37` | `tests/integration/acceso/test_turnos_verificacion.py` |
+| D-B6 | gzip para `application/json` en `despliegue/ec2/nginx-ov.conf` (solo ese archivo) | `9c0d02b6` | Se aplica a mano en la EC2 (sección H) |
+| F2b | Refresco condicional (detalle en «Lote 3») | `2a79ef13` | `tests/servidor/actividades/servidor-refresco-condicional.test.mjs` |
+| F7 | Las acciones del plan sin desbloqueos no refrescan el camino ni piden `planes` dos veces | `c2dad716` | `tests/servidor/actividades/servidor-refresco-planes.test.mjs` |
+| F4 | El libro de Helena se recarga al cambiar sus cuestionarios, no con cada refresco; al revelar, una sola lectura | `5611137d` | `tests/servidor/instrumentos/servidor-libro-helena.test.mjs` |
+| R1 | `responder` no resuelve dos veces el contexto del ítem guardado | `8068fd84` | `tests/integration/registro/test_presupuesto_responder.py` y el JSON completo idéntico (abajo) |
+| D-B4 | El guardia conserva la cuenta del token para la petición (una petición vacía pasa de 2 consultas a 1) | `8d9604ff` | `tests/integration/acceso/test_cuenta_del_token.py` y las demás de acceso |
+| F8 | `localStorage` se escribe solo si cambió, y el borrador con espera, sin perder texto (solo en api) | `b417792b` | `tests/servidor/actividades/servidor-escritura-local.test.mjs` |
+| Sección F | Las pruebas de presupuesto que faltaban | `f8b338bd` | Ver «Pruebas de presupuesto agregadas» |
+
+- **F5:** los casos quedan para después del 19, como decía el informe.
+- **F2b:** diario, check-in, cartas e investigaciones refrescan el camino solo con desbloqueos. Los requisitos con
+  «actual de requerido» se vuelven a pedir con cada acción, y los ítems de Mara ya no dependen de las actividades.
+- **Dependencia entre commits:** F4 usa la revisión de acciones de F2b, así que revertir F2b exige revertir también F4.
+
+### Lote 3: qué se volvía a pedir con cada recarga de actividades y su disparador nuevo
+
+| Lectura | Antes | Ahora |
+|---|---|---|
+| `GET progreso/BLOQUE/CIUDAD` (Ciudad cerrada, `useCityRequirement.ts`) | Cada recarga de actividades | Cada acción confirmada (`useRevisionAcciones`), refresque o no el camino |
+| `GET progreso/FICHA` o `TESTIMONIO` (`useRequisitoRecurso.ts`) | Cada recarga | Cada acción confirmada |
+| El libro de Helena completo (`useHelenaPages.ts`) | Cada recarga y otra vez al revelar | Cuando cambia el estado de un cuestionario, y una vez tras revelar o reiniciar |
+| El requisito de la Ciudad dentro del libro | Junto con el libro | Cada acción confirmada, en un efecto aparte |
+| `/items` del drawer de Mara (`useMapScreen.ts`) | Cada recarga con Mara seleccionada | Al elegir el punto o cuando cambia su estado |
+| `GET check-ins` | Solo si la sección se abre o no está cargada | Igual; tras un check-in, explícito |
+| El resultado RIASEC | Cada refresco (también tras un 409) | Una vez; tras un error, revelar o reiniciar (F3) |
+| Secciones vencidas montadas | Con cada refresco | Con cada refresco; una sección que su desbloqueo ya venció no se vence otra vez |
+
+- **Ninguna barra «actual de requerido» queda vieja tras una acción sin desbloqueo.** Esos conteos cambian solo con
+  eventos, y toda acción confirmada sube la revisión que las vuelve a pedir.
+- **Ninguna acción quedó con el refresco completo por no poder garantizar la frescura.** Las que cambian el progreso de
+  una actividad lo conservan por diseño: completar, responder ítems, revelar y reiniciar, batallas, casos y registros.
+  Está verificado en `app/services`: solo esas escriben `ProgresoActividad`.
+
+### El JSON del registro, antes y después de R1
+
+- **Qué se grabó:** `medicion/golden.py` (fuera del repo) graba el JSON completo de `GET registro`, `responder` y
+  `entregar` en los 19 registros de `contenido`. Cubre la cuenta nueva (`est-mia`), la que va a mitad (`est-ana` tras
+  `b3-8`) y la que terminó, más una reedición de cada registro al final: 170 peticiones, 162 con 200.
+- **Cómo se compara:** se quitan las marcas de tiempo del reloj y se normalizan los códigos aleatorios de las
+  notificaciones.
+- **Resultado:** dos corridas del código anterior salen idénticas entre sí, y la del código con R1 sale idéntica a
+  ellas.
+
+### Lo que se detuvo: R2
+
+`LecturaContexto` (`app/services/panel/contexto_lectura.py`) no sirve tal cual para armar la respuesta del estudiante.
+Le faltan dos cosas:
+
+1. **Las opciones de lista:** solo arma las de los ítems de piezas (`_armar`). La respuesta del estudiante necesita las
+   opciones de todo ítem con elección, con `lineas`, `grupo`, `pregunta` y `arranque` por opción, y también las que
+   vienen de una referencia (`opciones_por_item`).
+2. **El marcador que falta:** ante un marcador sin valor guarda `None` y pierde cuál era. La respuesta del estudiante
+   lo necesita en `marcador_faltante`.
+
+Para servir al estudiante habría que copiar al módulo del panel la regla de `_opciones` (la base de la fuente sin las
+propias, más las propias con sus marcadores), además de las copias de marcadores y ecos que ya tiene. La instrucción
+era detenerse en ese caso, así que R2 no se hizo.
+
+Opciones para decidir:
+- **(a)** Extender `LecturaContexto` con las opciones de lista (llamando a `opciones_por_item` en lote) y con el
+  marcador que falta, y probarla contra `resolver_contexto` en vivo en las tres cuentas.
+- **(b)** Dejar el registro como queda con R1.
+
+### Pruebas de presupuesto agregadas
+
+- `tests/integration/familia/test_presupuesto_familia.py`: `familia`, `familia/resultados` y `conversaciones` con 1 y
+  5 hijos.
+- `tests/integration/acceso/test_turnos_verificacion.py`: las verificaciones simultáneas no pasan del tope, y las que
+  esperan turno no retienen conexión.
+- `tests/integration/acceso/test_cuenta_del_token.py` y `tests/integration/cuentas/test_presupuesto_arranque.py`:
+  - `GET /sesion` en 1 consulta;
+  - el arranque (`sesion`, `ingresar`, `actividades`, `avance`, `resumen`, `secciones`, `presentaciones`,
+    `notificaciones`, `conversaciones`) con 500 eventos, 60 notificaciones y 60 entradas más;
+  - la carta repetida.
+- `tests/integration/planes/test_presupuesto_planes.py`: `GET planes` con 1 y 3 planes, 0 y 8 dudas, 0 y 10 pasos, y
+  `guardar-seccion` contando solo los `SELECT`. El primer guardado de PASOS lee una vez más (es una rama); después, 1,
+  10 o 20 pasos leen lo mismo.
+- `tests/integration/registro/test_presupuesto_registro_cuenta.py`: `GET registro`, `responder` y `entregar` con 3
+  planes, 300 eventos y 40 entradas más.
+- `tests/integration/registro/test_presupuesto_responder.py`: un `resolver_contexto` por ítem al responder.
+- `tests/integration/investigaciones/test_presupuesto_entrevistas.py`: `entrevistas`, su detalle e `investigaciones`
+  con 2 o 5 entrevistas, reacciones de 4 compañeros y comentarios. El comentario de la orientadora es una rama del
+  detalle, así que se compara con un comentario y con muchos.
+
+Sigue faltando la prueba contra los ítems del registro: hoy fallaría, porque sin R2 `registro_cuenta` resuelve cada
+ítem por separado.
+
+### Medición después de las correcciones
+
+**Gasto fijo (D-B4):** todas las rutas con guardia bajan una consulta. `GET /sesion` pasa de 2 a 1, y una ruta con su
+sección cerrada, de 4 a 3.
+
+| Ruta | Antes | Después |
+|---|---|---|
+| `GET familia` (apoderado, 2 hijos) | 10 | 6 |
+| `registro/responder` `b4-1` · `b4-5` · `b5-1` y `b5-3` · `ma8` y `h3` | 65 · 35 · 33 · 27 | 51 · 25 · 24 · 20 |
+| `registro/entregar` `b4-1` | 46 | 45 |
+| `GET planes` (3 planes) | 18 | 17 |
+| `GET catalogo/carreras/{c}` (cuenta que terminó) | 21 | 20 |
+| `completar-actividad` | 8–12 | 7–11 |
+
+**Costo por gesto del usuario** (la acción más lo que el front vuelve a pedir; KB sin comprimir):
+
+| Gesto | Antes: consultas · KB | Después: consultas · KB |
+|---|---|---|
+| Ingreso, cuenta nueva | 35 · ≈ 59 | **23** · ≈ 59 (la campana, una vez) |
+| Ingreso, cuenta que terminó | 43 · ≈ 66 | **29** · ≈ 61 (el resultado RIASEC, una vez por sesión) |
+| Completar una actividad (cuenta que terminó) | 23–29 · ≈ 55 | **13–17** · ≈ 33 (sin el resultado RIASEC) |
+| Guardar un ítem de registro | 16–65 · ≤ 8 | **14–51** · ≤ 8 |
+| Abrir un detalle de carrera | 34–43 · ≈ 68 | **17–26** · ≈ 15 (sin refresco si no hay desbloqueo) |
+| Mover un medidor | 39 · ≈ 76 | **22** · ≈ 22 |
+| Marcar un paso | 41 · ≈ 76 | **24** · ≈ 22 |
+| Escribir una entrada | 34–36 · ≈ 86 | **15–17** · ≈ 32 |
+| Escribir una carta | 27–31 · ≈ 60 | **10–14** · ≈ 5 |
+
+Si la respuesta trae un desbloqueo, el gesto suma el refresco del camino (actividades y avance: 6 consultas en la cuenta
+que terminó y 8 en la nueva) y la sección que se abre.
+
+La carga y Argon2 con 2 núcleos están en la sección H, al final («Carga y Argon2 con 2 núcleos, después de las
+correcciones»).
+
+## H. Operación para el 18 y el 19
+
+Todos los comandos son para la EC2 (Ubuntu 24.04), por SSH. Ninguno toca la base.
+
+**1. Tipo de instancia, núcleos, memoria y swap**
+
+```bash
+TOKEN=$(curl -s -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 60')
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-type; echo
+nproc
+free -h
+swapon --show
+```
+
+- **Si sale `t3.micro` (1 GB):** súbela a `t3.small` o `t3.medium` esos días (EC2 > Instancia > Detener > Cambiar tipo
+  de instancia > Iniciar). La IP elástica se conserva.
+- **Si `swapon --show` no muestra nada:** no hay swap; crea la del paso 2.
+
+**2. Crear 2 GB de swap persistente**
+
+```bash
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
+sudo sysctl -p /etc/sysctl.d/99-swappiness.conf
+free -h
+```
+
+- **Para qué:** con swap, un pico de memoria se vuelve lento en lugar de matar un worker.
+- **Cómo influye D-B1(a):** con los turnos, el pico de Argon2 queda en unos 560 MB (4 verificaciones por worker), y la
+  swap cubre lo que sobre.
+
+**3. Aplicar el gzip de D-B6 (a mano)**
+
+`instalar.sh` copia `nginx-ov.conf` solo en la instalación, y después certbot le agrega el bloque `listen 443`.
+`actualizar.sh` no lo vuelve a copiar. Por eso:
+
+```bash
+sudo cp /etc/nginx/sites-available/ov /etc/nginx/sites-available/ov.respaldo
+sudo nano /etc/nginx/sites-available/ov
+```
+
+- **Qué pegar:** dentro de **cada** bloque `server { … }` (el de 443 que agregó certbot y el de 80), debajo de
+  `client_max_body_size 5m;`, las seis líneas de `despliegue/ec2/nginx-ov.conf`:
+  `gzip on;`, `gzip_types application/json;`, `gzip_min_length 1024;`, `gzip_comp_level 5;`, `gzip_proxied any;` y
+  `gzip_vary on;`.
+- **Dónde no ponerlas:** en `/etc/nginx/conf.d/`. El `nginx.conf` de Ubuntu ya trae `gzip on;` en el bloque `http` y
+  nginx rechazaría el duplicado.
+
+Después, comprobar y recargar:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Si `nginx -t` falla, se vuelve atrás con `sudo cp /etc/nginx/sites-available/ov.respaldo /etc/nginx/sites-available/ov`.
+
+**4. Comprobar la compresión con curl**
+
+Primero se obtiene un token con una cuenta de prueba, desde tu máquina. La contraseña la escribes tú.
+
+```bash
+read -s -p 'Contraseña: ' CLAVE; echo
+TOKEN=$(curl -s https://DOMINIO_API/sesion/ingresar -H 'Content-Type: application/json' \
+  -d "{\"usuario\":\"CORREO_DE_PRUEBA\",\"contrasena\":\"$CLAVE\"}" | python3 -c 'import sys,json;print(json.load(sys.stdin)["token"])')
+```
+
+Directo a la EC2 y a través de Amplify:
+
+```bash
+curl -s -o /dev/null -D - -H 'Accept-Encoding: gzip' -H "Authorization: Bearer $TOKEN" \
+  https://DOMINIO_API/cuentas/CODIGO_CUENTA/actividades | grep -iE 'content-encoding|content-length'
+curl -s -o /dev/null -w 'bytes: %{size_download}\n' -H 'Accept-Encoding: gzip' -H "Authorization: Bearer $TOKEN" \
+  https://RAMA.XXXX.amplifyapp.com/api/cuentas/CODIGO_CUENTA/actividades
+```
+
+- **Comprimido:** aparece `Content-Encoding: gzip`, y una cuenta nueva baja de unos 55 KB a unos 10 KB.
+- **Sin comprimir:** no aparece; el resto de las mejoras igual se aplica.
+
+**5. Vigilar memoria y un OOM durante la sesión**
+
+Deja abiertas dos terminales SSH:
+
+```bash
+watch -n 2 'free -m; echo; ps -o pid,rss,pcpu,cmd -C uvicorn --sort=-rss | head -5'
+```
+
+```bash
+sudo journalctl -kf | grep -iE --line-buffered 'out of memory|oom|killed process'
+```
+
+Después de la sesión:
+
+```bash
+sudo journalctl -k --since '-4 hours' | grep -iE 'oom|killed process'
+sudo journalctl -u ov-backend --since '-4 hours' | grep -iE 'error|exception|worker|timeout' | tail -50
+```
+
+- **Señales de alarma:**
+  - `free` sin memoria disponible y la swap creciendo;
+  - un `Killed process … uvicorn` en el kernel;
+  - un 502 en el navegador, que es nginx sin worker.
+- **Qué hacer:** que el siguiente grupo ingrese de a pocos.
+- **Créditos de CPU:** una `t3` se queda sin ellos con carga sostenida. Revisa `CPUCreditBalance` en CloudWatch
+  (EC2 > Instancia > Monitoreo) antes y después.
+
+**6. Sin código: el ingreso escalonado**
+
+Aunque los turnos limitan la memoria, 25 ingresos a la vez tardan varios segundos con 2 núcleos (ver la carga
+abajo). Conviene que el salón ingrese por filas.
+
+## I. Despliegue
+
+**Lo que `main` tiene y `deploy` no** (27 commits, por ajuste):
+- **panel-salon:** 8, más su cierre y una integración de `main`.
+- **lumi-mensajes:** 6.
+- **coherencia-lumi:** 5.
+- **coherencia-apoderado:** 5, más su cierre.
+
+**Lo que esta rama tiene y `main` no** (32 commits):
+- **panel-estudiantes:** 8, más su cierre (en `ajuste/auditoria-panel`).
+- **auditoría panel:** 5, más su cierre.
+- **auditoría plataforma:** 17 (este documento y las correcciones de la sección G).
+
+**Migraciones que correrán sobre RDS** (`actualizar.sh` hace `alembic upgrade head` en cada despliegue):
+- `0056_panel_salon` (en `main`).
+- `0057_panel_estudiantes` (en esta rama).
+- Las correcciones de la auditoría plataforma no agregan migraciones.
+
+**Recarga de datos:**
+- **Qué cambió:** `datos/contenido.py` y `datos/fijos.py` tienen cambios respecto de `deploy`, y esos datos viven en la
+  base. Para verlos hay que recargar `contenido`: en Actions, el workflow «Pruebas y despliegue» con
+  `recargar_contenido`, o `actualizar.sh --recargar` en la EC2.
+- **Atención:** la recarga **borra toda la base**: cuentas, progreso y catálogo. Carga de nuevo los usuarios de
+  `datos/usuarios_prueba.txt`.
+- **Cuándo hacerla:** antes de crear las cuentas de las pruebas del 18, nunca entre el 18 y el 19 si ya hay estudiantes
+  con progreso.
+
+**Para que esto llegue a las pruebas:**
+1. Verificar esta rama e integrarla en `main` (incluye `ajuste/auditoria-panel`), con la suite completa en verde.
+2. Abrir un PR de `main` hacia `deploy`; GitHub Actions corre las pruebas.
+3. Con el push a `deploy` se actualiza la EC2 (migraciones y reinicio) y después Amplify. Si hace falta la recarga de
+   datos, se lanza el workflow con `recargar_contenido`.
+4. En la EC2, a mano: el gzip y la swap (sección H).
+
+## J. Lista de verificación manual
+
+Abre el portal en modo api con las herramientas del navegador (Red, filtro `Fetch/XHR`). «Ver» se refiere a esa
+pestaña, salvo que se diga otra cosa.
+
+| # | Pantalla | Qué hacer | Qué debes ver |
+|---|---|---|---|
+| F1 | Ingreso del estudiante → mapa | Ingresar | Un solo `GET …/notificaciones` (antes, dos). La campana muestra sus notificaciones. |
+| F1 | Apoderado → Inicio | Ingresar | Un solo `GET …/notificaciones`. |
+| F2a | Catálogo → detalle de una carrera | Abrir un detalle por primera vez | `POST /acciones/ver-carrera` y **ningún** `GET actividades` ni `avance` después. Si la vista abre algo (p. ej. `t-explorar`), sí aparecen y el mapa lo muestra. |
+| F3 | Mapa con `act-tip-final` abierta | Completar cualquier actividad | Después de `completar-actividad`, `GET actividades` y `avance`, pero **no** `…/TEST-RIASEC/resultado`. Al revelar intereses en el libro, el resultado se lee una vez. |
+| F6 | Apoderado → Inicio, ir y volver dos veces | Navegar entre Inicio y otra vista | `GET /instrumentos` solo la primera vez; `familia/resultados` cada vez. |
+| F6 | Apoderado → Mis actividades | Abrir una actividad | Un solo `GET …/fichas` aunque se monten la lista y la actividad. |
+| F5 | Mapa → drawer de una batalla → Empezar | Abrir el drawer y entrar a la batalla | Un solo `GET …/batallas`. Tras un intento, al volver a entrar, uno nuevo. |
+| F5 | Investigaciones → guion, paso 1 | Entrar, salir y volver | `GET …/catalogo/familias` solo la primera vez. |
+| F11 | Cerrar sesión e ingresar con otra cuenta | Abrir una ficha en cada cuenta | La ficha de la segunda cuenta se pide de nuevo y muestra su contenido. Nada de la primera. |
+| D-B3 | Apoderado con 2 hijos → Inicio | Cambiar de hijo | La tarjeta de cada hijo con su avance y nivel, como antes. |
+| D-B1 | Ingreso | Ingresar con una contraseña errada 5 veces y luego bien | Los mismos mensajes y el bloqueo de 15 minutos de siempre; con la correcta, entra. |
+| D-B6 | Cualquier vista, en la EC2 | El curl de la sección H | `Content-Encoding: gzip` en `actividades`. |
+| F2b | Diario | Escribir una entrada | `POST escribir-entrada` y las lecturas del diario, **sin** `GET actividades`. Si la entrada abre una insignia, sí se refresca y aparece el aviso. |
+| F2b | Mochila → una ficha bloqueada cuyo requisito cuente algo que se hace sin desbloqueo (p. ej. vistas del catálogo) | Abrir el detalle del requisito; ir al catálogo y abrir una carrera; volver a la ficha | El requisito «actual de requerido» muestra el conteo nuevo (`GET progreso/FICHA/…` tras la acción). Lo mismo con la Ciudad cerrada desde el mapa. |
+| F2b | Familia → escribir la carta | Enviar la carta | `POST escribir-carta` y `GET conversaciones`, **sin** `GET actividades`. |
+| F7 | Mis planes → un plan → «Cómo me siento» | Mover un medidor | `POST medidores` y **un** `GET planes`, sin `actividades`. El medidor queda en su valor. |
+| F7 | Plan → «Lo hice» en un paso | Marcarlo | `POST paso-hecho` y un `GET planes`; el paso queda hecho y su duda cerrada. |
+| F4 | Libro de Helena, con una página lista para revelar | Romper el sello | Un solo `GET …/instrumentos` y un resultado por página revelada (antes, dos de cada uno). La página se abre como siempre. |
+| R1 | Un registro con piezas (p. ej. `b4-1` o `b4-5`) | Responder un ítem | La misma pantalla de Lumi y los mismos ecos que antes. |
+| D-B4 | Cualquier vista | Usarla normalmente; luego desactivar la cuenta (en la base de desarrollo) y recargar | Todo responde igual. Con la cuenta desactivada, vuelve al ingreso (401). |
+| F8 | Un registro o entregable de texto | Escribir rápido y salir del campo; recargar la página | El borrador está completo tras recargar. En Aplicación → Almacenamiento local, `ov.missions.v2.api` cambia al dejar de escribir, no con cada tecla. |
+| F8 | Lo mismo | Escribir y cerrar la pestaña de inmediato; volver a abrir | El borrador sigue completo. |
+
+## Carga y Argon2 con 2 núcleos, después de las correcciones
+
+Mismo método que en 1b: un uvicorn local con 2 workers sobre el PostgreSQL 17 temporal, el LLM de prueba con 2 s de
+demora y 25 cuentas nuevas. Esta vez cada worker estaba fijado a 2 núcleos (afinidad de proceso), como la EC2. El
+arranque del cliente ya pide la campana una sola vez (F1).
+
+**Argon2 (25 verificaciones a la vez, 2 núcleos, la máquina sin otra carga; dos rondas):**
+
+| | Tiempo total | Pico de memoria del proceso |
+|---|---|---|
+| Sin turnos (antes de D-B1) | 3,54 s · 3,58 s | **1.606 MB · 1.542 MB** |
+| Con 4 turnos (D-B1(a)) | 3,49 s · 3,49 s | **281 MB · 281 MB** |
+
+- **Con 2 núcleos, los turnos no hacen más lento el ingreso:** la CPU ya era el límite.
+- **La memoria baja a una sexta parte:** con 2 workers, el tope es de unos 560 MB en total, en lugar de 3 GB.
+- **Una medición anterior no sirve para tiempos:** se hizo mientras corría la suite completa en paralelo; sus tiempos
+  (de 4 a 29 s) eran ruido de CPU, y no se usan.
+
+**Carga de 25 estudiantes, PostgreSQL, 2 núcleos, después de las correcciones** (ms):
+
+| Fase · ruta | Mediana / p95 / máx. |
+|---|---|
+| `POST /sesion/ingresar` | 3372 / 5110 / 5270 |
+| `GET /sesion` · `POST /acciones/ingresar` | 36 / 824 / 914 · 45 / 905 / 907 |
+| Arranque (`actividades`, `avance`, `resumen`, `secciones`, `presentaciones`, `notificaciones`) | 73–99 / ≤ 704 / ≤ 718 |
+| `POST completar-actividad` (los 25 a la vez) | 331 / 514 / 580 |
+| `POST completar-actividad` (tramo 0, 125 peticiones) | 305 / 494 / 586 |
+| `POST responder-items` | 213 / 315 / 344 |
+| `GET actividades` y `avance` (refrescos) | 253–346 / ≤ 610 / ≤ 695 |
+| `POST registro/responder` (LLM de 2 s) | 2172 / 2222 / 2233 |
+| Duración de cada fase | 5,7 s · 0,8 s · 6,1 s · 2,7 s |
+
+- **Errores:** ninguno.
+- **Bloqueos:** ni una espera por bloqueos (`Lock`).
+- **Conexiones:** el pico fue de **22 de 30**; antes de las correcciones fueron 30 de 30.
+- **El ingreso es lo más lento** (3,4 s de mediana y 5,3 s en el peor caso): son 25 verificaciones Argon2 sobre 2
+  núcleos, con o sin turnos. Escalonar el ingreso (sección H, punto 6) lo reparte.
+- **Las lecturas del arranque** salen rápido mientras los ingresos esperan su turno; su p95 (unos 700 ms) es el de las
+  que coinciden con las verificaciones.
+- **Lo que esta máquina no reproduce:** la latencia de red a RDS, los créditos de CPU de una `t3` y la memoria real de
+  la EC2.

@@ -1,1 +1,18 @@
 # Decisiones de la spec en curso
+
+Spec: `docs/specs/auditoria-plataforma.md` (correcciones del 14 de noviembre).
+
+- **F1:** una lista de notificaciones leída hace menos de 10 s se reutiliza (el ingreso y el mapa la pedían casi a la vez); lo que llega por acciones ya se incorpora sin pedirla.
+- **F3:** con `act-tip-final` abierta, el resultado RIASEC se pide solo si no se leyó o falló; revelar y reiniciar lo vuelven a leer con el libro (`conInstrumentos`). Un 409 (sin resultado) no se repite hasta el próximo revelado.
+- **F5:** las batallas se comparten mientras las actividades cargadas sean las mismas y se olvidan tras cada intento; los casos quedan para después del 19, como decía el informe.
+- **F6:** el catálogo de instrumentos del apoderado se pide una vez por sesión; las fichas siguen revalidándose en cada montaje, pero dos montajes a la vez comparten la petición.
+- **F2b:** criterio del refresco condicional: el progreso de una actividad solo cambia al completarla, responder ítems, reiniciar, en batallas, casos y registros (verificado en `app/services`); esas acciones refrescan siempre. Las demás refrescan solo con desbloqueos. Los requisitos con «actual de requerido» dependen de una revisión que sube con cada acción confirmada.
+- **F7:** medidores y orden siguen pidiendo `GET planes`: el servidor deriva estados de sección, `actualizada_en`, letras y avisos que el front no puede calcular sin decidir por el servidor. Aplicarlos sin pedir exigiría que la acción devuelva el plan (cambio de contrato).
+- **F4:** el libro de Helena se recarga cuando cambia el estado de un cuestionario (`codigo:estado` de los `CUESTIONARIO`), no con cada recarga de actividades; el requisito de la Ciudad del libro va en un efecto aparte.
+- **F8:** solo en api, el journey y la aventura no se reescriben si no cambiaron, y el borrador de un texto se escribe con 300 ms de espera; se guarda al salir del campo, al desmontar, antes de cualquier otra escritura y en `pagehide`.
+- **D-B1(a):** 4 verificaciones Argon2 simultáneas por proceso (`VERIFICACIONES_CONTRASENA_SIMULTANEAS`), tomadas antes de abrir la transacción del ingreso; con 2 workers, a lo más 8 a la vez (unos 560 MB). `memory_cost` no cambia.
+- **D-B3:** `ContextoConsultas.cargar_progresos` carga los progresos de varias cuentas en una consulta; `familia` la usa con los desbloqueos antes del bucle por hijo.
+- **D-B4:** el guardia, al autorizar, cierra su transacción con `commit` sin expirar lo leído y deja la cuenta en `sesion.info`; `obtener_cuenta` y `buscar_por_codigo` la reutilizan si es la pedida. Un rechazo sigue revirtiendo como antes.
+- **D-B6:** gzip en `despliegue/ec2/nginx-ov.conf`, con `gzip_proxied any` porque Amplify reenvía `/api` con cabecera `Via`. Como `instalar.sh` solo copia el archivo en la instalación y certbot lo modifica, en la EC2 se aplica a mano.
+- **R1:** el contexto del ítem guardado no depende de su propia respuesta; `responder` lo reusa para armar la respuesta. El JSON de `GET registro`, `responder` y `entregar` de todos los registros de `contenido` (cuenta nueva, a mitad y al terminar) salió idéntico al de antes.
+- **R2 (no se hizo):** `LecturaContexto` no arma las opciones de lista de los ítems que no son de piezas ni conserva qué marcador falta; servir al estudiante exigiría copiar al panel la regla de `_opciones`. Queda para decidir.
