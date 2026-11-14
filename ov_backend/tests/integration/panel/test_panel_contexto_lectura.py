@@ -1,29 +1,32 @@
-"""Auditoría del panel (H1): la pestaña Respuestas lee el contexto de hoy de cada ítem una vez por petición
-(`LecturaContexto`) en lugar de `resolver_contexto` por ítem.
+"""Auditoría del panel (H1): la pestaña Respuestas arma el contexto de hoy de cada ítem con `LecturaContexto`, que lee
+una vez por petición y repite sobre lo ya leído las reglas de marcadores y ecos de `registro/contexto.py`.
 
-- `respuestas` y cada `respuestas/{actividad}` de los ocho estudiantes de ejemplo salen idénticas a las de la
-  implementación anterior, guardadas en `respuestas_ejemplo.json` (generadas con `soporte_panel.respuestas_de_ejemplo`
-  antes del cambio).
+- Por cada ítem de registro de los ocho estudiantes de ejemplo, lo que arma `LecturaContexto` es igual a lo que da
+  `resolver_contexto` llamado en vivo (las opciones, solo en los ítems de piezas: las demás no las arma). Si cambian
+  las reglas del registro y el panel no, esta prueba falla.
 - Con los registros de `contenido` (marcadores, ecos y piezas), el número de consultas no crece con los registros
   respondidos ni con los compañeros del salón.
 
 Los ocho estudiantes se siembran una vez por módulo (unos 40 s, con acciones reales)."""
 
-import json
-from pathlib import Path
+from dataclasses import replace
 
 import pytest
 from sqlalchemy import select
 
 from app import models as m
+from app.core.contexto import usar_contexto
 from app.main import crear_aplicacion
+from app.services.panel.contexto_lectura import LecturaContexto
+from app.services.panel.perfil_respuestas import _items, _registros_en_orden
+from app.services.registro.contexto import MarcadorSinValor, resolver_contexto
+from app.services.registro.eleccion import FUENTES_PIEZAS
 from soporte_acceso import ClienteConToken
 from soporte_bases import copiar_plantilla
 from soporte_consultas import ContadorConsultas
 from soporte_llm import ClientePrueba
-from soporte_panel import AHORA_EJEMPLO, nuevo_estudiante, respuestas_de_ejemplo, sembrar_ejemplo
+from soporte_panel import ESTUDIANTES_EJEMPLO, nuevo_estudiante, sembrar_ejemplo
 
-ESPERADAS = Path(__file__).with_name('respuestas_ejemplo.json')
 PERFIL = '/cuentas/ori-carmen/panel/estudiantes'
 
 
@@ -47,16 +50,43 @@ def _consultas(aplicacion, cliente, ruta):
     return contador
 
 
-def test_respuestas_de_los_estudiantes_de_ejemplo_salen_identicas(ejemplos):
-    _, cliente = ejemplos
-    esperadas = json.loads(ESPERADAS.read_text(encoding='utf-8'))
-    assert esperadas['ahora'] == AHORA_EJEMPLO.isoformat()
-    leidas = json.loads(json.dumps(respuestas_de_ejemplo(cliente)))
-    for estudiante, datos in esperadas['estudiantes'].items():
-        assert leidas[estudiante]['respuestas'] == datos['respuestas'], estudiante
-        distintos = [a for a, registro in datos['registros'].items() if leidas[estudiante]['registros'].get(a) != registro]
-        assert not distintos, f'{estudiante}: {distintos}'
-    assert leidas.keys() == esperadas['estudiantes'].keys()
+@usar_contexto
+def _items_de_registros(sesion):
+    return [i for _, actividad, _ in _registros_en_orden(sesion) for i in _items(sesion, actividad.id)]
+
+
+@usar_contexto
+def _con_lectura(sesion, estudiante, items):
+    lectura = LecturaContexto(sesion, estudiante, items)
+    return {i.codigo: lectura.hoy(i) for i in items}
+
+
+@usar_contexto
+def _en_vivo(sesion, estudiante, item):
+    try:
+        return resolver_contexto(sesion, estudiante, item.codigo)
+    except MarcadorSinValor:
+        return None
+
+
+def test_el_contexto_de_cada_item_es_el_de_resolver_contexto(ejemplos):
+    aplicacion, _ = ejemplos
+    distintos, comparados = [], 0
+    with aplicacion.state.fabrica_sesiones() as sesion:
+        items = _items_de_registros(sesion)
+        assert any(i.fuente_opciones in FUENTES_PIEZAS for i in items)
+        for codigo in ESTUDIANTES_EJEMPLO:
+            estudiante = sesion.scalar(select(m.Cuenta).where(m.Cuenta.codigo == codigo))
+            armados = _con_lectura(sesion, estudiante, items)
+            for item in items:
+                vivo = _en_vivo(sesion, estudiante, item)
+                if vivo is not None and item.fuente_opciones not in FUENTES_PIEZAS:
+                    vivo = replace(vivo, opciones=())  # la lectura del panel no arma las opciones de lista
+                comparados += 1
+                if armados[item.codigo] != vivo:
+                    distintos.append(f'{codigo} · {item.codigo}')
+    assert comparados == len(items) * len(ESTUDIANTES_EJEMPLO)
+    assert not distintos, distintos
 
 
 def _con_companeros(aplicacion):

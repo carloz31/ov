@@ -180,7 +180,7 @@ def responder_autopercepcion(sesion, codigo, actividad, por_item, defecto=3):
     return {item.numero: item for item in items}
 
 
-# --- Auditoría del panel (H1): las respuestas de los estudiantes de ejemplo -------------------------
+# --- Auditoría del panel (H1): los estudiantes de ejemplo ------------------------------------------
 
 AHORA_EJEMPLO = datetime(2026, 11, 12, 10, 0)  # DATO DE PRUEBA: la hora fija de la siembra y de las lecturas
 ESTUDIANTES_EJEMPLO = tuple(f'est-panel-{n}' for n in range(1, 9))
@@ -198,20 +198,3 @@ def sembrar_ejemplo(aplicacion):
     sembrar(aplicacion, AHORA_EJEMPLO)
     fijar_ahora(aplicacion, AHORA_EJEMPLO)
 
-
-def respuestas_de_ejemplo(cliente) -> dict:
-    """`respuestas` y cada `respuestas/{actividad}` (todos sus registros, también los que aún no alcanza) de los ocho
-    estudiantes de ejemplo, leídos por ori-carmen."""
-    leidas = {}
-    for estudiante in ESTUDIANTES_EJEMPLO:
-        base = f'/cuentas/ori-carmen/panel/estudiantes/{estudiante}/respuestas'
-        respuesta = cliente.get(base)
-        assert respuesta.status_code == 200, respuesta.text
-        lista = respuesta.json()
-        registros = {}
-        for fila in lista['registros']:
-            detalle = cliente.get(f"{base}/{fila['actividad']}")
-            assert detalle.status_code == 200, detalle.text
-            registros[fila['actividad']] = detalle.json()
-        leidas[estudiante] = {'respuestas': lista, 'registros': registros}
-    return leidas

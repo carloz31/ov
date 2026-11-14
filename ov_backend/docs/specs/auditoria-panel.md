@@ -379,8 +379,8 @@ La pestaña Tests del caso 8, con tres cuestionarios revelados, pasa de 42 a 36 
 
 | # | Estado | Nota |
 |---|---|---|
-| H1 | Corregido | `panel/contexto_lectura.py` (`LecturaContexto`): lee una vez por petición y arma cada ítem una vez. Las respuestas de los ocho ejemplos (152 registros) salen idénticas a las de antes, y una prueba lo fija. **Los ecos al LLM se siguen calculando**, aunque la corrección aprobada decía «sin ecos_llm»: `eco_cambiado` los necesita, y sin ellos «Cambió después» cambiaría. Se calculan sobre lo ya leído, sin consultas. `resolver_contexto` y el flujo del estudiante no cambiaron; las reglas de marcadores y ecos quedan repetidas en el módulo del panel, y la prueba de respuestas idénticas las protege. |
-| H2 (a) | Corregido | Columnas en lugar de entidades, solo las coincidencias que `seleccionar_afines` puede elegir (posición ≤ 30) y familias solo de quien tiene Plan A. Comparado con `representar_resultado` en los 249 resultados de la base de medición: sin diferencias. |
+| H1 | Corregido | `panel/contexto_lectura.py` (`LecturaContexto`): lee una vez por petición y arma cada ítem una vez. Las respuestas de los ocho ejemplos (152 registros) salieron idénticas a las de antes; una prueba compara, ítem por ítem, lo que arma el panel con `resolver_contexto` en vivo. **Los ecos al LLM se siguen calculando**, aunque la corrección aprobada decía «sin ecos_llm»: `eco_cambiado` los necesita, y sin ellos «Cambió después» cambiaría. Se calculan sobre lo ya leído, sin consultas. `resolver_contexto` y el flujo del estudiante no cambiaron; las reglas de marcadores y ecos quedan repetidas en el módulo del panel, y la prueba de respuestas idénticas las protege. |
+| H2 (a) | Corregido | Columnas en lugar de entidades, solo las coincidencias que `seleccionar_afines` puede elegir (posición ≤ `max(MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES)`, hoy 30) y familias solo de quien tiene Plan A. Comparado con `representar_resultado` en los 249 resultados de la base de medición: sin diferencias. Una prueba cambia esos parámetros y comprueba el corte. |
 | H2 (b) | No se hace | Por decisión. |
 | H3 | Corregido | |
 | H4 | Corregido | |
@@ -400,9 +400,9 @@ La pestaña Tests del caso 8, con tres cuestionarios revelados, pasa de 42 a 36 
     `planes`, el plan completo, `respuestas`, `avance` y las tres acciones de notas.
   - Otra prueba responde los registros de `ruta` de a uno.
   - Se comprobó que falla si se deshace H3.
-- **`tests/integration/panel/test_panel_respuestas_identicas.py`** siembra los ocho ejemplos (`contenido`) y
+- **`tests/integration/panel/test_panel_contexto_lectura.py`** siembra los ocho ejemplos (`contenido`) y
   comprueba:
-  - las respuestas idénticas;
+  - por cada ítem de registro, el contexto del panel igual al de `resolver_contexto` en vivo;
   - `respuestas` del caso 5 frente al caso 7, y con diez compañeros más;
   - tres registros con ecos y piezas (`b1-3`, `b4-1`, `b4-5`).
 - **Front (`tests/servidor/panel`):**

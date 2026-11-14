@@ -1,6 +1,7 @@
 """Ajuste panel-salon §5: Intereses del salón, listas completas de áreas e instituciones y su orden."""
 
-from sqlalchemy import select, update
+import pytest
+from sqlalchemy import event, func, select, update
 
 from app import models as m
 from app.models import TipoFavorito
@@ -154,3 +155,50 @@ def test_el_numero_de_consultas_de_intereses_no_crece_con_el_salon(aplicacion, c
         favorito(sesion, nuevo.codigo, TipoFavorito.INSTITUCION, INST_UNI)
     sesion.commit()
     assert contar() == pocas
+
+
+@pytest.mark.parametrize('maximo, minimo', [(40, 12), (5, 12)])
+def test_el_corte_de_coincidencias_sale_de_los_parametros_de_afines(aplicacion, cliente, sesion, monkeypatch,
+                                                                     maximo, minimo):
+    """Auditoría del panel (H2): el panel lee de cada resultado las coincidencias con posición ≤ el mayor entre
+    `MAXIMO_OCUPACIONES_AFINES` y `MINIMO_OCUPACIONES_AFINES`, y con otros valores (y un umbral que deja pasar todas)
+    sus familias siguen siendo las de `representar_resultado`."""
+    from app.core.contexto import usar_contexto
+    from app.services.instrumentos import calculo, consultas
+
+    fijar_ahora(aplicacion)
+    ciclo(cliente, cuenta='est-ana')
+    for modulo in (calculo, consultas):
+        monkeypatch.setattr(modulo, 'MAXIMO_OCUPACIONES_AFINES', maximo)
+        monkeypatch.setattr(modulo, 'MINIMO_OCUPACIONES_AFINES', minimo)
+    monkeypatch.setattr(calculo, 'UMBRAL_AFIN', 0.0)
+    sesion.expire_all()
+    resultado = sesion.scalar(select(m.ResultadoInstrumento).where(
+        m.ResultadoInstrumento.cuenta_id == cuenta(sesion, 'est-ana').id, m.ResultadoInstrumento.anulado_en.is_(None),
+        m.ResultadoInstrumento.aplicacion_id == sesion.scalar(
+            select(m.Aplicacion.id).where(m.Aplicacion.codigo == 'APL-RIASEC'))))
+    coincidencias = sesion.scalar(select(func.count()).select_from(m.Coincidencia).where(
+        m.Coincidencia.resultado_id == resultado.id))
+    assert coincidencias > max(maximo, minimo)  # el corte deja fuera algunas
+    topes = []
+
+    def espiar(conexion, cursor, sentencia, parametros, contexto, varios):
+        if 'coincidencia.posicion <=' in sentencia and 'JOIN ocupacion' in sentencia:
+            topes.append(parametros[-1] if isinstance(parametros, (list, tuple)) else parametros)
+
+    @usar_contexto
+    def calcular(s):
+        return consultas.intereses_por_cuenta(s, [resultado])[resultado.cuenta_id]
+
+    @usar_contexto
+    def representar(s):
+        publico = consultas.representar_resultado(s, resultado)
+        return publico.codigo_interes.codigo, [f.codigo for f in publico.familias or []]
+
+    event.listen(aplicacion.state.motor_bd, 'before_cursor_execute', espiar)
+    try:
+        panel = calcular(sesion)
+    finally:
+        event.remove(aplicacion.state.motor_bd, 'before_cursor_execute', espiar)
+    assert topes == [max(maximo, minimo)]
+    assert panel == representar(sesion)

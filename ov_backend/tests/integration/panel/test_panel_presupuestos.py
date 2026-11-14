@@ -2,7 +2,7 @@
 los elementos de cada estudiante (planes, dudas, pasos, complicaciones, señales, diario, cuestionarios con resultado,
 registros respondidos). Patrón pocos frente a muchos: se cuenta cada ruta con el salón de `ruta` poblado, después de
 sumar doce estudiantes con lo mismo y después de duplicar lo de cada estudiante; las tres cuentas son iguales. La
-pestaña Respuestas con los registros de `contenido` (ecos y piezas) se mide en `test_panel_respuestas_identicas.py`."""
+pestaña Respuestas con los registros de `contenido` (ecos y piezas) se mide en `test_panel_contexto_lectura.py`."""
 
 from datetime import timedelta
 

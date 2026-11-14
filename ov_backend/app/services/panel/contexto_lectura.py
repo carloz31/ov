@@ -9,8 +9,9 @@ porque ni la lectura ni `eco_cambiado` las usan.
 
 `resolver_contexto` y el flujo del estudiante no cambian. Este módulo repite la regla de los marcadores
 (`resolver_marcadores`) y la de los ecos (`_ecos`, `_ecos_de_items`) sobre lo ya leído, y reutiliza sus piezas
-puras. `tests/integration/panel/test_panel_respuestas_identicas.py` comprueba que las respuestas de los
-estudiantes de ejemplo salen idénticas a las de la implementación anterior.
+puras. `tests/integration/panel/test_panel_contexto_lectura.py` compara, por cada ítem de los estudiantes de
+ejemplo, lo que arma esta lectura con `resolver_contexto` en vivo: quien cambie esas reglas debe cambiar también este
+módulo (ver `docs/sistema/panel.md`).
 """
 
 from sqlalchemy import select
