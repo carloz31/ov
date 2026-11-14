@@ -7,7 +7,7 @@
       "Varios cortometrajes incluyen testimonios en quechua y castellano. Los organizadores quieren conservar las voces originales y facilitar que el público comprenda las historias. A un día del evento, además, circulan publicaciones falsas sobre cobros y cancelaciones.",
       "Tu misión es reunir a quienes puedan coordinar el festival, adaptar su presentación artística, resolver necesidades técnicas y comunicar la información oficial. Las agrupaciones ya conocen sus actuaciones: el desafío es hacer posible el espectáculo."
     ],
-    "imagen": "thousand-voices-festival-intro.png",
+    "imagen": "thousand-voices-festival-intro.webp",
     "alerta": "El festival tiene más desafíos que tiempo disponible"
   },
   "presupuesto": 10,
@@ -79,7 +79,7 @@
         "textoMovil": "Las agrupaciones y organizadores tienen distintas necesidades para el escenario. Escucha sus testimonios antes de reunir el equipo."
       },
       "fondo": {
-        "imagen": "thousand-voices-festival-phase-1.png",
+        "imagen": "thousand-voices-festival-phase-1.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [
@@ -171,7 +171,7 @@
         "textoMovil": "Artistas y docentes informan dificultades de audio y de comprensión. Escucha sus testimonios antes de asignar profesionales."
       },
       "fondo": {
-        "imagen": "thousand-voices-festival-phase-2.png",
+        "imagen": "thousand-voices-festival-phase-2.webp",
         "posicion": "54% 53%"
       },
       "mensajes": [
@@ -268,7 +268,7 @@
         "textoMovil": "El público y los organizadores encontraron información contradictoria. Escucha sus testimonios antes de actuar."
       },
       "fondo": {
-        "imagen": "thousand-voices-festival-phase-3.png",
+        "imagen": "thousand-voices-festival-phase-3.webp",
         "posicion": "52% 50%"
       },
       "mensajes": [

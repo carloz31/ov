@@ -663,7 +663,7 @@ test('new map canvases draw segments only on the path, with completion and front
   journey.progress['mission-welcome'] = { estado: 'completada' }
   journey.progress['enc-mitos'] = { estado: 'completada' }
   const points = getCaminoPoints(store.createInitialAdventure(), journey)
-  const props = { points, panelOpen: false, onSelect() {}, onScaleChange() {}, backgroundImage: '/images/adventure/journey-map.png', label: 'Mapa de prueba' }
+  const props = { points, panelOpen: false, onSelect() {}, onScaleChange() {}, backgroundImage: '/images/adventure/journey-map.webp', label: 'Mapa de prueba' }
   const route = renderToStaticMarkup(React.createElement(MapCanvas, { ...props, variant: 'route' }))
   const city = renderToStaticMarkup(React.createElement(MapCanvas, { ...props, variant: 'open' }))
   assert.equal((route.match(/data-map-segment=/g) ?? []).length, points.length - 1)
@@ -2895,18 +2895,28 @@ test('phase 8 every novelty kind retains its existing destination and unread two
   journeyStore.updateJourney(() => journeyLogic.initialJourney()); noveltyUi.updateStudentUi(() => noveltyUi.initialStudentUiState())
 })
 
-test('PNG maps fill their triple-sized worlds and cover the entire viewport at minimum zoom', () => {
+// Auditoría plataforma (imágenes en WebP): el ancho y el alto salen de la cabecera VP8, VP8L o VP8X.
+function dimensionesWebp(archivo) {
+  const tipo = archivo.subarray(12, 16).toString()
+  if (tipo === 'VP8 ') return [archivo.readUInt16LE(26) & 0x3fff, archivo.readUInt16LE(28) & 0x3fff]
+  if (tipo === 'VP8L') {
+    const bits = archivo.readUInt32LE(21)
+    return [(bits & 0x3fff) + 1, ((bits >> 14) & 0x3fff) + 1]
+  }
+  return [archivo.readUIntLE(24, 3) + 1, archivo.readUIntLE(27, 3) + 1]
+}
+
+test('map images fill their triple-sized worlds and cover the entire viewport at minimum zoom', () => {
   const geometry = load(path.resolve('src/features/adventure/lib/geometry.ts'))
   const { canvasSize, imageSize, initialScale, getMinimumScale, zoomTransform, clampTransform, mapPosition } = geometry
   assert.equal(canvasSize.width, 5016); assert.equal(canvasSize.height, 2823)
   assert.equal(initialScale, .5)
   for (const name of ['journey-map', 'city-map']) {
-    const png = readFileSync(path.resolve(`public/images/adventure/${name}.png`))
-    assert.equal(png.subarray(1, 4).toString(), 'PNG')
-    assert.equal(png.readUInt32BE(16), imageSize.width)
-    assert.equal(png.readUInt32BE(20), imageSize.height)
+    const imagen = readFileSync(path.resolve(`public/images/adventure/${name}.webp`))
+    assert.equal(imagen.subarray(8, 12).toString(), 'WEBP')
+    assert.deepEqual(dimensionesWebp(imagen), [imageSize.width, imageSize.height])
     const markup = render(name === 'journey-map' ? '/student/missions' : '/student/exploration')
-    assert.match(markup, new RegExp(`src="/images/adventure/${name}\\.png"`))
+    assert.match(markup, new RegExp(`src="/images/adventure/${name}\\.webp"`))
     assert.match(markup, /width:5016px;height:2823px/)
     assert.match(markup, /scale\(0.5\)/)
   }

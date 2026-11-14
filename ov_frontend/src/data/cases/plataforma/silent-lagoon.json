@@ -7,7 +7,7 @@
       "Circula una fotografía de un camión con recipientes junto a un antiguo taller. Unos vecinos señalan a ese negocio; otros culpan a los cultivos y otros aseguran que se trata de un fenómeno natural. Las familias no saben qué usos del agua son seguros.",
       "Tu misión es reunir especialistas para investigar la circulación del agua, contrastar las posibles causas y proponer medidas ambientales y de gestión respaldadas por evidencias, sin acusar de manera apresurada."
     ],
-    "imagen": "silent-lagoon-intro.png",
+    "imagen": "silent-lagoon-intro.webp",
     "alerta": "La laguna presenta cambios inquietantes"
   },
   "presupuesto": 12,
@@ -87,7 +87,7 @@
         "textoMovil": "Pescadores, agricultores y vecinos tienen observaciones distintas sobre la laguna. Escucha sus testimonios antes de iniciar la investigación."
       },
       "fondo": {
-        "imagen": "silent-lagoon-phase-1.png",
+        "imagen": "silent-lagoon-phase-1.webp",
         "posicion": "54% 50%"
       },
       "mensajes": [
@@ -184,7 +184,7 @@
         "textoMovil": "El laboratorio y la comunidad reunieron indicios todavía incompletos. Escucha sus testimonios antes de continuar los análisis."
       },
       "fondo": {
-        "imagen": "silent-lagoon-phase-2.png",
+        "imagen": "silent-lagoon-phase-2.webp",
         "posicion": "51% 53%"
       },
       "mensajes": [
@@ -281,7 +281,7 @@
         "textoMovil": "La comunidad quiere actuar, pero todavía hay dudas sobre el origen del daño. Escucha los testimonios antes de formar el equipo."
       },
       "fondo": {
-        "imagen": "silent-lagoon-phase-3.png",
+        "imagen": "silent-lagoon-phase-3.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [

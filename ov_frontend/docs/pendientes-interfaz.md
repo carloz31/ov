@@ -52,10 +52,10 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-11-04 · Ajuste carga-casos · Imágenes de los seis casos
 
-- **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.png` y `<caso>-phase-1..3.png` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).
+- **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.webp` y `<caso>-phase-1..3.webp` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).
 - **Dónde se mostraría:** la imagen de la intro del caso (`ExplorationCaseIntroView`) y el fondo de cada fase de la Central.
 - **Opciones:** subir las imágenes con esos nombres a `public/images/`; cambiar los nombres de los JSON por imágenes que existan; dejar el respaldo.
-- **Si no se muestra:** la intro y las fases usan `exploration-case-background.png`.
+- **Si no se muestra:** la intro y las fases usan `exploration-case-background.webp`.
 - **Estado:** pendiente de las imágenes; no bloquea la carga.
 
 ## 2026-11-04 · Ajuste carga-casos · Voz T05 que anuncia `b3-10`
@@ -68,7 +68,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-11-04 · Ajuste carga-actividades · Imágenes de los personajes
 
-- **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.png`, y esa carpeta no existe en `public/`.
+- **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.webp`, y esa carpeta no existe en `public/`.
 - **Dónde se mostraría:** el avatar de cada hablante en el reproductor (`journey/Character.tsx`).
 - **Opciones:** subir las imágenes con esos nombres; cambiar las rutas a las que existan; dejar el retrato SVG genérico.
 - **Si no se muestra:** cada hablante cae al retrato SVG de `CharacterPortrait` (ya pasaba antes del ajuste).

@@ -7,7 +7,7 @@
       "La obra se detiene. Parte de la comunidad exige conservar el hallazgo; otras familias reclaman que la ciudad necesita un espacio recreativo. Las tensiones crecen cuando aparecen grietas en un muro cercano a la excavación.",
       "Tu misión es reunir equipos para estudiar y proteger lo encontrado, evaluar la seguridad y llegar a una solución que permita conservar la historia sin perder la plaza. No se trata de escoger entre patrimonio y recreación, sino de reconocer qué especialistas se necesitan para atender ambos objetivos."
     ],
-    "imagen": "hidden-plaza-intro.png",
+    "imagen": "hidden-plaza-intro.webp",
     "alerta": "Un hallazgo inesperado detiene la obra"
   },
   "presupuesto": 10,
@@ -71,7 +71,7 @@
         "textoMovil": "Los trabajadores y vecinos quieren contarte qué ocurrió durante la excavación. Escucha sus testimonios antes de formar el equipo."
       },
       "fondo": {
-        "imagen": "hidden-plaza-phase-1.png",
+        "imagen": "hidden-plaza-phase-1.webp",
         "posicion": "53% 50%"
       },
       "mensajes": [
@@ -163,7 +163,7 @@
         "textoMovil": "Distintas personas tienen inquietudes sobre el futuro de la plaza. Escucha sus puntos de vista antes de reunir al equipo."
       },
       "fondo": {
-        "imagen": "hidden-plaza-phase-2.png",
+        "imagen": "hidden-plaza-phase-2.webp",
         "posicion": "51% 52%"
       },
       "mensajes": [
@@ -260,7 +260,7 @@
         "textoMovil": "Docentes, estudiantes y responsables municipales tienen ideas sobre la muestra. Escucha sus testimonios antes de decidir."
       },
       "fondo": {
-        "imagen": "hidden-plaza-phase-3.png",
+        "imagen": "hidden-plaza-phase-3.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [

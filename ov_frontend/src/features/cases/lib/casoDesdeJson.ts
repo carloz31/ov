@@ -2,7 +2,7 @@ import type { CasoJson, CasoJugable, ForestFirePhase, ForestFireProfessional } f
 import type { OcupacionCaso } from '@/types/servidor'
 
 // Ajuste carga-casos: un fondo o una intro sin imagen entregada caen a esta (ver pendientes-interfaz.md).
-export const IMAGEN_RESPALDO_CASO = 'exploration-case-background.png'
+export const IMAGEN_RESPALDO_CASO = 'exploration-case-background.webp'
 
 type Escala = { titulo: string; minimo: number; maximo: number }
 

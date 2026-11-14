@@ -7,7 +7,7 @@
       "Una estudiante que utiliza silla de ruedas quiere participar en un circuito recreativo, pero varias estaciones no pueden completarse tal como están diseñadas. Otros jóvenes presentan cansancio persistente o están regresando de lesiones. Cuando los equipos finalmente se preparan, el calendario muestra partidos simultáneos y descansos desiguales.",
       "Tu misión es organizar equipos para mejorar los criterios de selección, crear condiciones de participación, proteger la salud y ordenar las competencias. No se pretende que todos ganen ni que nadie necesite atención especializada: se busca un torneo justo y seguro."
     ],
-    "imagen": "impossible-teams-tournament-intro.png",
+    "imagen": "impossible-teams-tournament-intro.webp",
     "alerta": "Los Juegos Juveniles necesitan reglas y condiciones más justas"
   },
   "presupuesto": 10,
@@ -75,7 +75,7 @@
         "textoMovil": "Estudiantes, docentes y voluntarios tienen preocupaciones sobre la participación. Escucha sus testimonios antes de convocar al equipo."
       },
       "fondo": {
-        "imagen": "impossible-teams-tournament-phase-1.png",
+        "imagen": "impossible-teams-tournament-phase-1.webp",
         "posicion": "52% 50%"
       },
       "mensajes": [
@@ -167,7 +167,7 @@
         "textoMovil": "Varias personas describen problemas de entrenamiento, salud y retorno a clases. Escucha sus testimonios antes de formar los equipos."
       },
       "fondo": {
-        "imagen": "impossible-teams-tournament-phase-2.png",
+        "imagen": "impossible-teams-tournament-phase-2.webp",
         "posicion": "50% 52%"
       },
       "mensajes": [
@@ -264,7 +264,7 @@
         "textoMovil": "Quienes programan las pruebas detectaron cruces de horarios y descansos. Escucha sus testimonios antes de decidir a quién llamar."
       },
       "fondo": {
-        "imagen": "impossible-teams-tournament-phase-3.png",
+        "imagen": "impossible-teams-tournament-phase-3.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [

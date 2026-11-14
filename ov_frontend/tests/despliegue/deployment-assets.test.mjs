@@ -44,9 +44,9 @@ test('deployed case images resolve from the public root on nested student routes
     'https://example.test/student/exploration?punto=forest-fire',
   ]
   const images = [
-    'forest-fire-case-background.png',
-    'forest-fire-stabilization-background-v2.png?v=2',
-    'forest-fire-recovery-background-v2.png?v=2',
+    'forest-fire-case-background.webp',
+    'forest-fire-stabilization-background-v2.webp?v=2',
+    'forest-fire-recovery-background-v2.webp?v=2',
   ]
   for (const page of pages) {
     for (const image of images) {

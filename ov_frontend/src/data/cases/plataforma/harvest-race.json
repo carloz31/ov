@@ -7,7 +7,7 @@
       "Los agricultores discuten: vender a cualquier precio, esperar una oferta mejor o transformar parte de la fruta en productos que duren más tiempo. Pero ninguna opción es gratuita ni sirve para todo el volumen de la cosecha.",
       "Tu misión es formar equipos que ayuden a priorizar qué cosechar y vender, explorar una alternativa segura de transformación y organizar un canal comercial viable. No se promete salvar absolutamente toda la cosecha; se busca reducir pérdidas y aprender a decidir con información."
     ],
-    "imagen": "harvest-race-intro.png",
+    "imagen": "harvest-race-intro.webp",
     "alerta": "La cosecha de mangos está en riesgo"
   },
   "presupuesto": 10,
@@ -79,7 +79,7 @@
         "textoMovil": "Agricultores, compradores y transportistas tienen información importante. Escucha sus testimonios antes de organizar el trabajo."
       },
       "fondo": {
-        "imagen": "harvest-race-phase-1.png",
+        "imagen": "harvest-race-phase-1.webp",
         "posicion": "54% 52%"
       },
       "mensajes": [
@@ -171,7 +171,7 @@
         "textoMovil": "Quienes preparan productos de mango tienen dudas sobre la fabricación y sus costos. Escucha sus testimonios antes de asignar especialistas."
       },
       "fondo": {
-        "imagen": "harvest-race-phase-2.png",
+        "imagen": "harvest-race-phase-2.webp",
         "posicion": "50% 54%"
       },
       "mensajes": [
@@ -263,7 +263,7 @@
         "textoMovil": "Los posibles vendedores y la cooperativa quieren contarte sus dudas. Escúchalos antes de preparar el equipo comercial."
       },
       "fondo": {
-        "imagen": "harvest-race-phase-3.png",
+        "imagen": "harvest-race-phase-3.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [

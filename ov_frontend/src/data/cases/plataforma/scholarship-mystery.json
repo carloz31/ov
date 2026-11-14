@@ -7,7 +7,7 @@
       "La primera lista de beneficiarios aumenta la tensión: estudiantes con condiciones parecidas obtienen puntajes difíciles de explicar. Para empeorar las cosas, circulan enlaces que permiten abrir documentos personales de postulantes sin autorización.",
       "La municipalidad suspende los resultados definitivos. Tu misión es formar equipos para averiguar qué está fallando, corregir el proceso, proteger la información y permitir una reapertura confiable. No basta con llamar a una sola persona que «sepa de computadoras»."
     ],
-    "imagen": "scholarship-mystery-intro.png",
+    "imagen": "scholarship-mystery-intro.webp",
     "alerta": "Las inscripciones no coinciden con los registros"
   },
   "presupuesto": 12,
@@ -83,7 +83,7 @@
         "textoMovil": "Estudiantes y personal municipal detectaron fallas diferentes. Escucha todos sus testimonios antes de elegir profesionales."
       },
       "fondo": {
-        "imagen": "scholarship-mystery-phase-1.png",
+        "imagen": "scholarship-mystery-phase-1.webp",
         "posicion": "55% 50%"
       },
       "mensajes": [
@@ -180,7 +180,7 @@
         "textoMovil": "Hay personas preocupadas por los resultados y la seguridad de los documentos. Escucha sus testimonios antes de actuar."
       },
       "fondo": {
-        "imagen": "scholarship-mystery-phase-2.png",
+        "imagen": "scholarship-mystery-phase-2.webp",
         "posicion": "48% 52%"
       },
       "mensajes": [
@@ -277,7 +277,7 @@
         "textoMovil": "La reapertura preocupa a estudiantes y responsables del programa. Escucha qué necesitan antes de formar el último equipo."
       },
       "fondo": {
-        "imagen": "scholarship-mystery-phase-3.png",
+        "imagen": "scholarship-mystery-phase-3.webp",
         "posicion": "52% 50%"
       },
       "mensajes": [

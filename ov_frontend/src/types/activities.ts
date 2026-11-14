@@ -213,7 +213,7 @@ export type Plantilla = PlantillaMatriz | { tipo: 'secuencial' } // secuencial =
 
 export type TipoActividad = 'encuentro' | 'registro' | 'instrumento'
 
-// Ajuste carga-actividades: lugar de la isla donde ocurre la actividad; da el fondo `/images/background/<escenario>.png`.
+// Ajuste carga-actividades: lugar de la isla donde ocurre la actividad; da el fondo `/images/background/<escenario>.webp`.
 export type Escenario = 'muelle' | 'bosque' | 'cabana' | 'nevado' | 'ciudad' | 'desierto' | 'bosque_volcan'
   | 'playa' | 'acantilado' | 'faro'
 

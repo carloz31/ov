@@ -152,7 +152,7 @@ const forestFirePhases: ForestFirePhase[] = [
     number: 1,
     name: 'Emergencia',
     subtitle: 'El fuego avanza y la localidad necesita una respuesta inmediata.',
-    backgroundImage: getExplorationImagePath('forest-fire-case-background.png'),
+    backgroundImage: getExplorationImagePath('forest-fire-case-background.webp'),
     backgroundPosition: '62% 50%',
     messages: [
       {
@@ -249,7 +249,7 @@ const forestFirePhases: ForestFirePhase[] = [
     number: 2,
     name: 'Estabilización',
     subtitle: 'El frente inmediato está contenido, pero las personas y los animales necesitan atención.',
-    backgroundImage: getExplorationImagePath('forest-fire-stabilization-background-v2.png?v=2'),
+    backgroundImage: getExplorationImagePath('forest-fire-stabilization-background-v2.webp?v=2'),
     backgroundPosition: '64% 55%',
     messages: [
       {
@@ -342,7 +342,7 @@ const forestFirePhases: ForestFirePhase[] = [
     number: 3,
     name: 'Recuperación',
     subtitle: 'La emergencia terminó, pero la localidad y el bosque necesitan recuperarse.',
-    backgroundImage: getExplorationImagePath('forest-fire-recovery-background-v2.png?v=2'),
+    backgroundImage: getExplorationImagePath('forest-fire-recovery-background-v2.webp?v=2'),
     backgroundPosition: '62% 50%',
     messages: [
       {

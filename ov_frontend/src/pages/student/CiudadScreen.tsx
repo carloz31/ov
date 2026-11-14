@@ -40,7 +40,7 @@ export function CiudadScreen() {
         <RegistroServidorPlayer
           key={registro}
           codigo={registro}
-          imageUrl="/images/background/afueras-ciudad.png"
+          imageUrl="/images/background/afueras-ciudad.webp"
           onClose={() => setParams({})}
         />
       </div>
@@ -60,7 +60,7 @@ export function CiudadScreen() {
       <div className="sx-player-host">
         <StudentActivityPlayer
           activity={activity}
-          imageUrl="/images/background/afueras-ciudad.png"
+          imageUrl="/images/background/afueras-ciudad.webp"
           direct={params.get('modo') === 'directa'}
           edit={revision}
           onClose={() => setParams({})}
