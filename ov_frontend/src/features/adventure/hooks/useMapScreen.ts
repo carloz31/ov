@@ -117,9 +117,10 @@ export function useMapScreen({
     return () => {
       vigente = false
     }
+    // Auditoría plataforma (F2b): los ítems de Mara no cambian con las actividades; se piden al elegir el punto o
+    // cuando cambia su estado, no con cada recarga del camino.
   }, [
     claveDetalle,
-    servidor.actividades.datos,
     selectedPointId,
     selectedActivityId,
     selectedStatus,

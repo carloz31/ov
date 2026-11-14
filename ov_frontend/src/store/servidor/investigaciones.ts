@@ -9,7 +9,7 @@ import type {
   RespuestaAgrupada,
   RespuestaServidor,
 } from '@/types/servidor'
-import { accionConRefresco } from './refresco'
+import { accionConRefresco, conDesbloqueos } from './refresco'
 import { vencerSeccion } from './secciones'
 import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion'
 import { actualizarEntrevista, vencerEntrevistas } from './entrevistas'
@@ -29,7 +29,8 @@ async function accionInvestigacion<T extends RespuestaAccion>(
   accion: (cuenta: string) => Promise<RespuestaServidor<T>>,
   entrevistas = false,
 ): Promise<Resultado<T>> {
-  const respuesta = await accionConRefresco(accion)
+  // Auditoría plataforma (F2b): sin desbloqueos, una acción de investigación no cambia el camino.
+  const respuesta = await accionConRefresco(accion, undefined, false, conDesbloqueos)
   if (confirmada(respuesta)) {
     vencerSeccion('investigaciones')
     if (entrevistas) vencerEntrevistas()
