@@ -36,3 +36,10 @@
 
 - Spec propia (`docs/specs/ajuste-panel-salon.md`), porque `ajuste-coherencia-apoderado` sigue en curso (§10.3 del texto de observaciones).
 - Modelo (aprobado en el plan): tablas de catálogo `grupo_alerta`, `alerta` (con `parametros` JSON, no tabla hija) y `parametro` (`valor` como texto), migración 0056; las llena `datos/fijos.py` (`GRUPOS_ALERTA`, `ALERTAS`, `PARAMETROS_PANEL`). Se adaptan los conteos de tablas y filas de las pruebas de migraciones y de la semilla (94 → 97 tablas) y la clasificación catálogo/estado.
+- `avance.tramos_del_camino` (puro) sale de `avance_estudiante` y lo usa también el panel por lotes; `familia.rutas_completas` sale de `_diploma` (mismo criterio, por lotes). `/avance` y `/familia` responden igual.
+- Alertas (observaciones del plan): un evaluador inexistente se omite con aviso en el log; cada evaluador declara sus claves con defecto; `{clave}` se resuelve en `nombre` y `descripcion`; «Por revisar» es una sola función (`comun.por_revisar`) que reciben el bloque del test (con `PANEL_AVISOS_VELOCIDAD_PRISA`) y la alerta (con su `avisos_velocidad`).
+- Días del panel por fecha de calendario de Lima (`obtener_ahora`, la misma hora del check-in): «hace 7 días o más» es `(hoy − fecha del último).days ≥ 7`; «Ingresaron esta semana» es el complemento.
+- «Familia participando» = vínculo activo con algún apoderado que tenga `INGRESO`; «familia pendiente» es su complemento (no existía ese concepto). «Conversaron» = alguna `conversacion_vinculo.conversada_en`. «Terminó su ruta» = criterio del diploma.
+- «Sin empezar» del camino = ninguna actividad completada; «Donde más se detienen» solo cuenta a quien completó alguna (fecha del último `COMPLETA_ACTIVIDAD`), y ante empate elige la actividad que va antes en el camino.
+- Partida y llegada cuentan «respondida completa» (todos los ítems de sus actividades), sin mirar el resultado; los demás cuestionarios, resultado vigente.
+- Tras rehacer el test (reinicio), las respuestas se borran y el estudiante vuelve a «Sin empezar» (no «En curso»).

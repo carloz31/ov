@@ -3,6 +3,8 @@
 Ajuste inicio-apoderado: todos los hijos, cada uno con sus cuestionarios visibles y su estado.
 """
 
+from datetime import datetime
+
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -10,12 +12,29 @@ from app.core.contexto import contexto, usar_contexto
 from app.core.parametros import CIFRAS_CUENTA_DIPLOMA, PREFIJO_DIPLOMA
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Aplicacion, Bloque, Cuenta, EstadoProgreso, EventoUso, Instrumento, MomentoAplicacion,
-    ResultadoInstrumento, Rol, SalonInstrumento, TipoEventoUso, TipoResultado, VinculoFamiliar,
+    Actividad,
+    Aplicacion,
+    Bloque,
+    Cuenta,
+    EstadoProgreso,
+    EventoUso,
+    Instrumento,
+    MomentoAplicacion,
+    ResultadoInstrumento,
+    Rol,
+    SalonInstrumento,
+    TipoEventoUso,
+    TipoResultado,
+    VinculoFamiliar,
 )
 from app.schemas.cuentas import NivelActual
 from app.schemas.familia import (
-    AplicacionHijo, AvanceRuta, CuestionarioHijo, Diploma, EstudianteVinculado, FamiliaApoderado,
+    AplicacionHijo,
+    AvanceRuta,
+    CuestionarioHijo,
+    Diploma,
+    EstudianteVinculado,
+    FamiliaApoderado,
 )
 from app.schemas.instrumentos import ResultadoPublico
 from app.services.instrumentos.consultas import representar_resultado
@@ -42,14 +61,22 @@ def avance_ruta(sesion: Session, cuenta: Cuenta) -> AvanceRuta:
 def _diploma(sesion: Session, cuenta: Cuenta) -> Diploma:
     """Se obtiene al completar todos los bloques de su ruta; la fecha es la del último COMPLETA_BLOQUE."""
     bloques = [bloque.id for bloque in _bloques(sesion, cuenta)]
-    completos, ultima = sesion.execute(select(
-        func.count(func.distinct(EventoUso.id_referencia)), func.max(EventoUso.fecha_hora),
-    ).where(EventoUso.cuenta_id == cuenta.id, EventoUso.tipo == TipoEventoUso.COMPLETA_BLOQUE,
-            EventoUso.id_referencia.in_(bloques))).one()
-    obtenido = bool(bloques) and completos == len(bloques)
-    if not obtenido:
+    ultima = rutas_completas(sesion, [cuenta.id], bloques).get(cuenta.id)
+    if ultima is None:
         return Diploma(obtenido=False, obtenido_en=None, codigo=None)
     return Diploma(obtenido=True, obtenido_en=ultima, codigo=codigo_diploma(cuenta.id, ultima.year))
+
+
+def rutas_completas(sesion: Session, cuentas: list[int], bloques: list[int]) -> dict[int, datetime]:
+    """Las cuentas con COMPLETA_BLOQUE en todos esos bloques (su ruta completa, criterio del diploma) y la fecha del
+    último; una sola consulta, también para el panel del salón (ajuste panel-salon)."""
+    if not bloques or not cuentas:
+        return {}
+    filas = sesion.execute(select(
+        EventoUso.cuenta_id, func.count(func.distinct(EventoUso.id_referencia)), func.max(EventoUso.fecha_hora),
+    ).where(EventoUso.cuenta_id.in_(cuentas), EventoUso.tipo == TipoEventoUso.COMPLETA_BLOQUE,
+            EventoUso.id_referencia.in_(bloques)).group_by(EventoUso.cuenta_id))
+    return {cuenta_id: ultima for cuenta_id, completos, ultima in filas if completos == len(bloques)}
 
 
 def codigo_diploma(cuenta_id: int, anio: int) -> str:

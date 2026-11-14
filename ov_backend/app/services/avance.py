@@ -9,8 +9,22 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.exceptions import ErrorAccion
-from app.models import Actividad, Audiencia, Bloque, Cuenta, Espacio, EstadoProgreso, Rol
-from app.schemas.avance import AvanceEstudiante, ConteoAvance, ConteoRequeridas, Tramo, TramoActual
+from app.models import (
+    Actividad,
+    Audiencia,
+    Bloque,
+    Cuenta,
+    Espacio,
+    EstadoProgreso,
+    Rol,
+)
+from app.schemas.avance import (
+    AvanceEstudiante,
+    ConteoAvance,
+    ConteoRequeridas,
+    Tramo,
+    TramoActual,
+)
 from app.services.tematicas import porcentaje
 
 
@@ -19,7 +33,7 @@ def _completadas(sesion: Session, cuenta: Cuenta) -> set[int]:
             if progreso.estado == EstadoProgreso.COMPLETADA}
 
 
-def _por_espacio(sesion: Session, espacio: Espacio) -> list[tuple[Bloque, Actividad]]:
+def por_espacio(sesion: Session, espacio: Espacio) -> list[tuple[Bloque, Actividad]]:
     definiciones = contexto(sesion).definiciones
     filas = [(definiciones.obtener(Bloque, actividad.bloque_id), actividad)
              for actividad in definiciones.listar(Actividad)]
@@ -34,15 +48,13 @@ def _conteo(actividades: list[Actividad], completadas: set[int]) -> ConteoAvance
 
 def avance_ciudad(sesion: Session, cuenta: Cuenta) -> ConteoAvance:
     """Todas las de la Ciudad (requeridas, opcionales y adicionales). Su porcentaje es la afinidad de `/logros`."""
-    return _conteo([actividad for _, actividad in _por_espacio(sesion, Espacio.CIUDAD)], _completadas(sesion, cuenta))
+    return _conteo([actividad for _, actividad in por_espacio(sesion, Espacio.CIUDAD)], _completadas(sesion, cuenta))
 
 
-@usar_contexto
-def avance_estudiante(sesion: Session, cuenta: Cuenta) -> AvanceEstudiante:
-    if cuenta.rol != Rol.ESTUDIANTE:
-        raise ErrorAccion("El avance solo corresponde a estudiantes", estado_http=404)
-    completadas = _completadas(sesion, cuenta)
-    camino = _por_espacio(sesion, Espacio.MISIONES_CAMPO)
+def tramos_del_camino(camino: list[tuple[Bloque, Actividad]],
+                      completadas: set[int]) -> tuple[list[Tramo], TramoActual | None]:
+    """Cada bloque del camino, por número, con sus requeridas; el actual es el primero con una requerida pendiente.
+    Puro: el panel del salón (ajuste panel-salon) lo llama por lotes con las completadas de cada estudiante."""
     tramo_actual = None
     tramos = []
     for bloque in sorted({bloque.id: bloque for bloque, _ in camino}.values(), key=lambda bloque: bloque.numero):
@@ -54,6 +66,16 @@ def avance_estudiante(sesion: Session, cuenta: Cuenta) -> AvanceEstudiante:
                                        completadas=hechas, total=len(requeridas))
         tramos.append(Tramo(codigo=bloque.codigo, nombre=bloque.nombre, numero=bloque.numero,
                             completadas=hechas, total=len(requeridas), estado=estado))
+    return tramos, tramo_actual
+
+
+@usar_contexto
+def avance_estudiante(sesion: Session, cuenta: Cuenta) -> AvanceEstudiante:
+    if cuenta.rol != Rol.ESTUDIANTE:
+        raise ErrorAccion("El avance solo corresponde a estudiantes", estado_http=404)
+    completadas = _completadas(sesion, cuenta)
+    camino = por_espacio(sesion, Espacio.MISIONES_CAMPO)
+    tramos, tramo_actual = tramos_del_camino(camino, completadas)
     return AvanceEstudiante(
         camino=_conteo([actividad for _, actividad in camino], completadas),
         tramo_actual=tramo_actual,
