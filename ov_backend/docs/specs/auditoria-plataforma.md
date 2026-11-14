@@ -15,7 +15,7 @@ el 18 y el 19») y la sección I («Despliegue»).
 
 | Riesgo | Qué | Gravedad | Qué hacer antes |
 |---|---|---|---|
-| **Memoria al ingresar** | Argon2 con los parámetros por defecto usa 64 MiB por verificación. 25 ingresos simultáneos llevaron el proceso a **1,6 GB** en la medición. La EC2 del README es una `t3.small` (2 GB) con 2 workers, o una `t3.micro` (1 GB). **Corregido el 14 de noviembre (D-B1(a)):** con 4 turnos por proceso, el pico baja a 281 MB por worker, sin ingreso más lento con 2 núcleos. | Media, con la corrección desplegada | Comprobar el tipo de instancia, agregar swap y que el salón ingrese de forma escalonada (sección H). |
+| **Memoria al ingresar** | Argon2 con los parámetros por defecto usa 64 MiB por verificación. 25 ingresos simultáneos llevaron el proceso a **1,6 GB** en la medición. La EC2 del README es una `t3.small` (2 GB) con 2 workers, o una `t3.micro` (1 GB). **Corregido el 14 de noviembre (sección O):** con 1 turno por proceso y 120 hilos por worker, Argon2 usa a lo más unos 128 MB en total (64 MiB por worker; cada proceso midió 205–220 MB), y 50 ingresos a la vez pasan sin errores con 2 núcleos. | Media, con la corrección desplegada | Comprobar el tipo de instancia, agregar swap y que los estudiantes ingresen conforme llegan y los apoderados unos minutos después (sección H). |
 | Conexiones durante el LLM | Ninguna acción deja una conexión ni una transacción abierta mientras espera al LLM. Medido con 25 esperas simultáneas de 8 s: 0 conexiones en transacción. | Ninguna | Nada. |
 | Pool de conexiones | 15 por worker (5 más 10 de desborde), 30 en total. La prueba de carga llegó a 30 de 30 sin errores ni esperas largas. | Baja | Nada. |
 | Bloqueos de base | En PostgreSQL no hubo esperas por bloqueos. En SQLite las escrituras se serializan y llegan a 4,6 s, cerca del tiempo de espera de 5 s de SQLite; el despliegue usa RDS PostgreSQL. | Ninguna en RDS | Nada. |
@@ -810,7 +810,7 @@ medir desde la prueba, así que esta fija el comportamiento (la respuesta tardí
 | F5 | Batallas compartidas entre el drawer y el reproductor; familias del guion una vez por sesión | `5ed42fea` | `servidor-batallas.test.mjs`, `servidor-investigaciones-familias-cache.test.mjs` |
 | F11 | Las cachés de fichas y favoritos conservan solo la sesión actual | `cd44b0a1` | `tests/servidor/testimonios/servidor-fichas-sesion.test.mjs` |
 | D-B3 | `familia` lee progresos y desbloqueos de todos los hijos juntos (antes, 8 consultas más 2 por hijo; ahora, 8 fijas) | `224354b6` | `tests/integration/familia/test_presupuesto_familia.py` |
-| D-B1(a) | Hasta 4 verificaciones Argon2 a la vez por proceso; el turno se toma antes de abrir la transacción del ingreso | `d8ff4d37` | `tests/integration/acceso/test_turnos_verificacion.py` |
+| D-B1(a) | Hasta 4 verificaciones Argon2 a la vez por proceso; el turno se toma antes de abrir la transacción del ingreso (desde `ca11c3a6`, 1 por proceso; sección O) | `d8ff4d37` | `tests/integration/acceso/test_turnos_verificacion.py` |
 | D-B6 | gzip para `application/json` en `despliegue/ec2/nginx-ov.conf` (solo ese archivo) | `9c0d02b6` | Se aplica a mano en la EC2 (sección H) |
 | F2b | Refresco condicional (detalle en «Lote 3») | `2a79ef13` | `tests/servidor/actividades/servidor-refresco-condicional.test.mjs` |
 | F7 | Las acciones del plan sin desbloqueos no refrescan el camino ni piden `planes` dos veces | `c2dad716` | `tests/servidor/actividades/servidor-refresco-planes.test.mjs` |
@@ -979,8 +979,8 @@ free -h
 ```
 
 - **Para qué:** con swap, un pico de memoria se vuelve lento en lugar de matar un worker.
-- **Cómo influye D-B1(a):** con los turnos, el pico de Argon2 queda en unos 560 MB (4 verificaciones por worker), y la
-  swap cubre lo que sobre.
+- **Cómo influyen los turnos:** con 1 verificación por worker (sección O), el pico de Argon2 queda en unos 128 MB en
+  total, y la swap cubre lo que sobre.
 
 **3. Aplicar el gzip de D-B6 (a mano)**
 
