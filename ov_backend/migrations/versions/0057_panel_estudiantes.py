@@ -24,6 +24,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table('nota_orientadora',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('numero', sa.Integer(), nullable=False),
     sa.Column('orientadora_id', sa.Integer(), nullable=False),
     sa.Column('estudiante_id', sa.Integer(), nullable=False),
     sa.Column('texto', sa.Text(), nullable=False),
@@ -31,7 +32,8 @@ def upgrade() -> None:
     sa.Column('actualizada_en', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['estudiante_id'], ['cuenta.id'], name=op.f('fk_nota_orientadora_estudiante_id_cuenta')),
     sa.ForeignKeyConstraint(['orientadora_id'], ['cuenta.id'], name=op.f('fk_nota_orientadora_orientadora_id_cuenta')),
-    sa.PrimaryKeyConstraint('id', name=op.f('pk_nota_orientadora'))
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_nota_orientadora')),
+    sa.UniqueConstraint('orientadora_id', 'numero', name=op.f('uq_nota_orientadora_numero'))
     )
     with op.batch_alter_table('nota_orientadora', schema=None) as batch_op:
         batch_op.create_index('ix_nota_orientadora_orientadora_estudiante', ['orientadora_id', 'estudiante_id'],

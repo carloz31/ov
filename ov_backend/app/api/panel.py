@@ -5,11 +5,18 @@ from fastapi import APIRouter, Query
 
 from app.core.parametros import LIMITE_PAGINA_CATALOGO
 
-from app.dependencies import Ahora, SesionBD
+from app.dependencies import Ahora, SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.panel import EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel
+from app.schemas.panel_estudiante import (
+    BorrarNotaEntrada, EditarNotaEntrada, EscribirNotaEntrada, NotaBorrada, NotaPerfil, PaginaEstudiantes,
+    PerfilEstudiante,
+)
 from app.services.panel import estudiantes as estudiantes_panel
 from app.services.panel import intereses as intereses_panel
+from app.services.panel import lista as lista_panel
+from app.services.panel import notas as notas_panel
+from app.services.panel import perfil as perfil_panel
 from app.services.panel import seguimiento as seguimiento_panel
 
 router = APIRouter(tags=["Panel del salón"])
@@ -54,3 +61,34 @@ def consultar_instituciones(cuenta: str, sesion: SesionBD, ahora: Ahora, salon: 
                             limite: int = Query(LIMITE_PAGINA_CATALOGO), desde: int = Query(0)):
     return _consultar(lambda: intereses_panel.lista_instituciones(sesion, cuenta, salon, orden, buscar, tipo, limite,
                                                                   desde, ahora))
+
+
+# --- Ajuste panel-estudiantes: lista y perfil del estudiante -------------------------------------
+
+@router.get("/cuentas/{cuenta}/panel/lista-estudiantes", response_model=PaginaEstudiantes)
+def consultar_lista_estudiantes(cuenta: str, sesion: SesionBD, ahora: Ahora, salon: str | None = None,
+                                buscar: str | None = None, aviso: str | None = None, test: str | None = None,
+                                acceso: str | None = None, orden: str | None = None, limite: int | None = None,
+                                desde: int = Query(0)):
+    return _consultar(lambda: lista_panel.lista_estudiantes(sesion, cuenta, salon, buscar, aviso, test, acceso, orden,
+                                                            limite, desde, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}", response_model=PerfilEstudiante)
+def consultar_perfil(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_panel.perfil(sesion, cuenta, estudiante, ahora))
+
+
+@router.post("/acciones/escribir-nota", response_model=NotaPerfil)
+def escribir_nota(entrada: EscribirNotaEntrada, sesion: SesionBD, ahora: Ahora):
+    return ejecutar_accion(sesion, lambda: notas_panel.escribir_nota(sesion, entrada, ahora))
+
+
+@router.post("/acciones/editar-nota", response_model=NotaPerfil)
+def editar_nota(entrada: EditarNotaEntrada, sesion: SesionBD, ahora: Ahora):
+    return ejecutar_accion(sesion, lambda: notas_panel.editar_nota(sesion, entrada, ahora))
+
+
+@router.post("/acciones/borrar-nota", response_model=NotaBorrada)
+def borrar_nota(entrada: BorrarNotaEntrada, sesion: SesionBD, ahora: Ahora):
+    return ejecutar_accion(sesion, lambda: notas_panel.borrar_nota(sesion, entrada, ahora))

@@ -6,7 +6,7 @@ por estudiante; se calculan al consultar con el evaluador que nombra cada fila (
 
 from datetime import datetime
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Index, Text, true
+from sqlalchemy import JSON, DateTime, ForeignKey, Index, Text, UniqueConstraint, true
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, enumerado
@@ -51,10 +51,13 @@ class Parametro(Base):
 
 
 class NotaOrientadora(Base):
-    """Nota privada de una orientadora sobre un estudiante (HU-108): solo la ve, edita y elimina quien la escribió."""
+    """Nota privada de una orientadora sobre un estudiante (HU-108): solo la ve, edita y elimina quien la escribió.
+    `numero` la nombra en la API (secuencia por orientadora; no se reutiliza)."""
     __tablename__ = "nota_orientadora"
-    __table_args__ = (Index("ix_nota_orientadora_orientadora_estudiante", "orientadora_id", "estudiante_id"),)
+    __table_args__ = (Index("ix_nota_orientadora_orientadora_estudiante", "orientadora_id", "estudiante_id"),
+                      UniqueConstraint("orientadora_id", "numero", name="uq_nota_orientadora_numero"))
     id: Mapped[int] = mapped_column(primary_key=True)
+    numero: Mapped[int]
     orientadora_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
     estudiante_id: Mapped[int] = mapped_column(ForeignKey("cuenta.id"))
     texto: Mapped[str] = mapped_column(Text)

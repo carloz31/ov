@@ -78,7 +78,7 @@ def llenar_estado(aplicacion):
         _llenar_investigaciones(sesion, cuenta, entrevista, fecha)
         # Ajuste panel-estudiantes: una nota de la orientadora.
         orientadora = sesion.scalar(select(modelos.Cuenta).where(modelos.Cuenta.codigo == 'ori-carmen'))
-        sesion.add(modelos.NotaOrientadora(orientadora_id=orientadora.id, estudiante_id=cuenta.id,
+        sesion.add(modelos.NotaOrientadora(numero=1, orientadora_id=orientadora.id, estudiante_id=cuenta.id,
                                            texto='DATO DE PRUEBA', creada_en=fecha, actualizada_en=fecha))
 
 
