@@ -235,17 +235,19 @@ export const sectionIntros: Record<StudentView, string[]> = {
   ],
 }
 
-// Guías del portal del apoderado (HU-018): qué se puede hacer en cada pantalla.
-// DATO DE PRUEBA: textos provisionales hasta cargar el material definitivo.
+// Guías del portal del apoderado (HU-018): qué hay en cada pantalla, qué se hace primero y qué se abre después.
+// En el portal no habla Lumi: habla la plataforma, de usted (ajuste lumi-mensajes).
 export const parentGuides = {
   overview:
-    'Aquí ves cómo avanza tu hijo o hija en su recorrido y qué conversaciones tienen pendientes. Cuando completes tus actividades, podrás abrir los resultados que comparte contigo.',
+    'Aquí ve cómo avanza su hijo o hija en su camino y qué cuestionarios ha completado. Si tiene más de un hijo o hija en la plataforma, elija arriba a quién ver.\n\nDebajo están sus actividades y las conversaciones: pulse cada tarjeta para entrar.\n\nAl terminar todas sus actividades recibe su diploma de compromiso, puede abrir los resultados que se comparten con las familias y se abren las Conversaciones.',
   activities:
-    'Estas actividades te ayudan a acompañar el proceso. Ábrelas en orden: puedes pausarlas y retomarlas cuando quieras, y repasar las que ya completaste.',
+    'Estas actividades le ayudan a acompañar a su hijo o hija en su decisión. Se abren una a una: al terminar una, se abre la siguiente.\n\nPuede salir de una actividad y retomarla después desde el mismo paso, en este mismo dispositivo. Cada actividad le deja una ficha para volver a leerla cuando quiera.\n\nAl terminar todas, recibe su diploma de compromiso y se abren las Conversaciones con su hijo o hija.',
+  conversations:
+    'Primero escriba una carta para su hijo o hija. La leerá en algún momento del camino, sin saber cuándo, y usted puede editarla cuando quiera.\n\nCon su carta guardada se abren los temas. Cada uno responde por separado; cuando están las dos respuestas, ven la del otro y una guía para conversar en casa.\n\nPuede responder un tema aunque su hijo o hija todavía no llegue a él: lo verá cuando lo abra. Si tiene más de un hijo o hija, elija arriba con quién conversar.\n\nNo hace falta estar de acuerdo en todo. Cuando respondan todos los temas, se rompe un sello.',
   careers:
-    'Esta guía reúne información para investigar en familia. Úsala para comparar alternativas y preparar preguntas, sin buscar una respuesta definitiva.',
+    'Aquí puede explorar las mismas ocupaciones, carreras e instituciones que ve su hijo o hija.\n\nEn cada carrera verá qué se aprende, dónde se estudia y cuánto ganan en promedio quienes estudiaron carreras parecidas.\n\nÚselo para conversar y preparar preguntas juntos, sin buscar todavía una respuesta definitiva.',
   questionnaire:
-    'Este es el resultado de un cuestionario que tu hijo o hija completó. Describe sus intereses o fortalezas, no lo que debe elegir: úsalo para conversar juntos.',
+    'Este es el resultado de un cuestionario que respondió su hijo o hija. Muestra cómo se ve hoy, no lo que debe elegir. Úselo para conversar: pregúntele qué le sorprendió y con qué no se identifica.',
 }
 
 // F07a: la guía de Mis planes con la tarjeta v4 (api); en local sigue la de `profile-decisions`.
