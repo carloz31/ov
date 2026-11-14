@@ -1,13 +1,16 @@
 import * as apiPlanes from '@/services/api/planes'
 import type { GuardarSeccionPlan, MedidoresEntrada } from '@/types/servidor'
-import { accionConRefresco } from './refresco'
-import { asegurarSeccion, vencerSeccion } from './secciones'
+import { accionConRefresco, conDesbloqueos, vencerSiNoRefrescada } from './refresco'
+import { asegurarSeccion } from './secciones'
 
-// F07a: acciones sobre los planes. Responden eventos y desbloqueos, no la tarjeta: cada una refresca el camino
-// como completar (crear y guardar pueden abrir t-comparar) y vence `planes`, que la vista montada vuelve a pedir.
+// F07a: acciones sobre los planes. Responden eventos y desbloqueos, no la tarjeta: vencen `planes`, que la vista
+// montada vuelve a pedir (el servidor calcula estados, totales, letras y avisos). Auditoría plataforma (F2b, F7): el
+// camino solo se refresca si abrieron algo (crear y guardar pueden abrir t-comparar), y `planes` no se pide dos veces
+// cuando el refresco ya la venció por un SECCION_PLAN.
 async function accionPlanes(accion: Parameters<typeof accionConRefresco>[0]) {
-  const respuesta = await accionConRefresco(accion)
-  if (respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar') vencerSeccion('planes')
+  const respuesta = await accionConRefresco(accion, undefined, false, conDesbloqueos)
+  if (respuesta.tipo === 'ok') vencerSiNoRefrescada('planes', respuesta.datos)
+  else if (respuesta.tipo === 'guardado_sin_refrescar') vencerSiNoRefrescada('planes', undefined)
   return respuesta
 }
 
