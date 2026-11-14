@@ -1,0 +1,22 @@
+# Decisiones de la spec en curso
+
+## Ajuste panel-salon
+
+- Spec propia (`docs/specs/ajuste-panel-salon.md`), porque `ajuste-coherencia-apoderado` sigue en curso (§10.3 del texto de observaciones).
+- Modelo (aprobado en el plan): tablas de catálogo `grupo_alerta`, `alerta` (con `parametros` JSON, no tabla hija) y `parametro` (`valor` como texto), migración 0056; las llena `datos/fijos.py` (`GRUPOS_ALERTA`, `ALERTAS`, `PARAMETROS_PANEL`). Se adaptan los conteos de tablas y filas de las pruebas de migraciones y de la semilla (94 → 97 tablas) y la clasificación catálogo/estado.
+- `avance.tramos_del_camino` (puro) sale de `avance_estudiante` y lo usa también el panel por lotes; `familia.rutas_completas` sale de `_diploma` (mismo criterio, por lotes). `/avance` y `/familia` responden igual.
+- Alertas (observaciones del plan): un evaluador inexistente se omite con aviso en el log; cada evaluador declara sus claves con defecto; `{clave}` se resuelve en `nombre` y `descripcion`; «Por revisar» es una sola función (`comun.por_revisar`) que reciben el bloque del test (con `PANEL_AVISOS_VELOCIDAD_PRISA`) y la alerta (con su `avisos_velocidad`).
+- Días del panel por fecha de calendario de Lima (`obtener_ahora`, la misma hora del check-in): «hace 7 días o más» es `(hoy − fecha del último).days ≥ 7`; «Ingresaron esta semana» es el complemento.
+- «Familia participando» = vínculo activo con algún apoderado que tenga `INGRESO`; «familia pendiente» es su complemento (no existía ese concepto). «Conversaron» = alguna `conversacion_vinculo.conversada_en`. «Terminó su ruta» = criterio del diploma.
+- «Sin empezar» del camino = ninguna actividad completada; «Donde más se detienen» solo cuenta a quien completó alguna (fecha del último `COMPLETA_ACTIVIDAD`), y ante empate elige la actividad que va antes en el camino.
+- Partida y llegada cuentan «respondida completa» (todos los ítems de sus actividades), sin mirar el resultado; los demás cuestionarios, resultado vigente.
+- Tras rehacer el test (reinicio), las respuestas se borran y el estudiante vuelve a «Sin empezar» (no «En curso»).
+- `instrumentos.consultas.intereses_por_cuenta` (código de interés y familias recomendadas por lotes) reutiliza `cargar_representaciones` y el mismo `_recomendadas` que arma el resultado; `_leer_familias_recomendadas` no cambia. «Intereses más frecuentes» cuenta la primera letra de los «Resultado listo»; la base de «Planes frente al test» es Plan A con resultado vigente y no plano (incluye los con prisa).
+- Filtro de las listas completas: en áreas, con `tipo`, cada familia cuenta solo sus carreras de ese tipo; las opciones del filtro son los tipos presentes entre lo que tiene interés. El orden es `<columna>`/`-<columna>`; nombres sin tildes.
+- Los textos de tipo y gestión («Universidad pública», «Técnica») los arma el front con los nombres del catálogo; el servidor manda los códigos.
+- Fixtures: el exportador pide el panel de ori-carmen sobre 5A con la hora de Lima fija en 2026-10-20 (`ruta-panel-*`). Esquemas de página del panel: `PaginaAreasPanel` y `PaginaInstitucionesPanel` (no chocan con los del catálogo).
+- Front (api): `PanelSalonView` y las listas completas reemplazan el Inicio solo en api (`routes/SubrutasPanelSalon.tsx`, fuera de `AppRoutes.tsx` por su tamaño); en local sigue `CounselorDashboardView`. Sin `?salon=`, el salón principal de la sesión; `all` = todos sus salones. Las fases F4 y F5 del front van en un solo commit (la página monta ambas pestañas).
+- Trato de usted en todo el panel (observaciones del plan), también en los subtítulos que el boceto tutea («Es la base de su informe…», «Pulse una cabecera…»). El nombre corto es la primera palabra y la inicial de la segunda («Camila R.»); con una sola palabra, el nombre entero.
+- Las pruebas del front cargan las vistas de la orientadora con `fixtureApoderado` (el entorno de los portales, que permite features/ y pages/) y el almacén con `fixtureServidor`.
+- La fecha de «datos al …» va sin coma («viernes 13 de noviembre»), como el boceto. Revisión visual con Playwright contra los bocetos sobre una base temporal (sin cambios de diseño pendientes).
+- A pedido del usuario, el ítem del menú «Prioritarios» pasa a «Configuración del salón» (como el boceto) en ambos modos, con el título de la barra y de la vista; la ruta y la vista no cambian. Se adaptan dos aserciones de `tests/local/aventura/adventure-rendering.test.mjs` que buscaban «Prioritarios» (una dependía del menú lateral).
