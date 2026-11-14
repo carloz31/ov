@@ -1,0 +1,65 @@
+{
+  "avisos": [
+    {
+      "avisos": [
+        {
+          "codigo": "sin-ingreso",
+          "descripcion": "Último ingreso: nunca.",
+          "destino": null,
+          "nombre": "No ingresa hace 7 días o más"
+        },
+        {
+          "codigo": "familia-pendiente",
+          "descripcion": "No tiene un apoderado vinculado.",
+          "destino": "AVANCE",
+          "nombre": "Su familia aún no se registra"
+        }
+      ],
+      "codigo": "atras",
+      "nombre": "Se están quedando atrás"
+    }
+  ],
+  "cabecera": {
+    "apoderado": null,
+    "codigo": "est-panel-1",
+    "dias_sin_ingreso": null,
+    "nombre": "Elena Espinoza León",
+    "salon": {
+      "codigo": "5A",
+      "nombre": "Quinto A"
+    },
+    "tramo": {
+      "codigo": "SIN_EMPEZAR",
+      "nombre": null,
+      "numero": 0,
+      "total": 6
+    }
+  },
+  "intereses": {
+    "areas": [],
+    "codigo": [],
+    "estado": "SIN_EMPEZAR",
+    "fecha": null,
+    "instrumento": "TEST-RIASEC",
+    "motivo_revision": null,
+    "partes_respondidas": 0,
+    "partes_total": 6
+  },
+  "notas": [],
+  "partida": {
+    "dimensiones": [],
+    "estado": "SIN_PARTIDA",
+    "fecha_llegada": null,
+    "fecha_partida": null
+  },
+  "planes": [],
+  "respuestas": {
+    "aun_no_lo_sabe": 0,
+    "completados": 0,
+    "destacados": true,
+    "requiere_atencion": 0,
+    "sin_contenido": 0,
+    "total": 1
+  },
+  "temas": []
+}

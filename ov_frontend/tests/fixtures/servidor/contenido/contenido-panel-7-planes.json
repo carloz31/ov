@@ -1,0 +1,105 @@
+{
+  "antes": {
+    "carreras_favoritas": [
+      "Ciencias de la Comunicación",
+      "Ingeniería de Petroleo y Gas Natural",
+      "Psicología"
+    ],
+    "instituciones_favoritas": [],
+    "opcion_inicial": null,
+    "plan_a": "Ingeniería de Petroleo y Gas Natural"
+  },
+  "maximo_planes": 3,
+  "planes": [
+    {
+      "carrera": "Ingeniería de Petroleo y Gas Natural",
+      "complicaciones": [],
+      "conoce_respondidas": 0,
+      "conoce_si": 0,
+      "conoce_total": 5,
+      "costo_primer_anio": null,
+      "dudas_abiertas": 0,
+      "dudas_resueltas": 0,
+      "en_areas": false,
+      "financiamiento": [],
+      "idea_origen": "FAMILIA",
+      "institucion": null,
+      "medidores": {
+        "capacidad": null,
+        "entusiasmo": null,
+        "recursos": null
+      },
+      "motivo_principal": "Estabilidad",
+      "pasos_hechos": 0,
+      "pasos_total": 0,
+      "prioridad": 1,
+      "secciones_listas": 1,
+      "secciones_total": 4,
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "carrera": "Ciencias de la Comunicación",
+      "complicaciones": [],
+      "conoce_respondidas": 0,
+      "conoce_si": 0,
+      "conoce_total": 5,
+      "costo_primer_anio": 1200,
+      "dudas_abiertas": 0,
+      "dudas_resueltas": 0,
+      "en_areas": false,
+      "financiamiento": [
+        "Apoyo de mi familia"
+      ],
+      "idea_origen": "MIA",
+      "institucion": {
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "tipo": "UNIVERSIDAD"
+      },
+      "medidores": {
+        "capacidad": null,
+        "entusiasmo": null,
+        "recursos": null
+      },
+      "motivo_principal": "Ayudar a otros",
+      "pasos_hechos": 0,
+      "pasos_total": 0,
+      "prioridad": 2,
+      "secciones_listas": 2,
+      "secciones_total": 4,
+      "tipo": "UNIVERSIDAD"
+    },
+    {
+      "carrera": "Psicología",
+      "complicaciones": [],
+      "conoce_respondidas": 0,
+      "conoce_si": 0,
+      "conoce_total": 5,
+      "costo_primer_anio": 1200,
+      "dudas_abiertas": 0,
+      "dudas_resueltas": 0,
+      "en_areas": true,
+      "financiamiento": [
+        "Apoyo de mi familia"
+      ],
+      "idea_origen": "MIA",
+      "institucion": {
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "tipo": "UNIVERSIDAD"
+      },
+      "medidores": {
+        "capacidad": null,
+        "entusiasmo": null,
+        "recursos": null
+      },
+      "motivo_principal": "Ayudar a otros",
+      "pasos_hechos": 0,
+      "pasos_total": 1,
+      "prioridad": 3,
+      "secciones_listas": 3,
+      "secciones_total": 4,
+      "tipo": "UNIVERSIDAD"
+    }
+  ]
+}

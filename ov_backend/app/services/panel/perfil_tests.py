@@ -81,7 +81,7 @@ def _intereses(sesion: Session, acceso: Acceso, parametros: dict, lecturas: Lect
     return TestIntereses(
         instrumento=instrumento.codigo, nombre=instrumento.nombre,
         etiqueta=_etiqueta(sesion, instrumento, aplicaciones, acceso), estado=estados[acceso.estudiante.id],
-        fecha=resultado.calculado_en.date() if resultado else None, motivo=motivos.get(acceso.estudiante.id),
+        fecha=resultado.calculado_en.date() if resultado else None, motivo_revision=motivos.get(acceso.estudiante.id),
         mensaje=textos_instrumento(instrumento, "orientadora", acceso.estudiante.nombre)["mensaje"],
         aplicacion=_codigo_aplicacion(sesion, resultado), barras=barras,
         codigo=[DimensionInteres(codigo=letra, nombre=nombres.get(letra, letra)) for letra in (codigo or "")],
@@ -136,7 +136,7 @@ def _grupos(items: dict[int, ItemInstrumento], partida: dict, llegada: dict | No
     if llegada is None:
         bajas = sorted((i for i, (_, valor, baja) in partida.items() if baja and i in items),
                        key=lambda i: (partida[i][1], items[i].numero))
-        return [GrupoAfirmaciones(codigo="BAJAS", afirmaciones=[afirmacion(i) for i in bajas[:tope]])]
+        return [GrupoAfirmaciones(codigo="BAJAS", afirmaciones=[afirmacion(i) for i in bajas[:tope]])] if bajas else []
     comunes = [i for i in partida if i in llegada and i in items]
     diferencia = {i: llegada[i][1] - partida[i][1] for i in comunes}
     bajaron = sorted((i for i in comunes if diferencia[i] < 0), key=lambda i: (diferencia[i], items[i].numero))

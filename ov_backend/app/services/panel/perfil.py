@@ -123,7 +123,7 @@ def _intereses(lecturas: Lecturas, acceso: Acceso, parametros: dict, estados, mo
         FamiliaCarrera.codigo.in_(familias))).all()) if familias else {}
     avances = [avance_aplicacion(sesion, acceso.estudiante, a) for a in aplicaciones]
     return InteresesResumen(
-        instrumento=instrumento.codigo, estado=estados[cuenta_id], motivo=motivos.get(cuenta_id),
+        instrumento=instrumento.codigo, estado=estados[cuenta_id], motivo_revision=motivos.get(cuenta_id),
         fecha=resultado.calculado_en.date() if resultado else None,
         codigo=[DimensionInteres(codigo=letra, nombre=dimensiones[letra].nombre if letra in dimensiones else letra)
                 for letra in (codigo or "")],

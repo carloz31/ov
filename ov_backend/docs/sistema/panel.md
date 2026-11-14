@@ -31,6 +31,24 @@ Todas las lecturas son `GET /cuentas/{c}/panel/...` de la propia orientadora (po
 
 Ninguna respuesta lleva texto del diario ni de registros.
 
+### Lista y perfil del estudiante (ajuste panel-estudiantes)
+
+Todas las rutas del perfil pasan por `perfil_acceso.estudiante_de_orientadora` (orientadora y `es_de_su_salon`; si no, 404 «Estudiante no encontrado»). Cada vista pide solo lo que muestra.
+
+| Ruta | Respuesta |
+|---|---|
+| `/panel/lista-estudiantes?salon&buscar&aviso&test&acceso&orden&limite&desde` | `PaginaEstudiantes`: `accesos` (todos, con avisos, los grupos del Inicio de orden 1, sin avisos), `avisos` del filtro e `items` con solo las columnas. Orden por defecto: aviso más importante (grupo y alerta), cantidad de avisos y nombre; `limite` por defecto `PANEL_FILAS_ESTUDIANTES`. |
+| `/panel/estudiantes/{e}` | `PerfilEstudiante`: cabecera y Resumen (avisos con textos de perfil, temas, intereses, planes, partida, `respuestas` sobre los destacados del salón o, sin destacados, los requeridos, y notas). |
+| `/panel/estudiantes/{e}/tests`, `…/tests/partida-llegada`, `…/tests/{aplicacion}/resultado` | Test de intereses, partida y llegada (zonas y afirmaciones agrupadas; nunca puntajes), otros cuestionarios; todas las afirmaciones; resultado completo con textos de orientadora (partida y llegada no: 404). |
+| `/panel/estudiantes/{e}/planes`, `…/planes/{prioridad}` | «De un vistazo» y «Antes de sus planes»; plan completo (secciones bloqueadas sin contenido, sin sugerencias). |
+| `/panel/estudiantes/{e}/respuestas`, `…/respuestas/{actividad}` | Registros sin ítems (salvo «Para leer primero»); ítems de un registro con los valores con que respondió. |
+| `/panel/estudiantes/{e}/avance` | Camino, señales (`PANEL_SENALES_PERFIL`), conteo del diario y familia, sin cartas. |
+| `POST /acciones/escribir-nota`, `editar-nota`, `borrar-nota` | Notas privadas de la orientadora (`numero` por orientadora; tope `PANEL_MAXIMO_CARACTERES_NOTA`; sin eventos). |
+
+- Afirmaciones: una respuesta es «baja» si su puntaje con el inverso aplicado está entre las `PANEL_OPCIONES_BAJAS` opciones inferiores de su escala. Solo partida: las bajas. Con llegada: bajaron, siguen bajas y mejoraron, hasta `PANEL_AFIRMACIONES_POR_GRUPO` por grupo, por tamaño del cambio.
+- Respuestas: etiquetas `REQUIERE_ATENCION` (`sensible`), `SIN_CONTENIDO` (`tipo_final` vacío o fuera de tema) y `AUN_NO_LO_SABE` (estado ABIERTO). Los ecos y preguntas salen de `valores_contexto`; con `eco_cambiado`, el ítem trae también los de hoy; sin valores guardados, se muestran los de hoy marcados como tales. Las piezas guardan su `origen` y `grupo` desde este ajuste.
+- Estudiantes de ejemplo: `scripts/sembrar_panel_ejemplo.py --desarrollo` (ocho casos `est-panel-*` en 5A, sobre `contenido`); el exportador lo corre en una base temporal y exporta `contenido-panel-*` de los casos 1, 5 y 7.
+
 ## Definiciones
 
 - **Alertas** (`app/services/panel/alertas.py`): cada evaluador recibe las lecturas del alcance y los parámetros de la fila (completados con sus defectos) y devuelve, por estudiante que cumple, los datos para sus textos de perfil; `{clave}` se resuelve en `nombre` y `descripcion` con los parámetros y en `nombre_perfil` y `descripcion_perfil` con los datos del estudiante y los parámetros. El Inicio y «Ver» solo calculan los grupos con `en_inicio`. Los textos que dependen de un código (motivo de «Por revisar», de familia pendiente, nombres de «Sin empezar»/«Terminó», «nunca») están en los `parametros` de la fila. Una alerta activa con un evaluador desconocido se omite y se avisa en el log. Evaluadores: `respuesta_sensible`, `seguridad_baja` (los `senales` check-ins más recientes ≤ `nivel_maximo`, sin mirar fechas), `sin_ingreso` (sin INGRESO hace `dias` días o más; nunca ingresó también), `avance_bajo_salon` (tramo ≤ mediana de su propio salón − `tramos`), `instrumento_por_revisar` y `familia_pendiente`.
@@ -44,4 +62,4 @@ Ninguna respuesta lleva texto del diario ni de registros.
 - Las alertas, grupos y parámetros iniciales están en `datos/fijos.py` (`GRUPOS_ALERTA`, `ALERTAS`, `PARAMETROS_PANEL`); `ruta` no agrega nada. Una prueba de `tests/integration/datos` exige que cada alerta fija nombre un evaluador registrado y traiga todas sus claves. Las tres tablas son de catálogo (el reinicio no las vacía).
 - Las pruebas (`tests/integration/panel`) siembran el estado directo en la base con la hora fija de `soporte_panel.AHORA`, recorren el flujo real del registro para la respuesta sensible y miden que el número de consultas no crezca con el salón. El exportador de fixtures pide el panel de ori-carmen sobre 5A con la hora de Lima fija en 2026-10-20 (`ruta-panel-*`).
 - El front solo pinta lo que llega: sus textos propios son los títulos y subtítulos de los bloques, de usted, y los nombres de tipo y gestión de institución; el servidor manda los códigos (`ov_frontend/docs/origen-de-datos.md`, «Panel del salón»). En el menú, «Configuración del salón» es la vista que antes se llamaba «Prioritarios».
-- Siguen pendientes fuera del panel: la lista y el perfil del estudiante en api (los nombres de «Ver» no enlazan y «Ver lista de estudiantes» está deshabilitado), la configuración del salón editable, el informe de viaje y los temas para conversar, los parámetros por salón y los conteos del diario (HU-091).
+- Siguen pendientes fuera del panel: la configuración del salón editable, el informe de viaje, afinar las reglas de «Para conversar», los parámetros por salón y los conteos del diario (HU-091).

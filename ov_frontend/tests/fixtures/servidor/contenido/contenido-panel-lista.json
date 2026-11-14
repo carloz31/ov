@@ -1,0 +1,266 @@
+{
+  "accesos": [
+    {
+      "cantidad": 13,
+      "codigo": "todos",
+      "nombre": null
+    },
+    {
+      "cantidad": 11,
+      "codigo": "con_avisos",
+      "nombre": null
+    },
+    {
+      "cantidad": 2,
+      "codigo": "conversar",
+      "nombre": "Conversar pronto"
+    },
+    {
+      "cantidad": 2,
+      "codigo": "sin_avisos",
+      "nombre": null
+    }
+  ],
+  "avisos": [
+    {
+      "codigo": "respuesta-sensible",
+      "nombre": "Escribió algo que conviene leer"
+    },
+    {
+      "codigo": "seguridad-baja",
+      "nombre": "Poca seguridad en sus últimas señales"
+    },
+    {
+      "codigo": "sin-ingreso",
+      "nombre": "No ingresa hace 7 días o más"
+    },
+    {
+      "codigo": "avance-bajo",
+      "nombre": "Va muy por detrás de su salón"
+    },
+    {
+      "codigo": "test-por-revisar",
+      "nombre": "Test de intereses por revisar"
+    },
+    {
+      "codigo": "familia-pendiente",
+      "nombre": "Su familia aún no se registra"
+    }
+  ],
+  "items": [
+    {
+      "aviso": "Escribió algo que conviene leer",
+      "avisos_mas": 1,
+      "codigo": "est-panel-6",
+      "dias_sin_ingreso": 9,
+      "nombre": "Camila Cárdenas Ruiz",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "B1",
+        "nombre": "Mi historia y mis aspiraciones",
+        "numero": 2,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "Poca seguridad en sus últimas señales",
+      "avisos_mas": 0,
+      "codigo": "est-panel-5",
+      "dias_sin_ingreso": 0,
+      "nombre": "Luciana Paredes Soto",
+      "plan_a": "Psicología",
+      "salon": "Quinto A",
+      "test": "LISTO",
+      "tramo": {
+        "codigo": "B5",
+        "nombre": "Mi decisión",
+        "numero": 6,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-ana",
+      "dias_sin_ingreso": null,
+      "nombre": "Ana",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-panel-2",
+      "dias_sin_ingreso": 12,
+      "nombre": "Andrea Vargas Luna",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "B0",
+        "nombre": "Inicio",
+        "numero": 1,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-panel-1",
+      "dias_sin_ingreso": null,
+      "nombre": "Elena Espinoza León",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-luis",
+      "dias_sin_ingreso": null,
+      "nombre": "Luis",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-mia",
+      "dias_sin_ingreso": null,
+      "nombre": "Mía",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-sol",
+      "dias_sin_ingreso": null,
+      "nombre": "Sol",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 1,
+      "codigo": "est-teo",
+      "dias_sin_ingreso": null,
+      "nombre": "Teo",
+      "plan_a": null,
+      "salon": "Quinto A",
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "Test de intereses por revisar",
+      "avisos_mas": 1,
+      "codigo": "est-panel-4",
+      "dias_sin_ingreso": 1,
+      "nombre": "Diego Mendoza Salas",
+      "plan_a": "Psicología",
+      "salon": "Quinto A",
+      "test": "POR_REVISAR",
+      "tramo": {
+        "codigo": "B3",
+        "nombre": "Exploro el mundo profesional",
+        "numero": 4,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "Test de intereses por revisar",
+      "avisos_mas": 1,
+      "codigo": "est-panel-3",
+      "dias_sin_ingreso": 2,
+      "nombre": "Fabián Ortiz Vega",
+      "plan_a": "Psicología",
+      "salon": "Quinto A",
+      "test": "POR_REVISAR",
+      "tramo": {
+        "codigo": "B3",
+        "nombre": "Exploro el mundo profesional",
+        "numero": 4,
+        "total": 6
+      }
+    },
+    {
+      "aviso": null,
+      "avisos_mas": 0,
+      "codigo": "est-panel-7",
+      "dias_sin_ingreso": 0,
+      "nombre": "Ana Lucía Álvarez Rojas",
+      "plan_a": "Ingeniería de Petroleo y Gas Natural",
+      "salon": "Quinto A",
+      "test": "LISTO",
+      "tramo": {
+        "codigo": "TERMINO",
+        "nombre": null,
+        "numero": 7,
+        "total": 6
+      }
+    },
+    {
+      "aviso": null,
+      "avisos_mas": 0,
+      "codigo": "est-panel-8",
+      "dias_sin_ingreso": 0,
+      "nombre": "Fabio Flores Vega",
+      "plan_a": "Psicología",
+      "salon": "Quinto A",
+      "test": "LISTO",
+      "tramo": {
+        "codigo": "B4",
+        "nombre": "Mis opciones",
+        "numero": 5,
+        "total": 6
+      }
+    }
+  ],
+  "salon": {
+    "codigo": "5A",
+    "nombre": "Quinto A"
+  },
+  "total": 13,
+  "total_estudiantes": 13
+}

@@ -1,0 +1,84 @@
+{
+  "casos_superados": 0,
+  "dias_ultima_entrada": null,
+  "entradas_diario": 0,
+  "familia": {
+    "conversaciones_total": 10,
+    "conversadas": 0,
+    "esperan_apoderado": 0,
+    "ingreso": "INGRESO",
+    "nombre": "Rocío Rojas",
+    "parentesco": "madre",
+    "ruta_hechas": 0,
+    "ruta_total": 8
+  },
+  "opcionales_ciudad": 6,
+  "senales": [
+    {
+      "banda": "MEDIA",
+      "fecha": "2026-11-07",
+      "nivel": 3
+    },
+    {
+      "banda": "ALTA",
+      "fecha": "2026-11-09",
+      "nivel": 4
+    },
+    {
+      "banda": "ALTA",
+      "fecha": "2026-11-11",
+      "nivel": 4
+    }
+  ],
+  "tramos": [
+    {
+      "estado": "COMPLETO",
+      "hechas": 6,
+      "nombre": "Inicio",
+      "numero": 1,
+      "siguiente": null,
+      "total": 6
+    },
+    {
+      "estado": "COMPLETO",
+      "hechas": 7,
+      "nombre": "Mi historia y mis aspiraciones",
+      "numero": 2,
+      "siguiente": null,
+      "total": 7
+    },
+    {
+      "estado": "COMPLETO",
+      "hechas": 5,
+      "nombre": "Me conozco",
+      "numero": 3,
+      "siguiente": null,
+      "total": 5
+    },
+    {
+      "estado": "COMPLETO",
+      "hechas": 10,
+      "nombre": "Exploro el mundo profesional",
+      "numero": 4,
+      "siguiente": null,
+      "total": 10
+    },
+    {
+      "estado": "COMPLETO",
+      "hechas": 5,
+      "nombre": "Mis opciones",
+      "numero": 5,
+      "siguiente": null,
+      "total": 5
+    },
+    {
+      "estado": "COMPLETO",
+      "hechas": 5,
+      "nombre": "Mi decisión",
+      "numero": 6,
+      "siguiente": null,
+      "total": 5
+    }
+  ],
+  "viene_bajando": null
+}

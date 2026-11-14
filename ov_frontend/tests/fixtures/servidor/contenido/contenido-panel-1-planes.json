@@ -1,0 +1,10 @@
+{
+  "antes": {
+    "carreras_favoritas": [],
+    "instituciones_favoritas": [],
+    "opcion_inicial": null,
+    "plan_a": null
+  },
+  "maximo_planes": 3,
+  "planes": []
+}

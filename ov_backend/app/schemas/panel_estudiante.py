@@ -104,7 +104,7 @@ class InteresesResumen(BaseModel):
     instrumento: str
     estado: EstadoTest
     fecha: date | None
-    motivo: Literal["PLANO", "PRISA"] | None
+    motivo_revision: Literal["PLANO", "PRISA"] | None
     codigo: list[DimensionInteres]
     areas: list[str]
     partes_respondidas: int
@@ -215,7 +215,7 @@ class TestIntereses(BaseModel):
     etiqueta: Etiqueta
     estado: EstadoTest
     fecha: date | None
-    motivo: Literal["PLANO", "PRISA"] | None
+    motivo_revision: Literal["PLANO", "PRISA"] | None
     mensaje: str
     aplicacion: str | None = Field(description="Para pedir el resultado completo; nulo sin resultado vigente.")
     barras: list[BarraInteres]

@@ -766,6 +766,61 @@ def _recorrer_registros_piezas():
     return f
 
 
+# Ajuste panel-estudiantes: los casos 1, 5 y 7 de `sembrar_panel_ejemplo.py` (lista y perfil de ori-carmen).
+CASOS_PANEL = ('est-panel-1', 'est-panel-5', 'est-panel-7')
+AHORA_PANEL = '2026-11-12T10:00:00'  # DATO DE PRUEBA: hora de Lima fija de la siembra y de las lecturas
+
+
+def _recorrer_panel_estudiantes():
+    """Siembra los estudiantes de ejemplo sobre `contenido` (sin red, con el cliente de prueba del LLM) y lee la lista y
+    cada pestaña del perfil de los casos de `CASOS_PANEL`, a una hora fija."""
+    from datetime import datetime
+
+    raiz = Path(__file__).resolve().parents[1]
+    for ruta in (str(raiz / 'tests' / 'soporte'), str(raiz / 'scripts')):
+        if ruta not in sys.path:
+            sys.path.insert(0, ruta)
+    from app.dependencies import obtener_ahora
+    from app.main import crear_aplicacion
+    from datos.cargar import preparar_base
+    from sembrar_panel_ejemplo import sembrar
+    from soporte_acceso import ClienteConToken
+
+    ahora = datetime.fromisoformat(AHORA_PANEL)
+    with TemporaryDirectory(prefix='ov-fixtures-panel-') as temporal:
+        url = f'sqlite:///{(Path(temporal) / "contenido.db").as_posix()}'
+        preparar_base(url, 'contenido', crear_tablas=True)
+        aplicacion = crear_aplicacion(url)
+        with _codigos_notificacion_fijos():
+            sembrar(aplicacion, ahora)
+        aplicacion.dependency_overrides[obtener_ahora] = lambda: ahora
+        base = '/cuentas/ori-carmen/panel'
+        f = {}
+        try:
+            with ClienteConToken(aplicacion) as cliente:
+                f['panel-lista'] = _pedir(cliente, 'GET', f'{base}/lista-estudiantes?salon=5A')
+                f['panel-lista-conversar'] = _pedir(cliente, 'GET', f'{base}/lista-estudiantes?salon=5A&acceso=conversar')
+                for estudiante in CASOS_PANEL:
+                    caso = estudiante.removeprefix('est-')
+                    perfil = f'{base}/estudiantes/{estudiante}'
+                    f[f'{caso}-perfil'] = _pedir(cliente, 'GET', perfil)
+                    for pestana in ('tests', 'planes', 'respuestas', 'avance'):
+                        f[f'{caso}-{pestana}'] = _pedir(cliente, 'GET', f'{perfil}/{pestana}')
+                    f[f'{caso}-partida-llegada'] = _pedir(cliente, 'GET', f'{perfil}/tests/partida-llegada')
+                    if f[f'{caso}-tests']['intereses']['aplicacion']:
+                        f[f'{caso}-resultado'] = _pedir(
+                            cliente, 'GET', f"{perfil}/tests/{f[f'{caso}-tests']['intereses']['aplicacion']}/resultado")
+                    if f[f'{caso}-planes']['planes']:
+                        f[f'{caso}-plan-a'] = _pedir(cliente, 'GET', f'{perfil}/planes/1')
+                    destacado = next((r['actividad'] for r in f[f'{caso}-respuestas']['registros']
+                                      if r['estado'] == 'COMPLETADO'), None)
+                    if destacado:
+                        f[f'{caso}-registro'] = _pedir(cliente, 'GET', f'{perfil}/respuestas/{destacado}')
+        finally:
+            aplicacion.state.motor_bd.dispose()
+    return f
+
+
 def exportar_fixtures(destino: Path) -> list[Path]:
     """Exporta los fixtures de `ruta` en `destino/ruta/`, con nombres `ruta-*.json`.
 
@@ -796,6 +851,7 @@ def exportar_fixtures(destino: Path) -> list[Path]:
             aplicacion.state.motor_bd.dispose()
     contenido = _recorrer_registro_contenido()
     contenido.update(_recorrer_registros_piezas())
+    contenido.update(_recorrer_panel_estudiantes())
     carpeta = Path(destino) / CARPETA
     carpeta.mkdir(parents=True, exist_ok=True)
     archivos = []

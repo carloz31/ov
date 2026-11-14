@@ -85,7 +85,7 @@ def test_tests_intereses_plano_por_revisar_sin_codigo_ni_areas(aplicacion, clien
     fijar_ahora(aplicacion)
     ciclo(cliente, cuenta='est-mia', opcion=3)
     intereses = pestana(cliente, '/tests', 'est-mia')['intereses']
-    assert intereses['estado'] == 'POR_REVISAR' and intereses['motivo'] == 'PLANO'
+    assert intereses['estado'] == 'POR_REVISAR' and intereses['motivo_revision'] == 'PLANO'
     assert intereses['codigo'] == [] and intereses['areas'] == [] and intereses['frente_planes'] == []
 
 

@@ -1,0 +1,819 @@
+{
+  "aplicacion": "APL-RIASEC",
+  "calculado_en": "2026-10-07T10:00:00",
+  "codigo_interes": {
+    "codigo": "SIA",
+    "hay_empate": false
+  },
+  "dimensiones": [
+    {
+      "codigo": "R",
+      "desarrollo": [],
+      "descripcion": "Te atraen las actividades prácticas: trabajar con las manos, usar herramientas o máquinas y estar al aire libre.",
+      "ejemplos": "reparar o armar objetos, cultivar, construir, manejar equipos o trabajar al aire libre.",
+      "fortalezas": [
+        "ser práctico y persistente: resolver con hechos, no con palabras",
+        "preferir trabajar por tu cuenta, sin tener que dirigir ni destacar",
+        "manejar herramientas, máquinas, materiales o animales",
+        "sentirte a gusto en el campo, el taller, la obra o la cancha más que en una oficina"
+      ],
+      "nombre": "Realista",
+      "puntaje": 10.0,
+      "puntaje_maximo": 40.0,
+      "puntaje_visual": 25,
+      "tematica": null,
+      "zona": null
+    },
+    {
+      "codigo": "I",
+      "desarrollo": [],
+      "descripcion": "Te atrae observar, preguntar y analizar para entender cómo y por qué funcionan las cosas.",
+      "ejemplos": "hacer experimentos, resolver acertijos, investigar un tema o entender cómo funciona algo.",
+      "fortalezas": [
+        "preferir pensar antes que actuar: observar, analizar, comprobar",
+        "trabajar con ideas, datos y símbolos",
+        "ser curioso y creativo para resolver problemas",
+        "rendir mejor en un laboratorio, una biblioteca o un centro de investigación que dirigiendo gente"
+      ],
+      "nombre": "Investigativa",
+      "puntaje": 30.0,
+      "puntaje_maximo": 40.0,
+      "puntaje_visual": 75,
+      "tematica": null,
+      "zona": null
+    },
+    {
+      "codigo": "A",
+      "desarrollo": [],
+      "descripcion": "Te atrae crear, imaginar y expresarte con libertad, sin reglas rígidas.",
+      "ejemplos": "dibujar, escribir, actuar, componer, diseñar o crear contenido.",
+      "fortalezas": [
+        "expresar sentimientos, emociones e imaginación en lo que haces",
+        "usar muchos medios: la palabra, la imagen, el sonido, el cuerpo",
+        "relacionarte con los demás a través de tus creaciones",
+        "preferir el tiempo de crear y reflexionar antes que las rutinas y las reglas fijas"
+      ],
+      "nombre": "Artística",
+      "puntaje": 30.0,
+      "puntaje_maximo": 40.0,
+      "puntaje_visual": 75,
+      "tematica": null,
+      "zona": null
+    },
+    {
+      "codigo": "S",
+      "desarrollo": [],
+      "descripcion": "Te atrae ayudar, enseñar, cuidar o acompañar a otras personas.",
+      "ejemplos": "enseñar a alguien, cuidar, escuchar, hacer voluntariado o trabajar en equipo.",
+      "fortalezas": [
+        "disfrutar el trabajo con personas",
+        "enseñar, orientar y acompañar",
+        "manejar grupos: conversar, debatir, escuchar",
+        "sentirte a gusto en colegios, consultorios y servicios a la comunidad"
+      ],
+      "nombre": "Social",
+      "puntaje": 40.0,
+      "puntaje_maximo": 40.0,
+      "puntaje_visual": 100,
+      "tematica": null,
+      "zona": null
+    },
+    {
+      "codigo": "E",
+      "desarrollo": [],
+      "descripcion": "Te atrae liderar, convencer, organizar proyectos y tomar decisiones.",
+      "ejemplos": "dirigir un grupo, convencer, vender una idea u organizar un evento.",
+      "fortalezas": [
+        "expresar tus ideas con facilidad y convencer",
+        "organizar y dirigir grupos, y sobresalir",
+        "preferir la acción y los resultados antes que la teoría",
+        "interesarte por los negocios, lo económico y las metas ambiciosas"
+      ],
+      "nombre": "Emprendedora",
+      "puntaje": 10.0,
+      "puntaje_maximo": 40.0,
+      "puntaje_visual": 25,
+      "tematica": null,
+      "zona": null
+    },
+    {
+      "codigo": "C",
+      "desarrollo": [],
+      "descripcion": "Te atrae ordenar información, seguir procedimientos claros y trabajar con datos de forma precisa.",
+      "ejemplos": "ordenar información, llevar registros, planificar con detalle o trabajar con números.",
+      "fortalezas": [
+        "ser ordenado, eficiente y responsable",
+        "cumplir normas y procedimientos con precisión",
+        "trabajar con datos, registros y números",
+        "sentirte a gusto en oficinas, administración y comercio, donde se valora la exactitud"
+      ],
+      "nombre": "Convencional",
+      "puntaje": 10.0,
+      "puntaje_maximo": 40.0,
+      "puntaje_visual": 25,
+      "tematica": null,
+      "zona": null
+    }
+  ],
+  "dimensiones_destacadas": null,
+  "familias": [
+    {
+      "area_codigo": "12",
+      "area_nombre": "Educación Secundaria",
+      "codigo": "121",
+      "descripcion": "Aborda el aprendizaje y el desarrollo de los adolescentes durante la etapa escolar. Incluye formas de enseñar contenidos de distintas áreas, preparar clases y evaluar avances. Trata también la convivencia, la orientación y el acompañamiento de los estudiantes, considerando sus intereses, necesidades y los cambios propios de esta etapa.",
+      "nombre": "Educación Secundaria",
+      "ocupaciones": [
+        {
+          "codigo": "25-1124.00",
+          "parecido": 90,
+          "titulo": "Docente de idiomas"
+        },
+        {
+          "codigo": "25-2031.00",
+          "parecido": 75,
+          "titulo": "Docente de educación secundaria"
+        },
+        {
+          "codigo": "25-2032.00",
+          "parecido": 72,
+          "titulo": "Docente de educación para el trabajo (educación técnica)"
+        }
+      ],
+      "posicion": 1,
+      "tipos": [
+        "UNIVERSIDAD",
+        "INSTITUTO"
+      ],
+      "total_carreras": 15,
+      "total_ocupaciones": 3,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "31",
+      "area_nombre": "Ciencias Sociales y del Comportamiento",
+      "codigo": "313",
+      "descripcion": "Aborda cómo las personas piensan, sienten, aprenden y se relacionan. Incluye el desarrollo a lo largo de la vida, la conducta y las dificultades emocionales. Trata la escucha, la evaluación y el acompañamiento, así como las relaciones en familias, escuelas, organizaciones y otros entornos donde influyen las decisiones y el comportamiento humano.",
+      "nombre": "Psicología",
+      "ocupaciones": [
+        {
+          "codigo": "19-3033.00",
+          "parecido": 81,
+          "titulo": "Psicólogo clínico"
+        },
+        {
+          "codigo": "19-3034.00",
+          "parecido": 78,
+          "titulo": "Psicólogo educativo"
+        },
+        {
+          "codigo": "21-1012.00",
+          "parecido": 60,
+          "titulo": "Orientador educativo y vocacional"
+        }
+      ],
+      "posicion": 2,
+      "tipos": [
+        "UNIVERSIDAD"
+      ],
+      "total_carreras": 3,
+      "total_ocupaciones": 4,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "11",
+      "area_nombre": "Educación Inicial y Primaria",
+      "codigo": "112",
+      "descripcion": "Se centra en el aprendizaje de los niños durante los primeros años escolares. Incluye la lectura, la escritura, el uso de números y la comprensión del entorno. Aborda cómo preparar actividades, acompañar dificultades y reconocer avances, además de la convivencia y la relación con las familias en distintos contextos culturales.",
+      "nombre": "Educación Primaria",
+      "ocupaciones": [
+        {
+          "codigo": "25-3011.00",
+          "parecido": 79,
+          "titulo": "Docente de educación básica alternativa (adultos)"
+        },
+        {
+          "codigo": "25-2021.00",
+          "parecido": 77,
+          "titulo": "Docente de educación primaria"
+        }
+      ],
+      "posicion": 3,
+      "tipos": [
+        "UNIVERSIDAD",
+        "INSTITUTO"
+      ],
+      "total_carreras": 10,
+      "total_ocupaciones": 2,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "71",
+      "area_nombre": "Ciencias de la Salud",
+      "codigo": "715",
+      "descripcion": "Reúne el uso de procedimientos, equipos y ejercicios para evaluar la salud y apoyar la recuperación de las personas. Incluye el análisis de muestras, la obtención de imágenes y la evaluación de la visión. Aborda también dificultades de movimiento, comunicación y actividades cotidianas, junto con el cuidado de materiales y equipos utilizados en la atención.",
+      "nombre": "Tecnología Médica",
+      "ocupaciones": [
+        {
+          "codigo": "29-1122.00",
+          "parecido": 77,
+          "titulo": "Terapeuta ocupacional"
+        },
+        {
+          "codigo": "29-1127.00",
+          "parecido": 75,
+          "titulo": "Terapeuta de lenguaje"
+        },
+        {
+          "codigo": "29-1123.00",
+          "parecido": 53,
+          "titulo": "Fisioterapeuta"
+        }
+      ],
+      "posicion": 4,
+      "tipos": [
+        "UNIVERSIDAD",
+        "INSTITUTO"
+      ],
+      "total_carreras": 7,
+      "total_ocupaciones": 7,
+      "unica_ocupacion": false
+    },
+    {
+      "area_codigo": "15",
+      "area_nombre": "Educación Artística",
+      "codigo": "151",
+      "descripcion": "Se centra en la enseñanza y el aprendizaje mediante la creación y la expresión artística. Incluye el uso del cuerpo, la voz, los sonidos, las imágenes y distintos materiales. Aborda la preparación de actividades, la apreciación de manifestaciones culturales y el acompañamiento de la creatividad en personas de distintas edades.",
+      "nombre": "Educación Artística",
+      "ocupaciones": [
+        {
+          "codigo": "25-1121.00",
+          "parecido": 94,
+          "titulo": "Docente de arte, teatro y música"
+        }
+      ],
+      "posicion": 5,
+      "tipos": [
+        "UNIVERSIDAD"
+      ],
+      "total_carreras": 1,
+      "total_ocupaciones": 1,
+      "unica_ocupacion": true
+    }
+  ],
+  "guia_abierta": false,
+  "instrumento": "TEST-RIASEC",
+  "lectura": "Perfil de intereses RIASEC (Holland) en seis tipos, de 0 a 100. Las ocupaciones afines salen de comparar el perfil del estudiante con el de cada ocupación (porcentaje de parecido) y las familias de carreras, de las ocupaciones más afines. Es preferencia, no aptitud. Un perfil poco marcado o plano es información (intereses aún en formación), no un resultado fallido: conviene proponer experiencias antes que recomendar. Contrástelo con sus registros y con el cuestionario de partida y llegada.",
+  "mensaje": "Resultado exploratorio: insumo para la tutoría, no diagnóstico.",
+  "ocupaciones": [
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-1121.00",
+      "codigo_onet": "25-1121.00",
+      "familia_principal": {
+        "area_codigo": "15",
+        "area_nombre": "Educación Artística",
+        "codigo": "151",
+        "nombre": "Educación Artística"
+      },
+      "parecido": 94,
+      "posicion": 1,
+      "preparacion": "AMPLIA",
+      "resumen": "Imparten cursos de teatro, música, y de bellas artes y artes aplicadas tales como pintura y escultura, o dibujo y manualidades.",
+      "riasec": [
+        "S",
+        "A"
+      ],
+      "titulo": "Docente de arte, teatro y música"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-1124.00",
+      "codigo_onet": "25-1124.00",
+      "familia_principal": {
+        "area_codigo": "12",
+        "area_nombre": "Educación Secundaria",
+        "codigo": "121",
+        "nombre": "Educación Secundaria"
+      },
+      "parecido": 90,
+      "posicion": 2,
+      "preparacion": "AMPLIA",
+      "resumen": "Imparten cursos de lengua y literatura en idiomas extranjeros.",
+      "riasec": [
+        "S",
+        "I",
+        "A"
+      ],
+      "titulo": "Docente de idiomas"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-1126.00",
+      "codigo_onet": "25-1126.00",
+      "familia_principal": {
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
+        "codigo": "216",
+        "nombre": "Teología y Filosofía"
+      },
+      "parecido": 89,
+      "posicion": 3,
+      "preparacion": "AMPLIA",
+      "resumen": "Imparten cursos de filosofía, religión y teología.",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de filosofía y religión"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-2056.00",
+      "codigo_onet": "25-2056.00",
+      "familia_principal": {
+        "area_codigo": "14",
+        "area_nombre": "Educación Especial",
+        "codigo": "141",
+        "nombre": "Educación Especial"
+      },
+      "parecido": 85,
+      "posicion": 4,
+      "preparacion": "AMPLIA",
+      "resumen": "Enseñan destrezas académicas, sociales, y de la vida diaria a alumnos de escuela primaria con discapacidades de aprendizaje, emocionales…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de educación especial"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "19-3033.00",
+      "codigo_onet": "19-3033.00",
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "parecido": 81,
+      "posicion": 5,
+      "preparacion": "AMPLIA",
+      "resumen": "Evalúan, diagnostican y tratan trastornos mentales y emocionales de individuos a través de la observación, de entrevista y de pruebas…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Psicólogo clínico"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-1193.00",
+      "codigo_onet": "25-1193.00",
+      "familia_principal": {
+        "area_codigo": "13",
+        "area_nombre": "Educación Física",
+        "codigo": "131",
+        "nombre": "Educación Física"
+      },
+      "parecido": 81,
+      "posicion": 6,
+      "preparacion": "AMPLIA",
+      "resumen": "Imparten cursos relacionados con el estudio de la recreación, esparcimiento y acondicionamiento físico, incluidos la fisiología del…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de educación física y deportes"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-3011.00",
+      "codigo_onet": "25-3011.00",
+      "familia_principal": {
+        "area_codigo": "11",
+        "area_nombre": "Educación Inicial y Primaria",
+        "codigo": "112",
+        "nombre": "Educación Primaria"
+      },
+      "parecido": 79,
+      "posicion": 7,
+      "preparacion": "AMPLIA",
+      "resumen": "Enseñan o capacitan a jóvenes y adultos no escolarizados clases de educación básica, de alfabetización, o de Inglés como Segunda Lengua, o…",
+      "riasec": [
+        "S",
+        "A"
+      ],
+      "titulo": "Docente de educación básica alternativa (adultos)"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "19-3034.00",
+      "codigo_onet": "19-3034.00",
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "parecido": 78,
+      "posicion": 8,
+      "preparacion": "AMPLIA",
+      "resumen": "Diagnostican e implementan, de manera individual o en toda la escuela, intervenciones o estrategias para abordar problemas educativos, de…",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Psicólogo educativo"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-2021.00",
+      "codigo_onet": "25-2021.00",
+      "familia_principal": {
+        "area_codigo": "11",
+        "area_nombre": "Educación Inicial y Primaria",
+        "codigo": "112",
+        "nombre": "Educación Primaria"
+      },
+      "parecido": 77,
+      "posicion": 9,
+      "preparacion": "AMPLIA",
+      "resumen": "Enseñan destrezas académicas y sociales a alumnos de escuelas de nivel primario.",
+      "riasec": [
+        "S"
+      ],
+      "titulo": "Docente de educación primaria"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "29-1122.00",
+      "codigo_onet": "29-1122.00",
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "parecido": 77,
+      "posicion": 10,
+      "preparacion": "AMPLIA",
+      "resumen": "Evalúan, planifican y organizan programas de rehabilitación que tiene por fin ayudar a generar o restaurar aptitudes y capacidades…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Terapeuta ocupacional"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "29-1127.00",
+      "codigo_onet": "29-1127.00",
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "parecido": 75,
+      "posicion": 11,
+      "preparacion": "AMPLIA",
+      "resumen": "Evalúan y tratan a personas con trastornos del habla, lenguaje, voz y fluidez de palabra.",
+      "riasec": [
+        "S",
+        "I",
+        "C"
+      ],
+      "titulo": "Terapeuta de lenguaje"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-1194.00",
+      "codigo_onet": "25-1194.00",
+      "familia_principal": {
+        "area_codigo": "16",
+        "area_nombre": "Educación Tecnológica",
+        "codigo": "161",
+        "nombre": "Educación Tecnológica"
+      },
+      "parecido": 75,
+      "posicion": 12,
+      "preparacion": "INTERMEDIA",
+      "resumen": "Enseñan cursos vocacionales dirigidos a proveer capacitación ocupacional a un nivel por debajo de una licenciatura en materias de…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Docente de formación técnica (instituto, CETPRO)"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-2031.00",
+      "codigo_onet": "25-2031.00",
+      "familia_principal": {
+        "area_codigo": "12",
+        "area_nombre": "Educación Secundaria",
+        "codigo": "121",
+        "nombre": "Educación Secundaria"
+      },
+      "parecido": 75,
+      "posicion": 13,
+      "preparacion": "AMPLIA",
+      "resumen": "Enseñan una o más materias a alumnos de escuelas de nivel secundaria alta.",
+      "riasec": [
+        "S"
+      ],
+      "titulo": "Docente de educación secundaria"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-2032.00",
+      "codigo_onet": "25-2032.00",
+      "familia_principal": {
+        "area_codigo": "12",
+        "area_nombre": "Educación Secundaria",
+        "codigo": "121",
+        "nombre": "Educación Secundaria"
+      },
+      "parecido": 72,
+      "posicion": 14,
+      "preparacion": "AMPLIA",
+      "resumen": "Enseñan materias relacionadas con ocupaciones, oficios, y carreras técnicas o vocacionales a alumnos de escuelas de nivel secundario.",
+      "riasec": [
+        "S"
+      ],
+      "titulo": "Docente de educación para el trabajo (educación técnica)"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "25-2011.00",
+      "codigo_onet": "25-2011.00",
+      "familia_principal": {
+        "area_codigo": "11",
+        "area_nombre": "Educación Inicial y Primaria",
+        "codigo": "111",
+        "nombre": "Educación Inicial"
+      },
+      "parecido": 71,
+      "posicion": 15,
+      "preparacion": "INTERMEDIA",
+      "resumen": "Enseñan a alumnos de edad preescolar, siguiendo el plan de asignaturas o lecciones, actividades diseñadas con el fin de fomentar el…",
+      "riasec": [
+        "S",
+        "A"
+      ],
+      "titulo": "Docente de educación inicial"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "29-1223.00",
+      "codigo_onet": "29-1223.00",
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "711",
+        "nombre": "Medicina"
+      },
+      "parecido": 71,
+      "posicion": 16,
+      "preparacion": "AMPLIA",
+      "resumen": "Diagnostican, tratan y ayudan a prevenir desórdenes mentales.",
+      "riasec": [
+        "I",
+        "S"
+      ],
+      "titulo": "Psiquiatra"
+    },
+    {
+      "banda": "MUY_AFIN",
+      "codigo": "21-1021.00",
+      "codigo_onet": "21-1021.00",
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "312",
+        "nombre": "Trabajo Social"
+      },
+      "parecido": 71,
+      "posicion": 17,
+      "preparacion": "AMPLIA",
+      "resumen": "Prestan asistencia y servicios sociales para mejorar el funcionamiento social y psicológico de los niños y de sus familias y para…",
+      "riasec": [
+        "S"
+      ],
+      "titulo": "Trabajador social"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "13-1151.00",
+      "codigo_onet": "13-1151.00",
+      "familia_principal": {
+        "area_codigo": "33",
+        "area_nombre": "Ciencias Administrativas y Comerciales",
+        "codigo": "339",
+        "nombre": "Otras Carreras de Administración"
+      },
+      "parecido": 68,
+      "posicion": 18,
+      "preparacion": "AMPLIA",
+      "resumen": "Diseñan o llevan a cabo programas de capacitación y desarrollo relacionados al trabajo para mejorar las destrezas individuales o el…",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Especialista en capacitación y desarrollo"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "19-3041.00",
+      "codigo_onet": "19-3041.00",
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "311",
+        "nombre": "Servicios Sociales y Asistenciales"
+      },
+      "parecido": 66,
+      "posicion": 19,
+      "preparacion": "AMPLIA",
+      "resumen": "Estudian la sociedad humana y el comportamiento social por medio del análisis de los grupos e instituciones sociales formadas por…",
+      "riasec": [
+        "I",
+        "S",
+        "A"
+      ],
+      "titulo": "Sociólogo"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "29-1031.00",
+      "codigo_onet": "29-1031.00",
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "712",
+        "nombre": "Nutrición"
+      },
+      "parecido": 60,
+      "posicion": 20,
+      "preparacion": "AMPLIA",
+      "resumen": "Planifican y dirigen servicios de comidas o programas nutricionales para colaborar con la promoción de la salud y control de enfermedades.",
+      "riasec": [
+        "S",
+        "I"
+      ],
+      "titulo": "Nutricionista"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "21-1012.00",
+      "codigo_onet": "21-1012.00",
+      "familia_principal": {
+        "area_codigo": "31",
+        "area_nombre": "Ciencias Sociales y del Comportamiento",
+        "codigo": "313",
+        "nombre": "Psicología"
+      },
+      "parecido": 60,
+      "posicion": 21,
+      "preparacion": "AMPLIA",
+      "resumen": "Aconsejan y ayudan a los estudiantes y proveen servicios de orientación educativa y vocacional.",
+      "riasec": [
+        "S",
+        "C",
+        "E"
+      ],
+      "titulo": "Orientador educativo y vocacional"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "29-1123.00",
+      "codigo_onet": "29-1123.00",
+      "familia_principal": {
+        "area_codigo": "71",
+        "area_nombre": "Ciencias de la Salud",
+        "codigo": "715",
+        "nombre": "Tecnología Médica"
+      },
+      "parecido": 53,
+      "posicion": 22,
+      "preparacion": "AMPLIA",
+      "resumen": "Evalúan planifican, organizan y participan de programas de rehabilitación que tienen por fin mejorar la movilidad, aliviar el dolor…",
+      "riasec": [
+        "S",
+        "I",
+        "R"
+      ],
+      "titulo": "Fisioterapeuta"
+    },
+    {
+      "banda": "AFIN",
+      "codigo": "19-3091.00",
+      "codigo_onet": "19-3091.00",
+      "familia_principal": {
+        "area_codigo": "21",
+        "area_nombre": "Humanidades",
+        "codigo": "211",
+        "nombre": "Antropología y Arqueología"
+      },
+      "parecido": 50,
+      "posicion": 23,
+      "preparacion": "AMPLIA",
+      "resumen": "Estudian el origen, desarrollo y comportamiento de los seres humanos.",
+      "riasec": [
+        "I",
+        "A"
+      ],
+      "titulo": "Antropólogo y arqueólogo"
+    }
+  ],
+  "perfil_plano": false,
+  "perfil_poco_marcado": false,
+  "por_area": [
+    {
+      "area_codigo": "15",
+      "area_nombre": "Educación Artística",
+      "ocupaciones": [
+        "25-1121.00"
+      ]
+    },
+    {
+      "area_codigo": "12",
+      "area_nombre": "Educación Secundaria",
+      "ocupaciones": [
+        "25-1124.00",
+        "25-2031.00",
+        "25-2032.00"
+      ]
+    },
+    {
+      "area_codigo": "21",
+      "area_nombre": "Humanidades",
+      "ocupaciones": [
+        "25-1126.00",
+        "19-3091.00"
+      ]
+    },
+    {
+      "area_codigo": "14",
+      "area_nombre": "Educación Especial",
+      "ocupaciones": [
+        "25-2056.00"
+      ]
+    },
+    {
+      "area_codigo": "31",
+      "area_nombre": "Ciencias Sociales y del Comportamiento",
+      "ocupaciones": [
+        "19-3033.00",
+        "19-3034.00",
+        "21-1021.00",
+        "19-3041.00",
+        "21-1012.00"
+      ]
+    },
+    {
+      "area_codigo": "13",
+      "area_nombre": "Educación Física",
+      "ocupaciones": [
+        "25-1193.00"
+      ]
+    },
+    {
+      "area_codigo": "11",
+      "area_nombre": "Educación Inicial y Primaria",
+      "ocupaciones": [
+        "25-3011.00",
+        "25-2021.00",
+        "25-2011.00"
+      ]
+    },
+    {
+      "area_codigo": "71",
+      "area_nombre": "Ciencias de la Salud",
+      "ocupaciones": [
+        "29-1122.00",
+        "29-1127.00",
+        "29-1223.00",
+        "29-1031.00",
+        "29-1123.00"
+      ]
+    },
+    {
+      "area_codigo": "16",
+      "area_nombre": "Educación Tecnológica",
+      "ocupaciones": [
+        "25-1194.00"
+      ]
+    },
+    {
+      "area_codigo": "33",
+      "area_nombre": "Ciencias Administrativas y Comerciales",
+      "ocupaciones": [
+        "13-1151.00"
+      ]
+    }
+  ]
+}

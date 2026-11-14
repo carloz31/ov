@@ -1,0 +1,56 @@
+{
+  "intereses": {
+    "aplicacion": null,
+    "areas": [],
+    "barras": [],
+    "codigo": [],
+    "estado": "SIN_EMPEZAR",
+    "etiqueta": "REQUISITO",
+    "fecha": null,
+    "frente_planes": [],
+    "instrumento": "TEST-RIASEC",
+    "mensaje": "Resultado exploratorio: insumo para la tutoría, no diagnóstico.",
+    "motivo_revision": null,
+    "nombre": "Test de intereses",
+    "partes_respondidas": 0,
+    "partes_total": 6,
+    "rehizo_plano": false
+  },
+  "otros": [
+    {
+      "aplicacion": null,
+      "destaca": [],
+      "estado": "SIN_EMPEZAR",
+      "etiqueta": "OPCIONAL",
+      "instrumento": "TEST-HABILIDADES",
+      "nombre": "Mi comportamiento con los demás",
+      "para_practicar": null,
+      "partes_respondidas": 0,
+      "partes_total": 4
+    },
+    {
+      "aplicacion": null,
+      "destaca": [],
+      "estado": "SIN_EMPEZAR",
+      "etiqueta": "OPCIONAL",
+      "instrumento": "TEST-INTELIGENCIAS",
+      "nombre": "Test de las inteligencias múltiples",
+      "para_practicar": null,
+      "partes_respondidas": 0,
+      "partes_total": 5
+    }
+  ],
+  "partida_llegada": {
+    "etiqueta": "CAMINO",
+    "grupos": [],
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "mensaje": "Medida antes y después: su valor está en el cambio.",
+    "nombre": "Punto de partida y de llegada",
+    "resumen": {
+      "dimensiones": [],
+      "estado": "SIN_PARTIDA",
+      "fecha_llegada": null,
+      "fecha_partida": null
+    }
+  }
+}

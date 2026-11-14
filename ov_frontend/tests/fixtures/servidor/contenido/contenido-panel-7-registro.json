@@ -1,0 +1,66 @@
+{
+  "actividad": "b1-1",
+  "items": [
+    {
+      "codigo": "b1-1-gustos",
+      "dialogo": "Todo mapa empieza por donde uno ya estuvo.",
+      "ecos": [],
+      "ecos_de_hoy": false,
+      "ecos_hoy": null,
+      "eleccion": null,
+      "elegidas": [],
+      "etiquetas": [],
+      "nombre": "Lo que te encantaba de niño",
+      "numero": 1,
+      "pregunta_eleccion": null,
+      "pregunta_texto": "¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "codigo": "b1-1-logro",
+      "dialogo": "En todo mapa hay lugares a los que llegaste por tu cuenta.",
+      "ecos": [],
+      "ecos_de_hoy": false,
+      "ecos_hoy": null,
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Organizar"
+        }
+      ],
+      "etiquetas": [],
+      "nombre": "Tu logro",
+      "numero": 2,
+      "pregunta_eleccion": "Piensa en un logro tuyo, aunque sea pequeño. ¿Qué habilidades tuyas se notaron ahí?",
+      "pregunta_texto": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "codigo": "b1-1-dificultad",
+      "dialogo": "Y también hubo algo que no salió a la primera.",
+      "ecos": [],
+      "ecos_de_hoy": false,
+      "ecos_hoy": null,
+      "eleccion": null,
+      "elegidas": [],
+      "etiquetas": [],
+      "nombre": "Lo que hiciste ante una dificultad",
+      "numero": 3,
+      "pregunta_eleccion": null,
+      "pregunta_texto": "Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    }
+  ]
+}

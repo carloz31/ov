@@ -1,0 +1,148 @@
+{
+  "avisos": [],
+  "cabecera": {
+    "apoderado": {
+      "estado": "INGRESO",
+      "nombre": "Rocío Rojas",
+      "parentesco": "madre"
+    },
+    "codigo": "est-panel-7",
+    "dias_sin_ingreso": 0,
+    "nombre": "Ana Lucía Álvarez Rojas",
+    "salon": {
+      "codigo": "5A",
+      "nombre": "Quinto A"
+    },
+    "tramo": {
+      "codigo": "TERMINO",
+      "nombre": null,
+      "numero": 7,
+      "total": 6
+    }
+  },
+  "intereses": {
+    "areas": [
+      "Educación Secundaria",
+      "Psicología",
+      "Educación Primaria",
+      "Tecnología Médica",
+      "Educación Artística"
+    ],
+    "codigo": [
+      {
+        "codigo": "S",
+        "nombre": "Social"
+      },
+      {
+        "codigo": "I",
+        "nombre": "Investigativa"
+      },
+      {
+        "codigo": "A",
+        "nombre": "Artística"
+      }
+    ],
+    "estado": "LISTO",
+    "fecha": "2026-10-07",
+    "instrumento": "TEST-RIASEC",
+    "motivo_revision": null,
+    "partes_respondidas": 6,
+    "partes_total": 6
+  },
+  "notas": [],
+  "partida": {
+    "dimensiones": [
+      {
+        "cambio": "SUBIO",
+        "codigo": "AUTO-A",
+        "nombre": "Claridad",
+        "zona_llegada": "FUERTE",
+        "zona_partida": "POR_TRABAJAR"
+      },
+      {
+        "cambio": "SUBIO",
+        "codigo": "AUTO-B",
+        "nombre": "Conocimiento de mí",
+        "zona_llegada": "FUERTE",
+        "zona_partida": "POR_TRABAJAR"
+      },
+      {
+        "cambio": "SUBIO",
+        "codigo": "AUTO-C",
+        "nombre": "Conocimiento de las opciones",
+        "zona_llegada": "FUERTE",
+        "zona_partida": "POR_TRABAJAR"
+      },
+      {
+        "cambio": "BAJO",
+        "codigo": "AUTO-D",
+        "nombre": "Decisión propia",
+        "zona_llegada": "POR_TRABAJAR",
+        "zona_partida": "FUERTE"
+      },
+      {
+        "cambio": "SUBIO",
+        "codigo": "AUTO-E",
+        "nombre": "Confianza",
+        "zona_llegada": "FUERTE",
+        "zona_partida": "POR_TRABAJAR"
+      }
+    ],
+    "estado": "CON_LLEGADA",
+    "fecha_llegada": "2026-10-07",
+    "fecha_partida": "2026-10-07"
+  },
+  "planes": [
+    {
+      "carrera": "Ingeniería de Petroleo y Gas Natural",
+      "en_areas": false,
+      "institucion": null,
+      "prioridad": 1
+    },
+    {
+      "carrera": "Ciencias de la Comunicación",
+      "en_areas": false,
+      "institucion": {
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "tipo": "UNIVERSIDAD"
+      },
+      "prioridad": 2
+    },
+    {
+      "carrera": "Psicología",
+      "en_areas": true,
+      "institucion": {
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "tipo": "UNIVERSIDAD"
+      },
+      "prioridad": 3
+    }
+  ],
+  "respuestas": {
+    "aun_no_lo_sabe": 0,
+    "completados": 1,
+    "destacados": true,
+    "requiere_atencion": 0,
+    "sin_contenido": 0,
+    "total": 1
+  },
+  "temas": [
+    {
+      "codigo": "plan-idea-ajena",
+      "destino": "PLANES",
+      "texto": "La idea de estudiar Ingeniería de Petroleo y Gas Natural (su Plan A) vino de su familia."
+    },
+    {
+      "codigo": "plan-fuera-areas",
+      "destino": "PLANES",
+      "texto": "Su Plan A (Ingeniería de Petroleo y Gas Natural) no está entre sus áreas sugeridas."
+    },
+    {
+      "codigo": "dimension-por-trabajar",
+      "destino": "TESTS",
+      "texto": "En su punto de llegada, «Decisión propia» quedó por trabajar."
+    }
+  ]
+}

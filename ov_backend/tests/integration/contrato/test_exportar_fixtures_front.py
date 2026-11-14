@@ -119,7 +119,12 @@ NOMBRES_CONTENIDO = {f'contenido-{nombre}.json' for nombre in (
     f'contenido-registro-{actividad}-{momento}.json' for actividad in ('b4-1', 'b4-5', 'b5-1', 'b5-3')
     for momento in ('inicial', 'completado')} | {
     # Ajuste lumi-mensajes: las actividades de una cuenta nueva de `contenido`, para el camino del mapa.
-    'contenido-actividades-inicial.json'}
+    'contenido-actividades-inicial.json'} | {
+    # Ajuste panel-estudiantes: la lista y el perfil de los casos 1, 5 y 7 de `sembrar_panel_ejemplo.py`.
+    'contenido-panel-lista.json', 'contenido-panel-lista-conversar.json'} | {
+    f'contenido-panel-{caso}-{parte}.json' for caso in (1, 5, 7)
+    for parte in ('perfil', 'tests', 'planes', 'respuestas', 'avance', 'partida-llegada')} | {
+    f'contenido-panel-{caso}-{parte}.json' for caso in (5, 7) for parte in ('resultado', 'plan-a', 'registro')}
 
 
 def leer(archivos):
@@ -548,8 +553,9 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     exportador.exportar_fixtures(destino)
     assert {ruta.name: ruta.read_bytes() for ruta in archivos} == bytes_antes
     assert conservar.read_text(encoding='utf-8') == 'Conservar'
-    # Dos exportaciones, cada una con tres bases: ruta, el registro b1-1 y los registros de piezas (lote 2).
-    assert len(bases) == 6 and all(not ruta.parent.exists() for ruta in bases)
+    # Dos exportaciones, cada una con cuatro bases: ruta, el registro b1-1, los registros de piezas (lote 2) y los
+    # estudiantes de ejemplo del panel (ajuste panel-estudiantes).
+    assert len(bases) == 8 and all(not ruta.parent.exists() for ruta in bases)
     assert ruta_ajena.read_bytes() == b'Base del usuario: conservar estos bytes'
 
 

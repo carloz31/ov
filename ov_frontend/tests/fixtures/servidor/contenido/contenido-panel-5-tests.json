@@ -1,0 +1,183 @@
+{
+  "intereses": {
+    "aplicacion": "APL-RIASEC",
+    "areas": [
+      "Educación Secundaria",
+      "Psicología",
+      "Educación Primaria",
+      "Tecnología Médica",
+      "Educación Artística"
+    ],
+    "barras": [
+      {
+        "codigo": "S",
+        "en_codigo": true,
+        "nombre": "Social",
+        "valor": 100
+      },
+      {
+        "codigo": "I",
+        "en_codigo": true,
+        "nombre": "Investigativa",
+        "valor": 75
+      },
+      {
+        "codigo": "A",
+        "en_codigo": true,
+        "nombre": "Artística",
+        "valor": 75
+      },
+      {
+        "codigo": "R",
+        "en_codigo": false,
+        "nombre": "Realista",
+        "valor": 25
+      },
+      {
+        "codigo": "E",
+        "en_codigo": false,
+        "nombre": "Emprendedora",
+        "valor": 25
+      },
+      {
+        "codigo": "C",
+        "en_codigo": false,
+        "nombre": "Convencional",
+        "valor": 25
+      }
+    ],
+    "codigo": [
+      {
+        "codigo": "S",
+        "nombre": "Social"
+      },
+      {
+        "codigo": "I",
+        "nombre": "Investigativa"
+      },
+      {
+        "codigo": "A",
+        "nombre": "Artística"
+      }
+    ],
+    "estado": "LISTO",
+    "etiqueta": "REQUISITO",
+    "fecha": "2026-10-07",
+    "frente_planes": [
+      {
+        "carrera": "Psicología",
+        "en_areas": true,
+        "prioridad": 1
+      },
+      {
+        "carrera": "Ciencias de la Comunicación",
+        "en_areas": false,
+        "prioridad": 2
+      }
+    ],
+    "instrumento": "TEST-RIASEC",
+    "mensaje": "Resultado exploratorio: insumo para la tutoría, no diagnóstico.",
+    "motivo_revision": null,
+    "nombre": "Test de intereses",
+    "partes_respondidas": 6,
+    "partes_total": 6,
+    "rehizo_plano": false
+  },
+  "otros": [
+    {
+      "aplicacion": null,
+      "destaca": [],
+      "estado": "SIN_EMPEZAR",
+      "etiqueta": "OPCIONAL",
+      "instrumento": "TEST-HABILIDADES",
+      "nombre": "Mi comportamiento con los demás",
+      "para_practicar": null,
+      "partes_respondidas": 0,
+      "partes_total": 4
+    },
+    {
+      "aplicacion": null,
+      "destaca": [],
+      "estado": "SIN_EMPEZAR",
+      "etiqueta": "OPCIONAL",
+      "instrumento": "TEST-INTELIGENCIAS",
+      "nombre": "Test de las inteligencias múltiples",
+      "para_practicar": null,
+      "partes_respondidas": 0,
+      "partes_total": 5
+    }
+  ],
+  "partida_llegada": {
+    "etiqueta": "CAMINO",
+    "grupos": [
+      {
+        "afirmaciones": [
+          {
+            "enunciado": "Me siento capaz de tomar una buena decisión.",
+            "item": "AUTO-17",
+            "llegada": null,
+            "partida": "Nada de acuerdo"
+          },
+          {
+            "enunciado": "Si algo no sale como espero, sé que puedo buscar otro camino.",
+            "item": "AUTO-18",
+            "llegada": null,
+            "partida": "Nada de acuerdo"
+          },
+          {
+            "enunciado": "Confío en que podré lograr lo que me proponga.",
+            "item": "AUTO-19",
+            "llegada": null,
+            "partida": "Nada de acuerdo"
+          }
+        ],
+        "codigo": "BAJAS"
+      }
+    ],
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "mensaje": "Medida antes y después: su valor está en el cambio.",
+    "nombre": "Punto de partida y de llegada",
+    "resumen": {
+      "dimensiones": [
+        {
+          "cambio": null,
+          "codigo": "AUTO-A",
+          "nombre": "Claridad",
+          "zona_llegada": null,
+          "zona_partida": "EN_CAMINO"
+        },
+        {
+          "cambio": null,
+          "codigo": "AUTO-B",
+          "nombre": "Conocimiento de mí",
+          "zona_llegada": null,
+          "zona_partida": "EN_CAMINO"
+        },
+        {
+          "cambio": null,
+          "codigo": "AUTO-C",
+          "nombre": "Conocimiento de las opciones",
+          "zona_llegada": null,
+          "zona_partida": "EN_CAMINO"
+        },
+        {
+          "cambio": null,
+          "codigo": "AUTO-D",
+          "nombre": "Decisión propia",
+          "zona_llegada": null,
+          "zona_partida": "EN_CAMINO"
+        },
+        {
+          "cambio": null,
+          "codigo": "AUTO-E",
+          "nombre": "Confianza",
+          "zona_llegada": null,
+          "zona_partida": "POR_TRABAJAR"
+        }
+      ],
+      "estado": "SOLO_PARTIDA",
+      "fecha_llegada": null,
+      "fecha_partida": "2026-10-07"
+    }
+  }
+}
