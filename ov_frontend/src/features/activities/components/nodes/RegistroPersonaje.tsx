@@ -1,5 +1,6 @@
 import { catalog } from '@/data/activities/content'
 import { getCharacterVisual } from '@/data/content/characters'
+import { AvatarItem } from './AvatarItem'
 
 // Ajuste vista del ítem de registro: el personaje de la actividad. Arriba, con avatar de 40 px y su nombre
 // encima del globo, dice lo fijo del ítem (`dialogo`); como reacción, bajo las opciones, con avatar de 28 px y
@@ -15,11 +16,7 @@ export function RegistroPersonaje({
 }) {
   const narrador = catalog.personajes.find((p) => p.id === hablanteId)?.rol === 'narrador'
   const visual = getCharacterVisual(hablanteId)
-  const avatar = !narrador && (
-    <span aria-hidden="true" className="sx-item-avatar">
-      {visual.emoji}
-    </span>
-  )
+  const avatar = !narrador && <AvatarItem id={hablanteId} />
   if (reaccion)
     return (
       <div className="sx-item-reaccion" aria-live="polite">

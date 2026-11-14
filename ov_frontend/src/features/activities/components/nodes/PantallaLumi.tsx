@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { getCharacterVisual } from '@/data/content/characters'
+import { AvatarItem } from './AvatarItem'
 import { LEYENDA_ITEM } from '../../lib/presentacionItem'
 import { BOTONES, TU_RESPUESTA, VER_COMPLETA } from '../../lib/textosRegistro'
 import '../../styles/registro-guiado.css'
@@ -60,9 +61,7 @@ export function PantallaLumi({
         {seguimiento?.trim() && <p>{seguimiento}</p>}
       </div>
       <div className="sx-item-personaje" aria-live="polite">
-        <span aria-hidden="true" className="sx-item-avatar">
-          {lumi.emoji}
-        </span>
+        <AvatarItem id="companero" />
         <div className="sx-item-dice">
           <span className="sx-item-nombre">{lumi.name}</span>
           {esperando ? (
