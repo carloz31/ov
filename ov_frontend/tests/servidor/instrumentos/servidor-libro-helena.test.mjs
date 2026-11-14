@@ -309,3 +309,25 @@ test('T2 bloqueado por un revelado muestra el aviso con el enlace al libro de He
   )
   assert.equal(inicio.requirementLink, undefined)
 })
+
+// Auditoría plataforma (F4): el libro abierto no se vuelve a pedir con cada recarga del camino; al revelar, se lee una
+// sola vez (la de la acción), no también por la recarga de actividades.
+test('el libro abierto no se recarga con cada refresco y al revelar se lee una sola vez', async () => {
+  const { app, almacen, useHelenaPages } = await libro({
+    avance: 'riasec-listo',
+    extra: (req) => (req.url.endsWith('/acciones/revelar-resultado') ? { body: accionVacia } : null),
+  })
+  const avance = () => app.requests.filter((r) => r.url.endsWith('/cuentas/est-ana/instrumentos')).length
+  const vista = app.mount(() => useHelenaPages(), {})
+  vista.render()
+  await esperar()
+  const alAbrir = avance()
+  await almacen.refrescar([])
+  vista.render()
+  await esperar()
+  assert.equal(avance(), alAbrir)
+  await app.load('src/store/servidor/instrumentos.ts').revelarResultado('TEST-RIASEC', 'APL-RIASEC')
+  vista.render()
+  await esperar()
+  assert.equal(avance(), alAbrir + 1)
+})
