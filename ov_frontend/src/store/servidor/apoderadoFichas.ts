@@ -49,10 +49,21 @@ function cuentaVigente() {
   return cuenta
 }
 
-// Se pide cada vez que se monta Mis actividades: completar una actividad (en otra vista) puede dar fichas.
-export async function cargarFichasApoderado() {
+// Se pide cada vez que se monta Mis actividades: completar una actividad (en otra vista) puede dar fichas. Auditoría
+// plataforma (F6): dos montajes a la vez (la lista y la vista de la actividad) comparten la petición en vuelo.
+let enCurso: { cuenta: string; promesa: Promise<void> } | null = null
+export function cargarFichasApoderado(): Promise<void> {
   const cuenta = cuentaVigente()
-  if (!modoApi || !cuenta) return
+  if (!modoApi || !cuenta) return Promise.resolve()
+  if (enCurso?.cuenta === cuenta) return enCurso.promesa
+  const actual = { cuenta, promesa: pedirFichas(cuenta) }
+  enCurso = actual
+  void actual.promesa.finally(() => {
+    if (enCurso === actual) enCurso = null
+  })
+  return actual.promesa
+}
+async function pedirFichas(cuenta: string) {
   const actual = ++revision
   publicar({ lista: { ...estado.lista, estado: estado.lista.datos ? 'vencido' : 'cargando', error: null } })
   const respuesta = await obtenerFichas(cuenta)

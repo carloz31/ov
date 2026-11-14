@@ -254,13 +254,27 @@ export function completarActividadApoderado(
   return pendiente
 }
 
+// Auditoría plataforma (F6): el catálogo de instrumentos no depende de la cuenta ni cambia en la sesión; se pide una
+// vez y se reutiliza (un error no se guarda).
+let catalogo: { cuenta: string; promesa: ReturnType<typeof obtenerCatalogo> } | null = null
+function catalogoInstrumentos() {
+  const cuenta = estado.cuenta ?? ''
+  if (catalogo?.cuenta === cuenta) return catalogo.promesa
+  const actual = { cuenta, promesa: obtenerCatalogo() }
+  catalogo = actual
+  void actual.promesa.then((r) => {
+    if (r.tipo !== 'ok' && catalogo === actual) catalogo = null
+  })
+  return actual.promesa
+}
+
 // F03 (HU-022, HU-023): resultados vigentes del hijo visibles al apoderado, con el catálogo para sus nombres.
 // Se piden al abrir la vista que los muestra; sin diploma, el servidor responde 409 con su mensaje.
 // Ajuste inicio-apoderado: del hijo elegido (`estudiante`).
 export async function consultarResultadosHijo(estudiante?: string) {
   const cuenta = estado.cuenta
   if (!modoApi || !cuenta) return sinCuenta()
-  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta, estudiante), obtenerCatalogo()])
+  const [resultados, catalogo] = await Promise.all([obtenerResultadosHijo(cuenta, estudiante), catalogoInstrumentos()])
   if (resultados.tipo !== 'ok') return resultados
   if (catalogo.tipo !== 'ok') return catalogo
   return { tipo: 'ok' as const, datos: { resultados: resultados.datos, catalogo: catalogo.datos } }
