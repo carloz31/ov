@@ -82,6 +82,9 @@ export const actividadServidor = (
   bloques: BloqueActividades[] | null,
   codigo: string,
 ): ActividadCuenta | undefined => bloques?.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
+// Ajuste lumi-mensajes (§1.1): el mapa espera a que se resuelva la primera misión del camino (b0-1).
+export const primeraMisionResuelta = (bloques: BloqueActividades[] | null) =>
+  bloquesZona(bloques, 'CAMINO')[0]?.actividades[0]?.estado === 'COMPLETADA'
 export const ciudadDisponible = (bloques: BloqueActividades[] | null) =>
   bloques?.some((b) => b.codigo === 'CIUDAD' && b.estado === 'DISPONIBLE') === true
 export const fichaDisponible = (fichas: ContenidoEstado[] | null, codigo: string) =>

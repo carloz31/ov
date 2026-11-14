@@ -263,7 +263,7 @@ test('la Ciudad cerrada se explica desde el selector: sin llave en el mapa y con
     m.app.mount(useMapScreen, { zone, points, adventure, journey: {} }).render()
   const camino = pantalla('missions', m.camino())
   assert.deepEqual([camino.ciudadBloqueo, camino.mostrarCiudadBloqueada], [mensaje, false])
-  assert.match(camino.pasosAyuda.join(' '), /En el camino se abre la ciudad/)
+  assert.match(camino.pasosAyuda.join(' '), /A mitad del camino se abre la ciudad/)
   assert.doesNotMatch(camino.pasosAyuda.join(' '), /Al final del camino/)
   const ciudad = pantalla('central', m.ciudad())
   assert.equal(ciudad.mostrarCiudadBloqueada, false)
@@ -411,7 +411,7 @@ test('en api las opcionales llevan «?» sin píldora, lo bloqueado candado y la
   // Sin requeridas disponibles (la Ciudad abierta y T2 cerrado), la recomendada puede ser una opcional.
   assert.equal(m.general.getRecommendedPoint(m.camino()).opcional, true)
   const { guiaCaminoApi } = m.app.load('src/data/content/guideTexts.ts')
-  assert.match(guiaCaminoApi[0], /candado aún no están disponibles.*misiones extra que ganaste/)
+  assert.match(guiaCaminoApi[1], /candado todavía no se abren.*misiones extra que se abrieron/)
 })
 
 test('completar t-cierre-inicio encola para revelar las opcionales que su bloque vuelve visibles', async () => {

@@ -4,6 +4,8 @@ import { CabeceraMisActividades } from '@/features/parent/components/servidor/Ca
 import { FilaActividad } from '@/features/parent/components/servidor/FilaActividad'
 import { useMisActividadesServidor } from '@/features/parent/hooks/useMisActividadesServidor'
 import '@/features/parent/styles/mis-actividades.css'
+import { GuideDialogue } from '@/components/common/GuideDialogue'
+import { parentGuides } from '@/data/content/guideTexts'
 
 // F08 (A7, A8): Mis actividades del apoderado en api. La ruta tiene un solo bloque: lista directa, sin tramos.
 // Las fichas se abren en el modal compartido, sin favorito, con su contenido pedido al pulsar el chip.
@@ -30,6 +32,7 @@ export function ParentMisActividadesView() {
         resource={v.fichaAbierta ? fichaServidor(v.fichaAbierta) : undefined}
         onClose={v.cerrarFicha}
       />
+      <GuideDialogue audience="parent" text={parentGuides.activities} />
     </div>
   )
 }

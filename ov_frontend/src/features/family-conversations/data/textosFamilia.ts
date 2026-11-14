@@ -43,14 +43,14 @@ export function textosEstudiante() {
     cartaKicker: 'Tu carta para ellos',
     cartaTitulo: 'Lo que quiero decirle a mi familia',
     cartaSubtitulo:
-      'Escríbela como les hablarías en la mesa. La van a leer en algún momento del camino, pero no sabrás cuándo. Puedes volver y agregar algo más siempre que quieras.',
+      'Escríbela como les hablarías en la mesa. Solo la lee tu familia, en algún momento del camino, pero no sabrás cuándo. Puedes volver y agregar algo más siempre que quieras.',
     saludo: () => 'Querida familia,',
     cartaPlaceholder: 'En esta etapa me gustaría que ustedes…',
     cartaContador: (n: number) =>
       `${n} ${n === 1 ? 'palabra' : 'palabras'} · sin mínimo, pero que diga algo tuyo`,
     cartaLumiNombre: 'Lumi:',
     cartaLumi:
-      'no es una tarea ni la leerá tu orientadora. Es solo para ellos. Escribe lo que de verdad te gustaría que escuchen; si no sabes por dónde empezar, te doy algunas ideas.',
+      'no es una tarea. Escribe lo que de verdad te gustaría que escuchen; si no sabes por dónde empezar, te doy algunas ideas.',
     cartaIdeasBoton: 'Pedirle ideas a Lumi',
     ideas: [
       'Si no sabes por dónde empezar, prueba con una de estas frases. Son solo ideas: escribe con tus palabras.',

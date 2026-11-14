@@ -8,6 +8,7 @@ import {
   useNotificaciones,
 } from '@/store/servidor/notificaciones'
 import { notificacionLegible } from '@/lib/servidor/adaptadoresNotificaciones'
+import { primeraMisionResuelta } from '@/lib/servidor/adaptadores'
 
 import { useNavigate } from 'react-router'
 import { useAdventure } from '@/store/adventureStore'
@@ -73,7 +74,10 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
         : uiLocal,
     [uiLocal, vistasServidor, cerradas],
   )
-  const introEnEspera = seccionBloqueada || (modoApi && !vistasServidor)
+  // Ajuste lumi-mensajes (§1.1): en api, la presentación del mapa espera a la primera misión (Lumi ya se presentó
+  // en el muelle de b0-1); hasta entonces no sale ni se marca vista.
+  const mapaEnEspera = modoApi && view === 'missions' && !primeraMisionResuelta(servidor.actividades.datos)
+  const introEnEspera = seccionBloqueada || (modoApi && !vistasServidor) || mapaEnEspera
   // F04d: con una ficha (o su requisito) abierta, p. ej. al entrar a la mochila con `?ficha=`, los avisos
   // automáticos esperan a que se cierre; como no llegan a mostrarse, tampoco se marcan como vistos.
   const fichaAbierta = useFichaEnPantalla()

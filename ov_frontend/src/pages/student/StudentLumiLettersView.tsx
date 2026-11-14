@@ -86,7 +86,7 @@ function StudentLumiLettersView() {
         ) : (
           <p className="sx-j-empty">
             {c.bandeja === 'PENDIENTE'
-              ? 'Lumi te dejará una carta al terminar tu próxima actividad.'
+              ? 'Lumi deja cartas al terminar algunas misiones. La próxima aparecerá aquí.'
               : 'Aún no hay cartas aquí.'}
           </p>
         )}

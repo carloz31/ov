@@ -72,7 +72,7 @@ test('buzón: hasta 3 filas con remitente, fecha y una sola acción («Responder
     acciones,
   })
   assert.match(vacio, /0 por responder/)
-  assert.match(vacio, /Lumi te dejará una carta al terminar tu próxima actividad\./)
+  assert.match(vacio, /Lumi deja cartas al terminar algunas misiones\. La próxima aparecerá aquí\./)
 })
 
 test('buzón: la carta adaptada llega con su pregunta y se responde como cualquier otra (ajuste cartas-diario)', () => {

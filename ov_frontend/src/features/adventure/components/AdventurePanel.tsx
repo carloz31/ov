@@ -133,7 +133,7 @@ export function AdventurePanel({
           >
             <LibraryBig size={18} />
             <span>
-              Información
+              Catálogo
               {textoOculto(seccion('CATALOGO'))}
             </span>
           </AccesoRapido>

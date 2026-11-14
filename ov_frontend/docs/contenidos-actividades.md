@@ -78,7 +78,7 @@ Secuencia de un encuentro: gancho (diapositiva o elección personal) → concept
 - Cada `pregunta` tiene retroalimentación en todas las opciones, al menos una pista y una explicación que refuerza el contenido, no que repite la respuesta.
 - Los casos usan nombres y situaciones cotidianas del contexto limeño.
 - Las afirmaciones con dato llevan `fuente`; sin cifras que cambien con el tiempo, salvo de una fuente oficial con fecha.
-- Apoderado: tono informativo y sin culpa, entre 10 y 15 minutos, frases cortas. Desde el ajuste coherencia-apoderado: de usted, en primera persona del plural solo para proponer y sin elogios; cada actividad parte de un padre o una madre de motivos entendibles, ninguna preferencia del padre es el problema (se trabaja cómo y dónde decirla) y el dinero se trata de frente; lo que el apoderado todavía no abrió se comenta sin enumerarlo; el diploma es «Diploma de compromiso». Las fichas del apoderado (FP01–FP08) cierran con «Dudas frecuentes de los padres»; el markdown de las fichas (`ResourceText`) admite viñetas sangradas bajo un ítem numerado.
+- Apoderado: tono informativo y sin culpa, entre 10 y 14 minutos, frases cortas. Desde el ajuste coherencia-apoderado: de usted, en primera persona del plural solo para proponer y sin elogios; cada actividad parte de un padre o una madre de motivos entendibles, ninguna preferencia del padre es el problema (se trabaja cómo y dónde decirla) y el dinero se trata de frente; lo que el apoderado todavía no abrió se comenta sin enumerarlo; el diploma es «Diploma de compromiso». Cada actividad tiene un solo tema y una forma distinta, y lo que es recomendación del equipo de orientación va rotulado así. Las fichas del apoderado (FP01–FP08) cierran con «Dudas frecuentes de los padres»; el markdown de las fichas (`ResourceText`) admite viñetas sangradas bajo un ítem numerado.
 
 ### Criterios de redacción del contenido real
 
@@ -98,6 +98,8 @@ Decididos por el usuario en los ajustes de coherencia de los bloques 0 a 4; vale
 - **RIASEC.** Ninguna carrera tiene código ni se busca por letras: las letras son de las ocupaciones, y el camino es ocupaciones parecidas al perfil, «Cómo se llega aquí» y, de ahí, las carreras.
 - **Nombres de pantalla.** Se citan como se ven (en el plan, «Cómo lo haría realidad» y «Mis próximos pasos»), no como en el backend.
 - **Cifras.** Con población, periodo y fuente, o sin número donde basta la idea; lo que cambia cada año, con su año.
+- **Textos de Lumi fuera de las actividades** (`guideTexts.ts`; ajuste lumi-mensajes). La presentación de una sección dice para qué sirve, sin repetir lo que ya contó la actividad que la abre; la ayuda del «?» dice qué se hace y con qué botón, con el nombre que muestra la pantalla («Desde mis favoritos», «Subir prioridad», «Ver en el mapa»). Lumi se presenta una sola vez, en el muelle de b0-1; no habla de sí en tercera persona ni cuenta su historia (eso es del diario); no nombra a la orientadora; no adelanta a quien el estudiante todavía no conoce ni lo que pasa al final del camino. Ante algo cerrado, Lumi dice su frase de `textosBloqueo` y el mensaje del servidor, que nombra la misión exacta (`motor.md`, «Reglas del contenido», 10).
+- **Guías del portal del apoderado** (`parentGuides`). Habla la plataforma, de usted, y no aparece Lumi. Cada guía dice en pocas líneas qué hay en la pantalla, qué se hace primero y qué se abre después, con los nombres del menú («Inicio», «Mis actividades», «Conversaciones», «Explorar opciones»).
 
 ### Continuidad de la historia
 

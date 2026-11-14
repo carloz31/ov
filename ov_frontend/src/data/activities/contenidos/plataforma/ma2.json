@@ -19,8 +19,8 @@
   ],
   "nodos": [],
   "mapa": {
-    "x": 0,
-    "y": 0,
+    "x": 955,
+    "y": 604,
     "icono": "test",
     "origen": "b1-6",
     "adicional": true

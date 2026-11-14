@@ -98,21 +98,32 @@ function GuideDialogue({
               <X className="size-4" />
             </button>
             <div className="absolute left-1/2 top-0 grid size-20 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-4 border-[var(--family-guide-border)] bg-[var(--family-guide-badge)] shadow-lg">
-              <svg role="img" aria-label="Lumi, quien te guía" viewBox="0 0 64 64" className="size-16">
-                <path d="M12 52L16 20L30 30L48 15L54 52Z" fill="var(--family-character-base)" />
-                <path d="M17 31L29 39L47 28L44 51L31 59L19 48Z" fill="var(--family-character-face)" />
-                <circle cx="24" cy="41" r="3" fill="var(--family-character-detail)" />
-                <circle cx="40" cy="39" r="3" fill="var(--family-character-detail)" />
-                <path d="M29 46L35 46L32 50Z" fill="var(--family-character-detail)" />
-                <path d="M14 26L32 6L51 24Z" fill="var(--family-character-hat)" />
-                <path
-                  d="M10 27L54 22"
-                  stroke="var(--family-character-stroke)"
-                  strokeWidth="5"
-                  strokeLinecap="round"
+              {/* Ajuste lumi-mensajes: en el portal del apoderado habla la plataforma; no aparece Lumi. */}
+              {audience === 'parent' ? (
+                <Compass
+                  role="img"
+                  aria-label="Guía para familias"
+                  className="size-10 text-[var(--family-guide-compass)]"
                 />
-              </svg>
-              <Compass className="absolute -bottom-1 -right-1 size-5 text-[var(--family-guide-compass)]" />
+              ) : (
+                <>
+                  <svg role="img" aria-label="Lumi" viewBox="0 0 64 64" className="size-16">
+                    <path d="M12 52L16 20L30 30L48 15L54 52Z" fill="var(--family-character-base)" />
+                    <path d="M17 31L29 39L47 28L44 51L31 59L19 48Z" fill="var(--family-character-face)" />
+                    <circle cx="24" cy="41" r="3" fill="var(--family-character-detail)" />
+                    <circle cx="40" cy="39" r="3" fill="var(--family-character-detail)" />
+                    <path d="M29 46L35 46L32 50Z" fill="var(--family-character-detail)" />
+                    <path d="M14 26L32 6L51 24Z" fill="var(--family-character-hat)" />
+                    <path
+                      d="M10 27L54 22"
+                      stroke="var(--family-character-stroke)"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <Compass className="absolute -bottom-1 -right-1 size-5 text-[var(--family-guide-compass)]" />
+                </>
+              )}
             </div>
             <p className="mb-2 text-center text-xs font-bold uppercase tracking-[0.14em] text-[var(--family-guide-label)]">
               {audience === 'student' ? 'Lumi · Quien te acompaña' : 'Guía para familias'}

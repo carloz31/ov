@@ -64,6 +64,7 @@ export function useMapInteraction({
     ciudadBloqueo,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    avisoAyuda,
     iniciales,
   } = useMapScreen({ zone, points, adventure, journey, selectedId })
   useRevelarOpcionales({
@@ -170,6 +171,7 @@ export function useMapInteraction({
     explicarCiudad,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    avisoAyuda,
     iniciales,
     closePoint,
     selectPoint,

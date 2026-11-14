@@ -108,3 +108,84 @@ Sin cambios.
 
 - `verificar_contenido_front.py` sin discrepancias; `uv run pytest -n auto -q`; `npm test`, `build`, `lint`, `check:estructura`.
 - Navegador, conjunto `contenido` (recarga con `--vaciar` y reinicio del servidor, como en el ajuste anterior), cuenta `est-ana`: «La historia de Lumi» con cinco capítulos bloqueados y «Al llegar a 1 carta»…«5 cartas»; la primera carta abre «De dónde vengo» al volver al diario sin taparse con el cierre; recorrer los cinco ida y vuelta en 375 px; con tres cartas en un día se abren los tres primeros y la cuarta no abre «Hasta la mitad»; tarjeta de amistad con los umbrales nuevos y sin siguiente en el nivel 5 (el segundo día se simula con `fecha_hora`, que el servidor acepta en desarrollo); ningún texto del diario dice «compañera».
+
+## Ajuste · lumi-mensajes
+
+### Contexto
+
+Texto de observaciones: `ajuste-explicaciones-lumi.md` (adjunto). Las presentaciones (`sectionIntros`), ayudas («?», `guideSteps` y guías api) y bloqueos (`textosBloqueo` + mensaje de la regla) de Lumi se escribieron antes de los lotes F y de los ajustes de coherencia: nombran pantallas viejas («el molino», «Información»), rompen la narrativa (Lumi se presenta dos veces, nombra a la orientadora) y los mensajes de bloqueo son frases de la historia que no dicen qué misión completar. Los textos ya están decididos y se copian tal cual. Además cambian tres comportamientos: el mapa espera a b0-1 (§1.1), las misiones adicionales tienen posición real (§14) y el camino aparece de a poco (§15). El portal del apoderado gana guías en api y deja de dibujar a Lumi (§13).
+
+- **Spec:** hay una en curso (`ov_backend/docs/specs/ajuste-coherencia-apoderado.md`, que ya trae la sección `## Ajuste · coherencia-lumi`). El plan aprobado se agrega al final como `## Ajuste · lumi-mensajes`. Rama `ajuste/lumi-mensajes` (ya creada desde `main`, `cd1b29f1`).
+- Id del ajuste: `lumi-mensajes`, de las palabras del usuario (el texto lo llama `explicaciones-lumi`).
+
+### Ya hecho en `main` (no se toca)
+
+- §13.6: `parentMotivation.ts` y «Sus actividades» ya tratan de usted (ajuste coherencia-apoderado).
+- §13.7, parte del estudiante: `GuideDialogue` ya dice «Lumi · Quien te acompaña» y `aria-label` «Lumi, quien te guía» (coherencia-lumi). El texto pide `aria-label="Lumi"`: lo cambio a «Lumi» como dice el texto.
+
+### Qué cambia (hoy → pasará a)
+
+#### Front, textos (`src/data/content/guideTexts.ts`, copiados tal cual del texto)
+- `sectionIntros.missions` (5 pasos §1.1), `guiaCaminoApi` (6 pasos §1.2), `cityArrivalSteps` (§2.1), `sectionIntros.central` / `guideSteps.central` (§2.2–2.3), `activities` (§3), `textosBloqueo` CHECK_IN/PLANES/FAMILIA (§4), `journal-signals` (§5), `sectionIntros.journal` pasa de 4 a 2 pasos y `guideSteps.journal` (§6.1–6.2), catálogo (4 vistas, §7), `profile-decisions` y `planesGuideSteps` (§8), `profile-helena` (§9), `guideSteps.conversations` 4 pasos (§10.1), `resources` pasos 2 y 4 (§11.1), `investigations` y `investigacionesGuideSteps` (§11.2), `passportGuideSteps` (§11.3), `parentGuides.overview/activities/careers/questionnaire` y nuevo `parentGuides.conversations` (§13).
+- Salen las marcas `DATO DE PRUEBA` de los textos que quedan definitivos (todas las de `sectionIntros` y la de `parentGuides`), salvo las claves solo-local (`community`, `research`, `research-guide`), que no se tocan.
+- `features/family-conversations/data/textosFamilia.ts`: `cartaLumi` y `cartaSubtitulo` (§10.2).
+- `BuzonLumi.tsx` y `StudentLumiLettersView.tsx`: buzón vacío (§6.3).
+- `AdventurePanel.tsx` l. 136: «Información» → «Catálogo» (§1.3). Es común a ambos modos.
+
+#### Front, comportamiento del mapa (solo api)
+- **§1.1 espera a b0-1.** Hoy `useNoveltyQueue` (l. 76) pone `introEnEspera` si la sección está cerrada o no hay presentaciones del servidor → se suma: vista `missions` en api con `b0-1` no completada. Hoy `MapScreenLayout` (l. 188) abre siempre `openGuide(pasosAyuda)` → el hook del mapa expone una bandera de dominio (`ayudaEsAviso`, true en api sin b0-1 completada; false en local) y, con ella, `MapControls` abre un aviso nuevo `features/adventure/components/AvisoAyudaMapa.tsx`: ícono `CircleHelp`, la línea «Empieza por la misión que brilla en el mapa.», botón ✕, se cierra al tocar fuera. Sin dependencia nueva (no hay popover en `components/ui/`; un `div` posicionado junto al botón con escucha de clic fuera y Escape).
+- **§14 posiciones.** `contenidos/plataforma/ma1, ma2, ma3, ma4, ma5, ma7, ma7_b, ma8.json`: `mapa.x/y` de la tabla del texto. Hoy siete están en (0, 0) y `ma5` en (820, 240).
+- **§15 camino de a poco.** Nueva función pura `puntosVisiblesCamino(puntos)` en `features/adventure/lib/puntosServidor.ts` (o archivo propio en `lib/` si pasa de 400 líneas): requeridas completadas, disponibles o empezadas, la primera requerida bloqueada en orden y las opcionales como hoy. Se aplica en `getCaminoPoints` (`caminoPoints.ts` l. 59) solo en api, antes de que `MapCanvas` pase los puntos a `MapPath`, `BlockSign` y los nodos, así líneas y letreros salen solo entre visibles. Ciudad, «Siguiente paso», «Mis actividades», avance por tramos y local no cambian.
+
+#### Front, portal del apoderado (§13)
+- `ParentMisActividadesView`, `ParentFamiliaView` (solo con la sección abierta) y `ParentExplorarView`: agregan el `GuideDialogue audience="parent"` flotante, como `ParentOverviewView`. `useFamiliaApoderado.abrirAyuda` deja de ser `null` y abre `parentGuides.conversations` en la vista del tema (`ResponderTema` ya pinta el «?»). Como el apoderado no tiene `openGuide`, se abre con el `GuideDialogue` controlado que ya usa «Ver ideas» de la carta.
+- `GuideDialogue` con `audience="parent"`: el círculo muestra `Compass` (ya importado) en lugar del SVG del personaje, con `aria-label="Guía para familias"`. Común a ambos modos (el local `ParentActivitiesView`/`ParentCareerGuideView` también lo usa).
+
+#### Backend (`ov_backend/datos/contenido.py`, `REGLAS`, conjunto `contenido`)
+- Se reemplazan solo los mensajes de §12.1–12.4 (camino, ciudad, secciones y secciones del plan, conversaciones y testimonios `R-tb3-*`), con los títulos verificados contra `ACTIVIDADES` de esta rama (coinciden todos). Condiciones, `R-F*`, `R-FP*`, `R-d-*`, `R-p*`, `R-SEC-CONVERSACIONES`, `R-tc*`, insignias, niveles y `ruta` no cambian. Comentario junto a `R-B4` sobre su dependencia de los cuestionarios prioritarios.
+- **Prueba nueva** `tests/integration/escenarios/contenido/test_mensajes_reglas_contenido.py` (§12.6): para las reglas del estudiante de tipo ACTIVIDAD, BLOQUE, SECCION, SECCION_PLAN, CONVERSACION y TESTIMONIO, toda condición COMPLETA_ACTIVIDAD / SUPERA_BATALLA / REGISTRO_ADECUADO con referencia tiene «{título}» en el mensaje; toda COMPLETA_BLOQUE tiene el nombre del tramo **o** el título de su última misión requerida entre «». Excluye `R-p*`, `R-SEC-CONVERSACIONES` y `R-lumi-*`.
+  - Decisión (contradicción menor en el texto): `R-b5-1` tiene COMPLETA_BLOQUE B4 y su mensaje de §12.1 nombra la misión («Pongo a prueba mi orden») pero no el tramo. La prueba acepta tramo o última misión; el mensaje queda tal cual.
+
+#### Observaciones del usuario al aprobar
+1. **§15, enlaces a puntos ocultos:** si un `?punto=` (p. ej. `hrefActividad` del libro de Helena hacia b5-2) apunta a un punto oculto por el filtro, el mapa no falla ni lo muestra: enfoca la única requerida bloqueada visible (la siguiente del camino) y abre su detalle. Caso agregado a `servidor-camino-visible.test.mjs`.
+2. **§15, orden:** «la primera requerida bloqueada» se toma en el orden del servidor (bloques y orden de actividades), sin contar opcionales ni puntos agrupados de una secuencia. Si «Siguiente paso» o el foco inicial apuntan a un punto, debe estar visible; si no, es un error a corregir, no a ocultar.
+3. **§14:** si `b3-a`, `b3-b`, `h1`–`h3` o `investigador-cierre` incumplen la distancia mínima, aviso antes de moverlos.
+4. **F5:** revisión en el navegador con §18 y §13.9, más dos capturas: el camino con todo completado (posiciones §14, sin cruces) y una cuenta nueva antes de b0-1 con el aviso sin Lumi abierto.
+
+### Qué no cambia
+
+Cuándo sale cada presentación (salvo el mapa), el brillo de la recomendada, íconos, condiciones de reglas, `PRESENTACIONES`, la Central (`ayudaCentral`), diálogos de actividades, cartas y recuerdos, las claves solo-local de `guideSteps`, `textosApoderado`, `BloqueoConversaciones`, la vista de la orientadora, el mapa de la ciudad (salvo `ma4`, `ma5`) y el modo local en comportamiento.
+
+### Excepciones al modo local congelado (a aprobar)
+
+Texto común, sin cambiar orden ni momento: los `guideSteps`/`sectionIntros` que usan ambos modos (el texto lo autoriza), «Catálogo» en el panel, `parentGuides.activities/careers` (las ven las vistas locales) y el ícono en lugar de la figura en `GuideDialogue` del apoderado. Se anotan en `ov_frontend/AGENTS.md` (excepciones) y `decisiones.md`.
+
+### Modelo de datos
+
+Sin cambios.
+
+### Datos y fixtures
+
+Cambian mensajes de `REGLAS` → se regeneran los fixtures del front (`uv run python scripts/exportar_fixtures_front.py --destino ../ov_frontend/tests/fixtures/servidor`). `ruta` no cambia. `scripts/verificar_contenido_front.py` sin discrepancias.
+
+### Pruebas
+
+- Se adaptan (autoriza §18) las que comparan estos textos o suponen el camino completo; ya ubicadas: `tests/local/aventura/adventure-rendering.test.mjs` (l. 3006, «Información»), `tests/servidor/diario/servidor-diario-vista.test.mjs`, `servidor-cartas-lumi`, `servidor-historia-lumi`, `servidor-carga`, `servidor-logros`, `servidor-batallas-cierre`, y en el back `test_casos_contenido.py` (mensaje «Calibra el artefacto»). Las demás que aparezcan al correr se adaptan solo si comparan un texto o el camino completo.
+- Nuevas del front: `tests/servidor/mapa/servidor-camino-visible.test.mjs` (unitarias del filtro y el recorrido de las 38 requeridas, §15) y `tests/servidor/mapa/servidor-posiciones-adicionales.test.mjs` (§14: ningún punto con `mapa` en (0,0) o fuera del lienzo 1080×660 con margen 50; cada misión adicional (`adicional: true`) a 70–160 de su origen y a ≥60 de los demás; en el camino, su línea no cruza el camino ni otra línea adicional y no pasa a <35 de otro punto; ningún par del mismo mapa a <60).
+  - Decisión: la regla 70–160 se exige solo a las misiones `adicional: true` (las de la tabla); `b3_a`, `b3_b`, `h1–h3` e `investigador_cierre` también tienen `origen` pero no son de este ajuste. Si incumplen «≥60 de otro punto», lo aviso antes de moverlas.
+- Una prueba de la espera de b0-1 en la cola (`introEnEspera`) y de la bandera del aviso, en `tests/servidor/mapa/`.
+
+### Fases
+
+1. **F1 · Backend:** mensajes de `REGLAS`, prueba nueva, `test_casos_contenido.py`, fixtures regenerados, `verificar_contenido_front.py`. Corre `tests/integration/escenarios` y `npm run test:servidor`.
+2. **F2 · Textos del estudiante:** `guideTexts.ts` (estudiante), `textosFamilia.ts`, buzón vacío, «Catálogo». Pruebas de impacto + `test:servidor`.
+3. **F3 · Mapa:** espera de b0-1 y `AvisoAyudaMapa`, posiciones §14, filtro §15 y sus pruebas.
+4. **F4 · Portal del apoderado:** `parentGuides`, guías en las tres vistas y en el tema, `GuideDialogue` sin figura.
+5. **F5 · Cierre:** `decisiones.md` (§19 + las dos decisiones de arriba), `docs/sistema/integracion.md` y `ov_frontend/AGENTS.md` solo en lo que cambió, suites completas de ambos repos, build, lint y `check:estructura`. Revisión en el navegador obligatoria según §13.9 y §18, con las dos capturas de la observación 4.
+
+Un commit por fase: `Ajuste lumi-mensajes · F<n>: <qué>`. Sin push.
+
+### Verificación
+
+- Por fase, el subagente `pruebas` con las carpetas de impacto; al final `uv run pytest -n auto -q`, `npm test`, `npm run build`, `npm run lint`, `npm run check:estructura`.
+- Navegador (conjunto `contenido`, cuenta nueva): mapa sin diálogo antes de b0-1 y con aviso sin Lumi; presentación de 5 pasos al volver de b0-1, una sola vez; «Catálogo» en el panel; un punto nuevo por misión completada; bloqueos que nombran la misión exacta; portal del apoderado con guía en Inicio, Mis actividades, Conversaciones (abierta) y Explorar opciones, sin figura de Lumi.

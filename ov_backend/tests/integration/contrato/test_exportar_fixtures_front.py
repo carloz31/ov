@@ -117,7 +117,9 @@ NOMBRES_CONTENIDO = {f'contenido-{nombre}.json' for nombre in (
     'registro-b1-1-completado')} | {
     # Ajuste front de registros (lote 2): los registros con piezas y ecos, sin responder y completados.
     f'contenido-registro-{actividad}-{momento}.json' for actividad in ('b4-1', 'b4-5', 'b5-1', 'b5-3')
-    for momento in ('inicial', 'completado')}
+    for momento in ('inicial', 'completado')} | {
+    # Ajuste lumi-mensajes: las actividades de una cuenta nueva de `contenido`, para el camino del mapa.
+    'contenido-actividades-inicial.json'}
 
 
 def leer(archivos):

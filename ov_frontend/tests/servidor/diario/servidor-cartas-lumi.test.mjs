@@ -30,7 +30,7 @@ test('la página tiene «Volver al diario», su título, las tres bandejas con s
   assert.match(html, /Respondidas · 1/)
   assert.match(html, /Archivadas · 1/)
   assert.match(html, /Actualizar/)
-  assert.match(html, /Lumi te dejará una carta al terminar tu próxima actividad\./)
+  assert.match(html, /Lumi deja cartas al terminar algunas misiones\. La próxima aparecerá aquí\./)
 })
 
 test('por responder: tarjeta completa con fecha, remitente, la pregunta y sus botones', () => {

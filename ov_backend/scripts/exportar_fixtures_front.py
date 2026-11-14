@@ -683,6 +683,8 @@ def _recorrer_registro_contenido():
         llm = aplicacion.state.cliente_llm = ClientePrueba()
         try:
             with ClienteConToken(aplicacion) as cliente, _codigos_notificacion_fijos():
+                # Ajuste lumi-mensajes: el camino real de `contenido` sin avance, para el filtro del mapa (§15).
+                inicial = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')
                 avanzar(cliente, REQUERIDAS[0], REQUERIDAS[REQUERIDAS.index('b1-1') - 1])
                 ruta = '/cuentas/est-ana/actividades/b1-1/registro'
 
@@ -697,7 +699,7 @@ def _recorrer_registro_contenido():
                     return accion('responder-seguimiento', {'item': item, 'texto': texto})
 
                 logro = [{'codigo': 'ORGANIZAR'}]
-                f = {'registro-b1-1-inicial': _pedir(cliente, 'GET', ruta)}
+                f = {'actividades-inicial': inicial, 'registro-b1-1-inicial': _pedir(cliente, 'GET', ruta)}
                 llm.encolar(salida('general', REPREGUNTA_B1_1), salida('general', REPREGUNTA_B1_1))
                 f['responder-b1-1-repregunta'] = responder('b1-1-gustos', [])
                 f['registro-b1-1-a-medias'] = _pedir(cliente, 'GET', ruta)

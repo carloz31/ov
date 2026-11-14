@@ -55,8 +55,8 @@
     "mensajeFin": "Ya sabes cómo se ve esa habilidad cuando sale bien."
   },
   "mapa": {
-    "x": 0,
-    "y": 0,
+    "x": 960,
+    "y": 355,
     "icono": "registro",
     "origen": "h1",
     "adicional": true
