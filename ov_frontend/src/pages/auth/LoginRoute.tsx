@@ -5,13 +5,14 @@ import { useLogin } from '@/features/auth/hooks/useLogin'
 import { portalPorRol } from '@/routes/paths'
 
 function LoginRoute() {
-  const { cuenta, enter, error, enviando, mostrarAvisoDemo } = useLogin()
+  const { cuenta, enter, error, enviando, lento, mostrarAvisoDemo } = useLogin()
   if (cuenta) return <Navigate replace to={portalPorRol[cuenta.rol]} />
   return (
     <LoginScreen
       onEnter={(usuario, contrasena) => void enter(usuario, contrasena)}
       error={error}
       enviando={enviando}
+      lento={lento}
       mostrarAvisoDemo={mostrarAvisoDemo}
     />
   )
