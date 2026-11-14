@@ -98,10 +98,13 @@ export type AccionConRefresco<T extends RespuestaAccion> =
 // Una acción con eventos y desbloqueos refresca el camino como completar: toasts y revelado de opcionales.
 // Con `confirmada`, solo se reintenta el refresco de una acción que el servidor ya guardó. Con `conCierre` (batalla
 // y caso), su pantalla de cierre anuncia lo desbloqueado: las notificaciones se marcan vistas, sin toast.
+// Auditoría plataforma: con `refrescarSi`, la acción solo refresca el camino si su respuesta lo pide (lo que cambia el
+// mapa llega declarado: desbloqueos y eventos de completar). Sin él, refresca siempre.
 export async function accionConRefresco<T extends RespuestaAccion>(
   accion: (cuenta: string) => Promise<RespuestaServidor<T>>,
   confirmada?: T,
   conCierre = false,
+  refrescarSi?: (datos: T) => boolean,
 ): Promise<AccionConRefresco<T>> {
   const cuenta = cuentaActiva()
   const sesion = sesionServidor()
@@ -115,6 +118,7 @@ export async function accionConRefresco<T extends RespuestaAccion>(
     return { tipo: 'http', estado: 409, detalle: 'La cuenta activa cambió durante la acción.' }
   revelarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
   incorporarNotificaciones(respuesta.datos.nuevas_notificaciones, conCierre)
+  if (refrescarSi && !refrescarSi(respuesta.datos)) return respuesta
   const estado = await refrescar(respuesta.datos.nuevos_desbloqueos)
   return estado.tipo === 'ok'
     ? respuesta

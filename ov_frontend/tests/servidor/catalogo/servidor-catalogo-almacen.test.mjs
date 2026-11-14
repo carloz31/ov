@@ -165,3 +165,22 @@ test('el refresco del camino no borra el resultado que pidió el catálogo si el
   assert.equal(almacen.obtenerEstadoServidor().resultadoRiasec, null)
   assert.equal(almacen.obtenerEstadoServidor().estadoResultado, 'pendiente')
 })
+
+// Auditoría plataforma (F2a): una vista sin desbloqueos no cambia el camino; con desbloqueos, refresca como antes.
+test('ver un detalle sin desbloqueos no vuelve a pedir el camino; con desbloqueos, sí', async () => {
+  const { app, store } = catalogo()
+  const conDesbloqueo = jsonServidor('ruta/ruta-ver-carrera')
+  let respuesta = { ...conDesbloqueo, nuevos_desbloqueos: [] }
+  app.fetch((r) => {
+    if (r.url.includes('/acciones/ver-carrera')) return { body: respuesta }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
+    return { body: [] }
+  })
+  const lecturasCamino = () => app.requests.filter((r) => /\/(actividades|avance)$/.test(r.url)).length
+  const resultado = await store.verEnCatalogo('carreras', 'civil-engineering')
+  assert.equal(resultado.tipo, 'ok')
+  assert.equal(lecturasCamino(), 0)
+  respuesta = conDesbloqueo
+  await store.verEnCatalogo('carreras', 'psychology')
+  assert.equal(lecturasCamino(), 2)
+})

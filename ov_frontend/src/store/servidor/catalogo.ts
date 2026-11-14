@@ -303,13 +303,18 @@ export function pedirInesperada(clase: 'carreras' | 'ocupaciones', excluir: stri
   return consultarCuenta((cuenta) => apiCatalogo.obtenerInesperada(cuenta, clase, excluir))
 }
 
-// Abrir un detalle registra la vista; sus desbloqueos (t-explorar, insignias) llegan con el refresco.
+// Abrir un detalle registra la vista; sus desbloqueos (t-explorar, insignias) llegan con el refresco. Auditoría
+// plataforma (F2a): una vista sin desbloqueos no cambia el camino, el avance ni las secciones, y no refresca.
 export function verEnCatalogo(clase: ClaseCatalogo, codigo: string) {
-  return accionConRefresco((cuenta) =>
-    clase === 'carreras'
-      ? apiAcciones.verCarrera(cuenta, codigo)
-      : clase === 'ocupaciones'
-        ? apiAcciones.verOcupacion(cuenta, codigo)
-        : apiAcciones.verInstitucion(cuenta, codigo),
+  return accionConRefresco(
+    (cuenta) =>
+      clase === 'carreras'
+        ? apiAcciones.verCarrera(cuenta, codigo)
+        : clase === 'ocupaciones'
+          ? apiAcciones.verOcupacion(cuenta, codigo)
+          : apiAcciones.verInstitucion(cuenta, codigo),
+    undefined,
+    false,
+    (datos) => datos.nuevos_desbloqueos.length > 0,
   )
 }
