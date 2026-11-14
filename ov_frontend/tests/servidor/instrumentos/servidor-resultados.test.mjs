@@ -268,3 +268,41 @@ test('los adaptadores conservan solo imports de tipos, incluidos los de presenta
   const source = readFileSync('src/lib/servidor/adaptadores.ts', 'utf8')
   assert.ok([...source.matchAll(/^import\s+(.+)$/gm)].every((m) => m[1].startsWith('type ')))
 })
+
+// Auditoría plataforma (F3): el resultado solo cambia al revelar o reiniciar; ya leído (o sin resultado), los refrescos
+// de otras acciones no lo vuelven a pedir. Tras un error, sí.
+test('el resultado RIASEC se pide una vez y no en cada refresco; tras un error se reintenta', async () => {
+  const f = await iniciarMara()
+  const acciones = f.app.load('src/store/servidor/operaciones.ts')
+  const recibo = jsonServidor('completar-act-tip-14')
+  let fallar = false
+  f.app.fetch((req) => {
+    if (req.url.endsWith('/completar-actividad')) return { body: recibo }
+    if (esConsultaDominio(req)) {
+      const estado = copia(f.estado)
+      estado.bloques.flatMap((b) => b.actividades).find((a) => a.codigo === 'act-tip-final').estado = 'DISPONIBLE'
+      return respuestaDominio(req, estado)
+    }
+    if (req.url.includes('/TEST-RIASEC/resultado')) {
+      if (fallar) return { status: 503, body: 'DATO DE PRUEBA: sin conexión' }
+      return { body: jsonServidor('resultado-riasec') }
+    }
+    return f.servidor(req)
+  })
+  const lecturas = () => f.app.requests.filter((r) => r.url.includes('/TEST-RIASEC/resultado')).length
+  f.almacen.publicar({ estadoResultado: 'sin_cargar', resultadoRiasec: null })
+  await acciones.completarActividad('act-tip-14')
+  assert.equal(lecturas(), 1)
+  assert.equal(f.almacen.obtenerEstadoServidor().estadoResultado, 'listo')
+  await f.almacen.refrescar([])
+  await f.almacen.refrescar()
+  assert.equal(lecturas(), 1)
+  f.almacen.publicar({ estadoResultado: 'error' })
+  fallar = true
+  await f.almacen.refrescar([])
+  assert.equal(lecturas(), 2)
+  fallar = false
+  await f.almacen.refrescar([])
+  assert.equal(lecturas(), 3)
+  assert.equal(f.almacen.obtenerEstadoServidor().estadoResultado, 'listo')
+})

@@ -79,7 +79,11 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     encolarPorRevelar(ahora.filter((codigo) => !visiblesAntes.includes(codigo)))
   }
   const final = actividadServidor(obtenerEstadoServidor().actividades.datos, 'act-tip-final')
+  // Auditoría plataforma (F3): el resultado solo cambia al revelar o reiniciar, y esas acciones lo vuelven a leer con
+  // el libro (`conInstrumentos`). Ya leído (o sin resultado, 409), no se pide en cada refresco; sí tras un error.
+  const resultadoLeido = ['listo', 'pendiente'].includes(obtenerEstadoServidor().estadoResultado)
   if (final && final.estado !== 'BLOQUEADA') {
+    if (resultadoLeido) return { tipo: 'ok', datos: null }
     const resultado = await cargarResultadoRiasec()
     if (!vigente()) return cambioCuenta()
     if (resultado.tipo !== 'ok') return resultado
