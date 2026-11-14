@@ -1382,8 +1382,7 @@ por nombre: los JSON de actividades no tienen marcador de nombre.
    - después, la recarga de contenidos: Actions > «Pruebas y despliegue» > Run workflow > `deploy` > marcar
      `recargar_contenido`. **Borra toda la base.**
 3. **Swap y gzip en la EC2** (sección H, pasos 2 y 3).
-4. **Crear las cuentas con el script**, primero con `--simular`. **Pendiente:** el script todavía no existe; se escribe
-   cuando decidas el formato del alias (M). El comando quedará así, con el CSV copiado a la EC2 fuera del repo, por
+4. **Crear las cuentas con el script**, primero con `--simular`. El comando, con el CSV copiado a la EC2 fuera del repo, por
    ejemplo en `/home/ov/cuentas-prueba.csv`:
 
    ```bash
@@ -1396,3 +1395,70 @@ por nombre: los JSON de actividades no tienen marcador de nombre.
 6. **Recorrido de comprobación en producción** con una cuenta de `datos/usuarios_prueba.txt` (lista J), sin publicar
    entrevistas. Después, si quieres, desactiva esas cuentas (sección M).
 7. **Instantánea de RDS al terminar la sesión del 18.**
+
+## N. Ráfaga de ingresos: la causa no es el orden de los turnos
+
+Para la prueba, el ingreso será escalonado (decisión del 14 de noviembre). Antes de cerrar el tema, se trazó cada
+ingreso dentro del servidor de medición: cuándo llega, cuándo entra al endpoint, cuándo obtiene su turno y cuándo lo
+suelta. Fueron 50 ingresos a la vez, con 1 turno por worker y 2 workers en 2 núcleos.
+
+| Qué se vio | Dato |
+|---|---|
+| Reparto entre workers | **48 ingresos a un worker y 2 al otro.** En Windows, uvicorn no reparte las conexiones entre sus workers; en Linux suele ser más parejo, pero no está garantizado. |
+| Orden de los turnos | **Por orden de llegada**: en los dos workers, el orden en que se obtienen los turnos coincide con el de llegada al endpoint. |
+| Espera de turno en el worker cargado | Mediana de 35,4 s y máximo de 39,0 s |
+| Lo que tarda una verificación con turno | Mediana de 0,21 s. **Una tardó 30,37 s**: esa es la pausa entre los segundos 3,4 y 33,8. |
+
+**Qué pasó:**
+- **Los ingresos en espera ocupan hilos.** Cada ingreso que espera turno bloquea un hilo del pool de hilos del worker,
+  que tiene 40. Con 34 ingresos esperando, casi no quedan hilos.
+- **Las peticiones de los que ya ingresaron retienen conexiones.** Siguen sus lecturas, y al terminar esperan un hilo
+  libre para cerrar la sesión de base (la dependencia `obtener_sesion` es síncrona). Mientras esperan ese hilo,
+  retienen su conexión.
+- **El que tiene el turno no consigue conexión.** El pool de conexiones del worker (15) se llena con esas sesiones sin
+  cerrar, y el ingreso que tiene el turno espera una conexión hasta el `pool_timeout` de 30 s.
+- **Resultado:** el turno queda retenido, y todos los que esperan detrás también. Con 4 turnos pasa lo mismo, y además
+  aparecen errores 500 (`QueuePool limit … timeout 30`).
+
+**No se corrigió.** El arreglo sale del módulo de turnos, así que me detuve como se indicó. Opciones:
+1. Esperar el turno sin ocupar un hilo: un endpoint de ingreso asíncrono que espere un semáforo de asyncio por orden
+   de llegada y recién entonces verifique en el pool de hilos. Toca `app/api/sesion.py` además de `acceso.py`.
+2. Más hilos por worker (el límite de AnyIO, al arrancar) o más conexiones por pool. Atenúa el problema, no lo resuelve.
+3. Que la espera del turno tenga un límite y responda 503 «Intenta de nuevo».
+4. Dejarlo así con el ingreso escalonado: repartidos en 20 s, 50 ingresos tardan 0,3 s cada uno y no hay ningún error
+   (sección K).
+
+### El botón «Ingresar»
+
+- **Durante el envío:** se desactiva (`disabled={enviando}`, `LoginScreen.tsx:143`), su texto cambia a «Ingresando…»
+  (`:145`) y Enter tampoco reenvía (`:96`, `useLogin.ts:36`).
+- **Si la espera se alarga, no hay más indicación:** ni un aviso de que sigue trabajando ni un tiempo límite del cliente
+  (`services/api/cliente.ts`).
+- **Quién corta antes:** nginx a los 60 s (`proxy_read_timeout`), y el reenvío de Amplify (CloudFront) probablemente a
+  los 30 s. En ese caso el usuario ve un error aunque el ingreso termine después en el servidor.
+- **No se cambió nada.**
+
+### El script de cuentas
+
+- **Qué es:** `scripts/crear_cuentas.py` y `scripts/cuentas_ejemplo.csv` (commit `b4f0e9a2`), con las funciones del
+  cargador (commit `1d82121d`). En el ejemplo: `ori-prueba` «Orientadora», `nav-01` «Navegante-01»… y `fam-01`
+  «Familia-01», con `nav01@ov.test` y `fam01@ov.test`.
+- **Parentesco:** el vínculo no tiene una lista de valores. La columna `parentesco` es texto libre (`str | None` en el
+  modelo y los esquemas). El front lo muestra como «tu {parentesco}» en la carta y con mayúscula en la firma
+  («— Madre»). El script exige parentesco para APODERADO, en minúsculas y con hasta 30 caracteres (madre, padre, abuela,
+  tío, tutora…).
+- **Pruebas:** las 16 de `tests/integration/cuentas/test_crear_cuentas.py` pasan.
+
+### Lista J: comprobaciones del script
+
+| # | Caso | Pasos | Qué debes ver |
+|---|---|---|---|
+| S1 | Estudiante, apoderado y orientadora desde el ejemplo | En una base de desarrollo con `contenido`: `uv run python scripts/crear_cuentas.py scripts/cuentas_ejemplo.csv --simular` y luego sin `--simular`. Las contraseñas están en `scripts/cuentas_ejemplo.resultado.csv`. | La lista de lo que crearía, sin contraseñas. Después, el salón 5P y las cinco cuentas. |
+| S2 | Ingresar con cada una | `nav01@ov.test`, `fam01@ov.test` y `ori@ov.test`. | Navegante-01 entra al mapa. Familia-01 ve «Hola, Familia-01» en Inicio y la tarjeta de Navegante-01. Orientadora ve el salón 5P y a Navegante-01 y Navegante-02 en la lista, y no ve 5A. |
+| S3 | Una carta | Navegante-01 completa hasta `b1-3` y escribe su carta; Familia-01 completa p1 a p8 y abre Conversaciones. | La carta de Navegante-01; en la del apoderado, «Escrita por Familia-01 · tu madre». |
+
+### Lista J: imágenes (cuando se conviertan)
+
+| # | Caso | Pasos | Qué debes ver |
+|---|---|---|---|
+| I1 | Ninguna imagen rota ni con bordes extraños | Recorrer el ingreso, el mapa (ampliar al máximo), `b0-1` a `b0-3` y un caso de la Central. | Mapa, fondos, personajes y escenas completos. Los personajes, sin un recuadro ni un borde claro alrededor (la transparencia se conserva). En la pestaña Red, todo `.webp` y ningún 404. |
