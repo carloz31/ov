@@ -14,7 +14,11 @@ import { consultarCuentaSesion, sesionServidor } from './sesion'
 // así que todo se revalida al abrir su vista (regla 4), mostrando lo ya cargado mientras llega lo nuevo.
 // - Un solo perfil a la vez: abrir otro estudiante o salir del perfil lo descarta con todas sus pestañas.
 // - Cada sección del perfil (pestaña, plan, registro, resultado) se pide al abrirla y una sola vez por visita.
-// - De la lista solo se guardan las páginas del filtro y orden actuales: otro filtro la reemplaza.
+// - De la lista solo se guardan las páginas del filtro y orden actuales: otro filtro la reemplaza. Mientras llega,
+//   la vista conserva la última página que mostró (`anterior`, auditoría del panel F2), que no se guarda bajo la
+//   llave vieja.
+// - Revalidar una lista con «Mostrar más» pide de una vez lo que ya mostraba (F3, hasta `LIMITE_LISTA_ESTUDIANTES`).
+// - Una lectura que ya está en curso no se vuelve a pedir; «Reintentar» sí (F4).
 // Nada se copia a otro almacén ni al navegador.
 export type CargaPerfil<T> = {
   estado: 'cargando' | 'listo' | 'error'
@@ -25,18 +29,26 @@ export type ListaEstudiantes = {
   estado: 'cargando' | 'listo' | 'mas' | 'error'
   pagina: PaginaEstudiantes | null
   error: ErrorServidor | null
+  // La última página que se mostró con otro filtro, solo mientras llega la primera de este (F2).
+  anterior: PaginaEstudiantes | null
 }
+// El máximo de filas por petición que acepta `lista-estudiantes`.
+export const LIMITE_LISTA_ESTUDIANTES = 100
 
 // Una visita dura lo que el perfil está abierto: al salir se descarta, así que volver lo pide de nuevo.
+// `borrador`: la nota nueva a medio escribir (F7); no avisa a nadie al cambiar, porque solo la lee su bloque.
 type Perfil = {
   sesion: number
   estudiante: string
   secciones: Map<string, CargaPerfil<unknown>>
   turnos: Map<string, number>
+  borrador: string
 }
 
 let perfil: Perfil | null = null
-let lista: { sesion: number; llave: string; turno: number; valor: ListaEstudiantes } | null = null
+// `ampliada`: ya se pidió alguna página con «Mostrar más».
+let lista: { sesion: number; llave: string; turno: number; ampliada: boolean; valor: ListaEstudiantes } | null =
+  null
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((oyente) => oyente())
 const suscribir = (oyente: () => void) => {
@@ -50,7 +62,7 @@ const suscribir = (oyente: () => void) => {
 
 function perfilDe(estudiante: string) {
   if (perfil?.estudiante === estudiante && perfil.sesion === sesionServidor()) return perfil
-  perfil = { sesion: sesionServidor(), estudiante, secciones: new Map(), turnos: new Map() }
+  perfil = { sesion: sesionServidor(), estudiante, secciones: new Map(), turnos: new Map(), borrador: '' }
   return perfil
 }
 
@@ -134,8 +146,18 @@ function cambiarNotas(estudiante: string, cambio: (notas: NotaPerfil[]) => NotaP
 
 export async function escribirNota(estudiante: string, texto: string) {
   const respuesta = await consultarCuentaSesion((cuenta) => api.enviarEscribirNota(cuenta, estudiante, texto))
-  if (respuesta.tipo === 'ok') cambiarNotas(estudiante, (notas) => [respuesta.datos, ...notas])
+  if (respuesta.tipo === 'ok') {
+    if (perfil?.estudiante === estudiante) perfil.borrador = ''
+    cambiarNotas(estudiante, (notas) => [respuesta.datos, ...notas])
+  }
   return respuesta
+}
+
+export const borradorNota = (estudiante: string) =>
+  perfil?.estudiante === estudiante && perfil.sesion === sesionServidor() ? perfil.borrador : ''
+
+export function guardarBorrador(estudiante: string, texto: string) {
+  if (perfil?.estudiante === estudiante && perfil.sesion === sesionServidor()) perfil.borrador = texto
 }
 
 export async function editarNota(estudiante: string, nota: number, texto: string) {
@@ -155,22 +177,32 @@ export async function borrarNota(estudiante: string, nota: number) {
 
 // --- Lista ----------------------------------------------------------------------------------------------
 
-export async function cargarListaEstudiantes(filtros: FiltrosListaEstudiantes, mas = false) {
+export async function cargarListaEstudiantes(filtros: FiltrosListaEstudiantes, mas = false, forzar = false) {
   const llave = JSON.stringify(filtros)
-  const vigente = lista?.llave === llave && lista.sesion === sesionServidor() ? lista : null
+  const misma = lista?.sesion === sesionServidor() ? lista : null
+  const vigente = misma?.llave === llave ? misma : null
   if (mas && (!vigente?.valor.pagina || vigente.valor.estado !== 'listo')) return
   if (mas && vigente!.valor.pagina!.items.length >= vigente!.valor.pagina!.total) return
+  // F4: la misma lectura ya está en camino.
+  if (!mas && !forzar && vigente?.valor.estado === 'cargando') return
   const turno = (vigente?.turno ?? 0) + 1
   const previas = mas ? vigente!.valor.pagina!.items : []
+  // F3: al revalidar una lista ampliada, se piden de una vez las filas que ya mostraba.
+  const limite =
+    !mas && vigente?.ampliada && vigente.valor.pagina
+      ? Math.min(vigente.valor.pagina.items.length, LIMITE_LISTA_ESTUDIANTES)
+      : undefined
+  const anterior = vigente ? null : (misma?.valor.pagina ?? misma?.valor.anterior ?? null)
   lista = {
     sesion: sesionServidor(),
     llave,
     turno,
-    valor: { estado: mas ? 'mas' : 'cargando', pagina: vigente?.valor.pagina ?? null, error: null },
+    ampliada: mas || (!!limite && (vigente?.ampliada ?? false)),
+    valor: { estado: mas ? 'mas' : 'cargando', pagina: vigente?.valor.pagina ?? null, error: null, anterior },
   }
   avisar()
   const respuesta = await consultarCuentaSesion((cuenta) =>
-    api.obtenerListaEstudiantes(cuenta, filtros, previas.length),
+    api.obtenerListaEstudiantes(cuenta, filtros, previas.length, limite),
   )
   if (lista?.llave !== llave || lista.turno !== turno) return
   lista.valor =
@@ -179,25 +211,38 @@ export async function cargarListaEstudiantes(filtros: FiltrosListaEstudiantes, m
           estado: 'listo',
           pagina: { ...respuesta.datos, items: [...previas, ...respuesta.datos.items] },
           error: null,
+          anterior: null,
         }
-      : { estado: 'error', pagina: lista.valor.pagina, error: respuesta }
+      : { estado: 'error', pagina: lista.valor.pagina, error: respuesta, anterior: null }
   lista = { ...lista }
   avisar()
+}
+
+// Antes de que el efecto pida la llave nueva, la vista ya ve la espera con la última página (F2); el objeto se
+// reutiliza mientras la lista guardada no cambie, como pide `useSyncExternalStore`.
+const esperas = new WeakMap<object, ListaEstudiantes>()
+function leerLista(llave: string): ListaEstudiantes | null {
+  if (!lista || lista.sesion !== sesionServidor()) return null
+  if (lista.llave === llave) return lista.valor
+  let espera = esperas.get(lista)
+  if (!espera) {
+    espera = { estado: 'cargando', pagina: null, error: null, anterior: lista.valor.pagina ?? lista.valor.anterior }
+    esperas.set(lista, espera)
+  }
+  return espera
 }
 
 // `activa` en falso (aún sin los salones de la sesión) no pide nada: así no se pide una lista que se descarta.
 export function useListaEstudiantes(filtros: FiltrosListaEstudiantes, activa = true) {
   const llave = JSON.stringify(filtros)
-  const actual = useSyncExternalStore(suscribir, () =>
-    lista?.llave === llave && lista.sesion === sesionServidor() ? lista.valor : null,
-  )
+  const actual = useSyncExternalStore(suscribir, () => leerLista(llave))
   useEffect(() => {
     if (activa) void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes)
   }, [llave, activa])
   return {
     lista: actual,
     mostrarMas: () => void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes, true),
-    reintentar: () => void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes),
+    reintentar: () => void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes, false, true),
   }
 }
 

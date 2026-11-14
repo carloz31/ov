@@ -18,7 +18,13 @@ import { consultarCuentaSesion, sesionServidor } from './sesion'
 // Ajuste panel-salon · Panel del salón de la orientadora. Lo cambian las cuentas de sus estudiantes, así que cada
 // lectura se revalida al montar su vista y al cambiar de salón u orden (regla 4): se muestra lo ya cargado de esa
 // misma llave mientras llega lo nuevo. Un turno por llave descarta las respuestas viejas.
+// Auditoría del panel: una lectura en camino no se vuelve a pedir salvo con «Reintentar» (F4); al revalidar una lista
+// con «Mostrar más», se pide de una vez lo que ya mostraba (F3); y cada almacén guarda a lo más `MAXIMO_LLAVES`
+// llaves: se descartan primero las que hace más que no se usan y ninguna que esté a la vista (F5).
 export const LIMITE_LISTA_PANEL = 20
+// El máximo de filas por petición que aceptan `areas` e `instituciones` (`LIMITE_MAXIMO_CATALOGO`).
+export const LIMITE_MAXIMO_LISTA_PANEL = 50
+export const MAXIMO_LLAVES = 30
 export type CargaPanel<T> = {
   estado: 'cargando' | 'listo' | 'error'
   datos: T | null
@@ -36,6 +42,9 @@ export type ListaPanel<F> = {
 const cargas = new Map<string, CargaPanel<unknown>>()
 const listas = new Map<string, ListaPanel<unknown>>()
 const turnos = new Map<string, number>()
+// Turno de la petición en camino de cada llave y cuántas vistas montadas la leen.
+const enCamino = new Map<string, number>()
+const enUso = new Map<string, number>()
 let sesionCargada = -1
 const oyentes = new Set<() => void>()
 const avisar = () => oyentes.forEach((oyente) => oyente())
@@ -51,6 +60,36 @@ function vigente() {
   cargas.clear()
   listas.clear()
   turnos.clear()
+  enCamino.clear()
+}
+// Guarda al final del orden (la más reciente) y poda las más antiguas que nadie está mirando.
+function guardar<V>(mapa: Map<string, V>, llave: string, valor: V) {
+  mapa.delete(llave)
+  mapa.set(llave, valor)
+  for (const vieja of mapa.keys()) {
+    if (mapa.size <= MAXIMO_LLAVES) break
+    if (enUso.get(vieja) || enCamino.has(vieja)) continue
+    mapa.delete(vieja)
+    turnos.delete(vieja)
+  }
+}
+function usar(llave: string) {
+  enUso.set(llave, (enUso.get(llave) ?? 0) + 1)
+  return () => {
+    const quedan = (enUso.get(llave) ?? 1) - 1
+    if (quedan > 0) enUso.set(llave, quedan)
+    else enUso.delete(llave)
+  }
+}
+function empezar(llave: string, forzar: boolean) {
+  if (!forzar && enCamino.has(llave)) return null
+  const turno = nuevoTurno(llave)
+  enCamino.set(llave, turno)
+  return turno
+}
+function terminar(llave: string, turno: number) {
+  if (enCamino.get(llave) === turno) enCamino.delete(llave)
+  return turnos.get(llave) === turno
 }
 function nuevoTurno(llave: string) {
   const turno = (turnos.get(llave) ?? 0) + 1
@@ -61,15 +100,18 @@ function nuevoTurno(llave: string) {
 export async function cargarPanel<T>(
   llave: string,
   pedir: (cuenta: string) => Promise<RespuestaServidor<T>>,
+  forzar = false,
 ) {
   vigente()
-  const turno = nuevoTurno(llave)
+  const turno = empezar(llave, forzar)
+  if (turno === null) return
   const actual = cargas.get(llave)
-  if (!actual?.datos) cargas.set(llave, { estado: 'cargando', datos: null, error: null })
+  if (!actual?.datos) guardar(cargas, llave, { estado: 'cargando', datos: null, error: null })
   avisar()
   const respuesta = await consultarCuentaSesion(pedir)
-  if (turnos.get(llave) !== turno) return
-  cargas.set(
+  if (!terminar(llave, turno)) return
+  guardar(
+    cargas,
     llave,
     respuesta.tipo === 'ok'
       ? { estado: 'listo', datos: respuesta.datos, error: null }
@@ -81,11 +123,14 @@ export async function cargarPanel<T>(
 function useCarga<T>(llave: string, pedir: (cuenta: string) => Promise<RespuestaServidor<T>>) {
   const carga = useSyncExternalStore(suscribir, () => cargas.get(`${sesionServidor()}:${llave}`))
   useEffect(() => {
-    void cargarPanel(`${sesionServidor()}:${llave}`, pedir)
+    const completa = `${sesionServidor()}:${llave}`
+    const soltar = usar(completa)
+    void cargarPanel(completa, pedir)
+    return soltar
     // La llave resume los parámetros de `pedir`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [llave])
-  const reintentar = () => void cargarPanel(`${sesionServidor()}:${llave}`, pedir)
+  const reintentar = () => void cargarPanel(`${sesionServidor()}:${llave}`, pedir, true)
   return { carga: (carga as CargaPanel<T> | undefined) ?? null, reintentar }
 }
 
@@ -116,11 +161,13 @@ function useTopInteres<T extends TipoLista>(
   const carga = useSyncExternalStore(suscribir, () => (activo ? cargas.get(llave) : undefined))
   useEffect(() => {
     if (!activo) return
+    const soltar = usar(llave)
     void cargarPanel<PaginaAreasPanel | PaginaInstitucionesPanel>(llave, (cuenta) =>
       tipo === 'areas'
         ? apiPanel.listarAreas(cuenta, { salon, orden }, tope, 0)
         : apiPanel.listarInstituciones(cuenta, { salon, orden }, tope, 0),
     )
+    return soltar
   }, [llave, activo, tipo, salon, orden, tope])
   return activo
     ? ((carga as CargaPanel<PaginaAreasPanel | PaginaInstitucionesPanel> | undefined) ?? null)
@@ -173,10 +220,11 @@ export function useEstudiantesPanel(salon: string, conjunto: ConjuntoPanel | nul
   const llave = conjunto ? `estudiantes:${salon}:${conjunto}:${valor}` : 'estudiantes:ninguno'
   const carga = useSyncExternalStore(suscribir, () => cargas.get(`${sesionServidor()}:${llave}`))
   useEffect(() => {
-    if (conjunto)
-      void cargarPanel(`${sesionServidor()}:${llave}`, (cuenta) =>
-        apiPanel.obtenerEstudiantes(cuenta, salon, conjunto, valor),
-      )
+    if (!conjunto) return
+    const completa = `${sesionServidor()}:${llave}`
+    const soltar = usar(completa)
+    void cargarPanel(completa, (cuenta) => apiPanel.obtenerEstudiantes(cuenta, salon, conjunto, valor))
+    return soltar
   }, [llave, salon, conjunto, valor])
   return conjunto ? ((carga as CargaPanel<EstudiantePanel[]> | undefined) ?? null) : null
 }
@@ -184,16 +232,26 @@ export function useEstudiantesPanel(salon: string, conjunto: ConjuntoPanel | nul
 // --- Listas completas de áreas e instituciones, con «Mostrar más» ---------------------------------------
 
 
-export async function cargarListaPanel(tipo: TipoLista, filtros: FiltrosListaPanel, mas = false) {
+export async function cargarListaPanel(
+  tipo: TipoLista,
+  filtros: FiltrosListaPanel,
+  mas = false,
+  forzar = false,
+) {
   vigente()
   const llave = `${sesionServidor()}:${tipo}:${JSON.stringify(filtros)}`
   const actual = listas.get(llave)
   if (mas && (actual?.estado !== 'listo' || actual.items.length >= actual.total)) return
-  const turno = nuevoTurno(llave)
+  const turno = empezar(llave, forzar || mas)
+  if (turno === null) return
   const previos = mas && actual ? actual.items : []
-  if (mas && actual) listas.set(llave, { ...actual, estado: 'mas', error: null })
+  // F3: revalidar una lista ya ampliada pide de una vez las filas que mostraba.
+  const limite = mas
+    ? LIMITE_LISTA_PANEL
+    : Math.min(Math.max(actual?.items.length ?? 0, LIMITE_LISTA_PANEL), LIMITE_MAXIMO_LISTA_PANEL)
+  if (mas && actual) guardar(listas, llave, { ...actual, estado: 'mas', error: null })
   else if (!actual?.items.length)
-    listas.set(llave, {
+    guardar(listas, llave, {
       estado: 'cargando',
       items: [],
       total: 0,
@@ -204,12 +262,13 @@ export async function cargarListaPanel(tipo: TipoLista, filtros: FiltrosListaPan
   avisar()
   const respuesta = await consultarCuentaSesion<PaginaAreasPanel | PaginaInstitucionesPanel>((cuenta) =>
     tipo === 'areas'
-      ? apiPanel.listarAreas(cuenta, filtros, LIMITE_LISTA_PANEL, previos.length)
-      : apiPanel.listarInstituciones(cuenta, filtros, LIMITE_LISTA_PANEL, previos.length),
+      ? apiPanel.listarAreas(cuenta, filtros, limite, previos.length)
+      : apiPanel.listarInstituciones(cuenta, filtros, limite, previos.length),
   )
-  if (turnos.get(llave) !== turno) return
+  if (!terminar(llave, turno)) return
   const base = listas.get(llave)!
-  listas.set(
+  guardar(
+    listas,
     llave,
     respuesta.tipo === 'ok'
       ? {
@@ -230,11 +289,13 @@ export function useListaPanel<T extends TipoLista>(tipo: T, filtros: FiltrosList
   const clave = JSON.stringify(filtros)
   const lista = useSyncExternalStore(suscribir, () => listas.get(`${sesionServidor()}:${tipo}:${clave}`))
   useEffect(() => {
+    const soltar = usar(`${sesionServidor()}:${tipo}:${clave}`)
     void cargarListaPanel(tipo, JSON.parse(clave) as FiltrosListaPanel)
+    return soltar
   }, [tipo, clave])
   return {
     lista: (lista as ListaPanel<Filas[T]> | undefined) ?? null,
     mostrarMas: () => void cargarListaPanel(tipo, JSON.parse(clave) as FiltrosListaPanel, true),
-    reintentar: () => void cargarListaPanel(tipo, JSON.parse(clave) as FiltrosListaPanel),
+    reintentar: () => void cargarListaPanel(tipo, JSON.parse(clave) as FiltrosListaPanel, false, true),
   }
 }

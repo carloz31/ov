@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { PantallaCargaPortal } from '@/components/staff/PantallaCargaPortal'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs'
 import { AQuienBuscar } from '@/features/counselor/components/panel/AQuienBuscar'
@@ -10,6 +11,15 @@ import { PestanaIntereses } from '@/features/counselor/components/panel/PestanaI
 import { usePanelSalon } from '@/features/counselor/hooks/usePanelSalon'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { useSeguimientoPanel } from '@/store/servidor/panel'
+
+// Auditoría del panel (F7): abrir o cerrar «Ver» no repinta los bloques, que reciben lo cargado y `abrirVer`, que no
+// cambian entre renders.
+const Indicadores = memo(IndicadoresPanel)
+const AQuien = memo(AQuienBuscar)
+const Test = memo(BloqueTest)
+const Otros = memo(OtrosCuestionarios)
+const Camino = memo(PorDondeVa)
+const Seguridad = memo(ComoSeSienten)
 
 // Ajuste panel-salon (api): Inicio de la orientadora con las pestañas Seguimiento e Intereses del salón. En local
 // sigue `CounselorDashboardView`.
@@ -44,15 +54,15 @@ function PanelSalonView() {
                   {mensajeErrorServidor(carga.error)} Se muestran los últimos datos cargados.
                 </p>
               )}
-              <IndicadoresPanel datos={datos} />
+              <Indicadores datos={datos} />
               <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2">
-                <AQuienBuscar datos={datos} onVer={modelo.abrirVer} />
+                <AQuien datos={datos} onVer={modelo.abrirVer} />
                 <div className="grid min-w-0 gap-6">
-                  <BloqueTest datos={datos} onVer={modelo.abrirVer} />
-                  <OtrosCuestionarios datos={datos} />
+                  <Test datos={datos} onVer={modelo.abrirVer} />
+                  <Otros datos={datos} />
                 </div>
-                <PorDondeVa datos={datos} onVer={modelo.abrirVer} />
-                <ComoSeSienten datos={datos} onVer={modelo.abrirVer} />
+                <Camino datos={datos} onVer={modelo.abrirVer} />
+                <Seguridad datos={datos} onVer={modelo.abrirVer} />
               </div>
             </div>
           )}

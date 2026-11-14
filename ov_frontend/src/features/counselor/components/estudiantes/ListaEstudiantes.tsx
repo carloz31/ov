@@ -12,7 +12,8 @@ import { TablaEstudiantes } from './TablaEstudiantes'
 // del bloque; título, accesos y filtros no saltan.
 export function ListaEstudiantes({ modelo }: { modelo: ModeloEstudiantesLista }) {
   const { lista } = modelo
-  const pagina = lista?.pagina ?? null
+  // Con un filtro nuevo, la última página que se mostró espera ahí (`aria-busy`) hasta que llega la suya.
+  const pagina = lista?.pagina ?? lista?.anterior ?? null
   const detalle = [modelo.nombreSalon, pagina ? `${pagina.total_estudiantes} estudiantes` : null]
     .filter(Boolean)
     .join(' · ')

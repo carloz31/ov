@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { Textarea } from '@/components/ui/Textarea'
 import { BloquePanel, FilaConteo } from '@/features/counselor/components/panel/PanelComun'
+import { useNotasPerfil, type ModeloNotasPerfil } from '@/features/counselor/hooks/useNotasPerfil'
 import type { ModeloPerfilEstudiante } from '@/features/counselor/hooks/usePerfilEstudiante'
 import { fechaCorta } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import type { NotaPerfil, RespuestasResumen } from '@/types/servidor'
@@ -12,7 +13,7 @@ function Cargando({ activo }: { activo: boolean }) {
   return activo ? <Loader2 className="animate-spin" aria-hidden="true" /> : null
 }
 
-function Nota({ nota, modelo }: { nota: NotaPerfil; modelo: ModeloPerfilEstudiante }) {
+function Nota({ nota, modelo }: { nota: NotaPerfil; modelo: ModeloNotasPerfil }) {
   const [editando, setEditando] = useState(false)
   const [texto, setTexto] = useState(nota.texto)
   const [confirmar, setConfirmar] = useState(false)
@@ -82,8 +83,8 @@ function Nota({ nota, modelo }: { nota: NotaPerfil; modelo: ModeloPerfilEstudian
   )
 }
 
-function MisNotas({ notas, modelo }: { notas: NotaPerfil[]; modelo: ModeloPerfilEstudiante }) {
-  const [nueva, setNueva] = useState('')
+function MisNotas({ notas, estudiante }: { notas: NotaPerfil[]; estudiante: string }) {
+  const modelo = useNotasPerfil(estudiante)
   const guardando = modelo.enviando === 'nueva'
   return (
     <BloquePanel titulo="Mis notas" subtitulo="Solo usted las ve. Sirven para recordar lo conversado.">
@@ -96,7 +97,7 @@ function MisNotas({ notas, modelo }: { notas: NotaPerfil[]; modelo: ModeloPerfil
       )}
       <label className="space-y-1">
         <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Nueva nota</span>
-        <Textarea value={nueva} onChange={(e) => setNueva(e.target.value)} />
+        <Textarea value={modelo.nueva} onChange={(e) => modelo.escribirNueva(e.target.value)} />
       </label>
       {modelo.errorNota && (
         <p role="alert" className="text-sm text-danger-text">
@@ -106,8 +107,8 @@ function MisNotas({ notas, modelo }: { notas: NotaPerfil[]; modelo: ModeloPerfil
       <Button
         variant="outline"
         className="min-h-11 w-fit"
-        disabled={!nueva.trim() || guardando}
-        onClick={async () => (await modelo.escribirNota(nueva)) && setNueva('')}
+        disabled={!modelo.nueva.trim() || guardando}
+        onClick={() => void modelo.guardarNueva()}
       >
         <Cargando activo={guardando} />
         Guardar nota
@@ -164,7 +165,7 @@ export function RespuestasYNotas({
   return (
     <div className="grid min-w-0 items-start gap-4 lg:grid-cols-2">
       <SusRespuestas datos={respuestas} onVer={() => modelo.irADestino('RESPUESTAS')} />
-      <MisNotas notas={notas} modelo={modelo} />
+      <MisNotas notas={notas} estudiante={modelo.estudiante} />
     </div>
   )
 }

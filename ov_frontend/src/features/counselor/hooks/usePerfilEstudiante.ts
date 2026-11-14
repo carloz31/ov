@@ -1,14 +1,7 @@
-import { useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router'
 import { appPaths } from '@/routes/paths'
-import {
-  borrarNota,
-  editarNota,
-  escribirNota,
-  usePerfilEstudiante as usePerfilServidor,
-} from '@/store/servidor/panelEstudiante'
-import { mensajeErrorServidor } from '@/store/servidor/sesion'
-import type { DestinoPerfil, RespuestaServidor } from '@/types/servidor'
+import { usePerfilEstudiante as usePerfilServidor } from '@/store/servidor/panelEstudiante'
+import type { DestinoPerfil } from '@/types/servidor'
 
 export const PESTANAS_PERFIL = ['resumen', 'tests', 'planes', 'respuestas', 'avance'] as const
 export type PestanaPerfil = (typeof PESTANAS_PERFIL)[number]
@@ -30,8 +23,6 @@ export function usePerfilEstudiante() {
   const pedida = params.get('tab') as PestanaPerfil | null
   const pestana: PestanaPerfil = pedida && PESTANAS_PERFIL.includes(pedida) ? pedida : 'resumen'
   const lista = (location.state as { lista?: string } | null)?.lista
-  const [enviando, setEnviando] = useState<string | null>(null)
-  const [errorNota, setErrorNota] = useState<string | null>(null)
 
   const ir = (cambios: Record<string, string | null>) =>
     setParams(
@@ -44,17 +35,6 @@ export function usePerfilEstudiante() {
       },
       { state: location.state },
     )
-  // Guardar, editar o borrar una nota: el botón lleva su cargador y lo confirmado actualiza el perfil cargado.
-  async function nota(clave: string, accion: () => Promise<RespuestaServidor<unknown>>) {
-    setEnviando(clave)
-    setErrorNota(null)
-    const respuesta = await accion()
-    setEnviando(null)
-    if (respuesta.tipo === 'ok') return true
-    setErrorNota(mensajeErrorServidor(respuesta))
-    return false
-  }
-
   return {
     estudiante: studentId,
     carga,
@@ -71,12 +51,6 @@ export function usePerfilEstudiante() {
     todas: params.get('todas') === '1',
     verTodas: (ver: boolean) => ir({ todas: ver ? '1' : null }),
     volver: lista ? `${appPaths.counselor.students}?${lista}` : appPaths.counselor.students,
-    enviando,
-    errorNota,
-    escribirNota: (texto: string) => nota('nueva', () => escribirNota(studentId, texto)),
-    editarNota: (numero: number, texto: string) =>
-      nota(`editar-${numero}`, () => editarNota(studentId, numero, texto)),
-    borrarNota: (numero: number) => nota(`borrar-${numero}`, () => borrarNota(studentId, numero)),
   }
 }
 export type ModeloPerfilEstudiante = ReturnType<typeof usePerfilEstudiante>

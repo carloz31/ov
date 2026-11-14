@@ -194,3 +194,29 @@ test('auditoría H8: reordenar una tabla de Intereses pide solo esa lista con el
   assert.equal(modelo.areas.total, INTERESES.areas.total)
   vista.unmount()
 })
+
+test('auditoría F4–F5: una lectura en camino no se repite y el almacén poda lo viejo que nadie mira', async () => {
+  const app = orientadora({}, fixtureServidor)
+  const panel = app.load('src/store/servidor/panel.ts')
+  const api = app.load('src/services/api/panel.ts')
+  const sesion = app.load('src/store/servidor/sesion.ts').sesionServidor()
+  const llave = (salon) => `${sesion}:${panel.llaveSeguimiento(salon)}`
+  const pedir = (salon) => (cuenta) => api.obtenerSeguimiento(cuenta, salon)
+  const seguimientos = () => app.requests.filter((r) => r.url.includes('/panel/seguimiento')).length
+  await Promise.all([panel.cargarPanel(llave('5A'), pedir('5A')), panel.cargarPanel(llave('5A'), pedir('5A'))])
+  assert.equal(seguimientos(), 1)
+  await panel.cargarPanel(llave('5A'), pedir('5A'), true)
+  assert.equal(seguimientos(), 2)
+  // «5A» queda a la vista; otras llaves llenan el almacén.
+  const vista = app.mount(() => panel.useSeguimientoPanel('5A').carga)
+  vista.render()
+  await esperar()
+  await panel.cargarPanel(llave('S-0'), pedir('S-0'))
+  for (let i = 1; i <= panel.MAXIMO_LLAVES + 5; i++) await panel.cargarPanel(llave(`S-${i}`), pedir(`S-${i}`))
+  // Lo que está a la vista no se poda (antes de montar otros lectores: el arnés comparte sus hooks).
+  assert.equal(vista.render().estado, 'listo')
+  vista.unmount()
+  const leer = (salon) => app.mount(() => panel.useSeguimientoPanel(salon).carga).render()
+  assert.equal(leer('S-0'), null)
+  assert.equal(leer(`S-${panel.MAXIMO_LLAVES + 5}`).estado, 'listo')
+})

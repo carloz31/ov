@@ -213,3 +213,63 @@ test('auditoría F1: el buscador de la lista espera 300 ms sin escribir antes de
   assert.equal(app.cambiosQuery[0](new URLSearchParams('salon=5A')).toString(), 'salon=5A&q=ana')
   vista.unmount()
 })
+
+// Auditoría del panel: la lista con una página de 13 de 26 (como si hubiera más), para «Mostrar más».
+function conPaginas() {
+  const app = orientadora(fixtureServidor)
+  app.fetch((req) => {
+    if (req.url.includes('/panel/lista-estudiantes')) return { body: { ...fx('lista'), total: 26 } }
+    const caso = req.url.match(/estudiantes\/est-panel-(\d)/)?.[1]
+    if (caso && /\/estudiantes\/est-panel-\d$/.test(req.url)) return { body: fx(`${caso}-perfil`) }
+    if (req.url.endsWith('/acciones/escribir-nota'))
+      return { body: { numero: 9, texto: 'N', creada_en: '2026-11-12T10:00:00', actualizada_en: '2026-11-12T10:00:00' } }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  return app
+}
+const listas = (app) => app.requests.map((r) => r.url).filter((u) => u.includes('lista-estudiantes'))
+
+test('auditoría F2–F4: la lista no repite lo que está en camino, espera con la última página y revalida lo ampliado', async () => {
+  const app = conPaginas()
+  const s = app.load('src/store/servidor/panelEstudiante.ts')
+  const A = { salon: '5A', orden: '' }
+  const B = { salon: '5A', orden: 'estudiante' }
+  // F4: dos pedidos de la misma lista, una sola petición; «Reintentar» (forzar) sí pide.
+  await Promise.all([s.cargarListaEstudiantes(A), s.cargarListaEstudiantes(A)])
+  assert.equal(listas(app).length, 1)
+  await s.cargarListaEstudiantes(A, false, true)
+  assert.equal(listas(app).length, 2)
+  // F3: con «Mostrar más», revalidar pide de una vez las filas que ya mostraba.
+  await s.cargarListaEstudiantes(A, true)
+  const leer = (filtros) => app.mount(() => s.useListaEstudiantes(filtros, false).lista).render()
+  const filas = leer(A).pagina.items.length
+  assert.ok(filas > fx('lista').items.length)
+  await s.cargarListaEstudiantes(A)
+  assert.match(listas(app).at(-1), new RegExp(`limite=${filas}&desde=0$`))
+  assert.equal(leer(A).pagina.items.length, fx('lista').items.length)
+  // F2: con otro orden, la vista espera con la última página; la nueva la reemplaza al llegar.
+  const ultima = leer(A).pagina
+  const enCamino = s.cargarListaEstudiantes(B)
+  assert.equal(leer(B).pagina, null)
+  assert.equal(leer(B).anterior, ultima)
+  assert.equal(leer(B).estado, 'cargando')
+  await enCamino
+  assert.equal(leer(B).anterior, null)
+  assert.equal(leer(B).estado, 'listo')
+  assert.doesNotMatch(listas(app).at(-1), /limite=/)
+})
+
+test('auditoría F7: el borrador de la nota nueva sigue con la visita del perfil y se descarta al guardar o salir', async () => {
+  const app = conPaginas()
+  const s = app.load('src/store/servidor/panelEstudiante.ts')
+  const api = app.load('src/services/api/panelEstudiante.ts')
+  await s.cargarSeccion('est-panel-5', 'perfil', (c) => api.obtenerPerfil(c, 'est-panel-5'))
+  s.guardarBorrador('est-panel-5', 'Hablar del examen')
+  assert.equal(s.borradorNota('est-panel-5'), 'Hablar del examen')
+  assert.equal(s.borradorNota('est-panel-7'), '')
+  await s.escribirNota('est-panel-5', 'Hablar del examen')
+  assert.equal(s.borradorNota('est-panel-5'), '')
+  s.guardarBorrador('est-panel-5', 'Otra')
+  s.descartarPerfil('est-panel-5')
+  assert.equal(s.borradorNota('est-panel-5'), '')
+})

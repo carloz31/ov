@@ -41,8 +41,9 @@ export function obtenerListaEstudiantes(
   cuenta: string,
   filtros: FiltrosListaEstudiantes,
   desde: number,
+  limite?: number,
 ): Promise<RespuestaServidor<PaginaEstudiantes>> {
-  return obtener(panel(cuenta, `lista-estudiantes${consulta({ ...filtros, desde })}`))
+  return obtener(panel(cuenta, `lista-estudiantes${consulta({ ...filtros, limite, desde })}`))
 }
 
 export function obtenerPerfil(
