@@ -22,11 +22,11 @@ from app.schemas.panel_estudiante import (
 )
 from app.services.instrumentos.calculo import calcular_puntaje_item
 from app.services.instrumentos.consultas import (
-    avance_aplicacion, representar_resultado, textos_instrumento,
+    avance_aplicacion, cargar_representaciones, representar_resultado, textos_instrumento,
 )
 from app.services.panel.autopercepcion import dimensiones_de, instrumento_autopercepcion
 from app.services.panel.comun import (
-    Lecturas, actividades_de_aplicaciones, aplicaciones_de, entero, estados_test, etiqueta_cuestionario,
+    Lecturas, actividades_de_aplicaciones, aplicaciones_de, entero, etiqueta_cuestionario,
     leer_parametros,
 )
 from app.services.panel.perfil import (
@@ -39,6 +39,18 @@ def _vigente(sesion: Session, cuenta_id: int, aplicaciones: list[int]) -> Result
     return sesion.scalar(select(ResultadoInstrumento).where(
         ResultadoInstrumento.cuenta_id == cuenta_id, ResultadoInstrumento.aplicacion_id.in_(aplicaciones),
         ResultadoInstrumento.anulado_en.is_(None)).order_by(ResultadoInstrumento.calculado_en.desc()))
+
+
+def _vigentes_por_aplicacion(sesion: Session, cuenta_id: int,
+                             aplicaciones: list[int]) -> dict[int, ResultadoInstrumento]:
+    """Por aplicación, su resultado vigente más reciente, en una lectura."""
+    vigentes = {}
+    if aplicaciones:
+        for resultado in sesion.scalars(select(ResultadoInstrumento).where(
+                ResultadoInstrumento.cuenta_id == cuenta_id, ResultadoInstrumento.aplicacion_id.in_(aplicaciones),
+                ResultadoInstrumento.anulado_en.is_(None)).order_by(ResultadoInstrumento.calculado_en.desc())):
+            vigentes.setdefault(resultado.aplicacion_id, resultado)
+    return vigentes
 
 
 def _partes(sesion: Session, acceso: Acceso, aplicaciones: list[Aplicacion]) -> tuple[int, int]:
@@ -60,8 +72,7 @@ def _intereses(sesion: Session, acceso: Acceso, parametros: dict, lecturas: Lect
     if instrumento is None:
         return None
     ids = [a.id for a in aplicaciones]
-    estados, motivos = estados_test(sesion, [acceso.estudiante.id], ids,
-                                    entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"), lecturas.completadas)
+    estados, motivos = lecturas.estados_test(ids, entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"))
     barras, nombres_areas = [], []
     if resultado is not None:
         representado = representar_resultado(sesion, resultado, audiencia="orientadora", nombre=acceso.estudiante.nombre)
@@ -174,15 +185,20 @@ def _partida_llegada(sesion: Session, acceso: Acceso, parametros: dict) -> Parti
 def _otros(sesion: Session, acceso: Acceso, parametros: dict, lecturas: Lecturas) -> list[OtroCuestionario]:
     definiciones = contexto(sesion).definiciones
     principal = parametros["PANEL_INSTRUMENTO_PRINCIPAL"]
+    instrumentos = [i for i in sorted(definiciones.listar(Instrumento), key=lambda i: i.codigo)
+                    if i.codigo != principal and i.tipo_resultado != TipoResultado.COMPARACION]
+    por_instrumento = {i.id: aplicaciones_de(sesion, i.codigo)[1] for i in instrumentos}
+    # Auditoría del panel (H3): los resultados vigentes de todos los cuestionarios y sus representaciones, en lote.
+    vigentes = _vigentes_por_aplicacion(sesion, acceso.estudiante.id,
+                                        [a.id for aplicaciones in por_instrumento.values() for a in aplicaciones])
+    cargar_representaciones(sesion, list(vigentes.values()))
     otros = []
-    for instrumento in sorted(definiciones.listar(Instrumento), key=lambda i: i.codigo):
-        if instrumento.codigo == principal or instrumento.tipo_resultado == TipoResultado.COMPARACION:
-            continue
-        _, aplicaciones = aplicaciones_de(sesion, instrumento.codigo)
+    for instrumento in instrumentos:
+        aplicaciones = por_instrumento[instrumento.id]
         ids = [a.id for a in aplicaciones]
-        estados, _ = estados_test(sesion, [acceso.estudiante.id], ids,
-                                  entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"), lecturas.completadas)
-        resultado = _vigente(sesion, acceso.estudiante.id, ids) if ids else None
+        estados, _ = lecturas.estados_test(ids, entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"))
+        candidatos = [vigentes[i] for i in ids if i in vigentes]
+        resultado = max(candidatos, key=lambda r: r.calculado_en) if candidatos else None
         destaca, practicar = [], None
         if resultado is not None:
             representado = representar_resultado(sesion, resultado, audiencia="orientadora",

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { appPaths } from '@/routes/paths'
 import { datosSesion } from '@/store/accesoStore'
@@ -6,6 +7,8 @@ import { TODOS_LOS_SALONES } from './usePanelSalon'
 
 export type ColumnaLista = 'estudiante' | 'tramo' | 'test' | 'plan_a' | 'ingreso' | 'avisos'
 export const COLUMNAS_LISTA: ColumnaLista[] = ['estudiante', 'tramo', 'test', 'plan_a', 'ingreso', 'avisos']
+// Auditoría del panel (F1): el buscador espera esta pausa antes de pedir la lista, como las listas de intereses.
+export const ESPERA_BUSQUEDA = 300
 
 // Ajuste panel-estudiantes §4 (api): la lista «Estudiantes». Salón (`?salon=`, «all» para todos), buscador
 // (`?q=`), aviso, estado del test, acceso rápido y orden viven en la URL; el perfil la recibe para «Volver».
@@ -37,6 +40,14 @@ export function useEstudiantesLista() {
       },
       { replace: true },
     )
+  const [texto, setTexto] = useState(filtros.buscar)
+  useEffect(() => {
+    if (texto === filtros.buscar) return
+    const espera = setTimeout(() => cambiar({ q: texto }), ESPERA_BUSQUEDA)
+    return () => clearTimeout(espera)
+    // Solo el texto escrito dispara la búsqueda; `cambiar` y la URL se leen al vencer la espera.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [texto])
   const columnaActiva = (orden.replace(/^-/, '') || 'avisos') as ColumnaLista
   return {
     salones,
@@ -50,7 +61,7 @@ export function useEstudiantesLista() {
     mostrarMas,
     reintentar,
     elegirSalon: (codigo: string) => cambiar({ salon: codigo }),
-    buscar: (texto: string) => cambiar({ q: texto }),
+    buscar: setTexto,
     elegirAviso: (codigo: string) => cambiar({ aviso: codigo }),
     elegirTest: (estado: string) => cambiar({ test: estado }),
     elegirAcceso: (codigo: string) => cambiar({ acceso: codigo === 'todos' ? '' : codigo }),

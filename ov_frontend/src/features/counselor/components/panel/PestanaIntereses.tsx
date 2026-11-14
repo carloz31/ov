@@ -9,15 +9,15 @@ import { Complicaciones, PlanesFrenteTest, TipoFormacion } from './ResumenIntere
 import { TablaInteres } from './TablaInteres'
 
 // Ajuste panel-salon §5: lo que el salón está considerando. El orden de cada tabla lo aplica el servidor sobre
-// toda la lista antes de cortar el top.
+// toda la lista antes de cortar el top; al reordenar se pide solo esa tabla (auditoría del panel, H8).
 export function PestanaIntereses({ modelo }: { modelo: ModeloPanelSalon }) {
-  const { carga, reintentar } = useInteresesPanel(
+  const { carga, areas, instituciones, errorTabla, reintentar } = useInteresesPanel(
     modelo.salonServidor,
     modelo.ordenAreas,
     modelo.ordenInstituciones,
   )
   const datos = carga?.datos
-  if (!datos)
+  if (!datos || !areas || !instituciones)
     return (
       <PantallaCargaPortal
         enSeccion
@@ -26,12 +26,12 @@ export function PestanaIntereses({ modelo }: { modelo: ModeloPanelSalon }) {
         onReintentar={reintentar}
       />
     )
-  const { areas, instituciones } = datos
+  const error = carga?.estado === 'error' ? carga.error : errorTabla
   return (
     <div className="space-y-6">
-      {carga?.estado === 'error' && (
+      {error && (
         <p role="alert" className="text-sm text-danger-text">
-          {mensajeErrorServidor(carga.error)} Se muestran los últimos datos cargados.
+          {mensajeErrorServidor(error)} Se muestran los últimos datos cargados.
         </p>
       )}
       <p className="text-sm text-muted-foreground">
@@ -74,7 +74,7 @@ export function PestanaIntereses({ modelo }: { modelo: ModeloPanelSalon }) {
             }
           />
           <PieTabla
-            texto={`Las ${instituciones.filas.length} primeras de ${instituciones.total}. ${instituciones.plan_a_sin_institucion} estudiantes con Plan A aún no eligen institución.`}
+            texto={`Las ${instituciones.filas.length} primeras de ${instituciones.total}. ${datos.instituciones.plan_a_sin_institucion} estudiantes con Plan A aún no eligen institución.`}
             enlace={modelo.enlaceLista('instituciones')}
             boton="Ver todas las instituciones"
           />

@@ -1,13 +1,14 @@
 """Consultas de instrumentos: derivan vistas sin modificar respuestas ni resultados."""
 
 from collections import Counter
-from typing import Literal
+from typing import Literal, NamedTuple
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
+from app.core.parametros import MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES
 from app.exceptions import ConsultaPendiente
 from app.models import (
     Actividad, ActividadItem, Aplicacion, AplicacionActividad, Audiencia, Bloque, Carrera,
@@ -287,19 +288,72 @@ def _recomendadas(sesion, afines_guardadas, principales):
                                                       {c: f.codigo for c, f in familia_de.items()})
 
 
+class _Correlacion(NamedTuple):
+    correlacion: float
+
+
+class _OcupacionAfin(NamedTuple):
+    id: int
+    codigo: str
+
+
 @usar_contexto
-def intereses_por_cuenta(sesion: Session, resultados: list[ResultadoInstrumento]) -> dict[int, tuple[str, list[str]]]:
+def intereses_por_cuenta(sesion: Session, resultados: list[ResultadoInstrumento],
+                         con_familias: set[int] | None = None) -> dict[int, tuple[str, list[str]]]:
     """Por cuenta, el código de interés y los códigos de las familias recomendadas de su resultado de intereses
     (vigente y no plano), con el mismo cálculo que `representar_resultado`, pero leído por lotes (panel del salón,
-    ajuste panel-salon)."""
-    cargar_representaciones(sesion, resultados)
-    intereses = {}
+    ajuste panel-salon). Las familias, solo de las cuentas de `con_familias` (todas si es `None`); las demás llevan
+    una lista vacía.
+
+    Auditoría del panel (H2): lee columnas, no entidades, y de cada resultado solo las coincidencias que
+    `seleccionar_afines` puede elegir (posición ≤ el mayor entre el máximo y el mínimo de afines: las posiciones
+    van de 1 en adelante por r descendente). No usa la caché de `representar_resultado`, que necesita las
+    ocupaciones completas. Lo calculado queda en el contexto de la petición, por resultado."""
+    datos = contexto(sesion)
+    if not hasattr(datos, 'intereses_panel'):
+        datos.intereses_panel = {}
+    calculados = datos.intereses_panel
+    pide_familias = {r.id for r in resultados if con_familias is None or r.cuenta_id in con_familias}
+    faltan = [r for r in resultados if r.id not in calculados
+              or (r.id in pide_familias and calculados[r.id][1] is None)]
+    if faltan:
+        _calcular_intereses(sesion, faltan, pide_familias, calculados)
+    return {r.cuenta_id: (calculados[r.id][0], (calculados[r.id][1] or []) if r.id in pide_familias else [])
+            for r in resultados}
+
+
+def _calcular_intereses(sesion, resultados, pide_familias, calculados) -> None:
+    """Guarda en `calculados` (código, familias o `None` si no se pidieron) de cada resultado."""
+    ids = [r.id for r in resultados]
+    puntajes: dict[int, list[tuple[str, float]]] = {i: [] for i in ids}
+    for resultado_id, codigo, puntaje in sesion.execute(select(
+            ResultadoDimension.resultado_id, Dimension.codigo, ResultadoDimension.puntaje).join(
+            Dimension, Dimension.id == ResultadoDimension.dimension_id).where(
+            ResultadoDimension.resultado_id.in_(ids)).order_by(Dimension.orden, Dimension.codigo)):
+        puntajes[resultado_id].append((codigo, puntaje))
+    familias_de = {r.id for r in resultados if r.id in pide_familias}
+    afines: dict[int, list[tuple[_Correlacion, _OcupacionAfin]]] = {i: [] for i in familias_de}
+    principales = {}
+    if familias_de:
+        tope = max(MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES)
+        usadas = select(Coincidencia.ocupacion_id).where(Coincidencia.resultado_id.in_(familias_de),
+                                                         Coincidencia.posicion <= tope)
+        for resultado_id, correlacion, ocupacion_id, codigo in sesion.execute(select(
+                Coincidencia.resultado_id, Coincidencia.correlacion, Ocupacion.id, Ocupacion.codigo).join(
+                Ocupacion, Ocupacion.id == Coincidencia.ocupacion_id).where(
+                Coincidencia.resultado_id.in_(familias_de), Coincidencia.posicion <= tope).order_by(
+                Coincidencia.resultado_id, Coincidencia.posicion)):
+            afines[resultado_id].append((_Correlacion(correlacion), _OcupacionAfin(ocupacion_id, codigo)))
+        principales = dict(sesion.execute(select(OcupacionFamilia.ocupacion_id, OcupacionFamilia.familia_id).where(
+            OcupacionFamilia.es_principal, OcupacionFamilia.ocupacion_id.in_(usadas))).all())
     for resultado in resultados:
-        filas, afines, principales = contexto(sesion).representaciones[resultado.id]
-        codigo = calcular_codigo_interes([r.puntaje for d, r in filas], [d.codigo for d, r in filas])
-        _, _, recomendadas = _recomendadas(sesion, afines, principales)
-        intereses[resultado.cuenta_id] = (codigo.codigo, [f.codigo for f in recomendadas])
-    return intereses
+        filas = puntajes[resultado.id]
+        codigo = calcular_codigo_interes([p for _, p in filas], [c for c, _ in filas])
+        familias = None
+        if resultado.id in familias_de:
+            _, _, recomendadas = _recomendadas(sesion, afines[resultado.id], principales)
+            familias = [f.codigo for f in recomendadas]
+        calculados[resultado.id] = (codigo.codigo, familias)
 
 
 def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:

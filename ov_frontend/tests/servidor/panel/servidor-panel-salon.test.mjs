@@ -169,3 +169,28 @@ test('en local el Inicio sigue siendo el panel congelado y las listas vuelven al
     'api',
   )
 })
+
+test('auditoría H8: reordenar una tabla de Intereses pide solo esa lista con el tope de Inicio', async () => {
+  const app = orientadora({}, fixtureServidor)
+  const panel = app.load('src/store/servidor/panel.ts')
+  const orden = { areas: '-en_planes', instituciones: '-en_planes' }
+  const vista = app.mount(() => panel.useInteresesPanel('5A', orden.areas, orden.instituciones))
+  vista.render()
+  await esperar()
+  let modelo = vista.render()
+  assert.deepEqual(copia(modelo.areas.filas), copia(INTERESES.areas.filas))
+  const tope = INTERESES.areas.filas.length
+  const antes = app.requests.length
+  orden.areas = 'nombre'
+  modelo = vista.render()
+  // Mientras llega el nuevo orden, la tabla conserva sus filas.
+  assert.deepEqual(copia(modelo.areas.filas), copia(INTERESES.areas.filas))
+  await esperar()
+  modelo = vista.render()
+  const nuevas = app.requests.slice(antes).map((r) => r.url)
+  assert.deepEqual(nuevas, [`/api/cuentas/ori-carmen/panel/areas?salon=5A&orden=nombre&limite=${tope}&desde=0`])
+  assert.deepEqual(copia(modelo.areas.filas), copia(jsonServidor('ruta/ruta-panel-areas').items))
+  assert.deepEqual(copia(modelo.instituciones.filas), copia(INTERESES.instituciones.filas))
+  assert.equal(modelo.areas.total, INTERESES.areas.total)
+  vista.unmount()
+})

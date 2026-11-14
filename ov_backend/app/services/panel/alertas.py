@@ -21,7 +21,7 @@ from sqlalchemy import select
 from app.core.parametros import INSTRUMENTO_INTERESES
 from app.models import Actividad, Alerta, GrupoAlerta, ProgresoActividad, RespuestaRegistro
 from app.services.panel.comun import (
-    SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, muy_atras, por_revisar,
+    SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, muy_atras,
 )
 from app.services.panel.temas import EVALUADORES_TEMAS
 from app.services.panel.textos import fecha_en_palabras, fechas_en_palabras, resolver_texto, unir
@@ -98,8 +98,7 @@ def _instrumento_por_revisar(lecturas: Lecturas, parametros) -> dict[int, dict]:
     `motivo`: el texto de `textos_motivo` para PLANO o PRISA."""
     _, aplicaciones = aplicaciones_de(lecturas.sesion, str(parametros["instrumento"]))
     textos = parametros["textos_motivo"]
-    revisar = por_revisar(lecturas.sesion, lecturas.alcance.ids, [a.id for a in aplicaciones],
-                          int(parametros["avisos_velocidad"]))
+    revisar = lecturas.por_revisar([a.id for a in aplicaciones], int(parametros["avisos_velocidad"]))
     return {cuenta_id: {"motivo": textos[motivo]} for cuenta_id, motivo in revisar.items()}
 
 

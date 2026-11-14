@@ -196,3 +196,20 @@ test('en local, la lista y el detalle siguen siendo los de siempre', () => {
   assert.match(rutas, /<SegunModo api=\{<EstudiantesView \/>\} local=\{<StudentsView \/>\} \/>/)
   assert.match(rutas, /<SegunModo api=\{<PerfilEstudianteView \/>\} local=\{<StudentDetailView \/>\} \/>/)
 })
+
+test('auditoría F1: el buscador de la lista espera 300 ms sin escribir antes de pasar el texto a la URL', async () => {
+  const app = orientadora()
+  const { useEstudiantesLista, ESPERA_BUSQUEDA } = app.load('src/features/counselor/hooks/useEstudiantesLista.ts')
+  assert.equal(ESPERA_BUSQUEDA, 300)
+  const vista = app.mount(() => useEstudiantesLista())
+  let modelo = vista.render()
+  for (const texto of ['a', 'an', 'ana']) {
+    modelo.buscar(texto)
+    modelo = vista.render()
+  }
+  assert.equal(app.cambiosQuery.length, 0)
+  await new Promise((resolve) => setTimeout(resolve, ESPERA_BUSQUEDA + 50))
+  assert.equal(app.cambiosQuery.length, 1)
+  assert.equal(app.cambiosQuery[0](new URLSearchParams('salon=5A')).toString(), 'salon=5A&q=ana')
+  vista.unmount()
+})

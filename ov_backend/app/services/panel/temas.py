@@ -13,8 +13,8 @@ from app.models import (
     Carrera, ComplicacionTarjeta, ConocimientoTarjeta, Dimension, MomentoAplicacion, OpcionLista,
     RespuestaConocimiento, TarjetaCarrera, ZonaDimension,
 )
-from app.services.panel.autopercepcion import mediciones
-from app.services.panel.comun import Lecturas, leer_parametros
+from app.services.panel.autopercepcion import mediciones_del_alcance
+from app.services.panel.comun import Lecturas
 from app.services.panel.intereses import DatosIntereses, frente_test
 from app.services.panel.textos import unir
 from app.services.planes.consultas import opciones_lista
@@ -23,11 +23,13 @@ LISTA_CONOCIMIENTO = "CONOCIMIENTO_ORIENTADORA"
 
 
 def planes_a(lecturas: Lecturas) -> dict[int, TarjetaCarrera]:
-    """El Plan A activo de cada estudiante del alcance."""
-    if not lecturas.alcance.ids:
-        return {}
-    return {t.cuenta_id: t for t in lecturas.sesion.scalars(select(TarjetaCarrera).where(
-        TarjetaCarrera.cuenta_id.in_(lecturas.alcance.ids), TarjetaCarrera.activa, TarjetaCarrera.prioridad == 1))}
+    """El Plan A activo de cada estudiante del alcance, una lectura por petición (la comparten tres temas)."""
+    def leer():
+        if not lecturas.alcance.ids:
+            return {}
+        return {t.cuenta_id: t for t in lecturas.sesion.scalars(select(TarjetaCarrera).where(
+            TarjetaCarrera.cuenta_id.in_(lecturas.alcance.ids), TarjetaCarrera.activa, TarjetaCarrera.prioridad == 1))}
+    return lecturas.una_vez("planes_a", leer)
 
 
 def _nombres_carreras(lecturas: Lecturas, tarjetas) -> dict[int, str]:
@@ -83,7 +85,7 @@ def _plan_fuera_de_areas(lecturas: Lecturas, _parametros) -> dict[int, dict]:
     """Su Plan A no está entre sus áreas sugeridas: el criterio de «Planes frente al test» del Inicio (Plan A y
     resultado vigente no plano). `carrera`."""
     datos = DatosIntereses(lecturas.sesion, lecturas.alcance)
-    fuera = frente_test(lecturas, datos, leer_parametros(lecturas.sesion)).no_coinciden
+    fuera = frente_test(lecturas, datos, lecturas.parametros).no_coinciden
     return {c: {"carrera": datos.carreras[datos.plan_a[c].carrera_id].nombre} for c in fuera}
 
 
@@ -93,7 +95,7 @@ def _dimension_por_trabajar(lecturas: Lecturas, parametros) -> dict[int, dict]:
     entre comillas latinas."""
     definiciones = contexto(lecturas.sesion).definiciones
     datos = {}
-    for cuenta_id, por_momento in mediciones(lecturas.sesion, lecturas.alcance.ids).items():
+    for cuenta_id, por_momento in mediciones_del_alcance(lecturas).items():
         momento = MomentoAplicacion.SALIDA if MomentoAplicacion.SALIDA in por_momento else MomentoAplicacion.ENTRADA
         medicion = por_momento.get(momento)
         if medicion is None:

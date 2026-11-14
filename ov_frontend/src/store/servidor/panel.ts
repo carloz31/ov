@@ -7,6 +7,7 @@ import type {
   EstudiantePanel,
   FilaArea,
   FilaInstitucion,
+  InteresesPanel,
   PaginaAreasPanel,
   PaginaInstitucionesPanel,
   RespuestaServidor,
@@ -88,18 +89,84 @@ function useCarga<T>(llave: string, pedir: (cuenta: string) => Promise<Respuesta
   return { carga: (carga as CargaPanel<T> | undefined) ?? null, reintentar }
 }
 
+type TipoLista = 'areas' | 'instituciones'
+type Filas = { areas: FilaArea; instituciones: FilaInstitucion }
+
 export const llaveSeguimiento = (salon: string) => `seguimiento:${salon}`
-export const llaveIntereses = (salon: string, areas: string, instituciones: string) =>
-  `intereses:${salon}:${areas}:${instituciones}`
+export const llaveIntereses = (salon: string) => `intereses:${salon}`
 
 export function useSeguimientoPanel(salon: string) {
   return useCarga(llaveSeguimiento(salon), (cuenta) => apiPanel.obtenerSeguimiento(cuenta, salon))
 }
 
+// Auditoría del panel (H8): `intereses` se pide una vez por salón al montar la pestaña, con los órdenes que hay en
+// ese momento. Ordenar una tabla después no lo vuelve a pedir: pide esa lista completa (`areas` o `instituciones`)
+// con el mismo tope que trajo `intereses` (sus filas: `PANEL_TOP_INTERESES`, o menos si no hay tantas).
+type InteresesCargados = { intereses: InteresesPanel; ordenAreas: string; ordenInstituciones: string }
+export type TablaInteresPanel<F> = { filas: F[]; total: number }
+
+function useTopInteres<T extends TipoLista>(
+  tipo: T,
+  salon: string,
+  orden: string,
+  tope: number,
+  activo: boolean,
+) {
+  const llave = `${sesionServidor()}:top:${tipo}:${salon}:${orden}:${tope}`
+  const carga = useSyncExternalStore(suscribir, () => (activo ? cargas.get(llave) : undefined))
+  useEffect(() => {
+    if (!activo) return
+    void cargarPanel<PaginaAreasPanel | PaginaInstitucionesPanel>(llave, (cuenta) =>
+      tipo === 'areas'
+        ? apiPanel.listarAreas(cuenta, { salon, orden }, tope, 0)
+        : apiPanel.listarInstituciones(cuenta, { salon, orden }, tope, 0),
+    )
+  }, [llave, activo, tipo, salon, orden, tope])
+  return activo
+    ? ((carga as CargaPanel<PaginaAreasPanel | PaginaInstitucionesPanel> | undefined) ?? null)
+    : null
+}
+
 export function useInteresesPanel(salon: string, ordenAreas: string, ordenInstituciones: string) {
-  return useCarga(llaveIntereses(salon, ordenAreas, ordenInstituciones), (cuenta) =>
-    apiPanel.obtenerIntereses(cuenta, salon, ordenAreas, ordenInstituciones),
+  const { carga, reintentar } = useCarga<InteresesCargados>(llaveIntereses(salon), async (cuenta) => {
+    const respuesta = await apiPanel.obtenerIntereses(cuenta, salon, ordenAreas, ordenInstituciones)
+    return respuesta.tipo === 'ok'
+      ? { ...respuesta, datos: { intereses: respuesta.datos, ordenAreas, ordenInstituciones } }
+      : respuesta
+  })
+  const cargados = carga?.datos ?? null
+  const topAreas = useTopInteres(
+    'areas',
+    salon,
+    ordenAreas,
+    cargados?.intereses.areas.filas.length ?? 0,
+    !!cargados?.intereses.areas.filas.length && cargados.ordenAreas !== ordenAreas,
   )
+  const topInstituciones = useTopInteres(
+    'instituciones',
+    salon,
+    ordenInstituciones,
+    cargados?.intereses.instituciones.filas.length ?? 0,
+    !!cargados?.intereses.instituciones.filas.length && cargados.ordenInstituciones !== ordenInstituciones,
+  )
+  const datos = cargados?.intereses ?? null
+  // Mientras llega el nuevo orden, la tabla conserva sus filas.
+  const areas: TablaInteresPanel<FilaArea> | null = datos && {
+    filas: (topAreas?.datos?.items as FilaArea[] | undefined) ?? datos.areas.filas,
+    total: datos.areas.total,
+  }
+  const instituciones: TablaInteresPanel<FilaInstitucion> | null = datos && {
+    filas: (topInstituciones?.datos?.items as FilaInstitucion[] | undefined) ?? datos.instituciones.filas,
+    total: datos.instituciones.total,
+  }
+  const errorTabla = topAreas?.error ?? topInstituciones?.error ?? null
+  return {
+    carga: carga && { ...carga, datos },
+    areas,
+    instituciones,
+    errorTabla,
+    reintentar,
+  }
 }
 
 export function useEstudiantesPanel(salon: string, conjunto: ConjuntoPanel | null, valor: string) {
@@ -116,8 +183,6 @@ export function useEstudiantesPanel(salon: string, conjunto: ConjuntoPanel | nul
 
 // --- Listas completas de áreas e instituciones, con «Mostrar más» ---------------------------------------
 
-type TipoLista = 'areas' | 'instituciones'
-type Filas = { areas: FilaArea; instituciones: FilaInstitucion }
 
 export async function cargarListaPanel(tipo: TipoLista, filtros: FiltrosListaPanel, mas = false) {
   vigente()

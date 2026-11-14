@@ -19,9 +19,11 @@ from app.schemas.panel_estudiante import (
 from app.services.familia import rutas_completas
 from app.services.instrumentos.consultas import avance_aplicacion, intereses_por_cuenta
 from app.services.panel.alertas import AlertaCalculada, calcular_alertas
-from app.services.panel.autopercepcion import dimensiones_de, instrumento_autopercepcion, mediciones
+from app.services.panel.autopercepcion import (
+    dimensiones_de, instrumento_autopercepcion, mediciones, mediciones_del_alcance,
+)
 from app.services.panel.comun import (
-    Lecturas, aplicaciones_de, dias_desde, entero, estados_test, leer_parametros,
+    Lecturas, aplicaciones_de, dias_desde, entero,
 )
 from app.services.panel.notas import notas_de
 from app.services.panel.perfil_acceso import Acceso, estudiante_de_orientadora
@@ -47,8 +49,7 @@ def dias_sin_ingreso(lecturas: Lecturas, cuenta_id: int) -> int | None:
 
 def estados_del_test(lecturas: Lecturas, parametros: dict) -> tuple[dict[int, str], dict[int, str]]:
     _, aplicaciones = aplicaciones_de(lecturas.sesion, parametros["PANEL_INSTRUMENTO_PRINCIPAL"])
-    return estados_test(lecturas.sesion, lecturas.alcance.ids, [a.id for a in aplicaciones],
-                        entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"), lecturas.completadas)
+    return lecturas.estados_test([a.id for a in aplicaciones], entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"))
 
 
 def avisos_por_estudiante(alertas: list[AlertaCalculada]) -> dict[int, list[AlertaCalculada]]:
@@ -101,7 +102,17 @@ def _temas(lecturas: Lecturas, cuenta_id: int) -> list[TemaPerfil]:
 
 
 def intereses_vigentes(sesion: Session, cuenta_id: int, parametros: dict):
-    """El resultado vigente del instrumento principal y, si no es plano, su código y familias recomendadas."""
+    """El resultado vigente del instrumento principal y, si no es plano, su código y familias recomendadas. Una
+    lectura por cuenta y petición (auditoría del panel, H5: el Resumen lo pedía dos veces)."""
+    datos = contexto(sesion)
+    if not hasattr(datos, "intereses_vigentes"):
+        datos.intereses_vigentes = {}
+    if cuenta_id not in datos.intereses_vigentes:
+        datos.intereses_vigentes[cuenta_id] = _leer_intereses_vigentes(sesion, cuenta_id, parametros)
+    return datos.intereses_vigentes[cuenta_id]
+
+
+def _leer_intereses_vigentes(sesion: Session, cuenta_id: int, parametros: dict):
     instrumento, aplicaciones = aplicaciones_de(sesion, parametros["PANEL_INSTRUMENTO_PRINCIPAL"])
     resultado = sesion.scalar(select(ResultadoInstrumento).where(
         ResultadoInstrumento.cuenta_id == cuenta_id, ResultadoInstrumento.aplicacion_id.in_([a.id for a in aplicaciones]),
@@ -169,9 +180,11 @@ def cambio(partida: str | None, llegada: str | None) -> str | None:
     return "SUBIO" if diferencia > 0 else "BAJO" if diferencia < 0 else "IGUAL"
 
 
-def partida_resumen(sesion: Session, cuenta_id: int) -> PartidaResumen:
+def partida_resumen(sesion: Session, cuenta_id: int, lecturas: Lecturas | None = None) -> PartidaResumen:
+    """Con `lecturas` (cuyo alcance es esta cuenta), comparte sus mediciones con los temas."""
     instrumento = instrumento_autopercepcion(sesion)
-    por_momento = mediciones(sesion, [cuenta_id]).get(cuenta_id, {})
+    leidas = mediciones_del_alcance(lecturas) if lecturas is not None else mediciones(sesion, [cuenta_id])
+    por_momento = leidas.get(cuenta_id, {})
     partida, llegada = por_momento.get(MomentoAplicacion.ENTRADA), por_momento.get(MomentoAplicacion.SALIDA)
     if instrumento is None or partida is None:
         return PartidaResumen(estado="SIN_PARTIDA", fecha_partida=None, fecha_llegada=None, dimensiones=[])
@@ -188,9 +201,9 @@ def partida_resumen(sesion: Session, cuenta_id: int) -> PartidaResumen:
 @usar_contexto
 def perfil(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahora: datetime) -> PerfilEstudiante:
     acceso = estudiante_de_orientadora(sesion, codigo_cuenta, codigo_estudiante, ahora)
-    parametros = leer_parametros(sesion)
     # Solo el estudiante consultado; del salón, únicamente el tramo de sus compañeros (`avance-bajo`).
     lecturas = Lecturas(sesion, acceso.solo, companeros=acceso.salon.estudiantes)
+    parametros = lecturas.parametros
     cuenta_id = acceso.estudiante.id
     estados, motivos = estados_del_test(lecturas, parametros)
     return PerfilEstudiante(
@@ -199,7 +212,7 @@ def perfil(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahora: d
         temas=_temas(lecturas, cuenta_id),
         intereses=_intereses(lecturas, acceso, parametros, estados, motivos),
         planes=_planes(sesion, cuenta_id, parametros),
-        partida=partida_resumen(sesion, cuenta_id),
+        partida=partida_resumen(sesion, cuenta_id, lecturas),
         respuestas=resumen_respuestas(sesion, acceso.estudiante, acceso.salon.salon),
         notas=notas_de(sesion, acceso.orientadora.id, cuenta_id))
 

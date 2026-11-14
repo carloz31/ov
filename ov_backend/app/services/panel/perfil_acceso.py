@@ -10,9 +10,8 @@ from sqlalchemy.orm import Session
 
 from app.exceptions import ErrorAccion
 from app.models import Cuenta, Rol
-from app.services.acceso import es_de_su_salon
 from app.services.investigaciones.acciones import exigir_orientadora
-from app.services.panel.comun import Alcance, resolver_alcance
+from app.services.panel.comun import Alcance, alcance_de_salones
 
 
 @dataclass(frozen=True)
@@ -31,10 +30,10 @@ class Acceso:
 
 def estudiante_de_orientadora(sesion: Session, codigo_cuenta: str, codigo_estudiante: str,
                               ahora: datetime) -> Acceso:
-    orientadora, _ = exigir_orientadora(sesion, codigo_cuenta)
+    # Auditoría del panel (H4): la orientadora y sus salones se leen una vez; «de su salón» es la misma condición que
+    # `es_de_su_salon` (el salón del estudiante está entre los suyos), y del alcance solo se lee el salón del estudiante.
+    orientadora, ids_salones = exigir_orientadora(sesion, codigo_cuenta)
     estudiante = sesion.scalar(select(Cuenta).where(Cuenta.codigo == codigo_estudiante, Cuenta.rol == Rol.ESTUDIANTE))
-    if estudiante is None or not es_de_su_salon(sesion, orientadora.id, estudiante.id):
+    if estudiante is None or estudiante.salon_id not in ids_salones:
         raise ErrorAccion("Estudiante no encontrado", estado_http=404)
-    salones = resolver_alcance(sesion, codigo_cuenta, None, ahora).salones
-    return Acceso(orientadora, estudiante,
-                  resolver_alcance(sesion, codigo_cuenta, salones[estudiante.salon_id].codigo, ahora))
+    return Acceso(orientadora, estudiante, alcance_de_salones(sesion, ids_salones, ahora, salon_id=estudiante.salon_id))

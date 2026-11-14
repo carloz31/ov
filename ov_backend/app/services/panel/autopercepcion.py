@@ -62,3 +62,8 @@ def mediciones(sesion: Session, ids: list[int]) -> dict[int, dict[MomentoAplicac
         aplicacion = aplicaciones[aplicacion_id]
         resultado[cuenta_id][aplicacion.momento] = Medicion(aplicacion, fechas[cuenta_id, aplicacion_id], por_dimension)
     return resultado
+
+
+def mediciones_del_alcance(lecturas) -> dict[int, dict[MomentoAplicacion, Medicion]]:
+    """`mediciones` de los estudiantes de unas `Lecturas`, una vez por petición (temas y partida del perfil)."""
+    return lecturas.una_vez("mediciones", lambda: mediciones(lecturas.sesion, lecturas.alcance.ids))

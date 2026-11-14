@@ -100,7 +100,8 @@ export function PestanaTests({
   modelo: ModeloPerfilEstudiante
   resultado: ReactNode
 }) {
-  const { carga, reintentar } = useTestsPerfil(modelo.estudiante)
+  // Entrar directo a un resultado o a «Ver todas» no pide la pestaña (auditoría del panel, F6).
+  const { carga, reintentar } = useTestsPerfil(modelo.estudiante, !modelo.resultado && !modelo.todas)
   if (modelo.resultado)
     return (
       <div className="space-y-4">

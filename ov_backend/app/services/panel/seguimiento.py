@@ -21,7 +21,7 @@ from app.services.familia import rutas_completas
 from app.services.panel.alertas import calcular_alertas
 from app.services.panel.comun import (
     SIN_EMPEZAR, TERMINO, Alcance, Lecturas, actividades_de_aplicaciones, aplicaciones_de, con_conversacion,
-    con_resultado_vigente, dias_desde, entero, estados_test, etiqueta_cuestionario, leer_parametros,
+    con_resultado_vigente, dias_desde, entero, etiqueta_cuestionario, leer_parametros,
     resolver_alcance,
     ultimo_evento,
 )
@@ -87,8 +87,7 @@ def _test(lecturas: Lecturas, parametros: dict) -> tuple[TestPanel, dict[int, st
     sesion, ids = lecturas.sesion, lecturas.alcance.ids
     instrumento, aplicaciones = aplicaciones_de(sesion, parametros["PANEL_INSTRUMENTO_PRINCIPAL"])
     ids_aplicaciones = [a.id for a in aplicaciones]
-    estados, revisar = estados_test(sesion, ids, ids_aplicaciones,
-                                    entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"), lecturas.completadas)
+    estados, revisar = lecturas.estados_test(ids_aplicaciones, entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"))
     actividades = set().union(*actividades_de_aplicaciones(sesion, ids_aplicaciones).values())
     contados = Counter(estados.values())
     motivos = Counter(revisar.values())

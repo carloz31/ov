@@ -26,7 +26,7 @@ from app.schemas.panel import (
 )
 from app.services.instrumentos.consultas import intereses_por_cuenta
 from app.services.panel.comun import (
-    Alcance, Lecturas, aplicaciones_de, entero, estados_test, leer_parametros, resolver_alcance,
+    Alcance, Lecturas, aplicaciones_de, entero, leer_parametros, resolver_alcance,
 )
 
 COLUMNAS = ("nombre", "en_planes", "plan_a", "solo_favoritos", "total")
@@ -208,12 +208,12 @@ def frente_test(lecturas: Lecturas, datos: DatosIntereses, parametros: dict) -> 
     resultados = list(sesion.scalars(select(ResultadoInstrumento).where(
         ResultadoInstrumento.cuenta_id.in_(lecturas.alcance.ids), ResultadoInstrumento.aplicacion_id.in_(ids_aplicaciones),
         ResultadoInstrumento.anulado_en.is_(None), ResultadoInstrumento.perfil_plano.is_(False))))
-    intereses = intereses_por_cuenta(sesion, resultados)
+    # Las familias solo se comparan con un Plan A; el código, de todos (conteo de letras de los listos).
+    intereses = intereses_por_cuenta(sesion, resultados, con_familias=set(datos.plan_a))
     base = [c for c in datos.plan_a if c in intereses]
     no_coinciden = {c for c in base if datos.familias[datos.carreras[datos.plan_a[c].carrera_id].familia_id].codigo
                     not in intereses[c][1]}
-    estados, _ = estados_test(sesion, lecturas.alcance.ids, ids_aplicaciones,
-                              entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"), lecturas.completadas)
+    estados, _ = lecturas.estados_test(ids_aplicaciones, entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"))
     listos = [c for c, estado in estados.items() if estado == "LISTO" and c in intereses]
     letras = Counter(intereses[c][0][0] for c in listos if intereses[c][0])
     nombres = {d.codigo: d.nombre for d in contexto(sesion).definiciones.listar(Dimension)

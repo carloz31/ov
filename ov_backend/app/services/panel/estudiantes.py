@@ -11,7 +11,7 @@ from app.exceptions import ErrorAccion
 from app.schemas.panel import EstudiantePanel
 from app.services.panel.alertas import calcular_alertas
 from app.services.panel.comun import (
-    Lecturas, aplicaciones_de, entero, estados_test, leer_parametros, resolver_alcance,
+    Lecturas, aplicaciones_de, entero, leer_parametros, resolver_alcance,
 )
 from app.services.panel.intereses import (
     DatosIntereses, frente_test, interesados_en_area, interesados_en_institucion,
@@ -39,8 +39,7 @@ def _test(lecturas: Lecturas, parametros, valor: str | None) -> set[int]:
     if valor not in ESTADOS_TEST:
         raise _no_encontrado()
     _, aplicaciones = aplicaciones_de(lecturas.sesion, parametros["PANEL_INSTRUMENTO_PRINCIPAL"])
-    estados, _ = estados_test(lecturas.sesion, lecturas.alcance.ids, [a.id for a in aplicaciones],
-                              entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"), lecturas.completadas)
+    estados, _ = lecturas.estados_test([a.id for a in aplicaciones], entero(parametros, "PANEL_AVISOS_VELOCIDAD_PRISA"))
     return {cuenta_id for cuenta_id, estado in estados.items() if estado == valor}
 
 

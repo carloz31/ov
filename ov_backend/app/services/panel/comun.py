@@ -49,12 +49,18 @@ class Alcance:
 def resolver_alcance(sesion: Session, codigo_cuenta: str, salon: str | None, ahora: datetime) -> Alcance:
     """Otro rol responde 404 (`exigir_orientadora`); un salón que no es suyo, 404 «Salón no encontrado»."""
     _, ids_salones = exigir_orientadora(sesion, codigo_cuenta)
+    return alcance_de_salones(sesion, ids_salones, ahora, salon=salon)
+
+
+def alcance_de_salones(sesion: Session, ids_salones: list[int], ahora: datetime, salon: str | None = None,
+                       salon_id: int | None = None) -> Alcance:
+    """El alcance sobre salones ya comprobados de la orientadora: uno (por código o por id) o, sin él, todos."""
     salones = {s.id: s for s in sesion.scalars(select(Salon).where(Salon.id.in_(ids_salones)))}
-    elegido = None
+    elegido = salones.get(salon_id) if salon_id is not None else None
     if salon is not None:
         elegido = next((s for s in salones.values() if s.codigo == salon), None)
-        if elegido is None:
-            raise ErrorAccion("Salón no encontrado", estado_http=404)
+    if (salon is not None or salon_id is not None) and elegido is None:
+        raise ErrorAccion("Salón no encontrado", estado_http=404)
     alcance = [elegido.id] if elegido else list(salones)
     filas = sesion.execute(select(Cuenta.id, Cuenta.codigo, Cuenta.nombre, Cuenta.salon_id).where(
         Cuenta.rol == Rol.ESTUDIANTE, Cuenta.salon_id.in_(alcance)).order_by(Cuenta.nombre, Cuenta.codigo))
@@ -229,10 +235,12 @@ def con_algo_hecho(sesion: Session, ids: list[int], actividades: set[int],
 
 
 def estados_test(sesion: Session, ids: list[int], aplicaciones: list[int], avisos_velocidad: int,
-                 completadas: dict[int, set[int]]) -> tuple[dict[int, str], dict[int, str]]:
+                 completadas: dict[int, set[int]],
+                 revisar: dict[int, str] | None = None) -> tuple[dict[int, str], dict[int, str]]:
     """Cada estudiante en un solo estado (LISTO, POR_REVISAR, EN_CURSO, SIN_EMPEZAR) y, de los por revisar, el
-    motivo (PLANO o PRISA)."""
-    revisar = por_revisar(sesion, ids, aplicaciones, avisos_velocidad)
+    motivo (PLANO o PRISA). `revisar`: el `por_revisar` ya leído de los mismos estudiantes y aplicaciones."""
+    if revisar is None:
+        revisar = por_revisar(sesion, ids, aplicaciones, avisos_velocidad)
     vigentes = set().union(*con_resultado_vigente(sesion, ids, aplicaciones).values())
     actividades = set().union(*actividades_de_aplicaciones(sesion, aplicaciones).values())
     hecho = con_algo_hecho(sesion, ids, actividades, completadas)
@@ -296,6 +304,28 @@ class Lecturas:
         self.sesion = sesion
         self.alcance = alcance
         self.companeros = companeros
+        self._memo: dict = {}
+
+    def una_vez(self, clave, calcular):
+        """Auditoría del panel (H5): una lectura que varias piezas de la petición comparten se calcula una vez."""
+        if clave not in self._memo:
+            self._memo[clave] = calcular()
+        return self._memo[clave]
+
+    @cached_property
+    def parametros(self) -> dict[str, str]:
+        return leer_parametros(self.sesion)
+
+    def por_revisar(self, aplicaciones: list[int], avisos_velocidad: int) -> dict[int, str]:
+        return self.una_vez(("por_revisar", tuple(aplicaciones), avisos_velocidad), lambda: por_revisar(
+            self.sesion, self.alcance.ids, list(aplicaciones), avisos_velocidad))
+
+    def estados_test(self, aplicaciones: list[int], avisos_velocidad: int) -> tuple[dict[int, str], dict[int, str]]:
+        """`estados_test` del alcance, compartido entre el bloque del test, la lista, el perfil y «Planes frente al
+        test»."""
+        return self.una_vez(("estados_test", tuple(aplicaciones), avisos_velocidad), lambda: estados_test(
+            self.sesion, self.alcance.ids, list(aplicaciones), avisos_velocidad, self.completadas,
+            revisar=self.por_revisar(aplicaciones, avisos_velocidad)))
 
     @cached_property
     def completadas(self) -> dict[int, set[int]]:
