@@ -16,7 +16,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** en la vista de la orientadora (lotes de orientadora), junto a las respuestas de registro de cada estudiante de su salón.
 - **Opciones:** una etiqueta «Requiere atención» en la fila del estudiante y en la respuesta; un filtro o una bandeja de respuestas marcadas; un aviso en el inicio de la orientadora con el conteo.
 - **Si no se muestra:** la marca queda guardada y solo se ve en la base; el protocolo del piloto define quién revisa y en cuánto tiempo.
-- **Estado:** pendiente (lotes de orientadora).
+- **Estado:** resuelto en el ajuste panel-estudiantes: etiqueta «Requiere atención» en la pestaña Respuestas del perfil (con «Para leer primero»), conteo en «Sus respuestas» del Resumen y aviso «Escribió algo que conviene leer» en el Inicio y la lista.
 
 ## 2026-11-04 · Ajuste carga-casos · Textos de la Central que citan el nombre de la fase
 
@@ -72,7 +72,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** la vista de cuestionario del estudiante en el portal de la orientadora (`pages/counselor/QuestionnaireDetailView.tsx`, hoy solo de demostración), con `ResultadoInteresesPortal`.
 - **Opciones:** una ruta de resultados del estudiante con la política `es_de_su_salon` y la vista del boceto 02 (B14, «Orientadora: seguimiento y configuración»); adelantarla en un ajuste; dejarla en demostración.
 - **Si no se muestra:** la orientadora no ve los resultados reales; sus textos quedan cargados sin uso.
-- **Estado:** pendiente para B14 (decisión del usuario en el ajuste).
+- **Estado:** resuelto en el ajuste panel-estudiantes: «Ver resultado completo» de la pestaña Tests del perfil reutiliza `ResultadoInteresesPortal` (o `QuestionnaireDetailContent`) con los textos de la orientadora; la tarjeta «Para la tutoría» no se pidió.
 
 ## 2026-10-29 · B13 · Investigaciones y entrevistas
 
@@ -148,7 +148,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el cierre de actividad o un aviso en Mis planes (HU-049); el perfil del estudiante en el portal de la orientadora (F10).
 - **Opciones:** HU-049 como aviso en el cierre de actividad con enlace a Mis planes, o como franja en Mis planes; las tarjetas y el aviso de misma familia en la vista de la orientadora cuando llegue B14.
 - **Si no se muestra:** el estudiante no recibe el recordatorio de revisar sus planes, y la orientadora no ve qué planes son de la misma familia.
-- **Estado:** pendiente de su lote (backend sin implementar para HU-049; B14 para la orientadora). «Es a propósito» se descartó en el ajuste coherencia-bloque0.
+- **Estado:** la vista de la orientadora quedó resuelta en el ajuste panel-estudiantes (pestaña Planes del perfil: de un vistazo y plan completo, sin el aviso de misma familia, que la spec no pidió). HU-049 sigue pendiente. «Es a propósito» se descartó en el ajuste coherencia-bloque0.
 
 ## 2026-10-28 · Ajuste F07a v4.2 · Compartir o imprimir el plan
 

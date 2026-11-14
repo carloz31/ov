@@ -1,11 +1,13 @@
+import { Link } from 'react-router'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select'
 import { TODOS_LOS_SALONES, type ModeloPanelSalon } from '@/features/counselor/hooks/usePanelSalon'
 import { fechaPanel } from '@/lib/servidor/adaptadoresPanel'
+import { appPaths } from '@/routes/paths'
 
 // Ajuste panel-salon §4: título, salón, número de estudiantes y fecha de los datos; selector de salón y la lista
-// de estudiantes (deshabilitada en api hasta el ajuste de la vista de estudiantes).
+// de estudiantes con el salón elegido (ajuste panel-estudiantes §4).
 export function CabeceraPanel({
   modelo,
   total,
@@ -44,8 +46,10 @@ export function CabeceraPanel({
             )}
           </SelectContent>
         </Select>
-        <Button variant="outline" className="min-h-11" disabled>
-          Ver lista de estudiantes
+        <Button asChild variant="outline" className="min-h-11">
+          <Link to={`${appPaths.counselor.students}?${new URLSearchParams({ salon: modelo.salon })}`}>
+            Ver lista de estudiantes
+          </Link>
         </Button>
       </div>
     </Card>

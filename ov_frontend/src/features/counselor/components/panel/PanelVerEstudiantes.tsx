@@ -1,11 +1,13 @@
+import { Link } from 'react-router'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/Sheet'
 import type { PedidoVer } from '@/features/counselor/hooks/usePanelSalon'
+import { appPaths } from '@/routes/paths'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import { useEstudiantesPanel } from '@/store/servidor/panel'
 
-// Ajuste panel-salon §6: el panel lateral de «Ver», con nombre y salón de quienes cumplen. Los nombres aún no
-// enlazan al perfil (llega con la vista de estudiantes en api).
+// Ajuste panel-salon §6: el panel lateral de «Ver», con nombre y salón de quienes cumplen; cada nombre enlaza a su
+// perfil (ajuste panel-estudiantes §4).
 export function PanelVerEstudiantes({
   pedido,
   salon,
@@ -40,7 +42,12 @@ export function PanelVerEstudiantes({
           <ul className="divide-y divide-border">
             {estudiantes.map((e) => (
               <li key={e.codigo} className="flex items-center justify-between gap-3 py-3">
-                <span className="font-semibold">{e.nombre}</span>
+                <Link
+                  to={appPaths.counselor.student(e.codigo)}
+                  className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 hover:underline"
+                >
+                  {e.nombre}
+                </Link>
                 <span className="text-sm text-muted-foreground">{e.salon}</span>
               </li>
             ))}

@@ -61,17 +61,19 @@ export function PlanesFrenteTest({
   const f = datos.frente_test
   return (
     <BloquePanel
-      titulo="Planes frente al test de intereses"
+      titulo="Planes frente a sus áreas sugeridas"
       subtitulo={`De los ${f.base} estudiantes que tienen Plan A y resultado del test.`}
     >
       <div>
-        <FilaConteo cantidad={f.coinciden} titulo="Su Plan A está entre lo sugerido por el test" />
+        <FilaConteo cantidad={f.coinciden} titulo="Su Plan A está entre sus áreas sugeridas" />
         <FilaConteo
           cantidad={f.no_coinciden}
           tono="aviso"
-          titulo="Su Plan A no aparece en lo sugerido"
+          titulo="Su Plan A no está entre sus áreas sugeridas"
           detalle="No es un error: es un tema para conversar."
-          onVer={() => onVer({ titulo: 'Su Plan A no aparece en lo sugerido', conjunto: 'plan_fuera_test' })}
+          onVer={() =>
+            onVer({ titulo: 'Su Plan A no está entre sus áreas sugeridas', conjunto: 'plan_fuera_test' })
+          }
         />
       </div>
       <div className="space-y-1 border-t border-border pt-3">

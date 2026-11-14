@@ -292,6 +292,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Nunca ve el contenido del diario.
 - **Comprueba:** sección 13 (capas 2 y 3; alertas separadas de los temas para conversar).
 - **Cubierto por el ajuste panel-salon:** las alertas (tablas `grupo_alerta` y `alerta`, evaluadores en `app/services/panel/alertas.py`; `docs/sistema/panel.md`) en lugar de `TipoAlerta`, y su vista en el Inicio de la orientadora. Siguen pendientes de B14 la lista y el perfil del estudiante, los registros y la configuración del salón.
+- **Cubierto por el ajuste panel-estudiantes:** B14/F10 (HU-081 a 088 y HU-108: lista de estudiantes, perfil con sus cinco pestañas, registros en lectura y notas de la orientadora), salvo la configuración del salón (destacados, cuestionarios requisito y visibilidad al apoderado), que sigue pendiente.
 
 **B15 · Informe de viaje y temas para conversar**
 - **Pruebas:**

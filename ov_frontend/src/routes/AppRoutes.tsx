@@ -2,6 +2,7 @@ import { LoginRoute } from '@/pages/auth/LoginRoute'
 import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
 import { SegunModo } from './SegunModo'
+import { subrutasEstudiantes } from './SubrutasEstudiantes'
 import { subrutasFamilia } from './SubrutasFamilia'
 import { rutasInvestigaciones } from './SubrutasInvestigaciones'
 import { rutasLibroHelena } from './SubrutasLibroHelena'
@@ -15,11 +16,9 @@ import { PrioritiesView } from '@/pages/counselor/PrioritiesView'
 import { PublicationsView } from '@/pages/counselor/PublicationsView'
 import { PublicacionesServidorView } from '@/pages/counselor/PublicacionesServidorView'
 import { PublicacionServidorView } from '@/pages/counselor/PublicacionServidorView'
-import { StudentDetailView } from '@/pages/counselor/StudentDetailView'
 import { QuestionnaireDetailView } from '@/pages/counselor/QuestionnaireDetailView'
 import { StudentRecordDetailView } from '@/pages/counselor/StudentRecordDetailView'
 import { FamilyRecordDetailView } from '@/pages/counselor/FamilyRecordDetailView'
-import { StudentsView } from '@/pages/counselor/StudentsView'
 import { OccupationExplorationModule } from '@/pages/student/OccupationExplorationModule'
 import { ExplorationCaseIntroPage } from '@/pages/student/ExplorationCaseIntroPage'
 import { ForestFireCasePage } from '@/pages/student/ForestFireCasePage'
@@ -258,13 +257,12 @@ function AppRoutes() {
       <Route element={<CounselorPortalModule />} path="/counselor">
         <Route element={<Navigate replace to={appPaths.counselor.home} />} index />
         {subrutasPanelSalon()}
-        <Route element={<StudentsView />} path="students" />
+        {subrutasEstudiantes()}
         <Route element={<PrioritiesView />} path="students/priorities" />
         <Route
           element={<QuestionnaireDetailView />}
           path="students/:studentId/questionnaires/:questionnaireId"
         />
-        <Route element={<StudentDetailView />} path="students/:studentId" />
         <Route element={<StudentRecordDetailView />} path="students/:studentId/records/:recordId" />
         <Route element={<FamilyRecordDetailView />} path="students/:studentId/family-records/:activityId" />
         <Route

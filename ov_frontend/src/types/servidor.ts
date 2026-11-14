@@ -335,3 +335,5 @@ export type RespuestaResolverCaso = RespuestaAccion & {
 }
 // app/schemas/panel.py vive en servidorPanel.ts (ajuste panel-salon).
 export * from './servidorPanel'
+// app/schemas/panel_estudiante.py vive en servidorPanelEstudiante.ts (ajuste panel-estudiantes).
+export * from './servidorPanelEstudiante'
