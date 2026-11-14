@@ -13,9 +13,11 @@ router = APIRouter(tags=["Sesión"])
 @router_ingreso.post("/sesion/ingresar", response_model=IngresoRespuesta)
 def ingresar(entrada: IngresoEntrada, sesion: SesionBD, ahora: Ahora, request: Request):
     secreto = request.app.state.configuracion.jwt_secreto
-    # El intento fallido se confirma antes de responder 401; si no, el rollback lo borraría.
-    respuesta = ejecutar_accion(sesion, lambda: servicio_acceso.ingresar(
-        sesion, entrada.usuario, entrada.contrasena, ahora, secreto))
+    # El intento fallido se confirma antes de responder 401; si no, el rollback lo borraría. El turno se toma antes de
+    # abrir la transacción: esperar no retiene una conexión (auditoría plataforma, D-B1).
+    with servicio_acceso.turno_de_verificacion():
+        respuesta = ejecutar_accion(sesion, lambda: servicio_acceso.ingresar(
+            sesion, entrada.usuario, entrada.contrasena, ahora, secreto))
     if respuesta is None:
         raise HTTPException(status_code=401, detail={"mensaje": servicio_acceso.MENSAJE_CREDENCIALES})
     return respuesta

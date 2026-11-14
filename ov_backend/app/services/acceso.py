@@ -1,5 +1,7 @@
 """Acceso (B17): contraseñas, tokens y política de qué cuenta puede actuar sobre cuál."""
 
+import threading
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from functools import cache
@@ -10,7 +12,9 @@ from argon2.exceptions import InvalidHashError, VerificationError
 from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
-from app.core.parametros import DURACION_TOKEN_HORAS, MAXIMO_INTENTOS_INGRESO, MINUTOS_BLOQUEO_INGRESO
+from app.core.parametros import (
+    DURACION_TOKEN_HORAS, MAXIMO_INTENTOS_INGRESO, MINUTOS_BLOQUEO_INGRESO, VERIFICACIONES_CONTRASENA_SIMULTANEAS,
+)
 from app.exceptions import ErrorAccion
 from app.models import Cuenta, OrientadoraSalon, OrigenSesion, Rol, Salon, VinculoFamiliar
 from app.schemas.cuentas import CuentaResumen
@@ -18,6 +22,15 @@ from app.schemas.sesion import HijoSesion, IngresoRespuesta, SalonSesion, Sesion
 
 
 _HASHER = PasswordHasher()
+_TURNOS_VERIFICACION = threading.BoundedSemaphore(VERIFICACIONES_CONTRASENA_SIMULTANEAS)
+
+
+@contextmanager
+def turno_de_verificacion():
+    """Auditoría plataforma (D-B1): limita las verificaciones Argon2 simultáneas del proceso. Se toma antes de abrir
+    la transacción del ingreso, para que la espera no retenga una conexión."""
+    with _TURNOS_VERIFICACION:
+        yield
 _ALGORITMO = 'HS256'
 MENSAJE_CREDENCIALES = 'Usuario o contraseña incorrectos'
 MENSAJE_BLOQUEO = 'Demasiados intentos. Espera unos minutos.'

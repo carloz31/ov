@@ -113,6 +113,9 @@ UMBRALES_AMISTAD = (1, 2, 3, 4, 5)
 DURACION_TOKEN_HORAS = 24
 MAXIMO_INTENTOS_INGRESO = 5
 MINUTOS_BLOQUEO_INGRESO = 15
+# Auditoría plataforma (D-B1): verificaciones Argon2 simultáneas por proceso. Cada una usa 64 MiB (`memory_cost` por
+# defecto); con 2 workers, el tope es 8 a la vez (unos 512 MiB) y el resto espera sin retener una conexión.
+VERIFICACIONES_CONTRASENA_SIMULTANEAS = 4
 
 
 def transformar_opcion_onet(orden):
