@@ -201,11 +201,15 @@ export function PlanCompletoPerfil({ plan, nombre }: { plan: PlanCompleto; nombr
               </div>
               <div className="flex flex-wrap gap-1.5 sm:col-span-3">
                 <Rotulo>Lo que podría complicarlo</Rotulo>
-                {r.complicaciones.map((c) => (
-                  <ChipPerfil key={c} tono="aviso">
-                    {c}
-                  </ChipPerfil>
-                ))}
+                {r.complicaciones.length ? (
+                  r.complicaciones.map((c) => (
+                    <ChipPerfil key={c} tono="aviso">
+                      {c}
+                    </ChipPerfil>
+                  ))
+                ) : (
+                  <p className="w-full">Sin registrar</p>
+                )}
               </div>
             </div>
           )}

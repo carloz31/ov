@@ -24,7 +24,7 @@ export function useEstudiantesLista() {
     acceso: params.get('acceso') ?? '',
     orden,
   }
-  const { lista, mostrarMas, reintentar } = useListaEstudiantes(filtros)
+  const { lista, mostrarMas, reintentar } = useListaEstudiantes(filtros, salones.length > 0)
 
   const cambiar = (cambios: Record<string, string>) =>
     setParams(

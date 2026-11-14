@@ -185,14 +185,15 @@ export async function cargarListaEstudiantes(filtros: FiltrosListaEstudiantes, m
   avisar()
 }
 
-export function useListaEstudiantes(filtros: FiltrosListaEstudiantes) {
+// `activa` en falso (aún sin los salones de la sesión) no pide nada: así no se pide una lista que se descarta.
+export function useListaEstudiantes(filtros: FiltrosListaEstudiantes, activa = true) {
   const llave = JSON.stringify(filtros)
   const actual = useSyncExternalStore(suscribir, () =>
     lista?.llave === llave && lista.sesion === sesionServidor() ? lista.valor : null,
   )
   useEffect(() => {
-    void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes)
-  }, [llave])
+    if (activa) void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes)
+  }, [llave, activa])
   return {
     lista: actual,
     mostrarMas: () => void cargarListaEstudiantes(JSON.parse(llave) as FiltrosListaEstudiantes, true),
