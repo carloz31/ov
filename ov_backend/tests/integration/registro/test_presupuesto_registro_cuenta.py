@@ -1,5 +1,6 @@
 """Auditoría plataforma (sección F): GET registro, responder y entregar no crecen con los datos de la cuenta (planes,
-eventos, diario). Con los ítems del registro todavía crecen (D-B2: R2 queda pendiente). DATO DE PRUEBA."""
+eventos, diario). Con la definición del registro crecen, con tope: lo fija `test_techo_registros_contenido.py`.
+DATO DE PRUEBA."""
 
 from datetime import datetime
 
