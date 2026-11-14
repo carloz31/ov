@@ -89,17 +89,43 @@ def _validar_origen_testimonios(m):
         raise ValueError(f'Testimonios sin regla SUPERA_CASO ni COMPLETA_ACTIVIDAD: {sorted(sin_origen)}')
 
 
+def crear_salones(sesion, colegios, filas):
+    """Los salones de `filas` (código, nombre, colegio), en los colegios de `colegios` (código → Colegio). Los deja con
+    id. Los usan el cargador y `scripts/crear_cuentas.py`."""
+    salones = {c: modelos.Salon(codigo=c, nombre=n, colegio_id=colegios[colegio].id) for c, n, colegio in filas}
+    sesion.add_all(salones.values())
+    sesion.flush()
+    return salones
+
+
+def crear_cuentas(sesion, salones, filas):
+    """Las cuentas de `filas` (código, nombre, rol, salón o None, correo, contraseña), con el correo normalizado y la
+    contraseña con Argon2id. Las agrega a la sesión sin confirmar; quien llama hace el flush."""
+    cuentas = {c: modelos.Cuenta(codigo=c, nombre=n, rol=modelos.Rol(r),
+                                 salon_id=None if salon is None else salones[salon].id,
+                                 correo=correo.strip().lower(), contrasena_hash=_hash(contrasena))
+               for c, n, r, salon, correo, contrasena in filas}
+    sesion.add_all(cuentas.values())
+    return cuentas
+
+
+def asignar_orientadoras(sesion, cuentas, salones, filas):
+    """Cada fila (orientadora, salón, es principal) asigna una orientadora a un salón."""
+    sesion.add_all(modelos.OrientadoraSalon(orientadora_id=cuentas[o].id, salon_id=salones[salon].id,
+                                            es_principal=p) for o, salon, p in filas)
+
+
+def vincular_familias(sesion, cuentas, filas):
+    """Cada fila (código, estudiante, apoderado, parentesco) vincula un apoderado con su hijo."""
+    sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
+                                           parentesco=p) for c, e, a, p in filas)
+
+
 def _cargar_estructura(m, sesion):
     colegios = {c: modelos.Colegio(codigo=c, nombre=n) for c, n in m.COLEGIOS}
     sesion.add_all(colegios.values())
     sesion.flush()
-    salones = {c: modelos.Salon(codigo=c, nombre=n, colegio_id=colegios[colegio].id) for c, n, colegio in m.SALONES}
-    sesion.add_all(salones.values())
-    sesion.flush()
-    cuentas = {c: modelos.Cuenta(codigo=c, nombre=n, rol=modelos.Rol(r),
-                                 salon_id=None if salon is None else salones[salon].id,
-                                 correo=correo.strip().lower(), contrasena_hash=_hash(contrasena))
-               for c, n, r, salon, correo, contrasena in m.CUENTAS}
+    salones = crear_salones(sesion, colegios, m.SALONES)
     bloques = {c: modelos.Bloque(codigo=c, numero=num, nombre=n, espacio=modelos.Espacio(e),
                                 audiencia=modelos.Audiencia(a)) for c, num, n, e, a in m.BLOQUES}
     fichas = {c: modelos.Ficha(codigo=c, titulo=t, descripcion=d, tema=tema, contenido=texto,
@@ -136,13 +162,12 @@ def _cargar_estructura(m, sesion):
     niveles = {num: modelos.Nivel(numero=num, titulo=t, descripcion=d, cita_lumi=m.CITAS_LUMI.get(num))
                for num, t, d in m.NIVELES}
     preguntas = _preguntas_diario(m, sesion)
-    sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
+    cuentas = crear_cuentas(sesion, salones, m.CUENTAS)
+    sesion.add_all([*bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
                     *insignias.values(), *niveles.values(), *preguntas.values()])
     sesion.flush()
-    sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
-                                           parentesco=p) for c, e, a, p in m.VINCULOS)
-    sesion.add_all(modelos.OrientadoraSalon(orientadora_id=cuentas[o].id, salon_id=salones[salon].id,
-                                            es_principal=p) for o, salon, p in m.ORIENTADORAS_SALONES)
+    vincular_familias(sesion, cuentas, m.VINCULOS)
+    asignar_orientadoras(sesion, cuentas, salones, m.ORIENTADORAS_SALONES)
     ordenes = {}
     actividades = {}
     for codigo, bloque, titulo, tipo, puntaje, duracion in m.ACTIVIDADES:
