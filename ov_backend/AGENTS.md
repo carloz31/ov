@@ -15,6 +15,7 @@ Documentos vigentes (lee los que toque la tarea):
 | `docs/sistema/planes.md` | Planes de carrera: tarjeta, secciones, totales, acciones y sugerencias de pasos con LLM. |
 | `docs/sistema/investigaciones.md` | Investigaciones, guion con sugerencias del LLM, entrevistas, reacciones, reportes y Leyenda. |
 | `docs/sistema/integracion.md` | Contrato con el front, conjuntos de datos, fixtures y reinicio. |
+| `docs/sistema/panel.md` | Panel del salón de la orientadora: alertas y parámetros configurables, evaluadores y lecturas. |
 | `docs/specs/` | La spec en curso. |
 | `docs/decisiones.md` | Decisiones de la spec en curso. |
 

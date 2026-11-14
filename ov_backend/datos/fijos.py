@@ -910,11 +910,61 @@ def _cargar_respaldos(sesion, listas):
                    for lista, codigo, tipo, texto in RESPALDOS_PASOS)
 
 
+# Panel del salón de la orientadora (ajuste panel-salon). Grupos de alertas: (código, nombre); el orden es el de la
+# tupla.
+GRUPOS_ALERTA = (('conversar', 'Conversar pronto'), ('atras', 'Se están quedando atrás'))
+
+# Alertas: (código, grupo, nombre, descripción, evaluador, parámetros). El orden dentro del grupo es el de la tupla.
+# `{clave}` en el nombre o la descripción se resuelve con los parámetros. Una alerta de un tipo nuevo necesita un
+# evaluador nuevo en `app/services/panel/alertas.py`; una variante de uno existente es solo una fila.
+ALERTAS = (
+    ('respuesta-sensible', 'conversar', 'Escribió algo que conviene leer',
+     'En un registro, Lumi lo derivó a la orientadora en lugar de seguir preguntando.', 'respuesta_sensible', {}),
+    ('seguridad-baja', 'conversar', 'Se sienten poco seguros en sus últimas señales',
+     'Sus {senales} últimas señales registradas fueron {nivel_maximo} o menos, sin importar cada cuánto ingresan.',
+     'seguridad_baja', {'senales': 3, 'nivel_maximo': 2}),
+    ('sin-ingreso', 'atras', 'No ingresan hace {dias} días o más', None, 'sin_ingreso', {'dias': 7}),
+    ('avance-bajo', 'atras', 'Van muy por detrás del salón', '{tramos} tramos o más por debajo de la mayoría.',
+     'avance_bajo_salon', {'tramos': 2}),
+    ('test-por-revisar', 'atras', 'Test de intereses por revisar', 'Perfil plano o respondido con prisa.',
+     'instrumento_por_revisar', {'instrumento': INSTRUMENTO_INTERESES, 'avisos_velocidad': 2}),
+    ('familia-pendiente', 'atras', 'Su familia aún no se registra', None, 'familia_pendiente', {}),
+)
+
+# Parámetros del panel: (código, valor, uso). El servidor convierte el valor.
+PARAMETROS_PANEL = (
+    ('PANEL_DIAS_INGRESO_RECIENTE', '7', 'Días del indicador «Ingresaron esta semana».'),
+    ('PANEL_INSTRUMENTO_PRINCIPAL', INSTRUMENTO_INTERESES, 'Instrumento con bloque propio en el panel.'),
+    ('PANEL_AVISOS_VELOCIDAD_PRISA', '2', 'Avisos de velocidad desde los que un test queda «Por revisar».'),
+    ('PANEL_NOMBRES_VISIBLES_ALERTA', '5', 'Hasta cuántos nombres se listan dentro de una alerta.'),
+    ('PANEL_DIAS_DETENIDO', '7', 'Días sin completar actividades para «Donde más se detienen».'),
+    ('PANEL_MINIMO_DETENIDOS', '2', 'Mínimo de estudiantes para mostrar «Donde más se detienen».'),
+    ('PANEL_SEGURIDAD_BAJA_MAXIMO', '2', 'Banda «Poco seguros»: última señal menor o igual a este valor.'),
+    ('PANEL_SEGURIDAD_ALTA_MINIMO', '4', 'Banda «Seguros»: última señal mayor o igual a este valor.'),
+    ('PANEL_TOP_INTERESES', '5', 'Filas de las tablas de áreas e instituciones en Inicio.'),
+    ('PANEL_TOP_COMPLICACIONES', '5', 'Filas de «Lo que podría complicar sus planes».'),
+)
+
+
+def _cargar_panel(sesion):
+    grupos = {c: modelos.GrupoAlerta(codigo=c, nombre=n, orden=orden)
+              for orden, (c, n) in enumerate(GRUPOS_ALERTA, start=1)}
+    sesion.add_all(grupos.values())
+    sesion.flush()
+    ordenes = Counter()
+    for c, g, n, d, e, p in ALERTAS:
+        ordenes[g] += 1
+        sesion.add(modelos.Alerta(codigo=c, grupo_id=grupos[g].id, nombre=n, descripcion=d, evaluador=e,
+                                  parametros=dict(p), orden=ordenes[g]))
+    sesion.add_all(modelos.Parametro(codigo=c, valor=v, descripcion=d) for c, v, d in PARAMETROS_PANEL)
+
+
 def cargar(sesion: Session) -> Fijos:
     sesion.add_all(modelos.TextoFijo(codigo=c, texto=t) for c, t in TEXTOS_FIJOS)
     secciones = _cargar_secciones(sesion)
     _cargar_presentaciones(sesion)
     _cargar_investigaciones(sesion)
+    _cargar_panel(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     secciones_tarjeta = _cargar_tarjeta(sesion, listas)
     tematicas = _cargar_tematicas(sesion)

@@ -31,3 +31,8 @@
 - Se adaptan `test_recuerdos_lumi.py::test_el_conteo_tiene_el_tope_diario_de_la_amistad` (prueba el tope con el primer umbral que lo supera, el 4.º), `servidor-historia-lumi.test.mjs` (requisitos 1–5) y el conteo de `tests/local/actividades/contenidos.test.mjs`; los fixtures de `ruta` se regeneran por los umbrales.
 - Un recuerdo de Lumi recién desbloqueado no se abre solo (decisión del usuario, que prevalece sobre lo que esperaba el texto de observaciones): queda en la historia como «Nuevo recuerdo · Toca para verlo» hasta que el estudiante lo abre, como ya establecían `ov_frontend/AGENTS.md` y `useJournalPage`. No cambia código.
 - La tarjeta de amistad dice «Falta 1 carta» (y «Faltan n cartas» con más de una), a pedido del usuario: con un nivel por carta casi siempre falta una. `LumiBondPanel` es común a los dos modos; la corrección de texto vale también en local, como excepción aprobada. Se adapta `servidor-diario-vista.test.mjs`.
+
+## Ajuste panel-salon
+
+- Spec propia (`docs/specs/ajuste-panel-salon.md`), porque `ajuste-coherencia-apoderado` sigue en curso (§10.3 del texto de observaciones).
+- Modelo (aprobado en el plan): tablas de catálogo `grupo_alerta`, `alerta` (con `parametros` JSON, no tabla hija) y `parametro` (`valor` como texto), migración 0056; las llena `datos/fijos.py` (`GRUPOS_ALERTA`, `ALERTAS`, `PARAMETROS_PANEL`). Se adaptan los conteos de tablas y filas de las pruebas de migraciones y de la semilla (94 → 97 tablas) y la clasificación catálogo/estado.

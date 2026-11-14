@@ -43,7 +43,8 @@ def test_migracion_inicial_coincide_completamente_con_modelos(base_migrada):
     _, configuracion, motor = base_migrada
     inspector = inspect(motor)
     # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): salen tres tablas (0050).
-    assert len(Base.metadata.tables) == 94
+    # Ajuste panel-salon: `grupo_alerta`, `alerta` y `parametro` (0056).
+    assert len(Base.metadata.tables) == 97
     assert set(inspector.get_table_names()) == set(Base.metadata.tables) | {'alembic_version'}
     with motor.connect() as conexion:
         assert compare_metadata(MigrationContext.configure(conexion), Base.metadata) == []
@@ -131,8 +132,8 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     command.upgrade(Config(str(RUTA_CONFIGURACION), output_buffer=salida), 'head', sql=True)
     sql = salida.getvalue()
     # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): 0050 rehace `respuesta_registro`.
-    # Ajuste llm-sugerencias: `respaldo_paso` (0055).
-    assert sql.count('CREATE TABLE ') == 104
+    # Ajuste llm-sugerencias: `respaldo_paso` (0055). Ajuste panel-salon: las tres tablas del panel (0056).
+    assert sql.count('CREATE TABLE ') == 107
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -431,8 +432,9 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         with pytest.raises(RuntimeError, match='existen datos de los registros definitivos'):
             command.downgrade(configuracion, '0002')
         # Nada baja de 0050: el esquema y los datos quedan como en 0050. Ajuste llm-sugerencias: 0055, que sí bajó, se
-        # llevó la tabla de catálogo `respaldo_paso` (se vuelve a cargar al subir).
-        posteriores = {'respaldo_paso'}
+        # llevó la tabla de catálogo `respaldo_paso` (se vuelve a cargar al subir); ajuste panel-salon: 0056 se llevó las
+        # tres tablas del panel.
+        posteriores = {'respaldo_paso', 'grupo_alerta', 'alerta', 'parametro'}
         assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) - posteriores | {'alembic_version'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0050'

@@ -59,6 +59,9 @@ _MODELOS_POR_MODULO = {
         'ConocimientoTarjeta', 'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta',
         'SugerenciaTarjeta', 'PasoTarjeta',
     ),
+    'app.models.panel': (
+        'GrupoAlerta', 'Alerta', 'Parametro',
+    ),
 }
 
 
@@ -96,6 +99,7 @@ __all__ = [
     'RespuestaConocimiento', 'OrigenDuda', 'EstadoDuda', 'EstadoSugerencia', 'OrigenSugerencia', 'ClaseNovedadPlan', 'EstadoPaso',
     'SeccionTarjeta', 'ReferenciaRubro', 'ReferenciaCamino', 'RespaldoPaso', 'TarjetaCarrera', 'MotivoTarjeta', 'ConocimientoTarjeta',
     'DudaTarjeta', 'GastoTarjeta', 'FinanciamientoTarjeta', 'ComplicacionTarjeta', 'SugerenciaTarjeta', 'PasoTarjeta',
+    'GrupoAlerta', 'Alerta', 'Parametro',
     'OrigenSesion', 'EstadoInvestigacion', 'OrigenPreguntaGuion', 'CampoLoQuePienso', 'EstadoSugerenciaGuion', 'EstadoEntrevista',
     'MotivoReporte', 'EstadoReporte', 'PreguntaBaseGuion', 'TipoReaccion', 'Investigacion', 'PreguntaGuion',
     'SugerenciaGuion', 'Reaccion', 'Reporte',
