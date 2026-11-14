@@ -12,7 +12,7 @@ son filas de un grupo con `en_inicio = false`.
 """
 
 import logging
-from collections import Counter, defaultdict
+from math import floor
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 
@@ -20,7 +20,9 @@ from sqlalchemy import select
 
 from app.core.parametros import INSTRUMENTO_INTERESES
 from app.models import Actividad, Alerta, GrupoAlerta, ProgresoActividad, RespuestaRegistro
-from app.services.panel.comun import SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, muy_atras, por_revisar
+from app.services.panel.comun import (
+    SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, medianas_por_salon, muy_atras, por_revisar,
+)
 from app.services.panel.temas import EVALUADORES_TEMAS
 from app.services.panel.textos import fecha_en_palabras, fechas_en_palabras, resolver_texto, unir
 
@@ -76,18 +78,18 @@ def _sin_ingreso(lecturas: Lecturas, parametros) -> dict[int, dict]:
 
 def _avance_bajo_salon(lecturas: Lecturas, parametros) -> dict[int, dict]:
     """Tramo actual ≤ mediana de su salón − `tramos` (sin empezar = 0, terminó = último + 1). `tramo`: el suyo;
-    `tramo_salon`: el más frecuente en su salón (en empate, el más avanzado)."""
+    `tramo_salon`: el de la mediana de su salón, el mismo valor con que se decide (una mediana entre dos tramos
+    nombra el menor)."""
     camino = lecturas.camino
     nombres = {b.codigo: b.nombre for b in camino.bloques} | dict(parametros["textos_tramo"])
-    por_salon = defaultdict(Counter)
-    for estudiante in lecturas.alcance.estudiantes:
-        posicion = camino.posiciones[estudiante.id]
-        por_salon[estudiante.salon_id][posicion.numero, posicion.codigo] += 1
+    por_numero = {0: SIN_EMPEZAR, **{i: b.codigo for i, b in enumerate(camino.bloques, start=1)},
+                  len(camino.bloques) + 1: TERMINO}
+    medianas = medianas_por_salon(lecturas.alcance.estudiantes, camino)
     salon_de = {e.id: e.salon_id for e in lecturas.alcance.estudiantes}
     datos = {}
     for cuenta_id in muy_atras(lecturas.alcance.estudiantes, camino, int(parametros["tramos"])):
-        (_, mayoria), _ = max(por_salon[salon_de[cuenta_id]].items(), key=lambda par: (par[1], par[0][0]))
-        datos[cuenta_id] = {"tramo": nombres[camino.posiciones[cuenta_id].codigo], "tramo_salon": nombres[mayoria]}
+        mediana = por_numero[floor(medianas[salon_de[cuenta_id]])]
+        datos[cuenta_id] = {"tramo": nombres[camino.posiciones[cuenta_id].codigo], "tramo_salon": nombres[mediana]}
     return datos
 
 

@@ -124,12 +124,17 @@ def posiciones_en_camino(sesion: Session, estudiantes: list[Estudiante],
     return Camino(bloques=bloques, posiciones=posiciones)
 
 
-def muy_atras(estudiantes: list[Estudiante], camino: Camino, tramos: int) -> set[int]:
-    """Su número de tramo es ≤ la mediana de su propio salón − `tramos`."""
+def medianas_por_salon(estudiantes: list[Estudiante], camino: Camino) -> dict[int, float]:
+    """La mediana del número de tramo de cada salón (sin empezar = 0, terminó = último + 1)."""
     por_salon = defaultdict(list)
     for estudiante in estudiantes:
         por_salon[estudiante.salon_id].append(camino.posiciones[estudiante.id].numero)
-    medianas = {salon_id: median(numeros) for salon_id, numeros in por_salon.items()}
+    return {salon_id: median(numeros) for salon_id, numeros in por_salon.items()}
+
+
+def muy_atras(estudiantes: list[Estudiante], camino: Camino, tramos: int) -> set[int]:
+    """Su número de tramo es ≤ la mediana de su propio salón − `tramos`."""
+    medianas = medianas_por_salon(estudiantes, camino)
     return {e.id for e in estudiantes if camino.posiciones[e.id].numero <= medianas[e.salon_id] - tramos}
 
 

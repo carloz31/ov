@@ -126,3 +126,17 @@ def test_los_temas_no_cuentan_en_el_inicio(aplicacion, cliente, sesion):
     assert alerta(datos, 'plan-idea-ajena') is None
     assert 'plan-idea-ajena' in alertas_de(sesion, 'est-ana', en_inicio=False)
     assert 'plan-idea-ajena' not in alertas_de(sesion, 'est-ana', en_inicio=True)
+
+
+def test_avance_bajo_nombra_el_tramo_de_la_mediana_del_salon(aplicacion, cliente, sesion):
+    from soporte_ruta import avanzar
+    fijar_ahora(aplicacion)
+    for codigo in ('est-ana', 'est-luis'):
+        avanzar(cliente, cuenta=codigo)  # T2 «Decisión» (3)
+    avanzar(cliente, hasta='t-inicio', cuenta='est-mia')  # T0 «Inicio» (1)
+    # est-teo y est-sol sin empezar (0): números 0, 0, 1, 3, 3 → mediana 1 (T0), aunque lo más frecuente sea T2.
+    sesion.execute(update(m.Alerta).where(m.Alerta.codigo == 'avance-bajo').values(parametros={'tramos': 1}))
+    sesion.commit()
+    assert alertas_de(sesion, 'est-teo')['avance-bajo'] == (
+        'Va muy por detrás de su salón', 'Va en «Sin empezar»; la mayoría del salón va en «Inicio».')
+    assert 'avance-bajo' not in alertas_de(sesion, 'est-mia')
