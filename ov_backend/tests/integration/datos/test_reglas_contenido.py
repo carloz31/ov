@@ -55,7 +55,8 @@ def test_todo_objetivo_tiene_regla_salvo_los_abiertos_a_proposito(sesion_conteni
     primeras = {a.codigo for a in actividades.values() if ('ACTIVIDAD', a.id) not in con_regla
                 and bloques[a.bloque_id].codigo in CAMINO}
     # Ajuste registros (adaptación autorizada para `contenido`): b4-1 lleva regla propia (pide el Plan A con «Por qué», además del bloque).
-    assert primeras == {'b0-1', 'b1-1', 'b2-1', 'b3-1'}
+    # Ajuste recorte-volcan (adaptación autorizada): b2-3 abre el bloque B2.
+    assert primeras == {'b0-1', 'b1-1', 'b2-3', 'b3-1'}
 
 
 def test_ninguna_requerida_depende_de_una_opcional(sesion_contenido):

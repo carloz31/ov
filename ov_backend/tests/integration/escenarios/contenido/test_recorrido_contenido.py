@@ -81,7 +81,8 @@ def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
             continue
         if siguiente:
             assert actividades[siguiente] == 'DISPONIBLE', siguiente
-    assert len(REQUERIDAS) == 38 and estados(cliente)[1]['b5-5'] == 'COMPLETADA'
+    # Ajuste recorte-volcan (adaptación autorizada): b2-1 y b2-2 salen de las requeridas (38 → 36).
+    assert len(REQUERIDAS) == 36 and estados(cliente)[1]['b5-5'] == 'COMPLETADA'
     completos = {e['referencia'] for e in eventos(cliente) if e['tipo'] == 'COMPLETA_BLOQUE'}
     assert completos >= set(CAMINO)
 
@@ -188,3 +189,25 @@ def test_las_cartas_se_entregan_con_las_diez_y_no_con_nueve(cliente_contenido):
     responder_tema(cliente, 'apo-rosa', 'conv-10')
     datos = conversaciones(cliente)
     assert (datos['completadas'], datos['cartas_disponibles'], datos['carta_recibida']) == (10, True, 'Carta de Rosa')
+
+
+def test_el_volcan_se_cierra_sin_las_opcionales(cliente_contenido):
+    """Ajuste recorte-volcan: b2-3 abre el bosque y sus dos opcionales; b2-5 cierra B2 y entrega F07 sin ellas."""
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b1-7')
+    _, actividades = estados(cliente)
+    assert actividades['b2-3'] == 'DISPONIBLE'
+    assert actividades['b2-1'] == actividades['b2-2'] == 'BLOQUEADA'
+    respuesta = completar(cliente, 'b2-3')
+    assert {'R-b2-4', 'R-b2-1', 'R-b2-2'} <= {d['regla'] for d in respuesta['nuevos_desbloqueos']}
+    _, actividades = estados(cliente)
+    assert actividades['b2-4'] == actividades['b2-1'] == actividades['b2-2'] == 'DISPONIBLE'
+    completar(cliente, 'b2-4')
+    completar(cliente, 'b2-5')
+    bloques, actividades = estados(cliente)
+    assert bloques['B3'] == 'DISPONIBLE'
+    assert 'B2' in {e['referencia'] for e in eventos(cliente) if e['tipo'] == 'COMPLETA_BLOQUE'}
+    assert actividades['b2-1'] == actividades['b2-2'] == 'DISPONIBLE'
+    fichas = {f['codigo']: f for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')}
+    assert fichas['F07']['obtenida_en'] and fichas['F10']['obtenida_en']
+    assert not fichas['F08']['obtenida_en'] and not fichas['F09']['obtenida_en']

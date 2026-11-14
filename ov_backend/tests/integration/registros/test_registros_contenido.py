@@ -92,7 +92,9 @@ def test_b2_4_podio_ordenado_con_otra(cliente_contenido):
 def test_un_opcional_completado_es_registro_adecuado(cliente_contenido):
     """h1 (opcional, sin LLM) completado emite REGISTRO_ADECUADO, que abre ma4 (R-ma4)."""
     cliente = cliente_contenido
-    avanzar(cliente, 'b0-1', 'b2-1')
+    # Ajuste recorte-volcan (adaptación autorizada): b2-1 es opcional y se abre con b2-3.
+    avanzar(cliente, 'b0-1', 'b2-3')
+    completar(cliente, 'b2-1')
     for parte in range(1, 5):
         responder(cliente, f'h-habilidades-{parte}', opcion=1)
         pedir(cliente, 'POST', '/acciones/completar-actividad',
