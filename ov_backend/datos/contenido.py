@@ -1188,7 +1188,8 @@ REGLAS = (
     ('R-b3-9', 'ACTIVIDAD', 'b3-9', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
     ('R-b3-10', 'ACTIVIDAD', 'b3-10', 'Gana «Batalla de los costos».', (('SUPERA_BATALLA', 'b3-9', 'EVENTOS', 1),)),
     # El mensaje de R-B4 nombra las páginas de los cuestionarios prioritarios del salón (hoy solo intereses, SALON_INSTRUMENTOS); si cambian, cambia con ellos.
-    ('R-B4', 'BLOQUE', 'B4', 'Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),
+    # R-B4 y R-b5-1 se ven cuando su tramo anterior ya está completo: primero dicen lo que falta y la misión, «si aún no lo hiciste».
+    ('R-B4', 'BLOQUE', 'B4', 'En el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad. Y, si aún no lo hiciste, completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional».', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),
     ('R-b4-1', 'ACTIVIDAD', 'b4-1', 'En «Mis planes», crea tu Plan A y completa su sección «Por qué la elijo».', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
     ('R-b4-2', 'ACTIVIDAD', 'b4-2', 'Completa la misión «Mi perfil frente a mi Plan A».', (('COMPLETA_ACTIVIDAD', 'b4-1', 'EVENTOS', 1),)),
     ('R-b4-3', 'ACTIVIDAD', 'b4-3', 'Completa la misión «Cómo decido».', (('COMPLETA_ACTIVIDAD', 'b4-2', 'EVENTOS', 1),)),
@@ -1196,7 +1197,7 @@ REGLAS = (
     # CREA_PLAN reevalúa la regla al crear el segundo plan (planes_creados no mira secciones).
     ('R-b4-5', 'ACTIVIDAD', 'b4-5', 'Gana «Batalla: decidir con criterio» y, en «Mis planes», completa «Por qué la elijo» en tu Plan A y en tu Plan B.', (('SUPERA_BATALLA', 'b4-4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
     ('R-B5', 'BLOQUE', 'B5', 'Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1),)),
-    ('R-b5-1', 'ACTIVIDAD', 'b5-1', 'Completa la misión «Pongo a prueba mi orden» y, en «Mis planes», anota al menos un paso en «Mis próximos pasos» de tu Plan A.', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
+    ('R-b5-1', 'ACTIVIDAD', 'b5-1', 'En «Mis planes», anota al menos un paso en «Mis próximos pasos» de tu Plan A. Y, si aún no lo hiciste, completa la misión «Pongo a prueba mi orden».', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
     ('R-b5-2', 'ACTIVIDAD', 'b5-2', 'Completa la misión «Mi proyecto».', (('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1),)),
     ('R-b5-3', 'ACTIVIDAD', 'b5-3', 'Completa la misión «Mi punto de llegada».', (('COMPLETA_ACTIVIDAD', 'b5-2', 'EVENTOS', 1),)),
     ('R-b5-4', 'ACTIVIDAD', 'b5-4', 'Completa la misión «Mirar el camino».', (('COMPLETA_ACTIVIDAD', 'b5-3', 'EVENTOS', 1),)),
