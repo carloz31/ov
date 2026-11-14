@@ -116,6 +116,8 @@ MINUTOS_BLOQUEO_INGRESO = 15
 # Auditoría plataforma (D-B1): verificaciones Argon2 simultáneas por proceso. Cada una usa 64 MiB (`memory_cost` por
 # defecto); con 2 workers, el tope es 8 a la vez (unos 512 MiB) y el resto espera sin retener una conexión.
 VERIFICACIONES_CONTRASENA_SIMULTANEAS = 4
+# Mínimo de caracteres de una contraseña que se fija al crear una cuenta (`scripts/crear_cuentas.py`).
+MINIMO_CARACTERES_CONTRASENA = 8
 
 
 def transformar_opcion_onet(orden):
