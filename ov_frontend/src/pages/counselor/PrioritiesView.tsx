@@ -37,7 +37,7 @@ function PrioritiesView() {
         </Button>
       )}
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold">Prioritarios</h1>
+        <h1 className="text-2xl font-bold">Configuración del salón</h1>
         <p>
           Selecciona las herramientas y actividades de registro que quieres filtrar para revisar rápidamente
           lo más prioritario de los perfiles de tus estudiantes.

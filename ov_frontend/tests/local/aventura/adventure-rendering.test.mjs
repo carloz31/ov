@@ -431,7 +431,7 @@ test('counselor v2 screens expose the revised controls and terminology', () => {
   assert.doesNotMatch(publications, /Borrador/)
 
   const priorities = render('/counselor/priorities')
-  assert.match(priorities, />Prioritarios</)
+  assert.match(priorities, />Configuración del salón</)
   assert.match(priorities, /Visible para el apoderado/)
   assert.match(priorities, /role="checkbox"/)
   assert.doesNotMatch(priorities, /Editar actividades|Guardar cambios/)
@@ -2455,7 +2455,7 @@ test('live priority configuration updates table, header, summary and profile fil
     assert.match(profile, /aria-valuenow="50"/)
     assert.doesNotMatch(profile, /Ver resultado<\/a>.*Test de intereses/)
     const questionnaires = render('/counselor/students/ejemplo-06?section=questionnaires')
-    assert.match(questionnaires, /Prioritarios.*1/)
+    assert.match(questionnaires, /Configuración del salón.*1/)
     assert.doesNotMatch(questionnaires, /Test de intereses/)
     const records = render('/counselor/students/ejemplo-06?section=records')
     assert.match(records, /Aún no marcas actividades de registro como prioritarias/)
