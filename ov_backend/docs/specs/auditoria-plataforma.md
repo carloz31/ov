@@ -1056,10 +1056,11 @@ sudo journalctl -u ov-backend --since '-4 hours' | grep -iE 'error|exception|wor
 - **Créditos de CPU:** una `t3` se queda sin ellos con carga sostenida. Revisa `CPUCreditBalance` en CloudWatch
   (EC2 > Instancia > Monitoreo) antes y después.
 
-**6. Sin código: el ingreso escalonado**
+**6. Sin código: el orden de ingreso**
 
-Aunque los turnos limitan la memoria, 25 ingresos a la vez tardan varios segundos con 2 núcleos (ver la carga
-abajo). Conviene que el salón ingrese por filas.
+Los estudiantes ingresan conforme llegan a la sesión, sin esperar a que esté todo el salón para entrar juntos. Los
+apoderados, unos minutos después de los estudiantes. Aunque 50 ingresos a la vez ya pasan sin errores (sección O),
+tardan hasta 10 s cada uno con 2 núcleos; repartidos, tardan menos de medio segundo.
 
 ## I. Despliegue
 
@@ -1424,6 +1425,7 @@ suelta. Fueron 50 ingresos a la vez, con 1 turno por worker y 2 workers en 2 nú
 1. Esperar el turno sin ocupar un hilo: un endpoint de ingreso asíncrono que espere un semáforo de asyncio por orden
    de llegada y recién entonces verifique en el pool de hilos. Toca `app/api/sesion.py` además de `acceso.py`.
 2. Más hilos por worker (el límite de AnyIO, al arrancar) o más conexiones por pool. Atenúa el problema, no lo resuelve.
+   **Hecho como mitigación para el 18 y el 19** (sección O); la opción 1 queda para después del 19.
 3. Que la espera del turno tenga un límite y responda 503 «Intenta de nuevo».
 4. Dejarlo así con el ingreso escalonado: repartidos en 20 s, 50 ingresos tardan 0,3 s cada uno y no hay ningún error
    (sección K).
@@ -1433,10 +1435,10 @@ suelta. Fueron 50 ingresos a la vez, con 1 turno por worker y 2 workers en 2 nú
 - **Durante el envío:** se desactiva (`disabled={enviando}`, `LoginScreen.tsx:143`), su texto cambia a «Ingresando…»
   (`:145`) y Enter tampoco reenvía (`:96`, `useLogin.ts:36`).
 - **Si la espera se alarga, no hay más indicación:** ni un aviso de que sigue trabajando ni un tiempo límite del cliente
-  (`services/api/cliente.ts`).
+  (`services/api/cliente.ts`). Desde `1c01f254` hay aviso y mensaje de reintento (sección O).
 - **Quién corta antes:** nginx a los 60 s (`proxy_read_timeout`), y el reenvío de Amplify (CloudFront) probablemente a
   los 30 s. En ese caso el usuario ve un error aunque el ingreso termine después en el servidor.
-- **No se cambió nada.**
+- **En esta sección no se cambió nada;** el cambio posterior está en la sección O.
 
 ### El script de cuentas
 
@@ -1457,8 +1459,94 @@ suelta. Fueron 50 ingresos a la vez, con 1 turno por worker y 2 workers en 2 nú
 | S2 | Ingresar con cada una | `nav01@ov.test`, `fam01@ov.test` y `ori@ov.test`. | Navegante-01 entra al mapa. Familia-01 ve «Hola, Familia-01» en Inicio y la tarjeta de Navegante-01. Orientadora ve el salón 5P y a Navegante-01 y Navegante-02 en la lista, y no ve 5A. |
 | S3 | Una carta | Navegante-01 completa hasta `b1-3` y escribe su carta; Familia-01 completa p1 a p8 y abre Conversaciones. | La carta de Navegante-01; en la del apoderado, «Escrita por Familia-01 · tu madre». |
 
-### Lista J: imágenes (cuando se conviertan)
+### Lista J: imágenes
 
 | # | Caso | Pasos | Qué debes ver |
 |---|---|---|---|
 | I1 | Ninguna imagen rota ni con bordes extraños | Recorrer el ingreso, el mapa (ampliar al máximo), `b0-1` a `b0-3` y un caso de la Central. | Mapa, fondos, personajes y escenas completos. Los personajes, sin un recuadro ni un borde claro alrededor (la transparencia se conserva). En la pestaña Red, todo `.webp` y ningún 404. |
+
+## O. Imágenes, ráfaga de ingresos y pantalla de ingreso (14 de noviembre)
+
+### Imágenes en WebP (commit `71fa203e`)
+
+- **Qué se hizo:** los 78 PNG de `public/images` pasaron a WebP con Pillow (`uv run --with pillow`, fuera del
+  proyecto), con calidad 82 y `method=6`. Los personajes quedaron a 512 px de ancho, con alfa sin pérdida y
+  `exact=True`. El mapa, los fondos y las escenas conservan su resolución (1672×941).
+- **Pesos:**
+
+| Qué | Antes | Después |
+|---|---|---|
+| `public/` completo | 211 MB | 23 MB |
+| Las 78 imágenes | 208,2 MB | 19,7 MB |
+| 33 personajes | 71,6 MB | 2,1 MB |
+| 45 mapa, fondos y escenas | 136,7 MB | 17,7 MB (mediana de 436 KB) |
+| El mapa al ingresar (mapa, `bosque` y Lumi) | 8,8 MB | 1,2 MB |
+
+- **Imágenes de más de 600 KB:** `adventure/journey-map.webp` (738 KB), `hidden-plaza-intro.webp` (634 KB) y
+  `hidden-plaza-phase-2.webp` (602 KB). El mapa conserva su tamaño porque se amplía hasta 1,4×.
+- **Revisión:**
+  - Sin bandas visibles en los cielos y degradados (`bosque`, `ciudad` y `nevado`, ampliados 2×).
+  - Sin halos ni bordes claros en los personajes, sobre fondo oscuro y claro (ampliados 3×).
+  - La comparación está en `comparacion-imagenes/index.html` (raíz del repo, ignorada por git), con seis pares.
+- **Originales:** en `ov-imagenes-originales/public/images/` (carpeta hermana del repo, fuera de él) y en la historia
+  de git.
+- **Referencias:**
+  - Se actualizaron el código, los JSON (catálogo y casos), las pruebas y los documentos.
+  - `index.html` y los estilos no tenían rutas `.png`; el front no tiene manifiesto (en `public/` solo hay dos SVG).
+  - El backend no guarda rutas de imágenes: ni la base ni `datos/` las tienen.
+- **`neutral`:** el catálogo nombraba 22 imágenes `<personaje>_neutral` que nunca existieron. Ahora apuntan al avatar
+  base (antes cada una daba un 404).
+- **Prueba nueva:** `tests/despliegue/imagenes-referencias.test.mjs`. Comprueba tres cosas: que toda imagen
+  referenciada exista, que cada `escenario` tenga su fondo y que no quede ningún PNG.
+
+### Ráfaga de ingresos: 120 hilos por worker (commit `ca11c3a6`)
+
+- **El cambio:**
+  - Al arrancar, cada worker sube el límite de hilos de AnyIO de 40 a 120 (`HILOS_POR_WORKER`, en el ciclo de vida
+    de `app/main.py`).
+  - Las verificaciones Argon2 simultáneas bajan de 4 a 1 por proceso (`VERIFICACIONES_CONTRASENA_SIMULTANEAS`).
+  - La ruta de ingreso y el módulo de turnos no cambian.
+  - La prueba `tests/integration/acceso/test_hilos_por_worker.py` fija los dos valores y comprueba que el límite
+    rige tras arrancar.
+- **La medición:**
+  - PostgreSQL local, 2 workers y 2 núcleos.
+  - Ingresos mixtos: estudiantes y apoderados, cada uno con su primera carga.
+  - Reparto «windows»: 2 workers en un puerto, que Windows reparte desigual. Reparto «parejo»: 2 servidores de 1
+    worker, con el cliente repartiendo por mitades, que se parece más a la EC2.
+
+| Turnos | Reparto | Ingresos a la vez | Mediana | p95 | Máximo | Errores | Sin respuesta | Pico de conexiones | Pico de hilos | Memoria por proceso |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | windows | 50 | 5,7 s | 10,2 s | 10,6 s | 0 | 0 | 30 | 49 | 202–205 MB |
+| 1 | windows | 25 | 2,8 s | 4,8 s | 5,0 s | 0 | 0 | 20 | 49 | 207 MB |
+| 1 | parejo | 50 | 5,6 s | 10,0 s | 10,4 s | 0 | 0 | 30 | 51 | 211–212 MB |
+| 1 | parejo | 25 | 2,7 s | 4,7 s | 5,0 s | 0 | 0 | 24 | 51 | 220–222 MB |
+| 2 | windows | 50 | 6,0 s | 10,3 s | 10,6 s | 0 | 0 | 30 | 47 | 267 MB |
+| 2 | windows | 25 | 3,0 s | 4,8 s | 5,0 s | 0 | 0 | 22 | 47 | 271–272 MB |
+| 2 | parejo | 50 | 6,1 s | 10,4 s | 10,7 s | 0 | 0 | 30 | 48 | 275–276 MB |
+| 2 | parejo | 25 | 3,3 s | 5,1 s | 5,3 s | 0 | 0 | 20 | 48 | 285 MB |
+
+- **Antes (40 hilos):** con 50 a la vez, un worker quedaba retenido unos 30 s y aparecían errores 500
+  (`QueuePool limit`), según la sección N.
+- **Con 120 hilos:**
+  - Los 50 ingresos pasan en todos los casos, sin errores ni ingresos colgados.
+  - El pico de hilos (47 a 51) supera los 40 de antes y queda lejos de 120.
+- **Por qué 1 turno:**
+  - Da la misma espera que 2 (el CPU es el límite) y usa unos 60 MB menos por proceso.
+  - Con 2 workers, el pico de Argon2 baja de unos 560 MB a 128 MB.
+  - Esto reemplaza el valor 4 de D-B1(a).
+- **Lo que queda:** esperar el turno sin ocupar un hilo (opción 1 de la sección N), después del 19.
+
+### Pantalla de ingreso (commit `1c01f254`)
+
+- **Aviso por espera:** si la petición lleva más de 8 s, bajo el botón aparece «Hay muchas personas ingresando.
+  Espera unos segundos, no recargues la página.»
+- **Tiempo agotado o error de red** (408, 502, 503, 504 o sin conexión): el mensaje invita a reintentar y el botón
+  vuelve a activarse. Los demás errores conservan el mensaje del servidor.
+- **Lo que no tiene:** ni tiempo límite propio ni reintentos. El aviso solo corre en modo api.
+- **Prueba:** `tests/servidor/acceso/servidor-ingreso-lento.test.mjs`, que comprueba el aviso a los 8000 ms, que no se
+  envía una segunda petición y el mensaje de reintento ante un 504.
+
+| # | Caso | Pasos | Qué debes ver |
+|---|---|---|---|
+| L1 | Ingreso lento | Con la red limitada en las herramientas del navegador (o el servidor detenido unos segundos), pulsar «Ingresar». | «Ingresando…» y, a los 8 s, el aviso bajo el botón. |
+| L2 | Sin servidor | Con el backend apagado, pulsar «Ingresar». | El mensaje que invita a reintentar y el botón activo de nuevo. |
