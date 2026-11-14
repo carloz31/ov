@@ -1,12 +1,14 @@
 import os
 from contextlib import asynccontextmanager
 
+import anyio.to_thread
 from fastapi import FastAPI
 from sqlalchemy.orm import sessionmaker
 
 from app.api.router import crear_router
 from app.config import cargar_configuracion, crear_cliente_llm
 from app.core.definiciones import CacheDefiniciones
+from app.core.parametros import HILOS_POR_WORKER
 from app.database import comprobar_tablas, crear_motor_bd
 
 
@@ -18,6 +20,8 @@ def crear_aplicacion(url_bd: str | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def ciclo_vida(aplicacion: FastAPI):
+        # El límite es del bucle de eventos del worker, así que se fija al arrancar (ver `HILOS_POR_WORKER`).
+        anyio.to_thread.current_default_thread_limiter().total_tokens = HILOS_POR_WORKER
         try:
             comprobar_tablas(motor_bd)
             motor_bd.cache_definiciones = CacheDefiniciones(motor_bd)

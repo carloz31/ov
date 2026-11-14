@@ -114,8 +114,12 @@ DURACION_TOKEN_HORAS = 24
 MAXIMO_INTENTOS_INGRESO = 5
 MINUTOS_BLOQUEO_INGRESO = 15
 # Auditoría plataforma (D-B1): verificaciones Argon2 simultáneas por proceso. Cada una usa 64 MiB (`memory_cost` por
-# defecto); con 2 workers, el tope es 8 a la vez (unos 512 MiB) y el resto espera sin retener una conexión.
-VERIFICACIONES_CONTRASENA_SIMULTANEAS = 4
+# defecto). Con 1 por worker, 50 ingresos a la vez tardaron lo mismo que con 2 y usaron unos 60 MiB menos por proceso.
+VERIFICACIONES_CONTRASENA_SIMULTANEAS = 1
+# Auditoría plataforma (ráfaga de ingresos): hilos de AnyIO por worker para las rutas síncronas (40 por defecto). Los
+# ingresos que esperan turno ocupan un hilo; con 40, el cierre de las sesiones esperaba hilo reteniendo su conexión y el
+# pool se agotaba. Con 120, 50 ingresos a la vez pasaron sin errores (pico de 51 hilos).
+HILOS_POR_WORKER = 120
 # Mínimo de caracteres de una contraseña que se fija al crear una cuenta (`scripts/crear_cuentas.py`).
 MINIMO_CARACTERES_CONTRASENA = 8
 
