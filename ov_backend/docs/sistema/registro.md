@@ -66,6 +66,8 @@ Todas exigen actividad disponible y cuenta de estudiante (apoderado u orientador
 
 **Eco cambiado** (se calcula al leer, `contexto.eco_cambiado`): un ítem con intento vigente lo tiene si, frente a `valores_contexto`, hoy difiere un marcador o una línea de eco al LLM, la pieza elegida ya no se ofrece o cambió su texto, o el contexto ya no se puede resolver. Los ecos que solo se muestran no cuentan (decisión del usuario). La respuesta no se borra ni se reabre, y la marca desaparece al editar el ítem. Un ítem sin marcadores, ecos al LLM ni piezas nunca la tiene.
 
+**Copia en el panel.** La pestaña Respuestas del panel no llama a `resolver_contexto`: `panel/contexto_lectura.py` (`LecturaContexto`) repite las reglas de marcadores y de ecos (también los del LLM, que usa `eco_cambiado`) sobre lecturas hechas una vez por petición. Quien cambie esas reglas aquí debe cambiar también ese módulo; `tests/integration/panel/test_panel_contexto_lectura.py` compara ambos, ítem por ítem, en los estudiantes de ejemplo (detalle en `panel.md`).
+
 Apoderados y cuentas o actividades inexistentes: 404.
 
 ## Contexto de un ítem (`contexto.py`, lote 2)
