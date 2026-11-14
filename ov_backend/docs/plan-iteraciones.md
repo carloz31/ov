@@ -470,6 +470,7 @@ La alerta «sin favoritos» se evalúa solo después de completar la actividad q
 - **Extras de catálogo y planes:** 042 y 049.
 - **Perfil social:** 076 y 077, con `InsigniaExhibida`.
 - **108:** decisión de alcance.
+- **Rendimiento pendiente:** que el ingreso espere su turno de Argon2 sin ocupar un hilo (un endpoint asíncrono con un semáforo de asyncio por orden de llegada, que recién entonces verifique en el pool de hilos); hoy lo mitiga `HILOS_POR_WORKER`. Y que los casos de la Central se compartan entre vistas como las batallas.
 - **Mecánicas sin lote:** señales anónimas del salón (sin HU ni modelo), «requiere atención», MA6 con `OCUPACIONES_DE_TIPO` y el contexto de los sellos de 4.5.
 - **Carga del contenido real de la ruta:**
   - actividades, reglas, ítems y criterios;

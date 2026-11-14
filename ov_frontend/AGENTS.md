@@ -57,6 +57,7 @@ src/
 | Estado persistente de varios dominios | `store/<nombre>Store.ts`; de un dominio, `features/<dominio>/store/`. |
 | Lógica pura | `features/<dominio>/lib/`; si la usan varios dominios o una capa inferior, `lib/`. |
 | Contenido fijo | `features/<dominio>/data/` si es de un dominio; si no, `data/content/` (narrativo), `data/catalog/` (catálogo que podría venir del servidor) o `data/activities/`. |
+| Una imagen | `public/images/`, en WebP (calidad 82, `method=6`): los personajes a 512 px de ancho con la transparencia sin pérdida (`alpha_quality=100`, `exact=True`), y mapa, fondos y escenas con su resolución. No se agregan PNG: `tests/despliegue/imagenes-referencias.test.mjs` exige que toda imagen referenciada exista, que cada `escenario` tenga su fondo y que no quede ningún PNG. |
 | Datos inventados | `data/demo/` o `features/<dominio>/data/`, con `// DATO DE PRUEBA: <qué es y qué lo reemplazará>` al inicio. |
 | Un tipo de varias capas | `types/<dominio>.ts`; de una feature, `features/<dominio>/types.ts`. |
 | Una variable de entorno | `config/env.ts` y `.env.example`. |
