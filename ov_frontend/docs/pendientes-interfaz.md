@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-14 · Ajuste panel-estudiantes · Nombres de las secciones en el plan completo de la orientadora
+
+- **Dato:** el `nombre` de cada `seccion_tarjeta` («Por qué», «Qué tanto la conozco», «Qué tan real es», «Mis pasos»), escrito con la voz del estudiante.
+- **Dónde se mostraría:** los títulos de las cuatro tarjetas del plan completo en la pestaña Planes del perfil del estudiante.
+- **Opciones:** títulos del front para la orientadora, como el boceto 10 («Por qué la elige», «Qué tanto la conoce», «Su realidad», «Sus pasos»); un nombre para la orientadora en `seccion_tarjeta`; dejar los de la base.
+- **Si no se muestra:** la orientadora lee los nombres con la voz del estudiante.
+- **Estado:** pendiente. Hoy se muestran los de la base, como pide la spec (§2, §8.2).
+
+## 2026-11-14 · Ajuste panel-estudiantes · Descripción del cuestionario en el resultado completo de la orientadora
+
+- **Dato que falta:** la `descripcion` del instrumento, que no viene en `GET …/panel/estudiantes/{e}/tests/{aplicacion}/resultado` (`ResultadoPublico`).
+- **Dónde se mostraría:** «Qué mide este cuestionario» de `QuestionnaireDetailContent`, al abrir «Ver resultado» de otro cuestionario (habilidades, inteligencias).
+- **Opciones:** agregar la descripción a la respuesta de `tests` (`OtroCuestionario`) y pasarla al abrir el resultado; agregarla a la respuesta del resultado; ocultar ese bloque cuando llega vacío.
+- **Si no se muestra:** el bloque «Qué mide este cuestionario» queda con el párrafo vacío.
+- **Estado:** pendiente.
+
 ## 2026-11-07 · Ajuste vista del ítem de registro · Respuestas en la pantalla de fin
 
 - **Dato:** lo que el estudiante eligió y escribió en cada ítem del registro que acaba de entregar (ya está en el registro del servidor).
