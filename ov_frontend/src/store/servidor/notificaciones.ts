@@ -30,6 +30,10 @@ const inicial = (): EstadoNotificaciones => ({
 let estado = inicial()
 let revision = 0
 let enCurso: Promise<RespuestaServidor<unknown>> | null = null
+// Auditoría plataforma (F1): el ingreso y el mapa (o el Inicio del apoderado) la piden casi a la vez; una lista leída
+// hace menos de RECIENTE_MS se reutiliza. Lo que llega por acciones ya se incorpora sin pedirla.
+const RECIENTE_MS = 10_000
+let cargadaEn = 0
 // Códigos cuyo marcado falló: se reintentan con el siguiente marcado.
 let porMarcar: string[] = []
 const oyentes = new Set<() => void>()
@@ -51,6 +55,7 @@ export const useNotificaciones = () =>
 export function limpiarNotificaciones() {
   revision++
   enCurso = null
+  cargadaEn = 0
   porMarcar = []
   estado = inicial()
   oyentes.forEach((oyente) => oyente())
@@ -75,12 +80,15 @@ export function cargarNotificaciones(): Promise<RespuestaServidor<unknown>> {
   const cuenta = propia()
   if (!cuenta) return Promise.resolve(sinCuenta)
   if (enCurso) return enCurso
+  if (estado.estado === 'listo' && Date.now() - cargadaEn < RECIENTE_MS)
+    return Promise.resolve({ tipo: 'ok', datos: null })
   const turno = revision
   publicar({ estado: estado.estado === 'listo' ? 'listo' : 'cargando', error: null })
   const pedido = apiNotificaciones.obtenerNotificaciones(cuenta).then((respuesta) => {
     if (!vigente(cuenta, turno)) return respuesta
     if (respuesta.tipo !== 'ok') publicar({ estado: estado.estado === 'listo' ? 'listo' : 'error', error: respuesta })
-    else
+    else {
+      cargadaEn = Date.now()
       publicar({
         estado: 'listo',
         error: null,
@@ -88,6 +96,7 @@ export function cargarNotificaciones(): Promise<RespuestaServidor<unknown>> {
         total: respuesta.datos.total,
         noVistas: Math.max(0, respuesta.datos.no_vistas - porMarcar.length),
       })
+    }
     return respuesta
   })
   enCurso = pedido
