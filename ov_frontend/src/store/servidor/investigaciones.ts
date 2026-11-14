@@ -11,7 +11,7 @@ import type {
 } from '@/types/servidor'
 import { accionConRefresco } from './refresco'
 import { vencerSeccion } from './secciones'
-import { consultarCuenta, consultarCuentaSesion } from './sesion'
+import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion'
 import { actualizarEntrevista, vencerEntrevistas } from './entrevistas'
 
 // F09: las acciones de Investigaciones. Las que dan eventos (iniciar, terminar el guion, publicar, reaccionar)
@@ -44,8 +44,20 @@ const propia =
     return respuesta.tipo === 'ok' ? { tipo: 'ok', datos: respuesta.datos.por_cuenta[cuenta] } : respuesta
   }
 
-// Paso 1: las familias de carreras del catálogo, para buscar o para nombrar la que llega por la URL.
-export const consultarFamiliasInvestigar = () => consultarCuenta((cuenta) => apiCatalogo.obtenerFamilias(cuenta))
+// Paso 1: las familias de carreras del catálogo, para buscar o para nombrar la que llega por la URL. Auditoría
+// plataforma (F5): el catálogo no cambia en la sesión; se pide una vez por sesión de cuenta (un error no se guarda).
+let familias: { sesion: number; promesa: ReturnType<typeof pedirFamilias> } | null = null
+const pedirFamilias = () => consultarCuenta((cuenta) => apiCatalogo.obtenerFamilias(cuenta))
+export function consultarFamiliasInvestigar() {
+  const sesion = sesionServidor()
+  if (familias?.sesion === sesion) return familias.promesa
+  const actual = { sesion, promesa: pedirFamilias() }
+  familias = actual
+  void actual.promesa.then((r) => {
+    if (r.tipo !== 'ok' && familias === actual) familias = null
+  })
+  return actual.promesa
+}
 
 export const guardarLoQuePienso = (familia: string, dia: string, necesita: string, duda: string) =>
   accionInvestigacion((cuenta) =>

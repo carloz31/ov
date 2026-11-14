@@ -150,3 +150,16 @@ test('la primera victoria no convierte en práctica su propio intento; el siguie
   assert.equal(vista.render().practice.current, true)
   vista.unmount()
 })
+
+// Auditoría plataforma (F5): el drawer y el reproductor comparten la lectura; un intento o un refresco la renuevan.
+test('las batallas se leen una vez por estado del camino y se vuelven a leer tras un intento', async () => {
+  const { app, store } = await preparar()
+  const lecturas = () => app.requests.filter((r) => r.url.endsWith('/batallas')).length
+  await Promise.all([store.consultarBatallas(), store.consultarBatallas()])
+  await store.consultarBatallas()
+  assert.equal(lecturas(), 1)
+  const intento = await store.resolverBatalla('t-batalla', [])
+  assert.notEqual(intento.tipo, 'http')
+  await store.consultarBatallas()
+  assert.equal(lecturas(), 2)
+})
