@@ -1,0 +1,787 @@
+# Auditoría de rendimiento de la plataforma: portal del estudiante y portal del apoderado
+
+Alcance: las rutas GET y `POST /acciones/*` que usan el estudiante y el apoderado, y el front de los dos portales en
+modo `api`. Quedan fuera el panel de la orientadora (ya auditado y corregido), el motor de reglas (ya tiene su prueba de
+presupuesto) y el cálculo de resultados. Es solo el informe: no se corrigió nada.
+
+**Estado:** fase A (inventario y ranking) aprobada; fase B entregada en este documento. Las pruebas del 18 y el 19 de
+noviembre, con más de 20 estudiantes a la vez y cuentas nuevas, guían las prioridades.
+
+## Resumen para las pruebas del 18 y el 19
+
+| Riesgo | Qué | Gravedad | Qué hacer antes |
+|---|---|---|---|
+| **Memoria al ingresar** | Argon2 con los parámetros por defecto usa 64 MiB por verificación. 25 ingresos simultáneos llevaron el proceso a **1,6 GB** en la medición. La EC2 del README es una `t3.small` (2 GB) con 2 workers, o una `t3.micro` (1 GB). | **Alta** si los estudiantes ingresan todos en el mismo segundo | Sin código: comprobar el tipo de instancia, agregar swap o subir a `t3.medium` esos días, y que el salón ingrese de forma escalonada. Las opciones de código son de backend y van después (D-B1). |
+| Conexiones durante el LLM | Ninguna acción deja una conexión ni una transacción abierta mientras espera al LLM. Medido con 25 esperas simultáneas de 8 s: 0 conexiones en transacción. | Ninguna | Nada. |
+| Pool de conexiones | 15 por worker (5 más 10 de desborde), 30 en total. La prueba de carga llegó a 30 de 30 sin errores ni esperas largas. | Baja | Nada. |
+| Bloqueos de base | En PostgreSQL no hubo esperas por bloqueos. En SQLite las escrituras se serializan y llegan a 4,6 s, cerca del tiempo de espera de 5 s de SQLite; el despliegue usa RDS PostgreSQL. | Ninguna en RDS | Nada. |
+| **Esta rama no está desplegada** | `ajuste/auditoria-panel` lleva 15 commits sin integrar en `main`, y `deploy` tiene 42 commits menos. Las correcciones de la auditoría del panel tampoco están en `deploy`. | — | Ver «Integración y despliegue». |
+
+## Cómo se midió
+
+Es el mismo método que en la auditoría del panel.
+
+- **Base de medición:**
+  - SQLite local, conjunto `contenido`, sembrada con acciones reales a través de la API y el cliente de prueba del LLM
+    (`ClientePrueba`, sin red), con `ENTORNO=desarrollo`.
+  - Para la carga, además, un clúster PostgreSQL 17 temporal y propio, creado con `initdb` en el scratchpad (puerto
+    55432, solo `127.0.0.1`, `max_connections=100`). Se usó el mismo motor que RDS sin tocar ninguna otra base. Nunca
+    se usó la base desplegada.
+  - Todo es `DATO DE PRUEBA` y quedó fuera del repo.
+- **Cuentas:**
+  - **Nueva** (`est-mia`): solo ingresó. Casi todas sus secciones están cerradas y responden 409 en 4 consultas.
+  - **A mitad** (`est-ana` tras `b3-8`): dos planes listos y los registros respondidos hasta ahí.
+  - **Terminó** (`est-ana` al final):
+    - las 38 requeridas, las misiones extra disponibles y los 6 casos;
+    - 62 ingresos, 61 check-ins, 61 entradas del diario y 61 preguntas del día;
+    - unas 160 vistas de carreras y 20 de ocupaciones;
+    - 25 favoritos;
+    - tres planes completos con 8 dudas y 10 pasos cada uno;
+    - una entrevista publicada y 12 cartas.
+  - **Apoderado** (`apo-rosa`): p1–p8, con 1, 2 y 3 hijos vinculados.
+  - **Para medir el crecimiento**, además: 24 autores con su entrevista publicada, 24 reacciones en cada una y un
+    comentario de la orientadora en cada una.
+- **Conteo:** cada sentencia que llega al cursor (`before_cursor_execute`, como `ContadorConsultas`), por petición
+  completa con el guardia de acceso incluido. Para separar las etapas de una acción, se midió cuánto aporta cada
+  función envolviéndola sin cambiar el código.
+- **Tiempo:** mediana de 3 peticiones (los POST, una sola). Sirve para comparar entre filas. El criterio es el número
+  de consultas.
+- **Tamaño:** el cuerpo JSON de la respuesta. Comprimido: gzip de nivel 1 (el de nginx por defecto) y de nivel 6.
+- **Carga:** `uvicorn` local con `--workers 2`, como `despliegue/ec2/ov-backend.service`, y un cliente de prueba del LLM
+  que demora 2 s (8 s para observar las conexiones). 25 hilos, uno por estudiante, con una barrera por fase para que
+  coincidan, y las peticiones de arranque en paralelo, como el navegador. Se muestreó `pg_stat_activity` cada 100 ms.
+- **Front:** lectura del código y un `npm run build` (`dist/` está ignorado por git).
+- **Scripts:** fuera del repo, en el scratchpad de la sesión (`medicion/` y `carga/`).
+
+## 1. Transversal
+
+### 1a. El LLM no retiene conexiones
+
+| Acción | Dónde | Transacción durante el LLM |
+|---|---|---|
+| `registro/responder`, `responder-seguimiento`, `reenviar` | `app/api/registro.py:19-29` (no usan `SesionBD`); `app/services/registro/flujo.py:245-252`: primera transacción (`fabrica.begin()`, `:248`), el LLM fuera (`_evaluar_primera`, `:192-193`) y la segunda transacción (`_cerrar`, `:185-189`) | Ninguna |
+| `registro/entregar` | `flujo.py:312` (`terminar`), dentro de `ejecutar_accion` | No llama al LLM |
+| `planes/guardar-seccion` (sugerencias de pasos tras CONOCIMIENTO o REALIDAD) | `app/api/planes.py:30-41`; `app/services/planes/acciones.py:344-351`; `app/services/planes/sugerencias.py:274-280` (leer, LLM fuera, guardar) | Ninguna |
+| `pedir-sugerencias-guion` | `app/api/investigaciones.py:40-51`; `app/services/investigaciones/sugerencias.py:177-187` | Ninguna |
+
+**El guardia.**
+- **Qué hace:** abre la sesión de la petición (`SesionBD`) y la consulta del token la autoinicia.
+- **Por qué no retiene la conexión:** `_autorizar` hace `rollback()` al terminar (`app/dependencies.py:53-69`), así que
+  la conexión vuelve al pool antes del endpoint.
+
+**Medido en PostgreSQL:**
+- 25 `registro/responder` simultáneos con el LLM demorando 8 s.
+- Durante toda la espera, `pg_stat_activity` mostró 10 conexiones `idle` (en el pool) y **0 `idle in transaction`**.
+
+**Capacidad:**
+- **Pool:** `create_engine(url, pool_pre_ping=True)` (`app/database.py:32-33`) deja el `QueuePool` por defecto: 5 más
+  10 de desborde = **15 conexiones por worker y 30 con 2 workers**. Quien no consigue conexión espera hasta 30 s
+  (`pool_timeout`) y luego falla. RDS `db.t4g.micro` admite unas 80, así que sobra margen.
+- **Hilos:** los endpoints son `def` síncronos y corren en el pool de hilos de AnyIO, **40 por worker y 80 en total**.
+  Una espera del LLM ocupa un hilo y ninguna conexión.
+- **Cuántas esperas aguanta:** unas 70 esperas simultáneas antes de que las demás peticiones hagan cola por hilos. El
+  tiempo máximo de una llamada es 12 s en registro y guion y 30 s en los pasos (`app/core/parametros.py:61`, `:144`).
+  Con 25 estudiantes no es un límite.
+- **El ingreso sí retiene una conexión:** la verificación Argon2 ocurre dentro de la transacción del ingreso
+  (`app/api/sesion.py:13-21`, `ejecutar_accion`). Son unos 100 ms con la CPU libre y más cuando hay contención.
+
+### Hallazgo urgente: memoria de Argon2 al ingresar
+
+- **Parámetros:** `PasswordHasher()` sin argumentos (`app/services/acceso.py:20`): `time_cost=3`,
+  **`memory_cost=65536` KiB (64 MiB)** y `parallelism=4`.
+- **Medición:** 25 verificaciones de la misma contraseña.
+
+| Hilos simultáneos | Tiempo total | Pico de memoria del proceso |
+|---|---|---|
+| 1 | 1,70 s | 88 MB |
+| 2 | 1,00 s | 152 MB |
+| 25 | 0,56 s | **1.627 MB** |
+
+- **Escenario de riesgo:**
+  - Con 2 workers, cada uno con hasta 40 hilos, 25 estudiantes que pulsan «Ingresar» a la vez pueden sumar de 0,6 a
+    1,6 GB solo en verificaciones, sobre los dos procesos (unos 150 MB cada uno).
+  - Con 2 vCPU, cada verificación tarda más y se superponen más que en esta máquina, que tiene 20 núcleos.
+  - En una `t3.small` sin swap, el kernel puede matar un worker. Las peticiones en curso de ese worker fallan con 502
+    en nginx, y uvicorn lo vuelve a levantar.
+  - Si el ingreso se escalona en 10 a 20 s, el pico baja a unos pocos cientos de MB.
+- **Bloqueo por intentos:** es por cuenta, no por IP (`acceso.py:97-104`). Un salón detrás de una sola IP no se bloquea
+  entero.
+
+### 1b. Prueba de carga: 25 estudiantes nuevos a la vez
+
+Escenario por estudiante:
+1. Ingreso: `POST /sesion/ingresar`, `GET /sesion`, `POST /acciones/ingresar`, las 6 lecturas del arranque en paralelo
+   y la segunda lectura de notificaciones del mapa.
+2. Completar `b0-1` y su refresco.
+3. Avanzar el resto del tramo 0, con refresco tras cada actividad.
+4. Abrir `b1-1` y guardar su primer ítem con el LLM de prueba (2 s).
+
+Tiempos en ms con 25 estudiantes en la misma fase:
+
+| Fase · ruta | PostgreSQL mediana / p95 / máx. | SQLite mediana / p95 / máx. |
+|---|---|---|
+| `POST /sesion/ingresar` | 1006 / 1191 / 1196 | 746 / 1076 / 1077 |
+| `GET /sesion` | 252 / 542 / 546 | 239 / 496 / 500 |
+| `POST /acciones/ingresar` | 353 / 468 / 473 | 300 / 573 / 673 |
+| `GET actividades` (arranque) | 437 / 573 / 605 | 327 / 400 / 426 |
+| `GET avance` · `resumen` · `secciones` · `presentaciones` · `notificaciones` (arranque) | 371–454 / ≤ 632 / ≤ 695 | 233–297 / ≤ 399 / ≤ 400 |
+| `POST completar-actividad` (`b0-1`, los 25 a la vez) | 295 / 545 / 609 | 577 / 1154 / 1186 |
+| `POST completar-actividad` (tramo 0, 125 peticiones) | 391 / 577 / 720 | 131 / **2762 / 4588** |
+| `POST responder-items` | 398 / 479 / 537 | 129 / **3013 / 4010** |
+| `GET actividades` (refrescos) | 352 / 556 / 637 | 59 / 113 / 128 |
+| `GET .../b1-1/registro` | 247 / 453 / 460 | 167 / 219 / 222 |
+| `POST registro/responder` (LLM de 2 s) | 2289 / 2429 / 2465 | 2393 / 2819 / 2895 |
+| Duración de cada fase | 3,1 s · 1,0 s · 6,9 s · 2,9 s | 2,3 s · 1,2 s · 7,3 s · 3,2 s |
+
+- **Errores:** ninguno en las dos bases: ni 5xx, ni 409 por conflicto, ni tiempos agotados.
+- **PostgreSQL:**
+  - **Conexiones:** el pico llegó a **30**, el tope de los dos pools. En las fases 1 y 3 hubo hasta 29 en
+    `idle in transaction`: son peticiones con una sesión abierta mientras Python arma la respuesta, porque las lecturas
+    no confirman hasta que se cierra la sesión.
+  - **Esperas por bloqueos:** no hubo ninguna de tipo `Lock`. En la fase 4 hubo esperas `LWLock` (hasta 9), propias
+    del disco local durante las escrituras.
+- **SQLite (propio de SQLite, no aparece en RDS):**
+  - Un solo escritor a la vez. Las acciones esperan el candado de escritura: p95 de 2,8 s y máximo de 4,6 s, cerca de
+    los 5 s tras los que pysqlite devuelve `database is locked`.
+  - Las lecturas son más rápidas que en PostgreSQL local porque no hay red ni pool.
+- **Lo que no se reproduce aquí:** la CPU de la EC2 (2 vCPU y créditos de ráfaga de `t3`), la latencia de red a RDS y
+  la memoria de 2 GB. Los tiempos absolutos en producción serán peores. La memoria es el riesgo, como se ve en 1a.
+
+### 1c. Gasto fijo por petición
+
+| # | Sentencia | Desde dónde | En qué rutas |
+|---|---|---|---|
+| 1 | `SELECT cuenta.id, codigo, rol, activa WHERE codigo = ?` | Guardia: `_autorizar` (`app/dependencies.py:55-56`). Después hace `rollback`, que expira lo leído. | Todas, salvo `/sesion/ingresar` |
+| 2 | `SELECT cuenta.*` (la cuenta completa) | `obtener_cuenta` (`dependencies.py:110`, `CuentaConsultada`) o la validación de cada acción. Vuelve a leer la fila que acaba de leer el guardia. | Todas las de `/cuentas/{c}/…` y todas las acciones |
+| 3 | `SELECT desbloqueo WHERE cuenta_id IN (?)` | Contexto de consultas (`core/contexto.py`): disponibilidad de la sección o del objetivo | Todas las rutas con sección y todas las acciones |
+| 4 | CTE `eventos_cuenta` | Progreso de la regla, para el mensaje del 409 | Solo cuando la sección está cerrada |
+
+- **Una petición vacía cuesta 2 consultas** (`GET /sesion`), 3 con la comprobación de la sección y 4 si responde 409.
+- **El ingreso completo de una cuenta nueva** hace 10 peticiones con guardia y 35 consultas. **20 de ellas (57 %) son
+  gasto fijo** (2 × 10), y **4 más son lecturas repetidas de desbloqueos** (resumen, secciones, actividades y la
+  acción).
+
+Opciones, sin elegir:
+1. **Que el guardia lea la cuenta completa y la conserve para la petición.** Un `rollback` expira los objetos, así que
+   haría falta guardar los valores, o no hacer `rollback` sino cerrar la transacción sin expirar
+   (`expire_on_commit=False` en esa sesión o `sesion.commit()` de solo lectura). Ahorra 1 consulta por petición.
+  Toca el acceso.
+2. **Que `obtener_cuenta` use el id que ya resolvió el guardia** (`sesion.get(Cuenta, actor.id)`). No ahorra la
+   consulta, que sigue siendo una, pero la hace por clave primaria. Ganancia mínima.
+3. **Guardar por petición los desbloqueos de la cuenta** en `ContextoConsultas`. Ya se hace dentro de una misma
+   petición: lo repetido aparece entre peticiones, no dentro de una. Bajarlo requiere que el front pida menos (ver 2).
+4. **Una ruta de arranque que agrupe resumen, secciones y presentaciones.** Va contra la regla de un dominio por ruta
+   (`AGENTS.md`, «Dónde va cada cosa») y cambia el contrato. No se recomienda.
+
+### 1d. Compresión
+
+- **Lo que dice el repo: nada comprime las respuestas JSON.**
+  - La aplicación no tiene `GZipMiddleware` (`app/main.py`).
+  - `despliegue/ec2/nginx-ov.conf` no declara `gzip`. El `nginx.conf` de Ubuntu trae `gzip on`, pero `gzip_types`
+    queda comentado, así que solo comprime `text/html` y no `application/json`.
+  - Amplify reenvía `/api/<*>` a la EC2 (`despliegue/amplify/reescrituras.json`). Si la CDN de Amplify comprime las
+    respuestas de una reescritura no se puede saber desde el repo.
+- **Cómo comprobarlo en el despliegue**, sin tocar la base, con un token de prueba de una cuenta de prueba:
+  `curl -sI -H 'Accept-Encoding: gzip' -H 'Authorization: Bearer …' https://<dominio>/api/cuentas/<cuenta>/actividades`.
+  Si la respuesta no trae `Content-Encoding: gzip`, viaja sin comprimir.
+
+| Respuesta | Sin comprimir | gzip 1 | gzip 6 |
+|---|---|---|---|
+| `actividades`, cuenta nueva | 54,5 KB | 9,9 KB | 6,7 KB |
+| `actividades`, cuenta que terminó | 30,9 KB | 8,9 KB | 6,1 KB |
+| Resultado de intereses (`TEST-RIASEC/resultado`) | 22,0 KB | 7,9 KB | 5,4 KB |
+| `familia/resultados` (apoderado) | 22,2 KB | 8,0 KB | 5,5 KB |
+| `planes` (3 planes completos) | 22,1 KB | 4,0 KB | 2,8 KB |
+| `/instrumentos` (catálogo) | 18,8 KB | 9,5 KB | 6,5 KB |
+| `diario/entradas` (61 entradas) | 28,4 KB | 1,4 KB | 1,0 KB |
+| Detalle de carrera | 14,5 KB | 3,9 KB | 2,8 KB |
+| `fichas` · `favoritos` | 10,1 · 9,0 KB | 3,2 · 2,2 KB | 2,3 · 1,6 KB |
+| Paquete JS del front (lo sirve Amplify) | 2.829 KB | | 817 KB (lo informa Vite) |
+
+**Lectura:** activar `gzip_types application/json` en nginx reduce de 3 a 5 veces todo lo que viaja tras cada acción.
+Es un cambio de configuración y no de contrato (D-B6).
+
+## 2. Refresco, ingreso y mapa
+
+### Costo por gesto del usuario
+
+La acción más todas las lecturas que dispara el front. KB sin comprimir. Las rutas del front están en la sección C.
+
+| Gesto | Peticiones | Consultas | KB |
+|---|---|---|---|
+| **Ingreso (cuenta nueva)** | `sesion/ingresar` 1 · `GET /sesion` 2 · `acciones/ingresar` 4 · `notificaciones` 4 **×2** · `actividades` 7 · `avance` 3 · `resumen` 3 · `secciones` 4 · `presentaciones` 3 | **35** (20 de gasto fijo) | **≈ 59** (actividades, 54,5) |
+| Ingreso (cuenta que terminó) | Lo mismo, más `check-ins` 4 y el resultado RIASEC 7 | **43** | **≈ 66** (actividades 30,9 y RIASEC 22) |
+| **Completar una actividad** | `completar-actividad` 8–12 · `actividades` 5–7 · `avance` 3 · RIASEC 7 (si `act-tip-final` está abierta) · `marcar-vistas` 3 (si hubo notificaciones) · la sección vencida si se abre algo (p. ej. `secciones` 4) | Nueva 19–26 · terminó 23–29 | Nueva ≈ 57 · terminó ≈ 55 |
+| **Guardar un ítem de registro** | `registro/responder` 16–65. Refresca solo si la respuesta trae eventos o desbloqueos (`registro.ts:41-43`). | 16–65 | ≤ 8 |
+| **Abrir un detalle de carrera** | `GET detalle` 15–21 · `ver-carrera` 4–7 · `actividades` 5 · `avance` 3 · RIASEC 7 | **34–43** | **≈ 68** |
+| **Mover un medidor** | `planes/medidores` 6 · `actividades` 5 · `avance` 3 · RIASEC 7 · `planes` 18 | **39** | **≈ 76** |
+| **Marcar un paso** | `planes/paso-hecho` 8 · lo mismo que el medidor | **41** | **≈ 76** |
+| **Escribir una entrada** | `escribir-entrada` 7–9 · `actividades` 5 · `avance` 3 · RIASEC 7 · entradas 4 · amistad 4 · preguntas 4 (`vencerDiario`) | **34–36** | **≈ 86** (entradas, 28) |
+| **Escribir una carta** | `escribir-carta` 6–10 · `actividades` 5 · `avance` 3 · RIASEC 7 · `conversaciones` 6 | **27–31** | **≈ 60** |
+
+En los cinco últimos gestos, **entre 15 consultas y 55 KB son el refresco** (actividades, avance y RIASEC), aunque la
+acción no cambie nada del mapa (ver abajo).
+
+### Qué declara cada acción y qué solo se ve al volver a pedir
+
+Toda acción devuelve `RespuestaAccion` (`app/schemas/acciones.py:160-175`):
+- `eventos_registrados`;
+- `nuevos_desbloqueos`, con `tipo_objetivo` BLOQUE, ACTIVIDAD, FICHA, TESTIMONIO, PREGUNTA_DIARIO, SECCION, INSIGNIA,
+  NIVEL, SECCION_PLAN o CONVERSACION;
+- `nuevas_notificaciones`;
+- `entradas_desbloqueadas`, solo cuando la acción dejó preguntas en el diario.
+
+Se compararon `actividades`, `avance`, `resumen` y `secciones` antes y después de cada acción:
+
+| Acción | Declara | Cambia en las lecturas | ¿Lo declara todo? |
+|---|---|---|---|
+| `completar-actividad` (`b0-2`) | Evento `COMPLETA_ACTIVIDAD b0-2`; desbloqueos SECCION DIARIO, ACTIVIDAD `b0-3` y PREGUNTA_DIARIO | `b0-2` → COMPLETADA; `b0-3` → DISPONIBLE (y su `bloqueo`); DIARIO → DISPONIBLE; `avance`: `camino`, `tramos[B0]`, `requeridas` y `tramo_actual` (+1) | **Implícito:** COMPLETADA y los contadores de `avance` no vienen en la respuesta, pero se deducen del evento `COMPLETA_ACTIVIDAD`. |
+| Primer ítem de un cuestionario (`responder-items`) | Nada | `b0-3` → **EN_CURSO** | **No.** El front ya lo resuelve refrescando en el primer ítem (`operaciones.ts:130-131`). |
+| Primer ítem de un registro | `registro.estado` en la respuesta | La actividad → EN_CURSO | Sí. El front lo copia (`registro.ts:16-30`). |
+| `ver-carrera` | Evento `VISTA_CARRERA` | **Nada** | Sí: no hay nada que refrescar. |
+| `escribir-entrada` | Eventos `ESCRIBE_ENTRADA_*` | **Nada** | Sí |
+| `escribir-carta` | Nada | **Nada** | Sí |
+| `planes/medidores` | Evento `ACTUALIZA_PLAN` | **Nada** | Sí |
+
+Lo que cambia en el mapa solo puede venir por dos caminos:
+1. **Un desbloqueo.** Disponibilidad, `visible`, estado del bloque y de la Ciudad, nivel, secciones, fichas e
+   insignias. Todos se guardan como `desbloqueo` y viajan en `nuevos_desbloqueos`.
+2. **Un cambio de progreso de la propia actividad.** COMPLETADA, que viene como evento `COMPLETA_ACTIVIDAD` (y
+   `COMPLETA_BLOQUE`), o EN_CURSO, que no viene declarado.
+
+El front no muestra los contadores `actual` de `bloqueo.condiciones_faltantes`. Solo lee `mensaje`,
+`evaluador_especial` y `condiciones_faltantes[0].requerido`, que no cambia (`useHistoriaLumi.ts:34`). Por eso no
+quedan barras desactualizadas: las barras «actual de requerido» salen de `GET progreso`, que se pide aparte.
+
+**Conclusión para un refresco condicional:**
+- Es seguro saltarse `actividades` y `avance` cuando la respuesta no trae desbloqueos ni eventos `COMPLETA_ACTIVIDAD` o
+  `COMPLETA_BLOQUE` y la acción no es la primera respuesta de un cuestionario.
+- La única excepción sin declarar es EN_CURSO del primer ítem de un cuestionario, que el front ya trata aparte.
+- El nivel (`resumen`) solo cambia con un desbloqueo NIVEL, y el front ya lo condiciona así.
+
+### Por qué `actividades` pesa 55 KB en la cuenta nueva
+
+| | Cuenta nueva | Cuenta que terminó |
+|---|---|---|
+| Total | 54,5 KB | 30,9 KB |
+| `bloqueo` de las actividades | **24,9 KB** (78 bloqueadas, una regla y 84 condiciones) | 3,1 KB (10 bloqueadas) |
+| `bloqueo` de los bloques | 2,2 KB | 0 |
+| `descripcion` | 7,5 KB | 7,5 KB |
+| Actividades con `visible=false` | 14 de 80 (viajan completas) | 3 |
+
+Qué campos se usan en el front:
+- **Mapa** (`features/adventure/lib/puntosServidor.ts`): `codigo`, `contenido`, `visible`, `estado`, `titulo`, `tipo`
+  y `requerida`. Del bloque, `numero`, `nombre`, `espacio` y `codigo`. También `duracion_estimada_min`
+  (`etiquetaActividad.ts:12`).
+- **Panel de detalle del punto** (`detallesRuta.ts:19-56`): `descripcion` y, de `bloqueo`, solo `mensaje` del primer
+  elemento (`adaptadores.ts:103-107`) y `evaluador_especial` (`adaptadoresInstrumentos.ts:74-77`).
+- **Dentro de `condiciones_faltantes`:** solo `requerido` de la primera condición, en `useHistoriaLumi.ts:34`.
+  `tipo_evento`, `referencia`, `tipo_conteo`, `actual`, `cumplida` y `texto` no se leen. `regla` tampoco.
+- **Actividades con `visible=false`:** se descartan en el mapa y en el reproductor, pero se usan para el revelado
+  (`refresco.ts:25-26`, `:77-80`) y en `useHistoriaLumi.ts:28`.
+- **Campos sin uso:** `orden` en el mapa (solo el apoderado, `parent/lib/selectors.ts:15`) y `visibilidad`
+  (solo `contenidos.ts:124`).
+
+**Lectura:** casi la mitad del peso de la cuenta nueva (unos 24 KB) son condiciones de bloqueo que el front no lee.
+Recortarlas cambia el contrato de `ActividadCuenta` (D-B7). Con gzip, la respuesta baja a 7–10 KB y la ganancia es
+mucho menor.
+
+### Resultado de intereses: cuándo cambia y dónde se vuelve a pedir
+
+- **Cuándo cambia de verdad:** solo con `revelar-resultado` y `reiniciar-instrumento`. Las respuestas de los ítems no
+  lo cambian hasta que se revela, y cada revelado crea un resultado nuevo con su `calculado_en`.
+- **Dónde lo pide el front sin que haya cambiado:**
+  - En cada ingreso y en **cada refresco tras cualquier acción**, si `act-tip-final` no está BLOQUEADA
+    (`store/servidor/refresco.ts:81-85`). Si responde 409 (sin resultado), lo vuelve a pedir en el refresco siguiente.
+  - Con el libro de Helena abierto, en cada recarga de actividades: el efecto de `useHelenaPages.ts:72-93` depende de
+    `actividades.datos` y vuelve a pedir todos los resultados revelados con `?aplicacion=`, `comparacion`, `historial`
+    y `/instrumentos`.
+  - Al abrir Mi perfil (`useStudentProfile.ts:38`), siempre: `cargarInstrumentos` no mira si ya estaba listo
+    (`instrumentos.ts:41-47`).
+  - Al revelar o reiniciar se pide 2 veces seguidas: primero el refresco y después `cargarInstrumentos(true)`
+    (`instrumentos.ts:153-182`).
+- **Caché:** no hay. `resultado.ts:15-22` solo comparte la petición mientras está en vuelo, y
+  `cargarResultadoRiasec` nunca comprueba si el resultado ya estaba cargado.
+
+## 3. Registro (solo medición; la corrección se decide aparte)
+
+### ¿Crece con los ítems? Sí, con un tope por definición
+
+`registro_cuenta` (`app/services/registro/consultas.py:85-93`) arma **todos** los ítems del registro en cada respuesta.
+Para cada uno llama a `resolver_contexto` (`consultas.py:64` → `contexto.py:488`), que vuelve a leer la base:
+`resolver_marcadores`, `_opciones` y `_ecos` dos veces (para mostrar y para el LLM, `contexto.py:498-500`). Cada una
+de esas funciones lee sus fuentes: planes, resultados, respuestas vigentes y piezas.
+
+Comparación de registros reales sobre la cuenta que terminó. Los segmentos se midieron envolviendo cada función:
+
+| Registro | Ítems | `GET registro` | `responder` | Guardado (con su contexto) | `eventos_adecuado` | Respuesta (`registro_cuenta`) | Contexto dentro de la respuesta | `entregar` |
+|---|---|---|---|---|---|---|---|---|
+| `b1-6`, `b2-3`, `b4-2` | 1 | 4 | 17 | 10 (1) | 2 | 2 | 1 en 1 llamada | 9 |
+| `b3-a`, `ma3` | 1 | 5 | 16–17 | 9–10 (1–2) | 2 | 3 | 2 | 9–10 |
+| `ma8`, `h3` | 1 | 10 | 27 | 15 (7) | 2 | 8 | 7 | 15 |
+| `b5-1`, `b5-3` | 1 | 12 | 33 | 18 (9) | 2 | 10 | 9 | 17 |
+| `b4-5` | 1 | 13 | 35 | 19 (10) | 2 | 11 | 10 | 18 |
+| `b1-1`, `b1-7` | 3 | 6 | 19 | 10 (1) | 2 | 4 | 3 en 3 llamadas | 11 |
+| `b2-4` | 3 | 7 | 20 | 10 (1) | 2 | 5 | 4 en 3 | 12 |
+| `b1-3` | 3 | 8 | 21 | 10 (1) | 2 | 6 | 5 en 3 | 13 |
+| `b3-4` | 2 | 8 | 22 | 11 (2) | 2 | 6 | 5 en 2 | 13 |
+| **`b4-1`** | **2** | **35** | **65** | **27 (18)** | 2 | **33** | **32 en 2** | **40** |
+
+- **De qué depende:** las consultas son, por ítem, el costo de su contexto, más una base fija. El costo del contexto va
+  de 1 (un ítem sin piezas) a 16–18 (un ítem de `b4-1` que lee planes, resultados de instrumentos y ecos de varios
+  registros).
+- **Tope por definición:** `MAXIMO_ITEMS_REGISTRO = 5` (`app/core/parametros.py:49`), que valida el cargador
+  (`datos/cargador.py:428-429`). Hoy el registro más grande tiene 3 ítems y el más caro es `b4-1`, con 2. Con 5 ítems
+  como el más caro de `b4-1`, `responder` llegaría a unas **115 consultas** (27 + 5 × 16 + 5).
+- **Con los datos de la cuenta no crece:**
+  - `b4-1` hace 65 consultas con 2 planes (fase A, a mitad) y 65 con 3 planes completos.
+  - Las lecturas de planes y resultados usan `IN (…)` sobre todos los planes.
+  - 61 entradas del diario y 160 vistas no cambian nada.
+
+**Lecturas duplicadas dentro de `responder`:**
+- El contexto del ítem guardado se resuelve 2 veces: en el guardado (`flujo.py:219`) y otra vez en la respuesta.
+- `validar_registro` corre 3 veces (5 consultas en total): en el guardado, en `_escribir` (`flujo.py:176`) y en la
+  segunda transacción.
+- Dentro de un mismo `resolver_contexto`, los planes se leen hasta 9 veces en `b4-1`: una vez por cada marcador, opción
+  o eco que los necesita.
+
+**Separación pedida:**
+
+| Parte | Consultas |
+|---|---|
+| Guardado y validación (acceso, validar, contexto del ítem, intento, cierre de repreguntas) | 9 a 27 |
+| Evaluación | `eventos_adecuado` 2; el motor, 0 al editar un ítem (sin eventos nuevos) |
+| Armar la respuesta (`registro_cuenta`) | 2 a 33 |
+| `entregar` | Casi todo es `registro_cuenta` (de 2 a 33 de sus 9 a 40) |
+
+### Qué usa el front de la respuesta de `responder`
+
+- **El registro completo:** `useRegistroServidor.ts:141`, `:159` y `:181` hacen `setRegistro(paso.registro)`.
+- **El desenlace** (`adaptadoresRegistro.ts:110-115`) usa `paso.paso`, `paso.mensaje`, `paso.repregunta` y `paso.item`,
+  y busca la respuesta dentro de `paso.registro`.
+- **El almacén** usa `registro.estado` y, para decidir si refresca, `eventos_registrados` y `nuevos_desbloqueos`
+  (`registro.ts:40-43`).
+
+### Opciones de corrección, sin elegir
+
+| Opción | Qué es | ¿Modifica `resolver_contexto`? | ¿Contrato? | Riesgo | Cómo se demostraría que la respuesta sale idéntica |
+|---|---|---|---|---|---|
+| R1 | **No resolver dos veces el ítem guardado:** pasar a `registro_cuenta` el contexto que ya resolvió el guardado. | No | No | Bajo | La prueba de registros de `contenido` (`tests/integration/registros/`) y una comparación del JSON de `responder` antes y después en todos los registros de `contenido`. Ahorra de 1 a 18 consultas, no corrige el crecimiento. |
+| R2 | **Una lectura por petición para el estudiante**, como `LecturaContexto` del panel (`panel/contexto_lectura.py`): vigentes, planes, referencias y piezas leídos una vez para todos los ítems. `registro_cuenta` arma cada ítem desde ahí. | No (queda como referencia) | No | Medio. Duplica las reglas de marcadores y ecos, como en el panel. | La misma técnica del panel: una prueba que, por cada ítem de cada registro de `contenido` y para varias cuentas (nueva, a mitad, terminó), compare lo que arma la lectura con `resolver_contexto` en vivo, más la comparación del JSON completo de `GET registro` y de `responder`. |
+| R3 | **Memorizar dentro de `resolver_contexto`** las lecturas de sus fuentes (planes, resultados, vigentes, piezas) en `ContextoConsultas`, válidas durante la petición y sin invalidación entre transacciones. | **Sí** (por dentro; su salida debe ser igual) | No | **Alto**. La segunda transacción de `responder` lee después de escribir la evaluación: una caché que la cruce devolvería datos viejos. | Las pruebas de `registro` y de `registros`, más la comparación de salidas de `resolver_contexto` antes y después, ítem por ítem, en las cuentas de `contenido`. |
+| R4 | **Devolver solo el ítem guardado y el siguiente** en `responder`. | No | **Sí** (`PasoRegistro`), con cambios en el front (`useRegistroServidor.ts`) | Medio | Pruebas de contrato del back y del front; el front tendría que fusionar el ítem en el registro que ya tiene. |
+
+Todas tocan el flujo del registro y quedan para decidir una por una, **después del 19**. Hoy, una cuenta nueva el día
+de la prueba hace los registros de B1 (16–22 consultas por ítem), no los de B4 y B5.
+
+## 4. Planes
+
+### `GET planes` no crece
+
+| Planes | Dudas por plan | Pasos por plan | Consultas | KB |
+|---|---|---|---|---|
+| 3 | 8 | 10 | 18 | 22,1 |
+| 3 | 0 | 10 | 18 | 13,9 |
+| 3 | 0 | 0 (quedan los hechos) | 18 | 11,4 |
+| 1 | 0 | 0 | 18 | 6,6 |
+| 1 | 8 | 0 | 18 | 9,5 |
+| 1 | 8 | 10 | 18 | 11,2 |
+
+(En la fase A, con 2 planes a mitad del camino, fueron 19: una rama.)
+
+### `guardar-seccion`
+
+| Sección y cambio | Consultas en SQLite | De ellas, `INSERT` |
+|---|---|---|
+| CONOCIMIENTO sin dudas nuevas | 7 | 1 |
+| CONOCIMIENTO con 1 duda nueva (con sugerencias del LLM) | 21 | 3 |
+| CONOCIMIENTO con 8 dudas nuevas | 36 | 17 (8 dudas, 8 sugerencias y el evento) |
+| CONOCIMIENTO de 8 a 0 dudas | 9 | 1 |
+| PASOS sin pasos nuevos | 7 | 1 |
+| PASOS con 1 paso nuevo | 10 | 2 |
+| PASOS con 10 pasos nuevos | 20 | 11 |
+| PASOS de 10 a 0 | 9 | 1 |
+
+- **El código no hace un flush por elemento.** Las dudas se agregan con `sesion.add_all(nuevas)`
+  (`app/services/planes/acciones.py:236`), las sugerencias con `sesion.add_all(...)` (`sugerencias.py:262`) y los
+  pasos con `sesion.add(nuevo)` (`acciones.py:313`). Después hay un solo flush.
+- **Lo que separa los `INSERT` es el dialecto.** SQLAlchemy 2.0.54 agrupa los `INSERT` de un mismo flush
+  (`insertmanyvalues`) en PostgreSQL, pero no en SQLite cuando necesita los ids generados. Medido con una tabla de
+  prueba: **8 filas son 8 `INSERT` en SQLite y 1 en PostgreSQL**.
+- **Lectura:** en RDS, `guardar-seccion` no crece con las dudas ni con los pasos. Solo crecen las filas por sentencia.
+  Las demás sentencias (5 a 14 `SELECT`) son constantes.
+- **Consecuencia para las pruebas:** las pruebas de presupuesto corren en SQLite y cuentan un `INSERT` por fila. Una
+  prueba de presupuesto de `guardar-seccion` tiene que contar los `INSERT` aparte, o aceptar que crecen solo en
+  SQLite.
+
+### Qué acciones necesitan volver a leer `GET planes`
+
+- **Hoy:** las seis acciones (crear, guardar sección, medidores, paso hecho, ordenar, eliminar) pasan por `accionPlanes`
+  (`store/servidor/planes.ts:8-12`), que hace el refresco completo y después `vencerSeccion('planes')`.
+- **Pedido doble:** con un desbloqueo SECCION_PLAN, `planes` se pide 2 veces (una dentro del refresco y otra al
+  vencerla).
+- **Qué devuelve cada acción:** solo `RespuestaAccion` (eventos, desbloqueos y notificaciones), sin el plan
+  (`services/api/planes.ts:15-60`). Ninguna puede actualizar el almacén por sí sola sin un cambio de contrato.
+- **Qué recalcula el servidor en cada acción:**
+
+| Acción | Qué cambia el servidor que el front no puede deducir | ¿Podría actualizar el almacén con su propia respuesta? |
+|---|---|---|
+| `medidores` | Nada más que los tres valores enviados | Sí, sin cambio de contrato: el front ya sabe lo que envió. |
+| `paso-hecho` | El estado del paso y el posible cierre de su duda (`cerrada_por_paso_id`) | Solo si la respuesta devuelve el plan (contrato). |
+| `ordenar` | Las prioridades | Sí, sin cambio de contrato (es el orden enviado). |
+| `eliminar` | Las prioridades de los demás | Con cuidado: hay que recalcular las prioridades. |
+| `crear` y `guardar-seccion` | Totales, estados de sección, dudas, sugerencias del LLM, `lista_para_comparar` | No: necesitan `GET planes` o que la acción devuelva el plan (contrato). |
+
+## 5. Catálogo
+
+- **Las 4 consultas de más** entre la cuenta a mitad y la que terminó (carrera 17 → 21, ocupación 13 → 17 y familia
+  9 → 13) **son una rama que se cumple, no crecimiento.**
+  - Son las mismas 4 sentencias en las tres rutas: `resultado_instrumento`, `dimension`, `coincidencia` con
+    `ocupacion`, y los conteos de `ocupacion_familia`.
+  - Representan el resultado de intereses para marcar la afinidad, y aparecen cuando la cuenta ya lo reveló.
+  - No dependen de favoritos, planes ni vistas: la cuenta que terminó tiene 25 favoritos, 3 planes y unas 180 vistas, y
+    aun así son 4.
+- **`ver-*` y el refresco.**
+  - **Qué devuelven:** `RespuestaAccion` con el evento `VISTA_*` y los desbloqueos que provoquen, por ejemplo una regla
+    que cuenta vistas de carreras.
+  - **Medido:** tras un `ver-carrera` sin desbloqueos no cambia nada en actividades, avance, resumen ni secciones.
+  - **Qué hace el front:** `useCatalogVisit.ts:19` descarta la respuesta, y `verEnCatalogo` (`catalogo.ts:307-315`)
+    siempre hace el refresco completo.
+  - **Conclusión:** la respuesta permite saltarse el refresco cuando `nuevos_desbloqueos` viene vacío (F2). Es el caso
+    más frecuente: cada detalle abierto.
+
+## 6. Investigaciones
+
+| Situación del salón | `entrevistas` (lista) | `entrevistas/{e}` (detalle) | `investigaciones` |
+|---|---|---|---|
+| 1 entrevista | 12 · 0,6 KB | 15 · 0,7 KB | 10 |
+| 25 entrevistas sin reacciones | 13 · 12,5 KB | 15 · 0,7 KB | — |
+| 25 entrevistas, 24 reacciones y 1 comentario en cada una | 13 · 12,6 KB (15,7 KB con `limite=50`) | 16 · **8,6 KB** | 10 |
+
+- **No crecen en consultas** con las entrevistas, las reacciones ni los comentarios. Las diferencias de 12 a 13 y de 15
+  a 16 aparecen cuando hay otras entrevistas o un comentario: son ramas.
+- **El tamaño sí crece:** el detalle trae todas las reacciones sin paginar (8,6 KB con 24) y la lista trae la página.
+
+## 7. Apoderado
+
+| Ruta | 1 hijo | 2 hijos | 3 hijos |
+|---|---|---|---|
+| `GET familia` | 8 · 0,7 KB | 10 · 1,2 KB | **12** · 1,6 KB |
+| `GET familia/resultados` (con y sin `?estudiante=`) | 9 · 22,2 KB | 9 | 9 |
+| `GET conversaciones?estudiante=` | 7 · 5,2 KB | 7 | 7 |
+| `GET /sesion` · `actividades` · `notificaciones` · `fichas` | 2 · 4 · 4 · 6 | igual | igual |
+
+- **`familia` crece con los hijos: 2 consultas por hijo.**
+  - **Dónde:** `consultar_familia` arma cada hijo en un bucle (`app/services/familia.py:168`) con `_estudiante`
+    (`:154-159`). Este llama a `nivel_actual(sesion, hijo)` y a `avance_ruta(sesion, hijo)`, y `avance_ruta` lee
+    `progresos_de(hijo.id)` (`:56`).
+  - **Cuánto pesa:** con 3 hijos, 4 consultas de más.
+  - **Corrección propuesta:** cargar los progresos y los desbloqueos de todos los hijos en una lectura (D-B3).
+- **`/instrumentos` repetido:**
+  - `useResultadosHijoSeccion` (`store/servidor/apoderadoResultados.ts:110-115`) revalida en cada montaje y en cada
+    cambio de hijo. Cada vez pide `familia/resultados` (22 KB) y `/instrumentos` (18,8 KB, el catálogo, que no depende
+    de la cuenta, `apoderado.ts:263`).
+  - Esto ocurre en cada visita a Inicio (`useParentOverview.ts:98`) y al detalle de un cuestionario
+    (`ParentQuestionnaireDetailView.tsx:49`).
+- **Las rutas del hijo:** el front del apoderado nunca llama a `/cuentas/{hijo}/actividades`, `avance`, `planes`,
+  `favoritos` ni `instrumentos`. Usa sus propias `actividades` y `familia`, `familia/resultados?estudiante=`, sus
+  `fichas`, `conversaciones?estudiante=` y el catálogo con su cuenta. Que esas rutas respondan al apoderado (fase A) es
+  la política de acceso del backend, no un uso del front.
+
+## A. Consultas por ruta (fase A)
+
+En cada celda: **consultas · ms · KB**. Un código HTTP al final indica que la ruta no respondió 200 para esa cuenta
+(409: sección cerrada). Mediana de 3 peticiones con la caché caliente.
+
+### Ingreso, sesión y mapa
+
+| Ruta | Nueva | A mitad | Terminó | Frecuencia en el front |
+|---|---|---|---|---|
+| `POST /sesion/ingresar` | 1 · 116 · 0,3 | | | Rara vez: al iniciar sesión. El tiempo es Argon2. |
+| `GET /sesion` | 2 · 9 · 0,1 | 2 · 10 · 0,1 | 2 · 10 · 0,1 | Cada ingreso |
+| `POST /acciones/ingresar` | 4 | | 4 (igual en los 62 ingresos) | Cada ingreso |
+| `GET actividades` | 7 · 22 · **54,8** | 7 · 29 · **42,5** | 5 · 21 · **30,9** | Cada ingreso **y tras cada acción** |
+| `GET avance` | 3 · 11 · 0,9 | 3 · 10 · 0,9 | 3 · 13 · 0,8 | Cada ingreso **y tras cada acción** |
+| `GET resumen` | 3 · 10 · 0,3 | 3 · 11 · 0,3 | 3 · 7 · 0,3 | Cada ingreso; tras una acción, solo con NIVEL |
+| `GET secciones` | 4 · 14 · 2,5 | 4 · 15 · 0,9 | 3 · 8 · 0,6 | Cada ingreso; tras una acción, solo con SECCION |
+| `GET secciones/{s}` | 4 · 12 · 0,4 | 3 · 13 · 0,1 | 3 · 11 · 0,1 | Al abrir una sección |
+| `GET presentaciones` | 3 · 11 · 0,0 | 3 · 11 · 0,0 | 3 · 7 · 0,0 | Cada ingreso |
+| `POST presentacion-vista` | 5 | | 5 | Al cerrar cada presentación de primera visita |
+| `GET progreso/{tipo}/{c}` | 4 · 8 · 0,3 | 4 · 13 · 0,3 | 4 · 11 · 0,3 | Al abrir la Ciudad cerrada, una ficha bloqueada, un sello o el perfil; se repite con cada recarga de actividades |
+| `GET notificaciones` | 4 · 9 · 0,0 | 4 · 10 · 4,2 | 4 · 12 · 4,2 | **2 veces por ingreso** |
+| `POST notificaciones/marcar-vistas` | 3 | | 3 | Cada actividad con cierre, cada toast y la campana |
+
+### Acciones del motor (fuera de alcance; solo como referencia)
+
+| Acción | Consultas | ¿Crece con el historial? | ms |
+|---|---|---|---|
+| `completar-actividad` | 8–12 (nueva 9; apoderado 9–10) | No | 27 |
+| `resolver-batalla` | 11–21 según la batalla | No | 33 |
+| `resolver-caso` | 6–11 | No | 26 |
+| `responder-items` | 8 | No | 23 |
+| `revelar-resultado` | 11–14 | n/d | 58 |
+
+### Instrumentos, catálogo, planes, diario, mochila, Central, investigaciones, familia y apoderado
+
+| Ruta | Nueva | A mitad | Terminó | Apoderado o hijo | Frecuencia |
+|---|---|---|---|---|---|
+| `GET /instrumentos` | 1 · 8 · **18,8** | 1 · 14 · 18,8 | 1 · 8 · 18,8 | | Al abrir el libro; en el apoderado, en cada visita a Inicio |
+| `GET /actividades/{a}/items` | 1 · 8 · 5,0 | 1 · 9 · 5,0 | 1 · 6 · 5,0 | | Al abrir un test o el drawer de Mara (se repite tras cada refresco con Mara seleccionada) |
+| `GET actividades/{a}/respuestas` | 3 · 10 · 0,1 | 3 · 11 · 0,1 | 3 · 8 · 1,6 | | Al abrir un test |
+| `GET instrumentos` | 5 · 13 · 1,3 | 5 · 16 · 1,3 | 5 · 14 · 1,2 | | Al abrir Mi perfil o el libro |
+| `GET instrumentos/TEST-RIASEC/resultado` | 6 · 10 · 409 | 6 · 14 · 409 | 7 · 15 · **22,0** | | **Cada ingreso y cada acción** |
+| `GET instrumentos/{i}/historial` | 3 · 8 · 0,0 | 3 · 13 · 0,0 | 7 · 28 · 22,0 | | Al abrir el libro |
+| `GET catalogo/carreras` | 409 | 8 · 21 · 5,6 | 8 · 12 · 5,6 | 7 · 17 · 5,6 | Al abrir; al escribir (espera de 300 ms) o filtrar (400 ms) |
+| `GET catalogo/carreras/{c}` | 409 | 17 · 30 · 14,5 | 21 · 36 · 14,5 | 15 · 22 · 14,5 | Cada detalle (caché LRU de 20) |
+| `GET catalogo/ocupaciones/{c}` | 409 | 13 · 20 · 3,0 | 17 · 36 · 3,0 | | Cada detalle |
+| `GET catalogo/familias/{f}` | 409 | 9 · 14 · 1,7 | 13 · 23 · 1,7 | | Al elegir una familia |
+| `GET catalogo/instituciones/{c}` | — | 9 · 19 · 1,3 | 9 · 18 · 1,3 | | Cada detalle |
+| `GET catalogo/familias`, `ubicaciones`, `grupos` | 409 | 4 | 4 | 3 | Una vez por sesión; `familias` sin caché en el guion |
+| `POST ver-carrera`, `ver-ocupacion`, `ver-institucion` | | | 4–9 | | Cada detalle, con refresco completo |
+| `GET favoritos` · `POST marcar-favorito` | 409 | 6 · 0,5 | 8 · 9,2 · 6–7 | | Al abrir el perfil o Mis planes · cada clic |
+| `GET planes` | 409 | 19 · 31 · 8,3 | 18 · 27 · 22,1 | | Al abrir y tras cada acción del plan |
+| `GET diario/entradas` | 409 | 4 · 12 · 0,0 | 4 · 10 · **28,2** (61 entradas, sin paginar) | | Al abrir el diario |
+| `GET diario/preguntas` · `amistad` · `check-ins` | 409 | 4 · 4 · 4 | 4 · 4 · 4 | | Al abrir; check-ins en cada ingreso |
+| `POST escribir-entrada` · `check-in` · `pregunta-del-dia` | | | 7–9 · 6 · 8 (61 veces, sin crecer) | | Cada acción del diario |
+| `GET logros` · `tematicas` | 6 · 3 | 6 · 3 | 6 · 3 | 2 (apoderado) | Al abrir el pasaporte |
+| `GET fichas` · `testimonios` | 6 · 6 | 6 · 6 | 6 · 10,1 KB · 6 · 9,0 KB | 6 · 3,0 KB | Al abrir la mochila; en el apoderado, en cada montaje |
+| `GET casos` · `batallas` · `batallas/{a}/preguntas` | 5 · 6 · 409 | 5 · 6 · 4 | 5 · 6 · 4 | | Al abrir; pedidos dobles (C) |
+| `GET investigaciones` · `entrevistas` · `entrevistas/{e}` | 409 | 409 | 10 · 12 · 15 | | Al abrir cada pantalla |
+| `GET conversaciones` | 409 | 6 · 5,5 KB | 6 · 5,1 KB | 7 · 5,2 KB | Al abrir Familia o Inicio del apoderado |
+| `GET familia` · `familia/resultados` | | | | 10 · 9 (22,2 KB) | Cada ingreso del apoderado · cada visita a Inicio |
+
+## B. Backend: ¿crece con…?
+
+«Sí» señala que las consultas crecen. El tamaño de la respuesta se anota aparte.
+
+| Ruta | Historial (eventos, diario, check-ins, notificaciones) | Elementos de la cuenta (planes, dudas, pasos, favoritos, ítems respondidos, resultados, conversaciones) | Catálogo y definición | Compañeros del salón | Hijos (apoderado) |
+|---|---|---|---|---|---|
+| Ingreso y arranque (`sesion`, `ingresar`, `actividades`, `avance`, `resumen`, `secciones`, `presentaciones`, `notificaciones`) | No (62 ingresos, 61 días) | No | No: lo fijan `test_presupuestos_motor.py` (100 actividades y 100 reglas) y `test_bloqueo_actividades.py` | — | — |
+| `registro/responder`, `entregar` y `GET registro` | No | No (2 o 3 planes, 65 en `b4-1`) | **Sí: con los ítems del registro y las piezas de cada uno.** Tope: 5 ítems. | — | — |
+| `GET planes` | No | **No** (18 con 1–3 planes, 0–8 dudas y 0–10 pasos); el tamaño sí | — | — | — |
+| `planes/guardar-seccion` | No | **Solo en SQLite** (un `INSERT` por fila); en PostgreSQL se agrupan | — | — | — |
+| Detalles del catálogo | No (180 vistas) | No: 4 más por la rama del resultado revelado | Lo fija `test_catalogo.py` | — | — |
+| `favoritos` | — | No (lo fija `test_favoritos.py`) | | | |
+| `entrevistas` y `entrevistas/{e}` | — | No | — | **No** (de 1 a 25 entrevistas, 24 reacciones cada una); el tamaño del detalle sí | — |
+| `conversaciones` | No (12 cartas) | No | — | — | No |
+| `familia` | No | No | — | — | **Sí: +2 por hijo** (`familia.py:168`) |
+| `familia/resultados` | No | No | — | — | No |
+| `diario/*` y `check-ins` | No (61 entradas y check-ins); `diario/entradas` crece en tamaño | — | Lo fija `test_presupuesto_diario.py` | — | — |
+
+**Lecturas duplicadas dentro de una petición:**
+- **`registro/responder`:** el contexto del ítem guardado 2 veces, `validar_registro` 3 veces y los planes hasta 9 veces
+  dentro de un contexto.
+- **Todas las rutas:** la cuenta 2 veces (el guardia y la dependencia, ver 1c).
+- **El refresco y el libro de Helena (front):** ver C.
+
+## C. Front: carga y memoria
+
+Rutas relativas a `ov_frontend/src/`.
+
+### Peticiones por pantalla
+
+| Pantalla | Al entrar | Repetidas sin necesidad | Dobles | Por tecla |
+|---|---|---|---|---|
+| Ingreso y mapa del estudiante | `POST ingresar`, después `actividades`, `avance`, `resumen`, `secciones`, `presentaciones` y `notificaciones` (`refresco.ts:38-63`, `operaciones.ts:70`); `check-ins` si CHECK_IN está abierta (`refresco.ts:70-72`); el resultado RIASEC si `act-tip-final` está abierta (`refresco.ts:81-85`) | El resultado RIASEC en cada refresco. El drawer de Mara vuelve a pedir `/items` tras cada refresco (`useMapScreen.ts:97-120`). Con la Ciudad cerrada, `progreso/BLOQUE/CIUDAD` tras cada refresco (`useCityRequirement.ts:16-31`). | **Notificaciones**: `operaciones.ts:70` y `useNoveltyQueue.ts:90`. La deduplicación de `notificaciones.ts:77` solo cubre la petición en vuelo (`:94-96`). | — |
+| Reproductor: completar | `completar-actividad`, después el refresco completo | El resultado RIASEC | — | — |
+| Reproductor: cuestionario | `/items` y `respuestas` | El primer ítem lanza el refresco completo para ver EN_CURSO (`operaciones.ts:130-131`) | — | — |
+| Reproductor: registro | `registro` y `referencias`, una vez (`RegistroServidorPlayer.tsx:34`, `:41`) | — | — | `SubmissionNode.tsx:218-223` escribe el journey en `localStorage` en cada tecla (no pide al servidor) |
+| Batalla | `batallas` y `preguntas` | — | **`GET batallas`**: `useChallengePlayer.ts:43-62` y `useFichasBatalla.ts:16-35` (montado en `CaminoScreen.tsx:104` y `CiudadScreen.tsx:75`), sin caché | — |
+| Caso | `casos` y `ocupaciones-caso` | — | **`GET casos`**: `useCasoServidor.ts:24` (intro y página del caso), `useProgresoCaso.ts:26` (drawer, en cada selección) y otra vez tras resolver (`useForestFireCase.ts:113`), además del refresco | — |
+| Libro de Helena | `instrumentos`, un resultado por aplicación revelada, `comparacion`, `historial` y `/instrumentos` | Todo el libro con cada recarga de actividades (`useHelenaPages.ts:72-93`); `progreso/BLOQUE/CIUDAD` (`:85`) | Al revelar o reiniciar, 2 veces (`instrumentos.ts:153-182`) | — |
+| Mi perfil | `instrumentos` y resultados (`useStudentProfile.ts:37-39`), `logros` y `favoritos` | `cargarInstrumentos` sin caché en cada apertura (`instrumentos.ts:41-47`) | — | — |
+| Diario | `entradas` y `amistad`; `preguntas` con el diario abierto; `pregunta-del-dia` (una vez por día) | Cada acción hace el refresco completo y después `vencerDiario` (`diario.ts:22-25`) | Preguntas, si se desbloquea una PREGUNTA_DIARIO; check-ins tras el check-in (`diario.ts:64-70`) | El texto de la entrada repinta la página (K), sin peticiones |
+| Planes | `planes` (`usePlanesServidor.ts:14`) | Cada acción hace el refresco completo y después `vencerSeccion('planes')` (`planes.ts:8-12`) | `planes`, si se desbloquea una SECCION_PLAN | Los medidores y «Lo hice» guardan al instante: un clic, una acción y el refresco |
+| Catálogo | La lista; las opciones una vez por sesión (`catalogo.ts:260-280`) | Cada detalle dispara `ver-*` y el refresco completo (`catalogo.ts:307-315`) | — | Búsqueda con espera de 300 ms y filtros de 400 ms, con `AbortController` (`useCatalogoServidor.ts:48-49`, `:104-119`; `catalogo.ts:121-123`). Bien. |
+| Mochila | `fichas` y `testimonios`; el detalle de cada ficha queda en caché por sesión (`fichas.ts:33-45`) | — | — | — |
+| Investigaciones | `investigaciones` (revalidada al montar cada hook, `secciones.ts:198-206`), `entrevistas` y `logros` | Cada acción hace el refresco completo y vence investigaciones (`investigaciones.ts:28-38`) | **`GET catalogo/familias` sin caché**: `useBuscadorFamilia.ts:21-31` en cada montaje y `useGuionInvestigacion.ts:59` con `?familia` | La lista de entrevistas espera 300 ms (`useInvestigacionesListado.ts:50`); el buscador de familias filtra en el cliente |
+| Familia (estudiante) | `conversaciones`, revalidada en cada montaje | Cada acción hace el refresco completo y vence conversaciones (`conversaciones.ts:8-12`) | `conversaciones`, si se desbloquea una CONVERSACION | — |
+| Apoderado: Inicio | `POST ingresar`, `actividades` y `familia` (`apoderado.ts:107-120`); `conversaciones?estudiante=` (`apoderadoConversaciones.ts:174-180`); `familia/resultados` y `/instrumentos` (`apoderadoResultados.ts:110-115`) | Resultados y `/instrumentos` en cada visita | **Notificaciones**: `apoderado.ts:115` y `useParentOverview.ts:56` | — |
+| Apoderado: Actividades | `fichas` en cada montaje (`apoderadoFichas.ts:53-66`, `:104-109`), sin deduplicar en vuelo (`revision++`); también desde `ParentActivityView.tsx:20` | Completar pide de nuevo `actividades` y `familia` (`apoderado.ts:238-242`) | `fichas` | — |
+
+- **No hay sondeos periódicos.** Los `setInterval` del front solo mueven relojes y animaciones.
+- **`StrictMode` en desarrollo** duplica los efectos sin deduplicación. En producción no.
+
+### Almacenes de `store/servidor/` y almacenamiento del navegador
+
+| Almacén | Qué guarda | Cuándo lo descarta | ¿Acumula sin tope? |
+|---|---|---|---|
+| `sesion.ts` | Un objeto global: 15 secciones, `instrumentos`, `respuestasPartida`, `resultadoRiasec` y `porRevelar` | Al ingresar (`limpiarEstadoServidor`) | No (tamaño fijo) |
+| `secciones.ts` | Contadores y `pendientes`, por nombre | — | No |
+| `catalogo.ts` | Listas, turnos y peticiones por clase; `detalles` (LRU de 20); `fichas` de familia (`:60`, `:234`) | Al cambiar de sesión (`:74-86`) | **`fichas` de familia, sin tope** dentro de la sesión |
+| `fichas.ts:26` | Detalles de fichas con clave `sesion:codigo` | **Nunca** | **Sí, entre sesiones** |
+| `favoritos.ts:38` | Un `Map` por número de sesión | No borra las sesiones viejas | **Sí, entre sesiones** |
+| `casos.ts:37` | Directorios por lista de códigos | Al cambiar de sesión | Sin tope dentro de la sesión |
+| `entrevistas.ts` | `detalles` | Al cambiar de sesión | Sin tope dentro de la sesión |
+| `notificaciones` | La lista | Al cambiar de sesión | Crece con «Mostrar más» y con las acciones |
+| `apoderadoResultados`, `apoderadoConversaciones`, `apoderadoFichas` | `Record` por hijo o código | Al cambiar de cuenta | Acotado por los hijos |
+
+En `localStorage`, en modo api:
+
+| Clave | Qué guarda | Cuándo escribe |
+|---|---|---|
+| `ov.acceso.v1` | La sesión (`accesoStore.ts:10`, `:59`) | Al ingresar |
+| `ov.missions.v2.api` | La proyección de actividades y los borradores por cuenta (`journeyStore.ts:52-71`) | **En cada GET actividades** (`secciones.ts:122`) y **en cada tecla** de un texto (`SubmissionNode.tsx:220`). Cada vez se lee y se reescribe entero. |
+| `ov.student-adventure.v1.api` | `completedMissionIds` y el estado de la aventura (`adventureStore.ts:160-182`) | En cada GET actividades |
+| `ov.parent-missions.v1` | El journey del apoderado (`parentJourneyStore.ts:81`) | Tras sus actividades |
+| `ov.student-ui.v1` | Indicadores de interfaz (intros vistas, sonido, `lastMap`) | Al cambiar |
+
+`reflectionStore`, `followUpStore`, `discoveryStore` y `explorationStore` también escriben en `localStorage`. No se
+verificó si se usan en api. `sessionStorage` lo usa solo la orientadora.
+
+### Contenido estático y paquete
+
+- **Paquete:** un solo JS de **2.829 KB (817 KB comprimido)** y un CSS de 490 KB (84 KB comprimido). Vite avisa que
+  hay fragmentos de más de 500 KB.
+- **Sin división por rutas:** no hay `React.lazy`, `Suspense` ni `import()`. `routes/AppRoutes.tsx` importa todas las
+  páginas, incluidas las de la orientadora, y `vite.config.ts` no tiene `manualChunks`.
+- **Contenidos:** `data/activities/contenidos.ts` importa de forma estática los 132 JSON: 88 de `plataforma`
+  (unos 565 KB), 31 de `ruta` (unos 51 KB) y 13 de la raíz (unos 99 KB). Son unos 715 KB, más `catalogo.json`
+  (22 KB) y los 6 casos (unos 89 KB). Todos entran en el paquete inicial, también los de `ruta`, que en el despliegue
+  no se usan.
+- **Imágenes:** están en `public/` (212 MB) y se cargan por URL al mostrarlas. Ningún TS las importa.
+- **Para las pruebas:** 25 estudiantes que cargan el paquete por primera vez descargan unos 20 MB comprimidos en total
+  desde la CDN de Amplify. El servidor no lo nota, pero sí una wifi escolar lenta.
+
+### Repintados evidentes
+
+- **Global:**
+  - `useEstadoServidor` (`sesion.ts:151`) devuelve el almacén entero, y lo usan 38 archivos. Cada `useXServidor`
+    (`secciones.ts:176-185`) también se suscribe a todo.
+  - Un `refrescar` publica de 10 a 15 veces (`cargando`, `vencido` y `listo` por sección), y cada publicación repinta
+    a todos los consumidores.
+- **Mapa:**
+  - `getCaminoPoints` y `puntosServidor` se recalculan sin `useMemo`, 2 veces en `CaminoScreen.tsx:27`, `:115` y 2 en
+    `useMapScreen.ts:47`, `:62`.
+  - `details` y `conServidor` son objetos nuevos en cada render (`useMapScreen.ts:74-91`).
+  - `CaminoScreen.tsx:22` llama a `useEstadoServidor()` solo para suscribirse.
+- **Reproductor:** usa el journey entero (`useActivityPlayer.ts:34`). Cada tecla de `SubmissionNode` actualiza el
+  journey: escribe `localStorage` y avisa a todos sus suscriptores.
+- **Diario:** unos 20 `useState` en `useJournalPage.ts`; `body` (`:73`) repinta toda la página en cada tecla y
+  `usedTags` (`:145`) se recalcula sin memo.
+- **Planes:** `usePlanesServidor.ts:10` se suscribe al almacén entero solo para leer `secciones`.
+
+## D. Hallazgos y correcciones propuestas
+
+Columnas:
+- **Riesgo:** bajo, medio o alto.
+- **Lógica validada:** si toca el motor, el flujo del registro o el cálculo de resultados.
+- **Contrato:** si cambia la respuesta de una ruta.
+- **Cuándo:** antes del 18 solo entran correcciones de front de bajo riesgo, que no cambian contratos ni lógica
+  validada.
+
+### Backend
+
+| # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Riesgo | Lógica validada | Contrato | Cuándo |
+|---|---|---|---|---|---|---|---|---|---|
+| D-B1 | **Alta (operación)** | Argon2 usa 64 MiB por verificación; 25 ingresos simultáneos llegan a 1,6 GB. | `app/services/acceso.py:20` | Sin código, para el 18 y el 19: comprobar la instancia, agregar swap o subir a `t3.medium`, y escalonar el ingreso del salón. Con código: (a) un semáforo que limite las verificaciones simultáneas (p. ej. 4 por worker); (b) bajar `memory_cost` (los hashes guardan sus parámetros, así que los viejos siguen verificando, y `check_needs_rehash` permite migrarlos al ingresar). (b) es una decisión de seguridad. | (a) 1 h; (b) 1 h más la decisión | (a) bajo; (b) medio | No | No | Operación: antes del 18. Código: después del 19. |
+| D-B2 | **Alta (consultas)** | Registro: de 16 a 65 consultas por ítem; crece con los ítems y sus piezas (tope de 5 ítems, unas 115 consultas). El contexto del ítem guardado se resuelve 2 veces y `validar_registro` corre 3 veces. | `registro/consultas.py:64`, `:93`; `flujo.py:176`, `:219`; `contexto.py:488-504` | Opciones R1 a R4 de la sección 3. | R1 2 h; R2 1 a 1,5 días; R3 1 día; R4 1 día con el front | R1 bajo; R2 medio; R3 alto; R4 medio | **Sí** (flujo del registro) | R4 sí | Después del 19, una por una |
+| D-B3 | Media | `familia` hace 2 consultas por hijo. | `app/services/familia.py:154-168` | Cargar los progresos y desbloqueos de todos los hijos en una lectura del contexto antes del bucle. | 1 h | Bajo | No | No | Después del 19 (es backend) |
+| D-B4 | Media | Gasto fijo: la cuenta se lee 2 veces en cada petición. | `app/dependencies.py:55-69`, `:110` | Opciones 1 a 3 de 1c. Toca el acceso. | 1 a 2 h | Medio | No | No | Después del 19 |
+| D-B5 | Baja | `guardar-seccion` crece con dudas y pasos, **solo en SQLite**. | Dialecto (`insertmanyvalues`) | Nada en producción. En la prueba de presupuesto, contar los `INSERT` aparte. | — | — | No | No | — |
+| D-B6 | Media (red) | Ninguna respuesta JSON viaja comprimida (según el repo). | `despliegue/ec2/nginx-ov.conf` | `gzip on; gzip_types application/json; gzip_min_length 1024;` en nginx, o `GZipMiddleware`. Primero comprobar si Amplify ya comprime (1d). | 0,5 h | Bajo | No | No | Es configuración, no código del front: decides tú si entra antes del 18. |
+| D-B7 | Baja | `actividades` manda unos 25 KB de `condiciones_faltantes` que el front no lee (cuenta nueva). | `app/schemas/actividades.py:10-31` (`bloqueo: list[MotivoBloqueo]`) | Recortar `bloqueo` a `mensaje`, `evaluador_especial` y el `requerido` de la primera condición, o mandarlo solo en `progreso`. Con gzip pierde importancia. | 2 h más fixtures | Medio | No (el cálculo no cambia) | **Sí** | Después del 19 |
+| D-B8 | Baja | El detalle de una entrevista trae todas las reacciones sin paginar (8,6 KB con 24). | `entrevistas/{e}` | Nada por ahora. | — | — | No | Sí, si se pagina | — |
+| — | Anotación | `diario/entradas` pesa 28 KB con 61 entradas (1,4 KB comprimido). | | Sin propuesta, como se pidió. | | | | | |
+
+### Front
+
+| # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Riesgo | Lógica validada | Contrato | Cuándo |
+|---|---|---|---|---|---|---|---|---|---|
+| F1 | Media | Notificaciones 2 veces en cada ingreso, en el estudiante y en el apoderado. | `operaciones.ts:70` y `useNoveltyQueue.ts:90`; `apoderado.ts:115` y `useParentOverview.ts:56` | No volver a pedir si la lista ya está cargada en esta sesión (o compartir la promesa resuelta). | 0,5 h y una prueba | Bajo | No | No | **Antes del 18** |
+| F2a | **Alta (frecuencia)** | `ver-*` dispara el refresco completo al abrir cada detalle del catálogo (unas 15 consultas y 55 KB). | `catalogo.ts:307-315`, `useCatalogVisit.ts:19` | Refrescar solo si la respuesta trae `nuevos_desbloqueos`. Medido: sin desbloqueos no cambia nada en actividades, avance, resumen ni secciones. | 1 h y una prueba | Bajo | No | No | **Antes del 18** |
+| F2b | Alta | Todas las demás acciones refrescan actividades, avance y RIASEC aunque no cambien nada (diario, cartas, medidores, pasos, investigaciones). | `refresco.ts:38-48`, `:101-122` | Refresco condicional: actividades y avance solo con desbloqueos o eventos `COMPLETA_ACTIVIDAD` o `COMPLETA_BLOQUE`, o en la primera respuesta de un cuestionario. Mantener el refresco tras `completar-actividad`, batallas y casos. | 2 a 3 h y pruebas | Medio (toca la frescura del mapa en todas las acciones) | No | No | Después del 19 (o antes, limitado a diario, cartas y medidores, si lo apruebas) |
+| F3 | **Alta (frecuencia)** | El resultado RIASEC (7 consultas y 22 KB) se pide en cada ingreso y en cada refresco; al revelar o reiniciar, 2 veces; sin caché. | `refresco.ts:81-85`, `resultado.ts:15-22`, `instrumentos.ts:41-47`, `:153-182` | Pedirlo solo si no está cargado, y forzarlo solo tras `revelar-resultado` o `reiniciar-instrumento`. Tras un 409, no repetir hasta el próximo revelado. | 1 h y una prueba | Bajo | No (solo cuándo se lee) | No | **Antes del 18** |
+| F4 | Media | El libro de Helena se pide entero con cada recarga de actividades. | `useHelenaPages.ts:72-93` | Depender de un indicador de cambio (revelado o reinicio) y no de `actividades.datos`. | 1 h | Medio (pantalla de resultados) | No | No | Después del 19 |
+| F5 | Baja | `GET batallas` doble, `GET casos` hasta 4 veces por caso, `catalogo/familias` sin caché. | `useChallengePlayer.ts:43-62`, `useFichasBatalla.ts:16-35`; `useCasoServidor.ts:24`, `useProgresoCaso.ts:26`, `useForestFireCase.ts:113`; `useBuscadorFamilia.ts:21-31`, `useGuionInvestigacion.ts:59` | Compartir la petición en vuelo y reutilizar lo cargado. Para familias, usar `useOpcionesCatalogo`. | 1,5 h | Bajo | No | No | Antes del 18 (familias y batallas); casos después |
+| F6 | Baja | El apoderado pide `/instrumentos` (estático, 18,8 KB) y `familia/resultados` en cada visita a Inicio, y `fichas` en cada montaje sin deduplicar. | `apoderado.ts:263`, `apoderadoResultados.ts:110-115`, `apoderadoFichas.ts:53-66` | Guardar `/instrumentos` por sesión; deduplicar `fichas` en vuelo. | 1 h | Bajo | No | No | **Antes del 18** |
+| F7 | Media | Planes: cada medidor o paso hace el refresco completo más `GET planes` (39–41 consultas y unos 76 KB por clic); `planes` doble con SECCION_PLAN. | `planes.ts:8-12` | Medidores y orden: aplicar lo enviado al almacén sin `GET planes`. Lo demás, con F2b. | 1,5 h | Medio | No | No | Después del 19 |
+| F8 | Media | `localStorage` reescrito entero en cada GET actividades y en cada tecla de un texto. | `journeyStore.ts:52-71`, `secciones.ts:122`, `SubmissionNode.tsx:218-223`, `adventureStore.ts:160-182` | Escribir con espera (300 ms) y solo si cambió. | 1,5 h | Medio (borradores) | No | No | Después del 19 |
+| F9 | Media | Un solo paquete de 817 KB comprimido, con las páginas de la orientadora y los 132 JSON de contenido (incluidos los de `ruta`). | `routes/AppRoutes.tsx`, `data/activities/contenidos.ts`, `vite.config.ts` | `React.lazy` por portal y carga de contenidos por actividad (`import.meta.glob` perezoso). | 1 a 2 días | Medio | No | No | Después del 19 |
+| F10 | Baja | Repintados globales: almacén entero en 38 consumidores; el mapa recalcula sus puntos sin memo; el diario repinta en cada tecla. | K | Selectores por sección; `useMemo` en el mapa; bajar el estado del texto. | 1 a 2 días | Medio | No | No | Después del 19 |
+| F11 | Baja | `fichas.ts` y `favoritos.ts` acumulan entre sesiones. | `fichas.ts:26`, `favoritos.ts:38` | Vaciar al cambiar de sesión, como `catalogo.ts`. | 0,5 h | Bajo | No | No | Antes del 18 (opcional) |
+
+### Correcciones que tocan lógica validada (se deciden una por una)
+
+- **D-B2, registro (R1 a R4):** todas tocan el flujo del registro. R3, además, cambia por dentro `resolver_contexto`.
+- **Motor y cálculo de resultados:** fuera de alcance; no se proponen cambios. F3 y F4 solo cambian cuándo el front
+  lee el resultado, no cómo se calcula.
+
+### Integración y despliegue
+
+- **Ramas:**
+  - Esta rama (`ajuste/auditoria-panel`) tiene **15 commits que no están en `main`**, entre ellos las correcciones de
+    la auditoría del panel (`6e73a965`, `ef2d8bab` y `8a37b3e9`) y el cierre de su spec.
+  - `deploy` (lo que corre en EC2 y Amplify) tiene 42 commits menos que esta rama.
+- **Pasos para que las correcciones de antes del 18 lleguen a las pruebas:**
+  1. Integrar esta rama en `main`, con la suite completa en verde (`uv run pytest -n auto -q`; `npm test`,
+     `npm run build`, `npm run lint` y `npm run check:estructura`), o aplicar F1, F2a, F3, F5 (parcial) y F6 en una
+     rama nueva desde `main`.
+  2. Abrir un PR hacia `deploy`. Sus pruebas corren en GitHub Actions (`despliegue/README.md`, sección 7).
+  3. El push a `deploy` actualiza la EC2 y después Amplify. Las correcciones de front solo necesitan el build de
+     Amplify, pero el flujo despliega los dos.
+- **Las medidas de operación de D-B1** (instancia, swap e ingreso escalonado) y **D-B6** (nginx) no pasan por git: se
+  aplican en la EC2.
+
+## E. Lo que se midió y está bien
+
+- **LLM:** ninguna de las cuatro acciones que lo llaman retiene una conexión ni una transacción mientras espera
+  (medido con 25 esperas simultáneas).
+- **Concurrencia en PostgreSQL:** con 25 estudiantes a la vez, sin errores, sin esperas por bloqueos y con el pool
+  dentro de su tope.
+- **Bloqueo de ingreso:** es por cuenta, no por IP.
+- **Historial:** ninguna ruta crece con 62 ingresos, 61 check-ins, 61 entradas, unas 180 vistas ni 12 cartas.
+- **`GET planes`:** 18 consultas con cualquier número de planes, dudas o pasos.
+- **Catálogo:** las 4 consultas de más son una rama (el resultado revelado), no crecimiento con favoritos, planes ni
+  vistas.
+- **Entrevistas:** no crecen con las entrevistas, las reacciones ni los comentarios del salón.
+- **`familia/resultados` y `conversaciones`:** no crecen con los hijos.
+- **Registro:** no crece con los datos de la cuenta (planes, diario, vistas), solo con su definición.
+- **Front:** la búsqueda del catálogo espera y cancela; no hay sondeos; las opciones del catálogo se piden una vez; el
+  detalle de cada ficha y de cada carrera queda en caché; el registro se lee una vez por apertura; el apoderado no usa
+  las rutas del hijo.
+
+## F. Pruebas de presupuesto: qué hay y qué falta
+
+| Ya existe | Archivo | Qué fija |
+|---|---|---|
+| Rutas de dominio (`resumen`, `actividades`, `fichas`, `logros`, `testimonios`, `diario/preguntas`, `secciones`) y `completar-actividad` | `tests/integration/motor/test_presupuestos_motor.py` | No crecen con 100 actividades, 100 reglas ni 500 eventos |
+| Motivos de bloqueo | `tests/integration/actividades/test_bloqueo_actividades.py:72` | No crecen con las actividades bloqueadas |
+| Diario, `tematicas`, `logros` | `tests/integration/diario/test_presupuesto_diario.py:14` | No crecen con las entradas ni con las actividades |
+| Instrumentos y reinicio | `tests/integration/instrumentos/test_presupuestos_instrumentos.py:51` | |
+| Catálogo, favoritos, casos, batallas, testimonios, secciones y referencias | `test_catalogo.py:357`, `test_favoritos.py:78`, `test_casos.py:90`, `test_batallas.py:170`, `test_testimonios.py:63`, `test_secciones.py:123`, `test_referencias.py:149`, `:208` | No crecen con el catálogo |
+| Prioritarios del motor | `tests/integration/motor/test_prioritarios_motor.py:63` | |
+
+**Faltan**, con el patrón «pocos frente a muchos»:
+- **Registro:**
+  - `GET registro`, `registro/responder` y `registro/entregar` contra los datos de la cuenta (1 o 3 planes, con y sin
+    resultados, ítems respondidos). Hoy pasarían.
+  - Contra los ítems del registro. Hoy fallaría por D-B2: sirve de prueba de aceptación de la corrección que se elija.
+- **`GET planes`:** contra 1 o 3 planes, 0 u 8 dudas y 0 o 10 pasos. Hoy pasaría.
+- **`planes/guardar-seccion`:** contra 0 u 8 dudas y 0 o 10 pasos, contando los `SELECT` sin los `INSERT`, o con
+  `TEST_POSTGRES_URL`. Hoy pasaría así.
+- **`familia`:** contra 1 o 3 hijos. Hoy fallaría por D-B3. También `familia/resultados` y `conversaciones` contra los
+  hijos (hoy pasarían).
+- **Investigaciones:** `entrevistas` y `entrevistas/{e}` contra 1 o 25 entrevistas con reacciones y comentarios; y
+  `investigaciones`. Hoy pasarían.
+- **Arranque:** `sesion`, `acciones/ingresar`, `avance`, `notificaciones` y `presentaciones` contra el historial
+  (ingresos, notificaciones). Hoy pasarían.
+- **`conversaciones` (estudiante) y `escribir-carta`:** contra las cartas. Hoy pasarían.
+- **Gasto fijo:** una prueba que fije en 2 las consultas de `GET /sesion`, para que no crezca el acceso.
+- **Front (`tests/servidor`):**
+  - F1: una sola lectura de notificaciones al ingresar;
+  - F2a: `ver-*` sin desbloqueos no pide actividades;
+  - F3: el resultado RIASEC no se vuelve a pedir tras una acción;
+  - F6: `/instrumentos` una vez por sesión en el apoderado.
+
+## Pendientes de la auditoría del panel
+
+- **¿La prueba de respuestas idénticas compara con `resolver_contexto` en vivo?** Sí.
+  `tests/integration/panel/test_panel_contexto_lectura.py:72`
+  (`test_el_contexto_de_cada_item_es_el_de_resolver_contexto`) compara, ítem por ítem, lo que arma `LecturaContexto`
+  (`_con_lectura`, `:58-61`) con `resolver_contexto` llamado en vivo (`_en_vivo`, `:64-69`, que importa
+  `app.services.registro.contexto.resolver_contexto`, `:22`).
+- **¿El corte de coincidencias sale de los parámetros?** Sí. `app/services/instrumentos/consultas.py:338` calcula
+  `tope = max(MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES)` (hoy 30 y 10, `app/core/parametros.py:12-13`) y
+  filtra con `Coincidencia.posicion <= tope` (`:340`, `:344`). No hay un 30 fijo. `tests/integration/panel/
+  test_panel_intereses.py` usa esos parámetros.
