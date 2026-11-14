@@ -6,9 +6,9 @@ import { subrutasFamilia } from './SubrutasFamilia'
 import { rutasInvestigaciones } from './SubrutasInvestigaciones'
 import { rutasLibroHelena } from './SubrutasLibroHelena'
 import { subrutasExplorar } from './SubrutasExplorar'
+import { subrutasPanelSalon } from './SubrutasPanelSalon'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
-import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
 import { CounselorPortalModule } from '@/pages/counselor/CounselorPortalModule'
 import { CounselorSettingsView } from '@/pages/counselor/CounselorSettingsView'
 import { PrioritiesView } from '@/pages/counselor/PrioritiesView'
@@ -257,7 +257,7 @@ function AppRoutes() {
 
       <Route element={<CounselorPortalModule />} path="/counselor">
         <Route element={<Navigate replace to={appPaths.counselor.home} />} index />
-        <Route element={<CounselorDashboardView />} path="home" />
+        {subrutasPanelSalon()}
         <Route element={<StudentsView />} path="students" />
         <Route element={<PrioritiesView />} path="students/priorities" />
         <Route

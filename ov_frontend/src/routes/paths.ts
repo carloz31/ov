@@ -79,6 +79,9 @@ const appPaths = {
   counselor: {
     root: '/counselor',
     home: '/counselor/home',
+    // Ajuste panel-salon (solo api): las listas completas de intereses del salón.
+    homeAreas: '/counselor/home/areas',
+    homeInstituciones: '/counselor/home/instituciones',
     dashboard: '/counselor/home',
     classrooms: '/counselor/classrooms',
     students: '/counselor/students',

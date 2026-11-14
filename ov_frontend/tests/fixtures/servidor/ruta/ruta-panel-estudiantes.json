@@ -1,0 +1,27 @@
+[
+  {
+    "codigo": "est-ana",
+    "nombre": "Ana",
+    "salon": "Quinto A"
+  },
+  {
+    "codigo": "est-luis",
+    "nombre": "Luis",
+    "salon": "Quinto A"
+  },
+  {
+    "codigo": "est-mia",
+    "nombre": "Mía",
+    "salon": "Quinto A"
+  },
+  {
+    "codigo": "est-sol",
+    "nombre": "Sol",
+    "salon": "Quinto A"
+  },
+  {
+    "codigo": "est-teo",
+    "nombre": "Teo",
+    "salon": "Quinto A"
+  }
+]

@@ -333,3 +333,5 @@ export type RespuestaResolverCaso = RespuestaAccion & {
   puntaje_minimo: number
   puntaje_maximo: number
 }
+// app/schemas/panel.py vive en servidorPanel.ts (ajuste panel-salon).
+export * from './servidorPanel'

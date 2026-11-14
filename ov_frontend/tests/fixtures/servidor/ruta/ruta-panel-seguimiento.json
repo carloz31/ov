@@ -1,0 +1,145 @@
+{
+  "avisos": {
+    "con_avisos": 5,
+    "grupos": [
+      {
+        "alertas": [
+          {
+            "cantidad": 5,
+            "codigo": "sin-ingreso",
+            "descripcion": null,
+            "nombre": "No ingresan hace 7 días o más",
+            "nombres": [
+              "Ana",
+              "Luis",
+              "Mía",
+              "Sol",
+              "Teo"
+            ]
+          },
+          {
+            "cantidad": 5,
+            "codigo": "familia-pendiente",
+            "descripcion": null,
+            "nombre": "Su familia aún no se registra",
+            "nombres": [
+              "Ana",
+              "Luis",
+              "Mía",
+              "Sol",
+              "Teo"
+            ]
+          }
+        ],
+        "codigo": "atras",
+        "nombre": "Se están quedando atrás"
+      }
+    ]
+  },
+  "cuestionarios": [
+    {
+      "aplicacion": "APL-PARTIDA",
+      "etiqueta": "CAMINO",
+      "n": 2,
+      "nombre": "Punto de partida"
+    },
+    {
+      "aplicacion": "APL-LLEGADA",
+      "etiqueta": "CAMINO",
+      "n": 1,
+      "nombre": "Punto de llegada"
+    },
+    {
+      "aplicacion": "APL-INTELIGENCIAS",
+      "etiqueta": "OPCIONAL",
+      "n": 0,
+      "nombre": "Inteligencias"
+    },
+    {
+      "aplicacion": "APL-HABILIDADES",
+      "etiqueta": "OPCIONAL",
+      "n": 0,
+      "nombre": "Habilidades sociales"
+    }
+  ],
+  "detenidos": null,
+  "fecha": "2026-10-20",
+  "indicadores": {
+    "con_plan_a": 2,
+    "con_tres_planes": 0,
+    "dias_ingreso": 7,
+    "familias_conversaron": 1,
+    "familias_participando": 0,
+    "familias_ruta_completa": 2,
+    "ingresaron": 0,
+    "test_listo": 1,
+    "test_por_revisar": 0,
+    "test_sin_terminar": 4
+  },
+  "salon": {
+    "codigo": "5A",
+    "nombre": "Quinto A"
+  },
+  "seguridad": {
+    "bandas": [
+      {
+        "cantidad": 0,
+        "codigo": "BAJA",
+        "desde": 1,
+        "hasta": 2
+      },
+      {
+        "cantidad": 1,
+        "codigo": "MEDIA",
+        "desde": 3,
+        "hasta": 3
+      },
+      {
+        "cantidad": 0,
+        "codigo": "ALTA",
+        "desde": 4,
+        "hasta": 5
+      }
+    ],
+    "sin_senales": 4
+  },
+  "test": {
+    "en_curso": 0,
+    "etiqueta": "REQUISITO",
+    "instrumento": "TEST-RIASEC",
+    "listo": 1,
+    "nombre": "Test de intereses",
+    "perfil_plano": 0,
+    "por_revisar": 0,
+    "prisa": 0,
+    "sin_empezar": 4
+  },
+  "total_estudiantes": 5,
+  "tramos": [
+    {
+      "cantidad": 3,
+      "codigo": "SIN_EMPEZAR",
+      "nombre": "Sin empezar"
+    },
+    {
+      "cantidad": 0,
+      "codigo": "T0",
+      "nombre": "Inicio"
+    },
+    {
+      "cantidad": 0,
+      "codigo": "T1",
+      "nombre": "Camino"
+    },
+    {
+      "cantidad": 2,
+      "codigo": "T2",
+      "nombre": "Decisión"
+    },
+    {
+      "cantidad": 0,
+      "codigo": "TERMINO",
+      "nombre": "Terminó"
+    }
+  ]
+}

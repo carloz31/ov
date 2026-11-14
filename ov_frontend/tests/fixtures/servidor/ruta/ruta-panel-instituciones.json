@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "codigo": "inst-63",
+      "en_planes": 1,
+      "gestion": "PUBLICA",
+      "nombre": "Universidad Nacional Federico Villarreal",
+      "plan_a": 1,
+      "solo_favoritos": 0,
+      "tipo": "UNIVERSIDAD",
+      "total": 1
+    }
+  ],
+  "plan_a_sin_institucion": 1,
+  "tipos": [
+    "UNIVERSIDAD"
+  ],
+  "total": 1
+}
