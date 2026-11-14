@@ -1,7 +1,7 @@
 import { progresoBloque } from '@/lib/servidor/contenidos'
 import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
-import { useEstadoServidor, mensajeErrorServidor } from '@/store/servidor/sesion'
+import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarProgreso } from '@/store/servidor/consultas'
 import { useRevisionAcciones } from '@/store/servidor/refresco'
 import { textoRequisito } from '@/lib/servidor/adaptadores'
@@ -26,7 +26,7 @@ export function useCityRequirement(adventure: AdventureState) {
       if (!vigente) return
       setError(r.tipo !== 'ok')
       setRequisito(
-        r.tipo === 'ok' ? textoRequisito(r.datos, servidor.actividades.datos) : mensajeErrorServidor(r),
+        r.tipo === 'ok' ? textoRequisito(r.datos, obtenerEstadoServidor().actividades.datos) : mensajeErrorServidor(r),
       )
     })
     return () => {
