@@ -149,16 +149,23 @@ function subscribe(listener: () => void) {
 }
 window.addEventListener('storage', (event) => {
   if (event.key === storageKey || event.key === null) {
+    escritoAventura = null
     state = readState()
     listeners.forEach((listener) => listener())
   }
 })
+// Auditoría plataforma (F8), solo en api: un estado igual al ya guardado (cada GET actividades lo vuelve a hidratar)
+// no se reescribe ni avisa. En local, cada cambio se escribe como antes.
+let escritoAventura: string | null = null
 export function updateAdventure(update: (current: AdventureState) => AdventureState) {
   const next = update(state)
-  state = {
+  const siguiente = {
     ...next,
     lumiRegistrations: trackLumiEntries(state.lumiRegistrations, state.journal, next.journal),
   }
+  const serializado = cuentaServidor ? JSON.stringify(siguiente) : null
+  if (serializado !== null && serializado === escritoAventura && !storageError) return
+  state = siguiente
   try {
     if (cuentaServidor) {
       const almacen = JSON.parse(localStorage.getItem(storageKey) || 'null')
@@ -167,6 +174,7 @@ export function updateAdventure(update: (current: AdventureState) => AdventureSt
         JSON.stringify({ por_cuenta: { ...almacen?.por_cuenta, [cuentaServidor]: state } }),
       )
     } else localStorage.setItem(storageKey, JSON.stringify(state))
+    escritoAventura = serializado
     storageError = false
   } catch {
     storageError = true
@@ -181,6 +189,7 @@ export function configurarAdventureServidor(cuenta: string, consultarCiudad: () 
   if (cuentaServidor === cuenta) return
   storageKey = 'ov.student-adventure.v1.api'
   cuentaServidor = cuenta
+  escritoAventura = null
   state = readState()
   storageError = false
   listeners.forEach((listener) => listener())

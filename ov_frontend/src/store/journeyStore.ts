@@ -47,8 +47,44 @@ const subscribe = (listener: () => void) => {
     listeners.delete(listener)
   }
 }
-export function updateJourney(update: (current: JourneyState) => JourneyState) {
+// Auditoría plataforma (F8), solo en api: lo que no cambió no se reescribe, y el borrador que se teclea se escribe con
+// espera (`diferido`). Lo pendiente se guarda antes de cualquier otra escritura, al salir del campo, al desmontar, al
+// enviar y al cerrar la página (`guardarJourneyPendiente`). En local, cada cambio se escribe como antes.
+const ESPERA_ESCRITURA_MS = 300
+let pendiente: ReturnType<typeof setTimeout> | null = null
+let escrito: string | null = null
+export function guardarJourneyPendiente() {
+  if (!pendiente) return !storageError
+  clearTimeout(pendiente)
+  pendiente = null
+  return guardarJourney(state)
+}
+export function updateJourney(
+  update: (current: JourneyState) => JourneyState,
+  opciones: { diferido?: boolean } = {},
+) {
   const next = update(state)
+  if (opciones.diferido && cuentaServidor) {
+    state = next
+    if (pendiente) clearTimeout(pendiente)
+    pendiente = setTimeout(guardarJourneyPendiente, ESPERA_ESCRITURA_MS)
+    listeners.forEach((listener) => listener())
+    return true
+  }
+  if (pendiente) {
+    clearTimeout(pendiente)
+    pendiente = null
+  }
+  return guardarJourney(next)
+}
+function guardarJourney(next: JourneyState) {
+  const serializado = cuentaServidor ? JSON.stringify(next) : null
+  if (serializado !== null && serializado === escrito) {
+    state = next
+    storageError = ''
+    listeners.forEach((listener) => listener())
+    return true
+  }
   try {
     if (cuentaServidor) {
       const almacen = JSON.parse(localStorage.getItem(key) ?? 'null')
@@ -58,6 +94,7 @@ export function updateJourney(update: (current: JourneyState) => JourneyState) {
       )
     } else localStorage.setItem(key, JSON.stringify(next))
     state = next
+    escrito = serializado
     storageError = ''
   } catch {
     storageError = 'No se pudo guardar. Libera espacio o permite el almacenamiento y vuelve a intentarlo.'
@@ -68,6 +105,8 @@ export function updateJourney(update: (current: JourneyState) => JourneyState) {
 // Sin red ni configuración de Vite: el módulo de servidor configura y proyecta.
 export function configurarJourneyServidor(cuenta: string) {
   if (cuentaServidor === cuenta) return
+  guardarJourneyPendiente()
+  escrito = null
   key = 'ov.missions.v2.api'
   cuentaServidor = cuenta
   state = read()
@@ -86,8 +125,10 @@ export function hidratarJourneyServidor(proyectar: (actual: JourneyState) => Jou
 export const useJourney = () => useSyncExternalStore(subscribe, () => state)
 export const getJourneySnapshot = () => state
 export const useJourneyError = () => useSyncExternalStore(subscribe, () => storageError)
+window.addEventListener('pagehide', () => guardarJourneyPendiente())
 window.addEventListener('storage', (event: StorageEvent) => {
   if (event.key === key || event.key === null) {
+    escrito = null
     state = read()
     listeners.forEach((listener) => listener())
   }
