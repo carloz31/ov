@@ -10,3 +10,4 @@
 - `senales_recientes` devuelve nivel y fecha; `Lecturas.senales` sigue dando solo niveles para el Inicio.
 - Las complicaciones de una lista se escriben en minúscula dentro de la frase del tema; las escritas por el estudiante, tal cual.
 - Notas como acciones (`escribir-nota`, `editar-nota`, `borrar-nota`), no rutas REST: en el repo toda escritura es `POST /acciones/*` (decidido por el usuario).
+- `validar_eleccion` guarda `origen` y `grupo` de las piezas (decisión aprobada en el plan); se adaptó `test_piezas_se_validan_contra_las_ofrecidas_con_su_texto` a la nueva forma.

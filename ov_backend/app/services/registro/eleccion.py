@@ -46,7 +46,8 @@ def es_pieza(item, opcion):
 
 def validar_eleccion(item, opciones, elegidas, exigir_minimo):
     """Devuelve la elección para guardar: `[{codigo, texto}]`, con el texto tal como se mostró (la etiqueta, el de la
-    referencia o la pieza, o lo escrito en «¿Cuál?»).
+    referencia o la pieza, o lo escrito en «¿Cuál?»). Una pieza guarda además su `origen` y su `grupo` mostrados (ajuste
+    panel-estudiantes: la orientadora ve de dónde sale); no cambian lo que recibe el estudiante ni lo que va al LLM.
 
     `opciones` son las que el ítem le ofrece a la cuenta, en su orden: las de `resolver_contexto` (`OpcionContexto`,
     también las piezas) u `OpcionItem`. Sin exigir el mínimo se valida todo lo demás. Una elección no ordenada se guarda
@@ -61,13 +62,14 @@ def validar_eleccion(item, opciones, elegidas, exigir_minimo):
     codigos = [elegida.codigo for elegida in elegidas]
     if len(codigos) != len(set(codigos)):
         raise invalida('No se puede elegir la misma opción dos veces')
-    textos = {}
+    textos, piezas = {}, {}
     for elegida in elegidas:
         opcion = por_codigo.get(elegida.codigo)
         if opcion is not None and es_pieza(item, opcion):
             if elegida.texto != opcion.texto:
                 raise invalida(f'La pieza {elegida.codigo} no se ofrece con ese texto')
             textos[elegida.codigo] = opcion.texto
+            piezas[elegida.codigo] = {'origen': opcion.origen, 'grupo': opcion.grupo}
         elif opcion is not None:
             # Una opción de referencia guarda el texto vigente; el que traiga la petición se ignora.
             if elegida.texto is not None and not getattr(opcion, 'de_referencia', False):
@@ -91,4 +93,5 @@ def validar_eleccion(item, opciones, elegidas, exigir_minimo):
         raise invalida(f'Se deben elegir al menos {item.eleccion_minima} opciones')
     if not item.eleccion_ordenada:
         elegidas = sorted(elegidas, key=lambda elegida: orden.get(elegida.codigo, len(orden)))
-    return [{'codigo': elegida.codigo, 'texto': textos[elegida.codigo]} for elegida in elegidas]
+    return [{'codigo': elegida.codigo, 'texto': textos[elegida.codigo], **piezas.get(elegida.codigo, {})}
+            for elegida in elegidas]

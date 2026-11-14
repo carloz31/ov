@@ -8,15 +8,18 @@ from app.core.parametros import LIMITE_PAGINA_CATALOGO
 from app.dependencies import Ahora, SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.panel import EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel
+from app.schemas.instrumentos import ResultadoPublico
 from app.schemas.panel_estudiante import (
-    BorrarNotaEntrada, EditarNotaEntrada, EscribirNotaEntrada, NotaBorrada, NotaPerfil, PaginaEstudiantes,
-    PerfilEstudiante,
+    AvanceEstudiantePerfil, BorrarNotaEntrada, EditarNotaEntrada, EscribirNotaEntrada, NotaBorrada, NotaPerfil,
+    PaginaEstudiantes, PerfilEstudiante, PlanCompleto, PlanesEstudiante, RegistroLectura, RespuestasEstudiante,
+    RespuestasPartidaLlegada, TestsEstudiante,
 )
 from app.services.panel import estudiantes as estudiantes_panel
 from app.services.panel import intereses as intereses_panel
 from app.services.panel import lista as lista_panel
 from app.services.panel import notas as notas_panel
 from app.services.panel import perfil as perfil_panel
+from app.services.panel import perfil_avance, perfil_planes, perfil_respuestas, perfil_tests
 from app.services.panel import seguimiento as seguimiento_panel
 
 router = APIRouter(tags=["Panel del salón"])
@@ -77,6 +80,48 @@ def consultar_lista_estudiantes(cuenta: str, sesion: SesionBD, ahora: Ahora, sal
 @router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}", response_model=PerfilEstudiante)
 def consultar_perfil(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
     return _consultar(lambda: perfil_panel.perfil(sesion, cuenta, estudiante, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/tests", response_model=TestsEstudiante)
+def consultar_tests(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_tests.tests(sesion, cuenta, estudiante, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/tests/partida-llegada",
+            response_model=RespuestasPartidaLlegada)
+def consultar_partida_llegada(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_tests.respuestas_partida_llegada(sesion, cuenta, estudiante, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/tests/{aplicacion}/resultado",
+            response_model=ResultadoPublico)
+def consultar_resultado(cuenta: str, estudiante: str, aplicacion: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_tests.resultado_completo(sesion, cuenta, estudiante, aplicacion, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/planes", response_model=PlanesEstudiante)
+def consultar_planes(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_planes.planes(sesion, cuenta, estudiante, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/planes/{prioridad}", response_model=PlanCompleto)
+def consultar_plan(cuenta: str, estudiante: str, prioridad: int, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_planes.plan_completo(sesion, cuenta, estudiante, prioridad, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/respuestas", response_model=RespuestasEstudiante)
+def consultar_respuestas(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_respuestas.respuestas(sesion, cuenta, estudiante, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/respuestas/{actividad}", response_model=RegistroLectura)
+def consultar_registro_respuestas(cuenta: str, estudiante: str, actividad: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_respuestas.registro(sesion, cuenta, estudiante, actividad, ahora))
+
+
+@router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/avance", response_model=AvanceEstudiantePerfil)
+def consultar_avance(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
+    return _consultar(lambda: perfil_avance.avance(sesion, cuenta, estudiante, ahora))
 
 
 @router.post("/acciones/escribir-nota", response_model=NotaPerfil)

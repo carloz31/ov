@@ -60,8 +60,9 @@ def test_piezas_se_validan_contra_las_ofrecidas_con_su_texto():
     piezas = item(lista_id=None, fuente_opciones='PIEZAS_PERFIL', eleccion_maxima=2)
     ofrecidas = (OpcionContexto('INTEL-ESP', 'Ver formas', origen='Tu test de inteligencias'),
                  OpcionContexto('GUSTO', '«Armar castillos»', origen='Lo que te encantaba de niño'))
+    # Ajuste panel-estudiantes: la pieza guarda también el origen y el grupo que se mostraron.
     assert validar_eleccion(piezas, ofrecidas, elegidas(('INTEL-ESP', 'Ver formas')), True) == [
-        {'codigo': 'INTEL-ESP', 'texto': 'Ver formas'}]
+        {'codigo': 'INTEL-ESP', 'texto': 'Ver formas', 'origen': 'Tu test de inteligencias', 'grupo': None}]
     for pares in ((('INTEL-ESP', 'Otro texto'),), (('GUSTO', None),), (('INI-OPCION', 'x'),),
                   (('CUESTA-MATEMATICA', 'x'),)):
         with pytest.raises(ErrorAccion):

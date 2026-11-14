@@ -159,3 +159,22 @@ def alertas_de(sesion, codigo, en_inicio=True, ahora=AHORA):
         return {a.alerta.codigo: (a.nombre_perfil(estudiante_id), a.descripcion_perfil(estudiante_id))
                 for a in calcular_alertas(lecturas, en_inicio) if estudiante_id in a.datos}
     return calcular(sesion)
+
+
+def responder_autopercepcion(sesion, codigo, actividad, por_item, defecto=3):
+    """DATO DE PRUEBA: respuestas de partida (`t-partida`) o llegada (`t-llegada`): `{numero de ítem: orden de la
+    opción}` (1 Nada de acuerdo … 4 Muy de acuerdo); el resto con `defecto`."""
+    actividad_id = sesion.scalar(select(m.Actividad.id).where(m.Actividad.codigo == actividad))
+    progreso = m.ProgresoActividad(cuenta_id=cuenta(sesion, codigo).id, actividad_id=actividad_id,
+                                   estado=m.EstadoProgreso.COMPLETADA)
+    sesion.add(progreso)
+    sesion.flush()
+    items = sesion.execute(select(m.ItemInstrumento).join(
+        m.ActividadItem, m.ActividadItem.item_id == m.ItemInstrumento.id).where(
+        m.ActividadItem.actividad_id == actividad_id)).scalars().all()
+    for item in items:
+        opcion = sesion.scalar(select(m.OpcionEscala.id).where(m.OpcionEscala.escala_id == item.escala_id,
+                                                               m.OpcionEscala.orden == por_item.get(item.numero, defecto)))
+        sesion.add(m.RespuestaItem(progreso_id=progreso.id, item_id=item.id, opcion_id=opcion, creada_en=AHORA,
+                                   actualizada_en=AHORA))
+    return {item.numero: item for item in items}

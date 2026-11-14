@@ -428,3 +428,67 @@ class AvanceEstudiantePerfil(BaseModel):
     entradas_diario: int
     dias_ultima_entrada: int | None
     familia: FamiliaAvance | None
+
+
+# --- Pestaña Respuestas --------------------------------------------------------------------------
+
+EtiquetaRespuesta = Literal["REQUIERE_ATENCION", "SIN_CONTENIDO", "AUN_NO_LO_SABE"]
+
+
+class ConteoEtiqueta(BaseModel):
+    etiqueta: EtiquetaRespuesta
+    cantidad: int
+
+
+class OpcionElegidaLectura(BaseModel):
+    """`otra`: lo escribió el estudiante en «Otra». `origen` y `grupo`: de dónde sale una pieza (nulos en las
+    respuestas anteriores a que se guardaran)."""
+    texto: str
+    otra: bool
+    origen: str | None
+    grupo: str | None
+
+
+class ItemLectura(BaseModel):
+    """Un ítem con el intento vigente, con las preguntas y ecos con los valores con que respondió. `ecos` son los
+    ecos mostrados tal como se guardaron (mismas formas que ve el estudiante); `ecos_hoy`, los de hoy cuando lo que
+    tenía a la vista cambió; `ecos_de_hoy`: la respuesta no guardó sus ecos y se muestran los de hoy."""
+    numero: int
+    codigo: str
+    nombre: str
+    etiquetas: list[EtiquetaRespuesta]
+    dialogo: str | None
+    ecos: list[dict]
+    ecos_hoy: list[dict] | None
+    ecos_de_hoy: bool
+    pregunta_eleccion: str | None
+    eleccion: Literal["LISTA", "ORDENADA", "PIEZAS"] | None
+    elegidas: list[OpcionElegidaLectura]
+    pregunta_texto: str
+    primera_respuesta: str | None
+    repregunta: str | None
+    segunda_respuesta: str | None
+    respondido: bool
+
+
+class RegistroFila(BaseModel):
+    actividad: str
+    titulo: str
+    tramo: str
+    ciudad: bool
+    destacado: bool
+    estado: Literal["COMPLETADO", "EN_CURSO", "AUN_NO_LLEGA"]
+    fecha: date | None
+    etiquetas: list[ConteoEtiqueta]
+    cambio_despues: bool = Field(description="Lo que tenía a la vista cambió después.")
+
+
+class RegistroLectura(BaseModel):
+    actividad: str
+    items: list[ItemLectura]
+
+
+class RespuestasEstudiante(BaseModel):
+    hay_destacados: bool
+    registros: list[RegistroFila]
+    leer_primero: list[RegistroLectura]
