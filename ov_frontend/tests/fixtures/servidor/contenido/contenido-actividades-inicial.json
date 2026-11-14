@@ -536,74 +536,12 @@
             "regla": "R-B2"
           }
         ],
-        "codigo": "b2-1",
-        "contenido": "b2_1",
-        "descripcion": "Rosa, jefa de la brigada del volcán, busca brigadista: liderazgo, iniciativa, trabajo en equipo. Descubre qué son las habilidades sociales.",
-        "duracion_estimada_min": 12,
-        "estado": "BLOQUEADA",
-        "orden": 1,
-        "requerida": true,
-        "tipo": "INFORMATIVA",
-        "titulo": "Las habilidades sociales",
-        "visibilidad": "SIEMPRE",
-        "visible": true
-      },
-      {
-        "bloqueo": [
-          {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": "B1",
-                "requerido": 1,
-                "texto": null,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "COMPLETA_BLOQUE"
-              }
-            ],
-            "evaluador_especial": null,
-            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
-            "regla": "R-B2"
-          }
-        ],
-        "codigo": "b2-2",
-        "contenido": "b2_2",
-        "descripcion": "Ayuda a Rosa a repartir las tareas de la semana entre seis brigadistas que son inteligentes de formas distintas.",
-        "duracion_estimada_min": 10,
-        "estado": "BLOQUEADA",
-        "orden": 2,
-        "requerida": true,
-        "tipo": "INFORMATIVA",
-        "titulo": "Muchas formas de ser inteligente",
-        "visibilidad": "SIEMPRE",
-        "visible": true
-      },
-      {
-        "bloqueo": [
-          {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": "B1",
-                "requerido": 1,
-                "texto": null,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "COMPLETA_BLOQUE"
-              }
-            ],
-            "evaluador_especial": null,
-            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
-            "regla": "R-B2"
-          }
-        ],
         "codigo": "b2-3",
         "contenido": "b2_3",
-        "descripcion": "Rosa se quedó en el volcán y su hermano se fue a la mina. Elige las tres cosas que más valoras en un trabajo y cuenta por qué la primera.",
-        "duracion_estimada_min": 8,
+        "descripcion": "Llegas al bosque del volcán y conoces a Rosa, jefa de la brigada. Ella se quedó en el volcán y su hermano se fue a la mina: ordena lo que valoras tú.",
+        "duracion_estimada_min": 9,
         "estado": "BLOQUEADA",
-        "orden": 3,
+        "orden": 1,
         "requerida": true,
         "tipo": "REGISTRO",
         "titulo": "Lo que valoro en un trabajo",
@@ -634,7 +572,7 @@
         "descripcion": "Nico reapareció en el taller de la brigada: le sale bien algo que no buscaba. Cuenta en qué te va mejor, qué te cuesta y si te gusta eso que mejor te sale.",
         "duracion_estimada_min": 8,
         "estado": "BLOQUEADA",
-        "orden": 4,
+        "orden": 2,
         "requerida": true,
         "tipo": "REGISTRO",
         "titulo": "Lo que se me da bien y lo que me cuesta",
@@ -665,12 +603,74 @@
         "descripcion": "La ronda de los seis refugios del volcán: seis ambientes de trabajo y el código de tres letras.",
         "duracion_estimada_min": 12,
         "estado": "BLOQUEADA",
-        "orden": 5,
+        "orden": 3,
         "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Intereses y ambientes de trabajo",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-1",
+        "contenido": "b2_1",
+        "descripcion": "Rosa, jefa de la brigada del volcán, busca brigadista: liderazgo, iniciativa, trabajo en equipo. Descubre qué son las habilidades sociales.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Las habilidades sociales",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-2",
+        "contenido": "b2_2",
+        "descripcion": "Ayuda a Rosa a repartir las tareas de la semana entre seis brigadistas que son inteligentes de formas distintas.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Muchas formas de ser inteligente",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       }
     ],
     "bloqueo": [

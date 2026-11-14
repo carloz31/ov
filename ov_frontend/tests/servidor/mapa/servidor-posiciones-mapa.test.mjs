@@ -49,8 +49,9 @@ const lineas = conOrigen
   .filter(([, p]) => p.zona === 'camino')
   .map(([clave, p]) => ({ clave, origen: porCodigo.get(p.origen), linea: [puntos.get(porCodigo.get(p.origen)), p] }))
 
-test('el camino de contenido tiene sus 38 requeridas con posición', () => {
-  assert.equal(requeridas.length, 38)
+// Ajuste recorte-volcan (adaptación autorizada): b2-1 y b2-2 salen de las requeridas.
+test('el camino de contenido tiene sus 36 requeridas con posición', () => {
+  assert.equal(requeridas.length, 36)
 })
 
 test('ningún punto está en (0, 0) ni fuera del lienzo, con 50 de margen', () => {

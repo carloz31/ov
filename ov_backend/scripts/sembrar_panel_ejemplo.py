@@ -294,6 +294,9 @@ def sembrar_casos(s: Sembrador) -> list[str]:
         s.ingreso('est-panel-8', 0)
         s.ingreso('apo-panel-8', 0)
         s.avanzar('est-panel-8', 'b4-2', partida=s.autopercepcion(lambda d: 4))
+        # Ajuste recorte-volcan: las páginas de habilidades e inteligencias se abren con las opcionales b2-1 y b2-2.
+        for opcional in ('b2-1', 'b2-2'):
+            s.completar('est-panel-8', opcional)
         for instrumento, prefijo, partes in (('TEST-HABILIDADES', 'h-habilidades', 4),
                                              ('TEST-INTELIGENCIAS', 'h-inteligencias', 5)):
             for parte in range(1, partes + 1):

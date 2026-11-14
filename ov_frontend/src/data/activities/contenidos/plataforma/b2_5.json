@@ -6,7 +6,7 @@
   "subtitulo": "Los seis refugios del volcán",
   "escenario": "bosque_volcan",
   "bloque": 2,
-  "orden": 5,
+  "orden": 3,
   "obligatoria": true,
   "requisitos": [
     "b2-4"
@@ -349,13 +349,13 @@
       "opciones": [
         {
           "id": "b2-5-13a",
-          "texto": "Que hay cosas mías que se practican.",
+          "texto": "Que me atraen más unos ambientes que otros.",
           "reaccion": [
             {
               "id": "b2-5-13ar",
               "tipo": "dialogo",
               "hablanteId": "guardian",
-              "texto": "Entonces lo que hoy te cuesta ya no te cierra el paso."
+              "texto": "Entonces ya sabes hacia dónde mirar primero."
             }
           ]
         },
@@ -414,7 +414,7 @@
       "id": "b2-5-16",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Lo de los refugios y las letras te lo dejé en la mochila: «Seis tipos de intereses». Vamos, que la bajada es larga."
+      "texto": "Lo de los refugios y las letras te lo dejé en la mochila: «Seis tipos de intereses». Y antes de ir donde Sol, mira «Qué es un test y para qué sirve». Vamos, que la bajada es larga."
     }
   ],
   "recompensa": {

@@ -78,7 +78,8 @@ test('con una cuenta nueva de contenido se ven b0-1 y b0-2 con candado', () => {
 
 test('recorrido: en cada paso del camino de contenido se ve la disponible y solo la siguiente bloqueada', () => {
   const total = requeridasCamino(jsonServidor(CONTENIDO)).length
-  assert.equal(total, 38)
+  // Ajuste recorte-volcan (adaptación autorizada): b2-1 y b2-2 salen de las requeridas.
+  assert.equal(total, 36)
   for (let k = 0; k <= total; k++) {
     const bloques = caminoEnPaso(k)
     const m = preparar(bloques)
@@ -103,7 +104,7 @@ test('recorrido: en cada paso del camino de contenido se ve la disponible y solo
       )
     if (k === total) {
       const fin = visibles.filter((p) => !p.opcional)
-      assert.equal(fin.length, 38)
+      assert.equal(fin.length, 36)
       assert.ok(fin.every((p) => p.status === 'completed'))
     }
   }

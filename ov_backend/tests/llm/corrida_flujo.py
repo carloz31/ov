@@ -228,7 +228,9 @@ def recorrer(aplicacion, cliente, filas):
         if codigo == 'b3-10':
             soporte_contenido.revelar_para_b4(cliente)
         if codigo == 'b4-1':
-            # Habilidades sociales con todas las respuestas iguales: todas destacadas (también liderazgo).
+            # Habilidades sociales con todas las respuestas iguales: todas destacadas (también liderazgo). Ajuste
+            # recorte-volcan: la página se abre con la opcional b2-1.
+            soporte_contenido.completar(cliente, 'b2-1')
             for parte in range(1, 5):
                 responder_items(cliente, f'h-habilidades-{parte}', opcion=1)
                 pedir(cliente, 'POST', '/acciones/completar-actividad',

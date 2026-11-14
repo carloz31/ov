@@ -49,11 +49,11 @@
     },
     {
       "estado": "COMPLETO",
-      "hechas": 5,
+      "hechas": 3,
       "nombre": "Me conozco",
       "numero": 3,
       "siguiente": null,
-      "total": 5
+      "total": 3
     },
     {
       "estado": "COMPLETO",
