@@ -14,6 +14,7 @@ import { missionComplete } from './missionSync'
 import { recomendadaServidor, type StudentMapPoint } from './mapPoints'
 import { iconosMapa } from './iconosMapa'
 import { puntosServidor } from './puntosServidor'
+import { puntosVisiblesCamino } from './caminoVisible'
 import { actividadPorContenido } from '@/lib/servidor/contenidos'
 export function getActivityType(mission: FieldMission) {
   if (mission.id === 'beliefs' || mission.kind === 'information') return 'Informativa'
@@ -50,6 +51,13 @@ export function getNextCaminoActivity(points: StudentMapPoint[]) {
       ? actividadPorContenido(obtenerEstadoServidor().actividades.datos, next?.specActivityId ?? '')
       : activityById(next?.specActivityId ?? '')) ?? null
   )
+}
+
+// Ajuste lumi-mensajes (§15): los puntos que dibuja el mapa del camino. En api, el camino aparece de a poco;
+// «Mis actividades», el siguiente paso y la entrada a una actividad siguen leyendo todos (`getCaminoPoints`).
+export function getCaminoPointsMapa(adventure: AdventureState, journey: JourneyState): StudentMapPoint[] {
+  const puntos = getCaminoPoints(adventure, journey)
+  return modoApi ? puntosVisiblesCamino(puntos) : puntos
 }
 
 export function getCaminoPoints(adventure: AdventureState, journey: JourneyState): StudentMapPoint[] {

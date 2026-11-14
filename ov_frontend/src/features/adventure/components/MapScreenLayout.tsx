@@ -74,6 +74,7 @@ export function MapScreenLayout({
     explicarCiudad,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    avisoAyuda,
     iniciales,
     closePoint,
     selectPoint,
@@ -185,7 +186,7 @@ export function MapScreenLayout({
             (() => (zone === 'missions' ? selectPoint('city') : navigate(appPaths.student.missions)))
           }
         />
-        <MapControls onHelp={() => openGuide(pasosAyuda)} />
+        <MapControls onHelp={() => openGuide(pasosAyuda)} aviso={avisoAyuda} />
         <ZoomControls
           scale={scale}
           minimumScale={minimumScale}

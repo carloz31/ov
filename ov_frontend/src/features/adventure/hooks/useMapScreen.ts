@@ -4,8 +4,8 @@ import { mensajeErrorServidor, useEstadoServidor } from '@/store/servidor/sesion
 import { useDiarioPreguntasServidor } from '@/store/servidor/secciones'
 import { cartaDeActividad, cartasDiario } from '@/lib/servidor/adaptadoresDiario'
 import { consultarItems } from '@/store/servidor/consultas'
-import { ciudadDisponible, mensajeBloqueo } from '@/lib/servidor/adaptadores'
-import { guiaCaminoApi, guideSteps } from '@/data/content/guideTexts'
+import { ciudadDisponible, mensajeBloqueo, primeraMisionResuelta } from '@/lib/servidor/adaptadores'
+import { avisoAyudaMapa, guiaCaminoApi, guideSteps } from '@/data/content/guideTexts'
 import { inicialesViajero } from './useTravelerLevel'
 import type { JourneyState } from '@/types/activities'
 import { canAccessCity } from '@/store/adventureStore'
@@ -18,6 +18,7 @@ import {
   type StudentZone,
 } from '@/features/adventure/lib/mapPoints'
 import { getCaminoPoints } from '@/features/adventure/lib/caminoPoints'
+import { puntoSustitutoCamino } from '@/features/adventure/lib/caminoVisible'
 import { getCiudadPoints } from '@/features/adventure/lib/ciudadPoints'
 import { actividadesDisponibles, siguientePaso } from '@/features/adventure/lib/siguientePaso'
 export function useMapScreen({
@@ -54,7 +55,12 @@ export function useMapScreen({
         ? points.find((p) => p.zone === siguiente.punto.zone && p.id === siguiente.punto.id)
         : undefined
   const progress = getZoneProgress(zone, adventure, journey)
-  const selected = points.find((point) => point.id === selectedId)
+  // Ajuste lumi-mensajes (§15): un `?punto=` de una misión del camino aún oculta abre la siguiente bloqueada.
+  const selected =
+    points.find((point) => point.id === selectedId) ??
+    (modoApi && zone === 'missions'
+      ? puntoSustitutoCamino(getCaminoPoints(adventure, journey), points, selectedId)
+      : undefined)
   const baseDetails = selected ? getPointDetails(selected, adventure, journey) : undefined
   const claveDetalle = `${servidor.resumen.datos?.cuenta.codigo}/${selected?.id}/${selected?.specActivityId}/${selected?.status}`
   // Ajuste del diario (F05): en api, la entrada de diario del drawer es la carta que abrió esa actividad.
@@ -151,6 +157,11 @@ export function useMapScreen({
         : undefined,
     mostrarCiudadBloqueada: locked && !modoApi,
     pasosAyuda: modoApi && zone === 'missions' ? guiaCaminoApi : guideSteps[zone],
+    // Ajuste lumi-mensajes (§1.1): antes de la primera misión, la ayuda del camino es un aviso sin Lumi.
+    avisoAyuda:
+      modoApi && zone === 'missions' && !primeraMisionResuelta(servidor.actividades.datos)
+        ? avisoAyudaMapa
+        : undefined,
     iniciales: inicialesViajero(servidor.resumen.datos?.cuenta.nombre),
   }
 }

@@ -1094,6 +1094,33 @@ body:has([data-student-experience] .sx-shell) {
   display: flex;
   gap: 8px;
 }
+/* Ajuste lumi-mensajes: aviso de ayuda del mapa antes de la primera misión, bajo el botón «?». */
+.sx-root .sx-aviso-ayuda-mapa {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 10px 8px 10px 12px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+.sx-root .sx-aviso-ayuda-mapa p {
+  margin: 0;
+}
+.sx-root .sx-aviso-ayuda-mapa-cerrar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: inherit;
+}
 .sx-root .sx-zoom-controls {
   position: absolute;
   z-index: 30;

@@ -169,7 +169,11 @@ test('con la sección cerrada en el servidor, la presentación espera y no se ma
 })
 
 test('cada sección del estudiante muestra su presentación en la primera visita y la marca al cerrarla', async () => {
-  const { app, textos, enviadas } = preparar('/student/missions')
+  const { app, sesion, textos, enviadas } = preparar('/student/missions')
+  // Ajuste lumi-mensajes: la presentación del mapa espera a que se resuelva b0-1.
+  const bloques = copia(jsonServidor('contenido/contenido-actividades-inicial'))
+  bloques[0].actividades[0].estado = 'COMPLETADA'
+  sesion.publicar({ actividades: listo(bloques) })
   const { studentViews } = app.load('src/lib/studentViews.ts')
   const marcadas = []
   for (const view of studentViews) {

@@ -1,0 +1,2731 @@
+[
+  {
+    "actividades": [
+      {
+        "bloqueo": null,
+        "codigo": "b0-1",
+        "contenido": "b0_1",
+        "descripcion": "Llegas al muelle, conoces a Lumi y aclaras tres palabras que todos confunden: vocación, carrera y ocupación.",
+        "duracion_estimada_min": 5,
+        "estado": "DISPONIBLE",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Bienvenida: la vocación se construye",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b0-1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Bienvenida: la vocación se construye».",
+            "regla": "R-b0-2"
+          }
+        ],
+        "codigo": "b0-2",
+        "contenido": "b0_2",
+        "descripcion": "En el bosque de las voces lees lo que otros sintieron al terminar el colegio, y Lumi te entrega tu diario: cartas que nadie más lee.",
+        "duracion_estimada_min": 6,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Lo que siento al terminar el colegio y mi diario",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b0-2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Lo que siento al terminar el colegio y mi diario».",
+            "regla": "R-b0-3"
+          }
+        ],
+        "codigo": "b0-3",
+        "contenido": "b0_3",
+        "descripcion": "Helena te entrega un libro que habla de ti y restaura su primera página con unas preguntas sobre cómo ves hoy tu futuro. No es un examen.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi punto de partida",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b0-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Mi punto de partida».",
+            "regla": "R-b0-4"
+          }
+        ],
+        "codigo": "b0-4",
+        "contenido": "b0_4",
+        "descripcion": "En la piedra de los caminos, Lumi te pregunta si ya tienes una opción y te enseña a guardarla como plan.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "¿Tienes una opción en mente?",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b0-4",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «¿Tienes una opción en mente?».",
+            "regla": "R-b0-5"
+          }
+        ],
+        "codigo": "b0-5",
+        "contenido": "b0_5",
+        "descripcion": "Mara te cuenta el caso de su sobrina Alejandra: qué factores pesan en una decisión y cuáles se le olvidaron.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Decidir con información: el caso de Alejandra",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b0-5",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Decidir con información: el caso de Alejandra».",
+            "regla": "R-b0-6"
+          }
+        ],
+        "codigo": "b0-6",
+        "contenido": "b0_6",
+        "descripcion": "Nico lleva siete meses acampando porque «todavía no sabe». Aprende de dónde viene una duda y qué hacer con ella.",
+        "duracion_estimada_min": 9,
+        "estado": "BLOQUEADA",
+        "orden": 6,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Dudar también es avanzar",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": null,
+    "codigo": "B0",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "DISPONIBLE",
+    "nombre": "Inicio",
+    "numero": 1
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-1",
+        "contenido": "b1_1",
+        "descripcion": "Mira tu historia: lo que te encantaba de niño, un logro tuyo y una dificultad que superaste.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Mi historia personal",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-2",
+        "contenido": "b1_2",
+        "descripcion": "Desde el mirador se ve todo lo que falta. Nadia te cuenta cómo su miedo se volvió curiosidad y te presta su catalejo.",
+        "duracion_estimada_min": 6,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Mirar hacia adelante",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-3",
+        "contenido": "b1_3",
+        "descripcion": "Iván calibra su artefacto con tus voces: lo que esperan de ti, lo que tú quieres y dónde coinciden o chocan.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Las voces y la mía",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-4",
+        "contenido": "b1_4",
+        "descripcion": "En el oasis, Aurelio pregona mitos sobre el futuro. Revísalos con el cuaderno de la caravana antes de cruzar el puente.",
+        "duracion_estimada_min": 14,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Mitos sobre el futuro profesional",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-5",
+        "contenido": "b1_5",
+        "descripcion": "Aurelio pregona desde la otra orilla: cada mito que aceptes rompe una tabla. Cruza con argumentos.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": true,
+        "tipo": "BATALLA",
+        "titulo": "Batalla: el puente de los mitos",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-6",
+        "contenido": "b1_6",
+        "descripcion": "Una idea sobre carreras que te suena y cómo llegó a ti.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 6,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "El mito que traje de casa",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "b1-7",
+        "contenido": "b1_7",
+        "descripcion": "Un día a tus 23 años, lo que estarás haciendo dentro de un año y lo que podría frenarte.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 7,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Mi futuro",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "ma1",
+        "contenido": "ma1",
+        "descripcion": "Nadia cuenta la carta que le escribió a la niña que fue, y te propone escribir la tuya en el diario.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Carta al niño que fui",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "ma2",
+        "contenido": "ma2",
+        "descripcion": "Aurelio recayó en su pregón favorito y trae números a medias. Complétalos.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 9,
+        "requerida": false,
+        "tipo": "BATALLA",
+        "titulo": "Batalla: profesiones sin género",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B0",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+            "regla": "R-B1"
+          }
+        ],
+        "codigo": "ma3",
+        "contenido": "ma3",
+        "descripcion": "El guardián cuenta lo que descubrió una viajera. De ese día que imaginaste, di qué ya haces hoy o qué te gustaría probar primero.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 10,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que ya tengo de ese día",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "B0",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa «Dudar también es avanzar», la última misión del tramo «Inicio».",
+        "regla": "R-B1"
+      }
+    ],
+    "codigo": "B1",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "BLOQUEADA",
+    "nombre": "Mi historia y mis aspiraciones",
+    "numero": 2
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-1",
+        "contenido": "b2_1",
+        "descripcion": "Rosa, jefa de la brigada del volcán, busca brigadista: liderazgo, iniciativa, trabajo en equipo. Descubre qué son las habilidades sociales.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Las habilidades sociales",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-2",
+        "contenido": "b2_2",
+        "descripcion": "Ayuda a Rosa a repartir las tareas de la semana entre seis brigadistas que son inteligentes de formas distintas.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Muchas formas de ser inteligente",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-3",
+        "contenido": "b2_3",
+        "descripcion": "Rosa se quedó en el volcán y su hermano se fue a la mina. Elige las tres cosas que más valoras en un trabajo y cuenta por qué la primera.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que valoro en un trabajo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-4",
+        "contenido": "b2_4",
+        "descripcion": "Nico reapareció en el taller de la brigada: le sale bien algo que no buscaba. Cuenta en qué te va mejor, qué te cuesta y si te gusta eso que mejor te sale.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que se me da bien y lo que me cuesta",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B1",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+            "regla": "R-B2"
+          }
+        ],
+        "codigo": "b2-5",
+        "contenido": "b2_5",
+        "descripcion": "La ronda de los seis refugios del volcán: seis ambientes de trabajo y el código de tres letras.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Intereses y ambientes de trabajo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "B1",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».",
+        "regla": "R-B2"
+      }
+    ],
+    "codigo": "B2",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "BLOQUEADA",
+    "nombre": "Me conozco",
+    "numero": 3
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-1",
+        "contenido": "b3_1",
+        "descripcion": "Ulises, el práctico del puerto, te muestra los cinco embarcaderos: las cinco rutas después del colegio.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Caminos después del colegio",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-2",
+        "contenido": "b3_2",
+        "descripcion": "En la sala del atlas aprendes a leer una ficha del catálogo.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Mis intereses en el catálogo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-3",
+        "contenido": "b3_3",
+        "descripcion": "Doña Cifra lee el futuro en los números del mercado. Aprende a leerlos tú: salarios, demanda e informalidad.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "El mercado laboral",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-4",
+        "contenido": "b3_4",
+        "descripcion": "Lumi recuerda a Maite, que quiso saber algo que ningún sueldo decía. Cuenta qué tendrías que saber tú de una carrera según lo que valoras, y a quién le preguntarías.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que necesito saber",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-5",
+        "contenido": "b3_5",
+        "descripcion": "Doña Cifra abre su puesto en la plaza: corrige sus lecturas y manda a cada viajero a su embarcadero.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": true,
+        "tipo": "BATALLA",
+        "titulo": "Batalla: el mercado y las rutas",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-6",
+        "contenido": "b3_6",
+        "descripcion": "El stand de la Universidad del Faro Dorado promete de todo. Aprende qué verificar y cómo se ingresa.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 6,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Elegir una institución",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-7",
+        "contenido": "b3_7",
+        "descripcion": "Desmonta los anuncios del Feriante uno por uno: qué verificar, qué promesa es dudosa, qué admisión aplica.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 7,
+        "requerida": true,
+        "tipo": "BATALLA",
+        "titulo": "Batalla de las instituciones",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-8",
+        "contenido": "b3_8",
+        "descripcion": "Clotilde presta «fácil, rápido y sin preguntas». Antes de firmar, todo lo que cuesta estudiar y cómo pagarlo.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Cuánto cuesta estudiar",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-9",
+        "contenido": "b3_9",
+        "descripcion": "Encuentra el hueco en cada presupuesto de la pila de Clotilde.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 9,
+        "requerida": true,
+        "tipo": "BATALLA",
+        "titulo": "Batalla de los costos",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-10",
+        "contenido": "b3_10",
+        "descripcion": "Alejandra baja del barco: su cambio de rumbo, lo que cuesta cambiar y cómo escuchar la historia de otro. Cierra el tramo.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 10,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Caminos que no van en línea recta",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-a",
+        "contenido": "b3_a",
+        "descripcion": "La historia que te quedó, y en qué se parece a la tuya y en qué no.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 11,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Lo que aprendí de una trayectoria",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-b",
+        "contenido": "b3_b",
+        "descripcion": "Doña Cifra reabre el puesto solo con un pregón: que una sola ruta vale. Repaso opcional.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 12,
+        "requerida": false,
+        "tipo": "BATALLA",
+        "titulo": "Batalla de las rutas (repaso)",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "ma7",
+        "contenido": "ma7",
+        "descripcion": "Doña Cifra trae un solo promedio. Léelo por partes: de dónde es, de qué edad y de quiénes.",
+        "duracion_estimada_min": 6,
+        "estado": "BLOQUEADA",
+        "orden": 13,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Más allá del promedio",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "ma7-b",
+        "contenido": "ma7_b",
+        "descripcion": "Doña Cifra dice lo que significan sus números. Corrígela con lo que ya sabes leer.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 14,
+        "requerida": false,
+        "tipo": "BATALLA",
+        "titulo": "Batalla: más allá del promedio",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "B2",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+        "regla": "R-B3"
+      }
+    ],
+    "codigo": "B3",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "BLOQUEADA",
+    "nombre": "Exploro el mundo profesional",
+    "numero": 4
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+            "regla": "R-B4"
+          }
+        ],
+        "codigo": "b4-1",
+        "contenido": "b4_1",
+        "descripcion": "Helena cuenta qué parte de ella va con su oficio y cuál va menos. Di qué parte de ti va con tu Plan A y cuál va menos, con tus propias palabras.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Mi perfil frente a mi Plan A",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+            "regla": "R-B4"
+          }
+        ],
+        "codigo": "b4-2",
+        "contenido": "b4_2",
+        "descripcion": "Lumi recuerda a Tadeo, que compró pasaje sin preguntar a dónde iba. Cuenta tu forma principal de decidir y una vez en que se notó.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Cómo decido",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+            "regla": "R-B4"
+          }
+        ],
+        "codigo": "b4-3",
+        "contenido": "b4_3",
+        "descripcion": "Iván sube con la mesa de mapas: lo que el camino le abrió a tu plan y para qué sirve un Plan B.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Tres rutas sobre la mesa",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+            "regla": "R-B4"
+          }
+        ],
+        "codigo": "b4-4",
+        "contenido": "b4_4",
+        "descripcion": "El Eco repite lo que los viajeros trajeron de casa. Reconoce en cada caso la razón que va sola y lo que faltó averiguar.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "BATALLA",
+        "titulo": "Batalla: decidir con criterio",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+            "regla": "R-B4"
+          }
+        ],
+        "codigo": "b4-5",
+        "contenido": "b4_5",
+        "descripcion": "Iván tira una moneda por ti: si te tocara tu Plan B, ¿qué te haría falta del A?",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Pongo a prueba mi orden",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              },
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "REVELA_RESULTADO"
+              }
+            ],
+            "evaluador_especial": {
+              "cumplido": false,
+              "nombre": "instrumentos_prioritarios"
+            },
+            "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+            "regla": "R-B4"
+          }
+        ],
+        "codigo": "ma8",
+        "contenido": "ma8",
+        "descripcion": "Lumi recuerda a Vera, que le respondió al Eco con lo que averiguó. Elige una objeción a tu Plan A que hayas escuchado, y cuenta qué le respondes.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 6,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "El abogado del diablo",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "B3",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          },
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": null,
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "REVELA_RESULTADO"
+          }
+        ],
+        "evaluador_especial": {
+          "cumplido": false,
+          "nombre": "instrumentos_prioritarios"
+        },
+        "mensaje": "Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional». Además, en el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad.",
+        "regla": "R-B4"
+      }
+    ],
+    "codigo": "B4",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "BLOQUEADA",
+    "nombre": "Mis opciones",
+    "numero": 5
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B4",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».",
+            "regla": "R-B5"
+          }
+        ],
+        "codigo": "b5-1",
+        "contenido": "b5_1",
+        "descripcion": "Teresa, la vigía, cuenta qué tan segura estaba cuando le ofrecieron el faro. Mira tu proyecto de hoy y cuenta qué te da seguridad, o qué te la quita.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Mi proyecto",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B4",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».",
+            "regla": "R-B5"
+          }
+        ],
+        "codigo": "b5-2",
+        "contenido": "b5_2",
+        "descripcion": "En la escalera del faro hay una hoja con la letra de Helena: las preguntas de la cabaña. Respóndelas otra vez para ver tu llegada junto a tu partida.",
+        "duracion_estimada_min": 10,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": true,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi punto de llegada",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B4",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».",
+            "regla": "R-B5"
+          }
+        ],
+        "codigo": "b5-3",
+        "contenido": "b5_3",
+        "descripcion": "Teresa cuenta qué pensaba cuando llegó al faro y qué la hizo verlo distinto. Mira lo que dijiste al llegar y cuenta qué ves hoy distinto, y por qué.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": true,
+        "tipo": "REGISTRO",
+        "titulo": "Mirar el camino",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B4",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».",
+            "regla": "R-B5"
+          }
+        ],
+        "codigo": "b5-4",
+        "contenido": "b5_4",
+        "descripcion": "La última escalera del faro. En la sala de la luz, sobre un atril, el pergamino.",
+        "duracion_estimada_min": 6,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "La sala de la luz",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B4",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».",
+            "regla": "R-B5"
+          }
+        ],
+        "codigo": "b5-5",
+        "contenido": "b5_5",
+        "descripcion": "Abres el pergamino: trae una sola frase. Helena cuenta qué quiere decir y por qué nunca dijo dónde estaba.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": true,
+        "tipo": "INFORMATIVA",
+        "titulo": "Lo que decía el pergamino",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "B4",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_BLOQUE"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».",
+        "regla": "R-B5"
+      }
+    ],
+    "codigo": "B5",
+    "espacio": "MISIONES_CAMPO",
+    "estado": "BLOQUEADA",
+    "nombre": "Mi decisión",
+    "numero": 6
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-habilidades-1",
+        "contenido": "h_habilidades_1",
+        "descripcion": "Dora, la tabernera, guarda las veinticuatro frases sobre cómo te portas con la gente. Primera visita: seis frases.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi comportamiento con los demás, 1 de 4",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-habilidades-2",
+        "contenido": "h_habilidades_2",
+        "descripcion": "Segunda visita a Dora: seis frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi comportamiento con los demás, 2 de 4",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-habilidades-3",
+        "contenido": "h_habilidades_3",
+        "descripcion": "Tercera visita a Dora: seis frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi comportamiento con los demás, 3 de 4",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-habilidades-4",
+        "contenido": "h_habilidades_4",
+        "descripcion": "Última visita a Dora: al terminar, tu página de habilidades queda lista.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mi comportamiento con los demás, 4 de 4",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-inteligencias-1",
+        "contenido": "h_inteligencias_1",
+        "descripcion": "El maestro Bruno guarda las treinta y cinco frases sobre tus inteligencias. Primera clase: siete frases.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Explorando mis inteligencias, 1 de 5",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-inteligencias-2",
+        "contenido": "h_inteligencias_2",
+        "descripcion": "Segunda clase con el maestro Bruno: siete frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 6,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Explorando mis inteligencias, 2 de 5",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-inteligencias-3",
+        "contenido": "h_inteligencias_3",
+        "descripcion": "Tercera clase con el maestro Bruno: siete frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 7,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Explorando mis inteligencias, 3 de 5",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-inteligencias-4",
+        "contenido": "h_inteligencias_4",
+        "descripcion": "Cuarta clase con el maestro Bruno: siete frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Explorando mis inteligencias, 4 de 5",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-inteligencias-5",
+        "contenido": "h_inteligencias_5",
+        "descripcion": "Última clase con el maestro Bruno: al terminar, tu página de inteligencias queda lista.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 9,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Explorando mis inteligencias, 5 de 5",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-intereses-1",
+        "contenido": "h_intereses_1",
+        "descripcion": "Sol, la bibliotecaria, guarda las sesenta frases de intereses. Primera visita: diez frases.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 10,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mis intereses, 1 de 6",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-intereses-2",
+        "contenido": "h_intereses_2",
+        "descripcion": "Segunda visita a Sol: diez frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 11,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mis intereses, 2 de 6",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-intereses-3",
+        "contenido": "h_intereses_3",
+        "descripcion": "Tercera visita a Sol: diez frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 12,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mis intereses, 3 de 6",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-intereses-4",
+        "contenido": "h_intereses_4",
+        "descripcion": "Cuarta visita a Sol: diez frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 13,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mis intereses, 4 de 6",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-intereses-5",
+        "contenido": "h_intereses_5",
+        "descripcion": "Quinta visita a Sol: diez frases más.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 14,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mis intereses, 5 de 6",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h-intereses-6",
+        "contenido": "h_intereses_6",
+        "descripcion": "Última visita a Sol: al terminar, tu página de intereses queda lista.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 15,
+        "requerida": false,
+        "tipo": "CUESTIONARIO",
+        "titulo": "Mis intereses, 6 de 6",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h1",
+        "contenido": "h1",
+        "descripcion": "Dora cuenta qué habilidad eligió practicar ella. Elige la tuya y cuenta en qué situación te serviría.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 16,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Una habilidad para practicar",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h2",
+        "contenido": "h2",
+        "descripcion": "El maestro Bruno cuenta si se reconoció en su página. Di si te reconoces en la tuya, y cuándo se nota.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 17,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "¿Me reconozco?",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "h3",
+        "contenido": "h3",
+        "descripcion": "Sol cuenta qué familia le dio curiosidad a ella. De las cinco que salieron de tus intereses, elige la tuya y di qué te llama.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 18,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "La familia de carreras que me llama",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "investigador",
+        "contenido": "investigador",
+        "descripcion": "Anselmo quiere armar un archivo de todos los trabajos y no tiene ni una entrevista. Aprende a hacer una y ayúdalo a empezar.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 19,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Una entrevista para Anselmo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "investigador-cierre",
+        "contenido": "investigador_cierre",
+        "descripcion": "Tu entrevista llegó al centro. Anselmo agradece y te cuenta qué hacer con ella ahora.",
+        "duracion_estimada_min": 5,
+        "estado": "BLOQUEADA",
+        "orden": 20,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "El investigador agradece",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "feria",
+        "contenido": "feria",
+        "descripcion": "Marina cuelga el plano de la feria. Planea tu visita: qué preparar, qué preguntar y qué anotar al salir.",
+        "duracion_estimada_min": 6,
+        "estado": "BLOQUEADA",
+        "orden": 21,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "La feria vocacional",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "ma4",
+        "contenido": "ma4",
+        "descripcion": "Dora cuenta a quién mira ella para aprender. Piensa en alguien a quien le sale bien la habilidad que elegiste, y qué hace.",
+        "duracion_estimada_min": 4,
+        "estado": "BLOQUEADA",
+        "orden": 22,
+        "requerida": false,
+        "tipo": "REGISTRO",
+        "titulo": "Alguien que ya lo hace",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "ma5",
+        "contenido": "ma5",
+        "descripcion": "Un viajero dejó en el taller de Iván una lista de profesiones del futuro. Ábrela con él antes de creerle.",
+        "duracion_estimada_min": 6,
+        "estado": "BLOQUEADA",
+        "orden": 23,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Ocupaciones nuevas y emprender",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "c1",
+        "contenido": "c1",
+        "descripcion": "Un proyecto de plaza se detiene al descubrir restos antiguos bajo el terreno.",
+        "duracion_estimada_min": 15,
+        "estado": "BLOQUEADA",
+        "orden": 24,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "La plaza que esconde otra historia",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "c2",
+        "contenido": "c2",
+        "descripcion": "Un programa de becas presenta solicitudes perdidas, puntajes difíciles de explicar y documentos expuestos.",
+        "duracion_estimada_min": 18,
+        "estado": "BLOQUEADA",
+        "orden": 25,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "Las becas que nadie puede explicar",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "c3",
+        "contenido": "c3",
+        "descripcion": "Una cosecha abundante de mangos pierde a su principal comprador y amenaza con desperdiciarse.",
+        "duracion_estimada_min": 15,
+        "estado": "BLOQUEADA",
+        "orden": 26,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "La cosecha contra el reloj",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "c4",
+        "contenido": "c4",
+        "descripcion": "Un festival juvenil gratuito debe coordinar doce agrupaciones, resolver fallas técnicas y desmentir rumores.",
+        "duracion_estimada_min": 15,
+        "estado": "BLOQUEADA",
+        "orden": 27,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "El festival de las mil voces",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "c5",
+        "contenido": "c5",
+        "descripcion": "Los Juegos Juveniles presentan criterios de selección injustos, barreras de acceso, problemas de salud y choques de horarios.",
+        "duracion_estimada_min": 15,
+        "estado": "BLOQUEADA",
+        "orden": 28,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "El torneo de los equipos imposibles",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "b1-3",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_ACTIVIDAD"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+            "regla": "R-CIUDAD"
+          }
+        ],
+        "codigo": "c6",
+        "contenido": "c6",
+        "descripcion": "Aparecen peces muertos y agua verdosa en una laguna; circulan acusaciones sin pruebas.",
+        "duracion_estimada_min": 18,
+        "estado": "BLOQUEADA",
+        "orden": 29,
+        "requerida": false,
+        "tipo": "CASO",
+        "titulo": "La laguna que amaneció en silencio",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": [
+      {
+        "condiciones_faltantes": [
+          {
+            "actual": 0,
+            "cumplida": false,
+            "referencia": "b1-3",
+            "requerido": 1,
+            "texto": null,
+            "tipo_conteo": "EVENTOS",
+            "tipo_evento": "COMPLETA_ACTIVIDAD"
+          }
+        ],
+        "evaluador_especial": null,
+        "mensaje": "Completa la misión «Las voces y la mía», en el camino.",
+        "regla": "R-CIUDAD"
+      }
+    ],
+    "codigo": "CIUDAD",
+    "espacio": "CIUDAD",
+    "estado": "BLOQUEADA",
+    "nombre": "La ciudad",
+    "numero": 7
+  },
+  {
+    "actividades": [
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele tu primera carta a Lumi para que te cuente de dónde viene.",
+            "regla": "R-lumi-1"
+          }
+        ],
+        "codigo": "lumi-1",
+        "contenido": "lumi_1",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 1,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "De dónde vengo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 2,
+                "texto": null,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele 2 cartas a Lumi para que te cuente el siguiente recuerdo.",
+            "regla": "R-lumi-2"
+          }
+        ],
+        "codigo": "lumi-2",
+        "contenido": "lumi_2",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 2,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Lo que escribí en el tronco",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 3,
+                "texto": null,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele 3 cartas a Lumi para que te cuente el siguiente recuerdo.",
+            "regla": "R-lumi-3"
+          }
+        ],
+        "codigo": "lumi-3",
+        "contenido": "lumi_3",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 3,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Un poco de todo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 4,
+                "texto": null,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele 4 cartas a Lumi para que te cuente el siguiente recuerdo.",
+            "regla": "R-lumi-4"
+          }
+        ],
+        "codigo": "lumi-4",
+        "contenido": "lumi_4",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 4,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Hasta la mitad",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": null,
+                "requerido": 5,
+                "texto": null,
+                "tipo_conteo": "EVENTOS_TOPE_DIARIO",
+                "tipo_evento": "ESCRIBE_ENTRADA_DIARIO"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Escríbele 5 cartas a Lumi para que te cuente el último recuerdo.",
+            "regla": "R-lumi-5"
+          }
+        ],
+        "codigo": "lumi-5",
+        "contenido": "lumi_5",
+        "descripcion": null,
+        "duracion_estimada_min": 3,
+        "estado": "BLOQUEADA",
+        "orden": 5,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Lo que elijo yo",
+        "visibilidad": "SIEMPRE",
+        "visible": true
+      }
+    ],
+    "bloqueo": null,
+    "codigo": "LUMI",
+    "espacio": "LUMI",
+    "estado": "DISPONIBLE",
+    "nombre": "La historia de Lumi",
+    "numero": 8
+  }
+]
