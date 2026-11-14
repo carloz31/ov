@@ -79,7 +79,8 @@ elementos por estudiante (AU30X2 frente a AU30).
   - `resolver_contexto` (`app/services/registro/contexto.py:488`) se escribió para un ítem de una cuenta y lee la base
     cada vez: `_vigentes` (`:126`), los planes en `resolver_marcadores` (`:316`), las referencias, las piezas y las
     opciones en `_ecos` y `_opciones` (`:395`, `:471`).
-  - Además calcula los ecos del LLM (`ecos_llm`, `:106`), que el panel no usa.
+  - Además calcula los ecos del LLM (`ecos_llm`, `:106`). *Corrección posterior:* el panel sí los usa, porque
+    `eco_cambiado` compara los guardados con los de hoy para «Cambió después» (ver G).
   - El panel lo llama dentro de bucles:
     - `perfil_respuestas.py:131`: `cambio_despues` llama a `_cambio` y este a `_hoy`, para cada respuesta vigente de
       cada registro.
@@ -224,7 +225,7 @@ Prueba temporal (`node --test`, 5 de 5 en verde, fuera del repo) y `tests/servid
 
 | # | Gravedad | Hallazgo | Dónde | Corrección propuesta | Costo | Contrato |
 |---|---|---|---|---|---|---|
-| H1 | **Alta** | `respuestas` y `registro` hacen de 5 a 8 consultas por ítem respondido que depende de otros: de 16 a 89 consultas por estudiante. «Para leer primero» repite lo ya resuelto. | `perfil_respuestas.py:61`, `:74`, `:131`, `:133`, `:145`; `registro/contexto.py:126`, `:316`, `:395`, `:488` | Una lectura de contexto «para la orientadora» por cuenta, cacheada en `contexto(sesion)`: vigentes de todos los ítems, planes, referencias y piezas leídos una vez; sin `ecos_llm`; memorizar el contexto de hoy por ítem para no resolverlo dos veces. `resolver_contexto` del estudiante no cambia. | 1 a 1,5 días con pruebas (es lógica compartida con el flujo del registro) | No |
+| H1 | **Alta** | `respuestas` y `registro` hacen de 5 a 8 consultas por ítem respondido que depende de otros: de 16 a 89 consultas por estudiante. «Para leer primero» repite lo ya resuelto. | `perfil_respuestas.py:61`, `:74`, `:131`, `:133`, `:145`; `registro/contexto.py:126`, `:316`, `:395`, `:488` | Una lectura de contexto «para la orientadora» por cuenta, cacheada en `contexto(sesion)`: vigentes de todos los ítems, planes, referencias y piezas leídos una vez; memorizar el contexto de hoy por ítem para no resolverlo dos veces (los `ecos_llm` sí hacen falta: ver G). `resolver_contexto` del estudiante no cambia. | 1 a 1,5 días con pruebas (es lógica compartida con el flujo del registro) | No |
 | H2 | **Alta (tiempo)** | `intereses`, «Ver» `plan_fuera_test` y el tema `plan_fuera_de_areas` no crecen en consultas, pero sí en filas y CPU: 64 coincidencias por estudiante con la **ocupación completa**, incluidas sus 6 columnas JSON. Con 90 estudiantes son 6.470 objetos y 35.761 decodificaciones JSON: 316 ms (512 ms en 3×30). | `instrumentos/consultas.py:226-252` (`cargar_representaciones`, la consulta `select(Coincidencia, Ocupacion)` de la línea 246), llamada desde `panel/intereses.py:211` (`frente_test`) | (a) En la lectura por lotes, solo las columnas necesarias (`Coincidencia.correlacion` y `posicion`, `Ocupacion.id` y `codigo`) en lugar de las entidades. (b) Más a fondo: guardar el código y las familias recomendadas en el resultado al calcularlo. Es un cambio de modelo, que hay que proponer aparte. | (a) 2 a 3 h, sin medir aún cuánto baja; (b) 1 día más la migración | No |
 | H3 | Media | `tests` hace una consulta más por cada cuestionario con resultado vigente (de 33 a 42). Tiene tope en el catálogo de instrumentos, pero rompe el criterio de aceptación. | `perfil_tests.py:174-188` (`_otros`) | Cargar las representaciones de todos los resultados vigentes antes del bucle (`cargar_representaciones` ya lo admite) y que `representar_resultado` lea de la caché. | 1 a 2 h | No |
 | H4 | Media | Cada ruta del perfil (también las notas) repite el acceso: `exigir_orientadora` ×3, la cuenta ×4 y `resolver_alcance` dos veces. Son unas 11 consultas fijas por petición. La primera llamada lee todos los estudiantes de todos sus salones solo para obtener los salones. | `panel/perfil_acceso.py:34-40` | Resolver una vez: los salones de la orientadora y, después, solo el salón del estudiante. | 1 h | No |
@@ -281,3 +282,134 @@ con los elementos por estudiante.
 
 Propuesta: una prueba por ruta con el patrón «pocos frente a muchos» de `ContadorConsultas`. Con H1 y H3 sin corregir,
 las de `respuestas`, `registro` y `tests` fallarían hoy.
+
+## G. Después de las correcciones
+
+Las correcciones aprobadas van en tres commits de la rama `ajuste/auditoria-panel`. No se hicieron H6, H7 ni H2 (b).
+
+| Fase | Hallazgos | Commit |
+|---|---|---|
+| 1 | H2 (a), H3, H4, H5, H8, F1, F6 | `6e73a965` |
+| 2 | H1 | `ef2d8bab` |
+| 3 | F2, F3, F4 (sin `AbortController`), F5, F7 y las pruebas de presupuesto | `8a37b3e9` |
+
+La medición se repitió con el mismo método de la sección «Cómo se midió», sobre una copia de la misma base. Cada
+celda dice «antes → después».
+
+### Rutas del salón
+
+| Ruta | Consultas 5 / 30 / 90 / 3×30 | ms con 30 / 90 / 3×30 |
+|---|---|---|
+| `seguimiento` | 23 → 22 / 23 → 22 / 23 → 22 / 23 → 22 | 34 → 35 / 61 → 60 / 60 → 62 |
+| `estudiantes «Ver» avisos` | 14 → 14 / 14 → 14 / 14 → 14 / 14 → 14 | 23 → 25 / 42 → 42 / 42 → 41 |
+| `estudiantes «Ver» alerta` | 14 → 14 / 14 → 14 / 14 → 14 / 14 → 14 | 22 → 24 / 42 → 41 / 42 → 43 |
+| `estudiantes «Ver» test` | 10 → 10 / 10 → 10 / 10 → 10 / 10 → 10 | 14 → 16 / 22 → 20 / 21 → 20 |
+| `estudiantes «Ver» tramo` | 7 → 7 / 7 → 7 / 7 → 7 / 7 → 7 | 15 → 16 / 27 → 28 / 29 → 28 |
+| `estudiantes «Ver» detenidos` | 8 → 8 / 8 → 8 / 8 → 8 / 8 → 8 | 16 → 18 / 30 → 31 / 30 → 30 |
+| `estudiantes «Ver» seguridad_baja` | 7 → 7 / 7 → 7 / 7 → 7 / 7 → 7 | 9 → 9 / 10 → 11 / 11 → 11 |
+| `estudiantes «Ver» plan_fuera_test` | 19 → 19 / 19 → 19 / 19 → 19 / 19 → 19 | 121 → 30 / 321 → 57 / 512 → 54 |
+| `intereses` | 20 → 20 / 20 → 20 / 20 → 20 / 20 → 20 | 119 → 31 / 316 → 58 / 317 → 58 |
+| `areas` | 10 → 10 / 10 → 10 / 10 → 10 / 10 → 10 | 11 → 12 / 13 → 13 / 14 → 13 |
+| `instituciones` | 10 → 10 / 10 → 10 / 10 → 10 / 10 → 10 | 11 → 11 / 12 → 13 / 12 → 14 |
+| `estudiantes «Ver» area` | 11 → 11 / 11 → 11 / 11 → 11 / 11 → 11 | 12 → 11 / 13 → 14 / 13 → 16 |
+| `lista-estudiantes` | 18 → 17 / 18 → 17 / 18 → 17 / 18 → 17 | 26 → 27 / 51 → 48 / 48 → 49 |
+| `lista-estudiantes orden=estudiante` | 18 → 17 / 18 → 17 / 18 → 17 / 18 → 17 | 26 → 26 / 52 → 49 / 48 → 49 |
+| `lista-estudiantes aviso+test` | 18 → 17 / 18 → 17 / 18 → 17 / 18 → 17 | 26 → 25 / 52 → 49 / 48 → 49 |
+
+En estas rutas el número de consultas ya era constante. Lo que cambió es el tiempo de `intereses` y de «Ver»
+`plan_fuera_test` (H2): con 90 estudiantes, de 316 a 58 ms y de 321 a 57 ms; con 3×30, de 317 a 58 ms y de 512 a
+54 ms. `seguimiento` y la lista bajan una consulta (H5: los parámetros, el estado del test y `por_revisar` se leen
+una vez).
+
+### Rutas del perfil
+
+«Terminó con 30 / x2» es un estudiante que terminó el camino en AU30 y otro de AU30X2, con el doble de dudas, pasos,
+señales y diario.
+
+| Ruta | Consultas 5 / 30 / 90 / 3×30 | Consultas: terminó con 30 / x2 | ms con 30 / 90 |
+|---|---|---|---|
+| `perfil` | 60 → 44 / 60 → 44 / 60 → 44 / 60 → 44 | 60 → 44 / 60 → 44 | 59 → 47 / 70 → 53 |
+| `tests` | 40 → 35 / 40 → 35 / 40 → 35 / 40 → 35 | 40 → 35 / 40 → 35 | 37 → 40 / 38 → 34 |
+| `partida-llegada` | 15 → 8 / 15 → 8 / 15 → 8 / 15 → 8 | 15 → 8 / 15 → 8 | 13 → 10 / 14 → 10 |
+| `resultado APL-RIASEC` | 18 → 11 / 18 → 11 / 18 → 11 / 18 → 11 | 18 → 11 / 18 → 11 | 21 → 16 / 23 → 19 |
+| `planes` | 34 → 27 / 34 → 27 / 34 → 27 / 34 → 27 | 34 → 27 / 34 → 27 | 30 → 22 / 30 → 24 |
+| `plan 1` | 32 → 25 / 32 → 25 / 32 → 25 / 32 → 25 | 32 → 25 / 32 → 25 | 29 → 23 / 29 → 24 |
+| `plan 2` | 32 → 25 / 32 → 25 / 32 → 25 / 32 → 25 | 32 → 25 / 32 → 25 | 29 → 20 / 27 → 22 |
+| `respuestas` | 68 → 32 / 68 → 32 / 68 → 32 / 68 → 32 | 89 → 32 / 86 → 32 | 63 → 36 / 64 → 40 |
+| `registro (máx.)` | 46 → 22 / 46 → 22 / 46 → 22 / 46 → 22 | 46 → 22 / 46 → 22 | 51 → 26 / 42 → 34 |
+| `avance` | 28 → 21 / 28 → 21 / 28 → 21 / 28 → 21 | 28 → 21 / 28 → 21 | 30 → 25 / 43 → 40 |
+| `escribir-nota` | 16 → 9 / 16 → 9 / 16 → 9 / 16 → 9 | 16 → 9 / 16 → 9 | 22 → 17 / 23 → 18 |
+| `editar-nota` | 16 → 9 / 16 → 9 / 16 → 9 / 16 → 9 | 16 → 9 / 16 → 9 | 18 → 14 / 25 → 16 |
+| `borrar-nota` | 15 → 8 / 15 → 8 / 15 → 8 / 15 → 8 | 15 → 8 / 15 → 8 | 18 → 15 / 23 → 15 |
+
+### Los estudiantes de ejemplo (5A)
+
+Columnas: caso 2 (recién empieza) / caso 5 (a mitad) / caso 7 (terminó) / caso 6 (respuesta sensible).
+
+| Ejemplos (5A) | Consultas antes → después |
+|---|---|
+| `perfil` | 51 → 35 / 60 → 44 / 61 → 45 / 53 → 37 |
+| `tests` | 35 → 27 / 40 → 35 / 40 → 35 / 35 → 27 |
+| `partida-llegada` | 15 → 8 / 15 → 8 / 15 → 8 / 15 → 8 |
+| `resultado APL-RIASEC` | — / 18 → 11 / 18 → 11 / — |
+| `planes` | 18 → 11 / 34 → 27 / 34 → 27 / 18 → 11 |
+| `plan 1` | — / 32 → 25 / 32 → 25 / — |
+| `plan 2` | — / 32 → 25 / 32 → 25 / — |
+| `respuestas` | 16 → 9 / 68 → 32 / 72 → 32 / 22 → 21 |
+| `registro (máx.)` | — / 46 → 22 / 46 → 22 / 17 → 8 |
+| `avance` | 25 → 18 / 28 → 21 / 28 → 21 / 28 → 21 |
+| `escribir-nota` | 16 → 9 / 16 → 9 / 16 → 9 / 16 → 9 |
+| `editar-nota` | 16 → 9 / 16 → 9 / 16 → 9 / 16 → 9 |
+| `borrar-nota` | 15 → 8 / 15 → 8 / 15 → 8 / 15 → 8 |
+| `plan 3` | — / — / 32 → 25 / — |
+
+La pestaña Tests del caso 8, con tres cuestionarios revelados, pasa de 42 a 36 consultas.
+
+- **El perfil:** baja de 60 a 44 consultas (referencia pedida: unas 40). Lo que queda repetido es marginal: el vínculo
+  familiar se lee en la cabecera y en las lecturas, y las familias de carreras, en el resumen de intereses y en el de
+  planes.
+- **Todas las rutas del perfil:** bajan unas 7 consultas fijas por H4 (el acceso se resuelve una vez).
+- **`respuestas`:** queda en 32 consultas para un estudiante con datos, haya respondido 20, 22 o el doble de ítems;
+  antes iba de 68 a 89. Un registro desplegado cuesta a lo más 22 (antes 46).
+- **Lo que queda variable es de presencia, no de cantidad.** Por ejemplo, el caso 6 (21) no tiene intereses ni
+  planes, así que algunas lecturas no se hacen. Lo mismo pasa con la pestaña Tests sin ningún cuestionario con
+  resultado (25 en el caso 1).
+
+### Estado de los hallazgos
+
+| # | Estado | Nota |
+|---|---|---|
+| H1 | Corregido | `panel/contexto_lectura.py` (`LecturaContexto`): lee una vez por petición y arma cada ítem una vez. Las respuestas de los ocho ejemplos (152 registros) salen idénticas a las de antes, y una prueba lo fija. **Los ecos al LLM se siguen calculando**, aunque la corrección aprobada decía «sin ecos_llm»: `eco_cambiado` los necesita, y sin ellos «Cambió después» cambiaría. Se calculan sobre lo ya leído, sin consultas. `resolver_contexto` y el flujo del estudiante no cambiaron; las reglas de marcadores y ecos quedan repetidas en el módulo del panel, y la prueba de respuestas idénticas las protege. |
+| H2 (a) | Corregido | Columnas en lugar de entidades, solo las coincidencias que `seleccionar_afines` puede elegir (posición ≤ 30) y familias solo de quien tiene Plan A. Comparado con `representar_resultado` en los 249 resultados de la base de medición: sin diferencias. |
+| H2 (b) | No se hace | Por decisión. |
+| H3 | Corregido | |
+| H4 | Corregido | |
+| H5 | Corregido | |
+| H6 | No se hace | El tiempo de `perfil` y `avance` todavía crece un poco con el salón (avance: 25 → 40 ms de 30 a 90), por el tramo de los compañeros. |
+| H7 | No se hace | |
+| H8 | Corregido | Reordenar una tabla pide `areas` o `instituciones` con `limite` = las filas del top y `desde=0`. Mientras llega, la tabla conserva sus filas. |
+| F1–F7 | Corregidos | F4 solo deduplica lo que está en camino (sin cancelación). F7 conserva el borrador de la nota por estudiante hasta guardarla o salir del perfil. |
+
+### Pruebas que fijan el criterio
+
+- **`tests/integration/panel/test_panel_presupuestos.py`** cuenta cada ruta tres veces con el salón de `ruta`
+  poblado: con los cinco estudiantes, con doce más y con el doble de planes, dudas, pasos, complicaciones, señales,
+  diario y cuestionarios con resultado. Las tres cuentas deben ser iguales.
+  - Cubre 25 rutas o variantes: `seguimiento` (un salón y todos), los ocho conjuntos de «Ver», `intereses`, `areas`,
+    `instituciones`, la lista (inicial y filtrada), el perfil, `tests`, `partida-llegada`, los dos resultados,
+    `planes`, el plan completo, `respuestas`, `avance` y las tres acciones de notas.
+  - Otra prueba responde los registros de `ruta` de a uno.
+  - Se comprobó que falla si se deshace H3.
+- **`tests/integration/panel/test_panel_respuestas_identicas.py`** siembra los ocho ejemplos (`contenido`) y
+  comprueba:
+  - las respuestas idénticas;
+  - `respuestas` del caso 5 frente al caso 7, y con diez compañeros más;
+  - tres registros con ecos y piezas (`b1-3`, `b4-1`, `b4-5`).
+- **Front (`tests/servidor/panel`):**
+  - H8: reordenar pide solo esa lista;
+  - F1: una sola búsqueda tras 300 ms;
+  - F2–F4: espera con la última página, revalidación con `limite` y sin duplicados;
+  - F5: poda sin tocar lo que está a la vista;
+  - F7: el borrador.
+- **Suite completa:** backend 1407 aprobadas y 5 omitidas; front 968 aprobadas; `build`, `lint` y `check:estructura`
+  en verde.
