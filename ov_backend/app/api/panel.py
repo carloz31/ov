@@ -7,12 +7,16 @@ from app.core.parametros import LIMITE_PAGINA_CATALOGO
 
 from app.dependencies import Ahora, SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
-from app.schemas.panel import EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel
+from app.schemas.panel import (
+    ConfiguracionColegio, ConfigurarColegioEntrada, EstudiantePanel, InteresesPanel, PaginaAreasPanel,
+    PaginaInstitucionesPanel, SeguimientoPanel,
+)
 from app.schemas.panel_estudiante import (
     AvanceEstudiantePerfil, BorrarNotaEntrada, EditarNotaEntrada, EscribirNotaEntrada, NotaBorrada, NotaPerfil,
     PaginaEstudiantes, PerfilEstudiante, PlanCompleto, PlanesEstudiante, RegistroLectura, RespuestasEstudiante,
     DetallePartidaLlegada, ResultadoCompletoPerfil, TestsEstudiante,
 )
+from app.services.panel import configuracion as configuracion_panel
 from app.services.panel import estudiantes as estudiantes_panel
 from app.services.panel import intereses as intereses_panel
 from app.services.panel import lista as lista_panel
@@ -136,3 +140,14 @@ def editar_nota(entrada: EditarNotaEntrada, sesion: SesionBD, ahora: Ahora):
 @router.post("/acciones/borrar-nota", response_model=NotaBorrada)
 def borrar_nota(entrada: BorrarNotaEntrada, sesion: SesionBD, ahora: Ahora):
     return ejecutar_accion(sesion, lambda: notas_panel.borrar_nota(sesion, entrada, ahora))
+
+
+# Ajuste panel-entrevistas-configuracion: la configuración del colegio de la orientadora (sin parámetros de colegio).
+@router.get("/cuentas/{cuenta}/panel/configuracion", response_model=ConfiguracionColegio)
+def consultar_configuracion(cuenta: str, sesion: SesionBD):
+    return _consultar(lambda: configuracion_panel.consultar_configuracion(sesion, cuenta))
+
+
+@router.post("/acciones/configurar-colegio", response_model=ConfiguracionColegio)
+def configurar_colegio(entrada: ConfigurarColegioEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: configuracion_panel.configurar_colegio(sesion, entrada))

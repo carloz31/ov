@@ -25,7 +25,8 @@ FILAS = [
     ('APODERADO', 'fam-01', 'Familia-01', '', 'fam01@ov.test', CLAVE, 'nav-01', 'madre'),
     ('APODERADO', 'fam-12', 'Familia-12', '', 'fam12@ov.test', CLAVE, 'nav-01;nav-02', 'madre'),
 ]
-TABLAS = (m.Cuenta, m.Salon, m.VinculoFamiliar, m.OrientadoraSalon, m.SalonInstrumento, m.SalonActividadPrioritaria)
+TABLAS = (m.Cuenta, m.Salon, m.VinculoFamiliar, m.OrientadoraSalon, m.ColegioInstrumentoVisible,
+          m.ColegioActividadDestacada)
 
 
 def _csv(tmp_path, filas, nombre='cuentas-prueba.csv'):
@@ -92,17 +93,12 @@ def test_el_salon_nuevo_toma_su_promocion_y_su_seccion_del_codigo(creadas):
         assert (salon.promocion, salon.seccion) == (2026, 'C')
 
 
-def test_el_salon_nuevo_tiene_la_configuracion_de_5a_y_su_orientadora_solo_lo_ve_ella(creadas, cliente_contenido):
+def test_el_salon_nuevo_es_del_colegio_piloto_y_su_orientadora_solo_lo_ve_ella(creadas, cliente_contenido):
+    # Ajuste panel-entrevistas-configuracion: la configuración es del colegio; el salón nuevo la tiene sin copiar nada.
     cliente = cliente_contenido
     with creadas.state.fabrica_sesiones() as sesion:
-        def configuracion(codigo):
-            salon = sesion.scalar(select(m.Salon).where(m.Salon.codigo == codigo))
-            instrumentos = sorted((i.instrumento_id, i.es_prioritario, i.visible_apoderado) for i in sesion.scalars(
-                select(m.SalonInstrumento).where(m.SalonInstrumento.salon_id == salon.id)))
-            prioritarias = sorted(p.actividad_id for p in sesion.scalars(select(m.SalonActividadPrioritaria).where(
-                m.SalonActividadPrioritaria.salon_id == salon.id)))
-            return salon.colegio_id, instrumentos, prioritarias
-        assert configuracion('2026-C') == configuracion('5A')
+        colegios = {s.codigo: s.colegio_id for s in sesion.scalars(select(m.Salon))}
+        assert colegios['2026-C'] == colegios['5A']
     ori = _token(cliente, 'ori@ov.test')
     assert [s['codigo'] for s in cliente.get('/sesion', headers=ori).json()['salones']] == ['2026-C']
     assert cliente.get('/cuentas/ori-prueba/panel/seguimiento?salon=2026-C', headers=ori).status_code == 200

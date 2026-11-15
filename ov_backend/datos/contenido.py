@@ -22,8 +22,6 @@ from datos.fijos import validar_distribucion_items
 # Sus reglas apuntan a actividades de `contenido`; ninguna nombra una actividad `t-` del camino.
 PROVISIONALES = (
     ('Cuentas, colegios, salones, vínculos y orientadoras', 'ruta.CUENTAS, COLEGIOS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
-    ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
-    ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
 )
 
 COLEGIOS = ruta.COLEGIOS
@@ -40,9 +38,10 @@ CUENTAS = (*ruta.CUENTAS, *APODERADOS_PRUEBA)
 ORIENTADORAS_SALONES = ruta.ORIENTADORAS_SALONES
 VINCULOS = (*ruta.VINCULOS, ('VIN-BETO', 'est-beto', 'apo-beto', 'padre'), ('VIN-MIA', 'est-mia', 'apo-mia', 'madre'),
             ('VIN-TEO', 'est-teo', 'apo-teo', 'padre'), ('VIN-SOL', 'est-sol', 'apo-sol', 'madre'))
-SALON_INSTRUMENTOS = ruta.SALON_INSTRUMENTOS
-# PROVISIONAL (B14): el registro que la orientadora ve destacado.
-SALON_ACTIVIDADES_PRIORITARIAS = (('5A', 'b1-3'),)
+# Configuración del colegio de partida; la orientadora la cambia desde su portal. Ningún cuestionario opcional
+# visible para el apoderado (intereses se ve siempre, por definición).
+COLEGIO_INSTRUMENTOS_VISIBLES = ()
+COLEGIO_ACTIVIDADES_DESTACADAS = (('col-piloto', 'b1-3'),)
 
 # (código, número, nombre, espacio, audiencia)
 BLOQUES = (
@@ -1377,7 +1376,7 @@ REGLAS = (
     ('R-b3-8', 'ACTIVIDAD', 'b3-8', 'Gana «Batalla: el mercado y las rutas».', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
     ('R-b3-9', 'ACTIVIDAD', 'b3-9', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
     ('R-b3-10', 'ACTIVIDAD', 'b3-10', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
-    # El mensaje de R-B4 nombra las páginas de los cuestionarios prioritarios del salón (hoy solo intereses, SALON_INSTRUMENTOS); si cambian, cambia con ellos.
+    # El mensaje de R-B4 nombra las páginas de los cuestionarios obligatorios (partida e intereses, fijos.CONFIGURACION_INSTRUMENTOS); si cambian, cambia con ellos.
     # R-B4 y R-b5-1 se ven cuando su tramo anterior ya está completo: primero dicen lo que falta y la misión, «si aún no lo hiciste».
     ('R-B4', 'BLOQUE', 'B4', 'En el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad. Y, si aún no lo hiciste, completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional».', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),
     ('R-b4-1', 'ACTIVIDAD', 'b4-1', 'En «Mis planes», crea tu Plan A y completa su sección «Por qué la elijo».', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),

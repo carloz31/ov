@@ -67,17 +67,12 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 - `actividades_completas(tipo)` (ajuste logros): las actividades de los bloques del estudiante, sin el bloque LUMI y, con `tipo`, solo las de ese tipo, con un COMPLETA_ACTIVIDAD de la cuenta. Lee solo los conteos y las definiciones (sin consultas propias); una batalla y un caso solo emiten COMPLETA_ACTIVIDAD al superarse. El total sale del contenido cargado. Se registra con cuatro nombres: `todas_las_batallas`, `todos_los_casos`, `todos_los_registros` y `todas_las_actividades` (sin filtro).
 - `todas_las_conversaciones` (ajuste logros): todas las `conversacion` cargadas con un COMPLETA_CONVERSACION de la cuenta; también sin consultas propias.
 - `planes_completos` (ajuste logros): al menos `parametro` planes activos con sus cuatro secciones en LISTA (`planes.md`). Lee de la caché de planes y mira primero solo las tarjetas: si las que tienen todas sus secciones guardadas no alcanzan, no carga las filas hijas.
-- `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en dos casos:
-  - la aplicación ENTRADA (la partida) de todo instrumento COMPARACION;
-  - todas las aplicaciones de cada instrumento que `salon_instrumento` marca `es_prioritario` en su salón.
+- `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en las aplicaciones de los instrumentos `obligatorio`: de un COMPARACION, solo la ENTRADA (la partida; la llegada ocurre después); de los demás, todas. Hoy son la partida y el test de intereses, iguales para todos los salones. Lee `obligatorio` de la caché de definiciones y hace una consulta a los resultados vigentes.
 
-  Un COMPARACION marcado como prioritario se ignora: la partida es obligatoria por diseño y la llegada ocurre después. Sin salón o sin prioritarios, solo exige la partida. Hace una consulta a los resultados vigentes y lee la configuración de la caché de definiciones.
-
-**Configuración del salón** (B07; la orientadora la editará en B14):
-- `salon_actividad_prioritaria`: los registros que ella ve destacados en el perfil.
-- `salon_instrumento`: por cuestionario, `es_prioritario` (requisito de T2, la «decisión») y `visible_apoderado`.
-
-Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario y una actividad prioritaria que no sea de registro.
+**Cuestionarios y configuración del colegio** (ajuste panel-entrevistas-configuracion):
+- `instrumento.obligatorio` y `instrumento.visibilidad_apoderado` (`VisibilidadApoderado`: SIEMPRE, NUNCA o SEGUN_COLEGIO) son definiciones de `fijos.CONFIGURACION_INSTRUMENTOS`: partida y llegada, obligatorio y NUNCA; intereses, obligatorio y SIEMPRE; inteligencias y habilidades sociales, opcionales y SEGUN_COLEGIO. La carga exige configurar todo instrumento y rechaza un SEGUN_COLEGIO obligatorio.
+- `colegio_instrumento_visible (colegio_id, instrumento_id)`: los SEGUN_COLEGIO que el apoderado ve. `colegio_actividad_destacada (colegio_id, actividad_id)`: los registros que la orientadora ve destacados en el perfil. Una sola configuración para todos los salones del colegio.
+- Las dos tablas las escribe la orientadora (`POST /acciones/configurar-colegio`, `panel.md`), así que **no están en la caché de definiciones**: se leen de la base, una consulta por tabla y por petición (`ContextoConsultas.cargar_configuracion`). Se conservan al reiniciar, como las cuentas. La carga rechaza un visible que no sea SEGUN_COLEGIO y un destacado que no sea de registro.
 
 **Avance** (ajuste logros): un evaluador puede devolver `Avance(actual, requerido)` en vez de un booleano; `evaluar_regla` lo convierte en `cumplido = actual >= requerido`, y un total de 0 no cumple. `ResultadoEvaluador` lleva entonces `actual` y `requerido`, que llegan en `GET progreso`, en los motivos de bloqueo y en `nuevos_desbloqueos`; sin avance no se serializan. Hoy dan avance los tres evaluadores de logros.
 
@@ -298,7 +293,7 @@ Código: `app/services/familia.py`. Solo para cuentas APODERADO; otras, 404.
 
 - **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan. Es el avance que ve la familia; el del panel del estudiante es otro (ver «Avance del estudiante»).
 - **Diploma:** se obtiene al completar todos los bloques de su audiencia (COMPLETA_BLOQUE de cada uno); `obtenido_en` es la fecha del último.
-- **Hijos:** los estudiantes de sus vínculos activos, por código de vínculo, cada uno con su avance, su nivel actual y sus cuestionarios: los que `salon_instrumento` marca `visible_apoderado` en su salón, con cada aplicación (partida antes que llegada) y la fecha de su resultado vigente (`calculado_en`, nulo sin él). Los cuestionarios y su estado se entregan sin diploma; los puntajes no (ajuste inicio-apoderado).
+- **Hijos:** los estudiantes de sus vínculos activos, por código de vínculo, cada uno con su avance, su nivel actual y sus cuestionarios: los SIEMPRE y los SEGUN_COLEGIO que el colegio del hijo hace visibles (un NUNCA jamás), con cada aplicación (partida antes que llegada) y la fecha de su resultado vigente (`calculado_en`, nulo sin él). Los cuestionarios y su estado se entregan sin diploma; los puntajes no (ajuste inicio-apoderado).
 - **Resultados del hijo:** solo con el diploma (si no, 409, antes de mirar el hijo); del hijo elegido (`estudiante`; uno ajeno, 404) o del primer vínculo activo (sin vínculo, 409); los resultados vigentes del hijo en esos cuestionarios, en el mismo orden, con la misma forma que la consulta de resultado del estudiante.
 
 ## Preguntas de batalla (F04b)

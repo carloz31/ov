@@ -16,7 +16,7 @@ from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Aplicacion, AplicacionActividad, Bloque, Carrera, CheckIn, ConversacionVinculo, Cuenta, Espacio,
     EstadoProgreso, EventoUso, FamiliaCarrera, Institucion, Instrumento, ProgresoActividad, RespuestaItem,
-    ResultadoInstrumento, RitmoAplicacion, Rol, Salon, SalonInstrumento, TarjetaCarrera, TipoEventoUso,
+    ResultadoInstrumento, RitmoAplicacion, Rol, Salon, TarjetaCarrera, TipoEventoUso,
     VinculoFamiliar,
 )
 from app.services.avance import por_espacio, tramos_del_camino
@@ -254,16 +254,11 @@ def estados_test(sesion: Session, ids: list[int], aplicaciones: list[int], aviso
     return estados, revisar
 
 
-def etiqueta_cuestionario(sesion: Session, instrumento_id: int, actividades: set[int], salones: list[int]) -> str:
-    """REQUISITO si es prioritario en todos los salones del alcance (en algunos: REQUISITO_ALGUNOS); si no, CAMINO
-    si alguna de sus actividades es requerida del camino; si no, OPCIONAL."""
-    definiciones = contexto(sesion).definiciones
-    prioritario = {fila.salon_id for fila in definiciones.listar(SalonInstrumento)
-                   if fila.instrumento_id == instrumento_id and fila.es_prioritario}
-    if salones and all(salon_id in prioritario for salon_id in salones):
+def etiqueta_cuestionario(sesion: Session, instrumento_id: int, actividades: set[int]) -> str:
+    """REQUISITO si el cuestionario es obligatorio; si no, CAMINO si alguna de sus actividades es requerida del
+    camino; si no, OPCIONAL."""
+    if contexto(sesion).definiciones.obtener(Instrumento, instrumento_id).obligatorio:
         return "REQUISITO"
-    if any(salon_id in prioritario for salon_id in salones):
-        return "REQUISITO_ALGUNOS"
     camino = {actividad.id for bloque, actividad in por_espacio(sesion, Espacio.MISIONES_CAMPO) if actividad.requerida}
     return "CAMINO" if actividades & camino else "OPCIONAL"
 

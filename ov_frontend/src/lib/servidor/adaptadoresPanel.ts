@@ -60,7 +60,6 @@ export function textoDesglose(desglose: DesgloseFormacion[]) {
 
 export const etiquetasCuestionario: Record<EtiquetaCuestionario, string> = {
   REQUISITO: 'Requisito del salón',
-  REQUISITO_ALGUNOS: 'Requisito en algunos salones',
   CAMINO: 'Parte del camino',
   OPCIONAL: 'Opcional',
 }

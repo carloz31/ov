@@ -29,13 +29,16 @@ def hijo(cliente, codigo='est-ana'):
     return next(e for e in familia(cliente)['estudiantes'] if e['codigo'] == codigo)
 
 
-def hacer_visible(aplicacion, instrumento='TEST-PARTIDA-LLEGADA', salon='5A'):
-    """Configura un cuestionario más como visible al apoderado en el salón (no está en `ruta`)."""
+def hacer_visible(aplicacion, instrumento='TEST-INTELIGENCIAS', visible=True):
+    """Marca (o desmarca) un cuestionario como visible al apoderado en el colegio piloto, escribiendo la fila directo
+    (ajuste panel-entrevistas-configuracion: no está en `ruta`)."""
     with aplicacion.state.fabrica_sesiones.begin() as sesion:
-        salon_id = sesion.scalar(select(modelos.Salon.id).where(modelos.Salon.codigo == salon))
+        colegio_id = sesion.scalar(select(modelos.Colegio.id).where(modelos.Colegio.codigo == 'col-piloto'))
         instrumento_id = sesion.scalar(select(modelos.Instrumento.id).where(modelos.Instrumento.codigo == instrumento))
-        sesion.add(modelos.SalonInstrumento(salon_id=salon_id, instrumento_id=instrumento_id, es_prioritario=False,
-                                            visible_apoderado=True))
+        if visible:
+            sesion.add(modelos.ColegioInstrumentoVisible(colegio_id=colegio_id, instrumento_id=instrumento_id))
+        else:
+            sesion.delete(sesion.get(modelos.ColegioInstrumentoVisible, (colegio_id, instrumento_id)))
 
 
 def completar_ruta_apoderado(cliente):
@@ -120,11 +123,8 @@ def test_resultados_del_hijo_con_ruta_completa_e_instrumento_visible(cliente, ap
     assert {k: v for k, v in riasec.items() if k not in textos} == {k: v for k, v in propio.items() if k not in textos}
     assert riasec['codigo_interes']['codigo'] == 'IRA' and riasec['lectura'] != propio['lectura']
     assert 'Ana' in riasec['mensaje'] and 'Ana' in riasec['lectura'] and '{nombre}' not in riasec['lectura']
-    # El de partida y llegada no está configurado como visible al apoderado.
+    # El de partida y llegada nunca se muestra al apoderado; intereses, siempre.
     assert {r['instrumento'] for r in resultados(cliente)} == {'TEST-RIASEC'}
-    with aplicacion.state.fabrica_sesiones.begin() as sesion:
-        sesion.scalar(select(modelos.SalonInstrumento)).visible_apoderado = False
-    assert resultados(cliente) == []
 
 
 def test_instrumento_visible_sin_resultado_revelado_no_aparece(cliente):
@@ -153,15 +153,18 @@ def test_un_resultado_anulado_no_cuenta(cliente, aplicacion):
     assert hijo(cliente)['cuestionarios'][0]['aplicaciones'][0]['completado_en'] is None
 
 
-def test_instrumento_no_visible_no_aparece(cliente, aplicacion):
-    with aplicacion.state.fabrica_sesiones.begin() as sesion:
-        sesion.scalar(select(modelos.SalonInstrumento)).visible_apoderado = False
-    assert hijo(cliente)['cuestionarios'] == []
+def test_un_opcional_aparece_solo_mientras_el_colegio_lo_hace_visible(cliente, aplicacion):
+    assert [c['instrumento'] for c in hijo(cliente)['cuestionarios']] == ['TEST-RIASEC']
+    hacer_visible(aplicacion)
+    assert [c['instrumento'] for c in hijo(cliente)['cuestionarios']] == ['TEST-INTELIGENCIAS', 'TEST-RIASEC']
+    hacer_visible(aplicacion, visible=False)
+    assert [c['instrumento'] for c in hijo(cliente)['cuestionarios']] == ['TEST-RIASEC']
 
 
 def test_partida_y_llegada_nunca_se_muestra_al_apoderado(cliente, aplicacion):
-    # Ajuste resultados-intereses: aunque el salón la marque visible, mide también la presión de la familia.
-    hacer_visible(aplicacion)
+    # Ajuste resultados-intereses: mide también la presión de la familia. NUNCA es una definición: ni una fila del
+    # colegio escrita a mano lo hace visible.
+    hacer_visible(aplicacion, 'TEST-PARTIDA-LLEGADA')
     avanzar(cliente, 't-partida')
     revelar(cliente, 'TEST-PARTIDA-LLEGADA', aplicacion='APL-PARTIDA')
     assert [c['instrumento'] for c in hijo(cliente)['cuestionarios']] == ['TEST-RIASEC']

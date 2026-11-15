@@ -4,7 +4,7 @@ from importlib import import_module
 
 from app.models.enums import (
     Rol, Espacio, Audiencia, TipoActividad, Visibilidad, EstadoProgreso, TipoEventoUso,
-    TipoResultado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
+    TipoResultado, VisibilidadApoderado, MomentoAplicacion, TipoObjetivo, TipoConteo, OrigenEntrada,
     EstadoRespuestaRegistro,
     TipoReferencia, EstadoReferencia, ZonaDimension, TipoInstitucion, TipoFavorito,
     UsoPreguntaDiario, TipoRecomendacion, GestionInstitucion, FrecuenciaGasto, OrigenIdea,
@@ -20,7 +20,7 @@ _MODELOS_POR_MODULO = {
         'Base',
     ),
     'app.models.cuentas': (
-        'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria', 'SalonInstrumento',
+        'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'ColegioActividadDestacada', 'ColegioInstrumentoVisible',
     ),
     'app.models.contenido': (
         'Bloque', 'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio', 'PreguntaDiario', 'Conversacion',
@@ -78,10 +78,10 @@ def __getattr__(nombre):
 
 __all__ = [
     'Base', 'Rol', 'Espacio', 'Audiencia', 'TipoActividad', 'Visibilidad', 'EstadoProgreso',
-    'TipoEventoUso', 'TipoResultado', 'MomentoAplicacion', 'TipoObjetivo',
+    'TipoEventoUso', 'TipoResultado', 'VisibilidadApoderado', 'MomentoAplicacion', 'TipoObjetivo',
     'TipoConteo', 'OrigenEntrada', 'EstadoRespuestaRegistro',
-    'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'SalonActividadPrioritaria',
-    'SalonInstrumento', 'Bloque',
+    'Colegio', 'Salon', 'Cuenta', 'OrientadoraSalon', 'VinculoFamiliar', 'ColegioActividadDestacada',
+    'ColegioInstrumentoVisible', 'Bloque',
     'Actividad', 'Tematica', 'ActividadTematica', 'PreguntaBatalla', 'Seccion', 'Presentacion', 'Ficha', 'Testimonio',
     'PreguntaDiario', 'Conversacion', 'GrupoInsignia', 'Insignia', 'Nivel', 'FamiliaCarrera', 'Carrera',
     'ProgresoActividad', 'ResultadoCaso', 'ResultadoBatalla', 'RespuestaBatalla', 'ColeccionOcupacion', 'EntradaDiario', 'CheckIn', 'Entrevista',

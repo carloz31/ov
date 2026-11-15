@@ -41,7 +41,7 @@
     }
   ],
   "partida_llegada": {
-    "etiqueta": "CAMINO",
+    "etiqueta": "REQUISITO",
     "grupos": [],
     "instrumento": "TEST-PARTIDA-LLEGADA",
     "mensaje": "Medida antes y después: su valor está en el cambio.",

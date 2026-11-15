@@ -24,7 +24,7 @@ def test_sin_partida_solo_la_cabecera_con_la_lectura_de_la_orientadora(aplicacio
     fijar_ahora(aplicacion)
     datos = _detalle(cliente)
     assert datos['estado'] == 'SIN_PARTIDA' and datos['dimensiones'] == [] and datos['conteo'] == []
-    assert datos['lectura'] and datos['etiqueta'] == 'CAMINO' and datos['opciones_bajas'] == 2
+    assert datos['lectura'] and datos['etiqueta'] == 'REQUISITO' and datos['opciones_bajas'] == 2
 
 
 def test_solo_partida_por_atencion_con_respuestas_bajas_e_item_inverso(aplicacion, cliente, sesion):

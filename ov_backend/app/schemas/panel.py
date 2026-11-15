@@ -43,7 +43,7 @@ class AvisosPanel(BaseModel):
     grupos: list[GrupoAlertaPanel]
 
 
-EtiquetaCuestionario = Literal["REQUISITO", "REQUISITO_ALGUNOS", "CAMINO", "OPCIONAL"]
+EtiquetaCuestionario = Literal["REQUISITO", "CAMINO", "OPCIONAL"]
 EstadoTest = Literal["LISTO", "POR_REVISAR", "EN_CURSO", "SIN_EMPEZAR"]
 
 
@@ -224,3 +224,43 @@ class PaginaInstitucionesPanel(BaseModel):
     items: list[FilaInstitucion]
     tipos: list[TipoFormacion]
     plan_a_sin_institucion: int
+
+
+# --- Configuración del colegio (ajuste panel-entrevistas-configuracion) --------------------------------------------
+
+class CuestionarioConfiguracion(BaseModel):
+    """`visible`: lo que ve hoy el apoderado (SIEMPRE → sí; NUNCA → no; SEGUN_COLEGIO → lo que eligió el colegio)."""
+    codigo: str
+    nombre: str
+    descripcion: str
+    obligatorio: bool
+    visibilidad_apoderado: Literal["SIEMPRE", "NUNCA", "SEGUN_COLEGIO"]
+    visible: bool
+
+
+class RegistroConfiguracion(BaseModel):
+    codigo: str
+    titulo: str
+    requerida: bool
+    destacado: bool
+
+
+class BloqueConfiguracion(BaseModel):
+    codigo: str
+    nombre: str
+    registros: list[RegistroConfiguracion]
+
+
+class ConfiguracionColegio(BaseModel):
+    """Una sola configuración para todos los salones de la orientadora. `registros`: por bloque en el orden del
+    camino, con los de la Ciudad al final."""
+    cuestionarios: list[CuestionarioConfiguracion]
+    registros: list[BloqueConfiguracion]
+
+
+class ConfigurarColegioEntrada(BaseModel):
+    """Reemplaza toda la configuración: `visibles`, códigos de instrumento SEGUN_COLEGIO; `destacados`, códigos de
+    actividades de registro."""
+    cuenta: str
+    visibles: list[str]
+    destacados: list[str]

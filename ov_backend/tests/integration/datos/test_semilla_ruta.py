@@ -33,7 +33,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # ajuste llm-sugerencias: DIFICULTADES sin SALUD; ajuste cartas-diario: salen las dos referencias de
         # preguntas del diario
         'referencia': 12, 'tematica': 5,
-        'actividad_tematica': 6, 'pregunta_batalla': 14, 'salon_instrumento': 1, 'salon_actividad_prioritaria': 1,
+        'actividad_tematica': 6, 'pregunta_batalla': 14, 'colegio_instrumento_visible': 0, 'colegio_actividad_destacada': 1,
         'high_point': 614, 'tipo_carrera': 14, 'ubicacion': 26, 'institucion': 706, 'institucion_carrera': 3597,
         'grupo_ocupacional': 23, 'estilo_trabajo': 21, 'ingreso_familia': 716, 'ingreso_institucion': 1096,
         'seccion_tarjeta': 4, 'referencia_rubro': 6, 'referencia_camino': 6,

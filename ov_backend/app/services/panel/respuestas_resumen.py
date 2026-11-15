@@ -1,5 +1,5 @@
 """Registros del estudiante vistos por la orientadora (ajuste panel-estudiantes): qué registros cuentan (destacados del
-salón o, sin destacados, los requeridos del camino) y las etiquetas de sus respuestas. Lo usan la tarjeta «Sus
+colegio o, sin destacados, los requeridos del camino) y las etiquetas de sus respuestas. Lo usan la tarjeta «Sus
 respuestas» del Resumen y la pestaña Respuestas."""
 
 from collections import Counter
@@ -10,16 +10,17 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto
 from app.models import (
     Actividad, Cuenta, EstadoProgreso, EstadoRespuestaRegistro, ProgresoActividad, RespuestaRegistro, Salon,
-    SalonActividadPrioritaria, TipoActividad,
+    TipoActividad,
 )
 from app.schemas.panel_estudiante import RespuestasResumen
 
 TIPOS_SIN_CONTENIDO = ("vacio", "fuera_de_tema")
 
 
-def destacados_del_salon(sesion: Session, salon_id: int) -> list[int]:
-    return [fila.actividad_id for fila in contexto(sesion).definiciones.listar(SalonActividadPrioritaria)
-            if fila.salon_id == salon_id]
+def destacados_del_colegio(sesion: Session, colegio_id: int) -> list[int]:
+    """Los registros que la orientadora eligió destacar para todo el colegio, en el orden de las actividades."""
+    elegidos = contexto(sesion).actividades_destacadas(colegio_id)
+    return [a.id for a in contexto(sesion).definiciones.listar(Actividad) if a.id in elegidos]
 
 
 def registros_requeridos(sesion: Session) -> list[int]:
@@ -50,7 +51,7 @@ def respuestas_vigentes(sesion: Session, cuenta_id: int, actividades: list[int])
 
 
 def resumen_respuestas(sesion: Session, estudiante: Cuenta, salon: Salon) -> RespuestasResumen:
-    destacados = destacados_del_salon(sesion, salon.id)
+    destacados = destacados_del_colegio(sesion, salon.colegio_id)
     actividades = destacados or registros_requeridos(sesion)
     completadas = set(sesion.scalars(select(ProgresoActividad.actividad_id).where(
         ProgresoActividad.cuenta_id == estudiante.id, ProgresoActividad.actividad_id.in_(actividades),

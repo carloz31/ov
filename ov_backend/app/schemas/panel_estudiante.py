@@ -197,7 +197,7 @@ class NotaBorrada(BaseModel):
 
 # --- Pestaña Tests -------------------------------------------------------------------------------
 
-Etiqueta = Literal["REQUISITO", "REQUISITO_ALGUNOS", "CAMINO", "OPCIONAL"]
+Etiqueta = Literal["REQUISITO", "CAMINO", "OPCIONAL"]
 
 
 class BarraInteres(BaseModel):

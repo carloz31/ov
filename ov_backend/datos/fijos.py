@@ -709,6 +709,28 @@ HABILIDADES = DefinicionInstrumento(
 )
 INSTRUMENTOS = (INTELIGENCIAS, HABILIDADES)
 
+# Ajuste panel-entrevistas-configuracion: (obligatorio, visibilidad para el apoderado) de cada instrumento. Los
+# obligatorios son requisito del camino; un SEGUN_COLEGIO lo hace visible la orientadora para todo su colegio.
+_V = modelos.VisibilidadApoderado
+CONFIGURACION_INSTRUMENTOS = {
+    'TEST-PARTIDA-LLEGADA': (True, _V.NUNCA),
+    'TEST-RIASEC': (True, _V.SIEMPRE),
+    'TEST-INTELIGENCIAS': (False, _V.SEGUN_COLEGIO),
+    'TEST-HABILIDADES': (False, _V.SEGUN_COLEGIO),
+}
+
+
+def configurar_instrumentos(sesion, configuracion=CONFIGURACION_INSTRUMENTOS) -> None:
+    """Pone `obligatorio` y `visibilidad_apoderado` a cada instrumento cargado; todos deben estar en `configuracion` y
+    un SEGUN_COLEGIO no puede ser obligatorio."""
+    instrumentos = {i.codigo: i for i in sesion.scalars(select(modelos.Instrumento))}
+    if faltan := sorted(set(instrumentos) ^ set(configuracion)):
+        raise ValueError(f'Instrumentos sin configuración o configurados sin existir: {faltan}')
+    for codigo, (obligatorio, visibilidad) in configuracion.items():
+        if obligatorio and visibilidad == _V.SEGUN_COLEGIO:
+            raise ValueError(f'{codigo} es obligatorio: su visibilidad no puede depender del colegio')
+        instrumentos[codigo].obligatorio, instrumentos[codigo].visibilidad_apoderado = obligatorio, visibilidad
+
 PATRON_RIASEC = 'RRIIAASSEECC'
 OPCIONES_LIKERT = ('Me disgusta mucho', 'Me disgusta', 'No estoy seguro', 'Me gusta', 'Me gusta mucho')
 
@@ -1060,6 +1082,8 @@ def cargar(sesion: Session) -> Fijos:
     catalogo.cargar(sesion, dimensiones)
     comparacion, items_comparacion = _cargar_partida_llegada(sesion, tematicas)
     otros = {definicion.codigo: _cargar_instrumento(sesion, definicion) for definicion in INSTRUMENTOS}
+    sesion.flush()
+    configurar_instrumentos(sesion)
     sesion.flush()
     validar_textos_piezas(sesion)
     return Fijos(aplicaciones={a.codigo: a for a in (aplicacion, *comparacion, *(a for a, _ in otros.values()))},

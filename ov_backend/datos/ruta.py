@@ -41,12 +41,12 @@ ORIENTADORAS_SALONES = (('ori-carmen', '5A', True),)
 # F08: un segundo hijo para el selector del apoderado; Ana sigue siendo el primer vínculo.
 VINCULOS = (('VIN-ANA', 'est-ana', 'apo-rosa', 'madre'), ('VIN-LUIS', 'est-luis', 'apo-rosa', 'madre'))
 
-# Configuración del salón (B07; la orientadora la editará en B14). (salón, instrumento, prioritario, visible al
-# apoderado): un cuestionario prioritario es requisito de T2. El de partida y llegada (COMPARACION) es obligatorio
-# por diseño y no admite la marca de prioritario.
-SALON_INSTRUMENTOS = (('5A', 'TEST-RIASEC', True, True),)
-# (salón, actividad de registro): registros que la orientadora ve destacados en el perfil.
-SALON_ACTIVIDADES_PRIORITARIAS = (('5A', 't-expectativas'),)
+# Configuración del colegio (ajuste panel-entrevistas-configuracion; la orientadora la edita después). Qué es
+# obligatorio y la visibilidad de partida e intereses son definiciones (`fijos.CONFIGURACION_INSTRUMENTOS`).
+# (colegio, instrumento SEGUN_COLEGIO) que el apoderado ve:
+COLEGIO_INSTRUMENTOS_VISIBLES = ()
+# (colegio, actividad de registro): registros que la orientadora ve destacados en el perfil.
+COLEGIO_ACTIVIDADES_DESTACADAS = (('col-piloto', 't-expectativas'),)
 
 # (código, número, nombre, espacio, audiencia)
 BLOQUES = (('T0', 1, 'Inicio', 'MISIONES_CAMPO', 'ESTUDIANTE'),

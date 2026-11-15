@@ -108,7 +108,7 @@
     }
   ],
   "partida_llegada": {
-    "etiqueta": "CAMINO",
+    "etiqueta": "REQUISITO",
     "grupos": [
       {
         "afirmaciones": [

@@ -119,7 +119,7 @@ test('Seguimiento pinta lo que llega del servidor: indicadores, avisos, test, ca
   assert.match(test_, /Test de intereses Requisito del salón/)
   assert.match(test_, /Es la base de su informe\. Aquí ve quién/)
   const otros = texto(html(cuestionarios.OtrosCuestionarios, { datos: SEGUIMIENTO }))
-  assert.match(otros, /Punto de partida Parte del camino 2 de 5/)
+  assert.match(otros, /Punto de partida Requisito del salón 2 de 5/)
   const camino = cargar('CaminoPanel')
   assert.match(texto(html(camino.PorDondeVa, { datos: SEGUIMIENTO, onVer })), /3 Sin empezar/)
   const detenidos = { actividad: 't-llegada', titulo: 'Punto de llegada', cantidad: 2, dias: 7 }

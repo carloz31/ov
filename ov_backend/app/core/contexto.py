@@ -8,7 +8,9 @@ from sqlalchemy import distinct, func, literal, select, union_all
 from app.core.definiciones import obtener_definiciones
 from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA
 from app.core.planes import cargar_hijas, cargar_tarjetas
-from app.models import Desbloqueo, EventoUso, Favorito, ProgresoActividad, TipoConteo
+from app.models import (
+    ColegioActividadDestacada, ColegioInstrumentoVisible, Desbloqueo, EventoUso, Favorito, ProgresoActividad, TipoConteo,
+)
 
 
 # B17: la `fecha_hora` del cliente solo se acepta con ENTORNO=desarrollo. Prohibida por defecto; el guardia de
@@ -28,6 +30,37 @@ class ContextoConsultas:
         self.topes = {}
         self.planes = {}
         self.planes_con_hijas = set()
+        # Ajuste panel-entrevistas-configuracion: colegio → (instrumentos SEGUN_COLEGIO visibles, registros
+        # destacados). La escribe la orientadora, así que se lee de la base (una consulta por tabla), no de la caché.
+        self.configuracion_colegios = {}
+        # Colegio de cada cuenta leída con su salón (los hijos del apoderado), para no volver a consultarlo.
+        self.colegios_cuenta = {}
+
+    def cargar_configuracion(self, colegios):
+        faltantes = set(colegios) - self.configuracion_colegios.keys()
+        if not faltantes:
+            return
+        for colegio_id in faltantes:
+            self.configuracion_colegios[colegio_id] = (set(), set())
+        for colegio_id, instrumento_id in self.sesion.execute(select(
+                ColegioInstrumentoVisible.colegio_id, ColegioInstrumentoVisible.instrumento_id).where(
+                ColegioInstrumentoVisible.colegio_id.in_(faltantes))):
+            self.configuracion_colegios[colegio_id][0].add(instrumento_id)
+        for colegio_id, actividad_id in self.sesion.execute(select(
+                ColegioActividadDestacada.colegio_id, ColegioActividadDestacada.actividad_id).where(
+                ColegioActividadDestacada.colegio_id.in_(faltantes))):
+            self.configuracion_colegios[colegio_id][1].add(actividad_id)
+
+    def instrumentos_visibles(self, colegio_id) -> set[int]:
+        self.cargar_configuracion([colegio_id])
+        return self.configuracion_colegios[colegio_id][0]
+
+    def actividades_destacadas(self, colegio_id) -> set[int]:
+        self.cargar_configuracion([colegio_id])
+        return self.configuracion_colegios[colegio_id][1]
+
+    def invalidar_configuracion(self):
+        self.configuracion_colegios.clear()
 
     def cargar_conteos(self, cuentas):
         faltantes = set(cuentas) - self.conteos.keys()

@@ -31,7 +31,7 @@ Todas las lecturas son `GET /cuentas/{c}/panel/...` de la propia orientadora (po
 
 | Ruta | Respuesta |
 |---|---|
-| `/panel/seguimiento` | `SeguimientoPanel`: `fecha`, `salon`, `total_estudiantes`, `indicadores`, `avisos` (grupos y alertas con cantidad > 0, con `nombres` si caben en `PANEL_NOMBRES_VISIBLES_ALERTA`), `test` (instrumento principal: listo, por revisar con perfil plano y prisa, en curso, sin empezar, y su etiqueta), `cuestionarios` (una fila por aplicación de los demás instrumentos, en el orden del camino y luego la ciudad, con etiqueta REQUISITO, REQUISITO_ALGUNOS, CAMINO u OPCIONAL), `tramos` (SIN_EMPEZAR, cada bloque del camino, TERMINO), `detenidos` y `seguridad` (bandas con `desde`/`hasta` de los parámetros y `sin_senales`). |
+| `/panel/seguimiento` | `SeguimientoPanel`: `fecha`, `salon`, `total_estudiantes`, `indicadores`, `avisos` (grupos y alertas con cantidad > 0, con `nombres` si caben en `PANEL_NOMBRES_VISIBLES_ALERTA`), `test` (instrumento principal: listo, por revisar con perfil plano y prisa, en curso, sin empezar, y su etiqueta), `cuestionarios` (una fila por aplicación de los demás instrumentos, en el orden del camino y luego la ciudad, con etiqueta REQUISITO si el instrumento es `obligatorio`, CAMINO si alguna de sus actividades es requerida del camino y OPCIONAL en los demás casos), `tramos` (SIN_EMPEZAR, cada bloque del camino, TERMINO), `detenidos` y `seguridad` (bandas con `desde`/`hasta` de los parámetros y `sin_senales`). |
 | `/panel/intereses?orden_areas=&orden_instituciones=` | `InteresesPanel`: `con_planes`, `con_favoritos`, el top de `areas` e `instituciones` (con `total` y `plan_a_sin_institucion`), `formacion`, `complicaciones` y `frente_test`. |
 | `/panel/areas`, `/panel/instituciones` (`orden`, `buscar`, `tipo`, `limite` 20 hasta 50, `desde`) | Página `{total, items, tipos}` de las filas con algún interesado; `tipos`, los presentes para el filtro. |
 | `/panel/estudiantes?conjunto=&valor=` | `list[EstudiantePanel]` (`codigo`, `nombre`, `salon`: `SalonDatos`) de un conjunto: `avisos`, `alerta`, `test`, `tramo`, `detenidos`, `seguridad_baja`, `area`, `institucion` o `plan_fuera_test`. Desconocido: 422. |
@@ -45,7 +45,7 @@ Todas las rutas del perfil pasan por `perfil_acceso.estudiante_de_orientadora` (
 | Ruta | Respuesta |
 |---|---|
 | `/panel/lista-estudiantes?salon&buscar&aviso&test&acceso&orden&limite&desde` | `PaginaEstudiantes`: `accesos` (todos, con avisos, los grupos del Inicio de orden 1, sin avisos), `avisos` del filtro e `items` con solo las columnas. Orden por defecto: aviso más importante (grupo y alerta), cantidad de avisos y nombre; `limite` por defecto `PANEL_FILAS_ESTUDIANTES`. |
-| `/panel/estudiantes/{e}` | `PerfilEstudiante`: cabecera y Resumen (avisos con textos de perfil, temas, intereses, planes, partida, `respuestas` sobre los destacados del salón o, sin destacados, los requeridos, y notas). |
+| `/panel/estudiantes/{e}` | `PerfilEstudiante`: cabecera y Resumen (avisos con textos de perfil, temas, intereses, planes, partida, `respuestas` sobre los destacados del colegio o, sin destacados, los requeridos, y notas). |
 | `/panel/estudiantes/{e}/tests`, `…/tests/partida-llegada`, `…/tests/{aplicacion}/resultado` | Test de intereses, partida y llegada (zonas y afirmaciones agrupadas; nunca puntajes), otros cuestionarios; el detalle por dimensión (`DetallePartidaLlegada`, ajuste color-partida-llegada: lectura de la orientadora, fechas, conteos y, por dimensión y afirmación, en el orden de atención, las etiquetas, si son bajas y su cambio); resultado completo con textos de orientadora y el nombre y la descripción del instrumento (partida y llegada no: 404). |
 | `/panel/estudiantes/{e}/planes`, `…/planes/{prioridad}` | «De un vistazo» y «Antes de sus planes»; plan completo (secciones bloqueadas sin contenido, sin sugerencias). |
 | `/panel/estudiantes/{e}/respuestas`, `…/respuestas/{actividad}` | Registros sin ítems (salvo «Para leer primero»); ítems de un registro con los valores con que respondió. |
@@ -57,6 +57,15 @@ Todas las rutas del perfil pasan por `perfil_acceso.estudiante_de_orientadora` (
 - La tabla `parametro` se lee solo con `instrumentos/parametros.leer_parametros` (`comun` lo reexporta).
 - Respuestas: etiquetas `REQUIERE_ATENCION` (`sensible`), `SIN_CONTENIDO` (`tipo_final` vacío o fuera de tema) y `AUN_NO_LO_SABE` (estado ABIERTO). Los ecos y preguntas salen de `valores_contexto`; con `eco_cambiado`, el ítem trae también los de hoy; sin valores guardados, se muestran los de hoy marcados como tales. Las piezas guardan su `origen` y `grupo` desde este ajuste.
 - Estudiantes de ejemplo: `python -m datos.cargar contenido` los siembra por defecto, en cualquier entorno (la siembra corre en otro proceso con `ENTORNO=desarrollo` y sin clave del LLM; `--sin-ejemplos` los omite; si falla, la base queda con `contenido` sin ejemplos y el código de salida es 3), o a mano `scripts/sembrar_panel_ejemplo.py --desarrollo` (ocho casos `est-panel-*` en 5A, sobre `contenido`, con apoderado del 3 al 8 y credenciales de prueba en `CREDENCIALES` del script para ingresar como cada estudiante y apoderado; recorren el camino con `scripts/prerrequisitos_contenido.py`); el exportador lo corre en una base temporal y exporta `contenido-panel-*` de los casos 1, 5 y 7.
+
+### Configuración del colegio (ajuste panel-entrevistas-configuracion)
+
+Una sola para todos los salones de la orientadora: el colegio es el de sus salones y no se expone. Si sus salones son de más de un colegio (caso no soportado), las dos rutas responden 422 «Sus salones pertenecen a más de un colegio». Otro rol, 404. El modelo está en `motor.md` («Cuestionarios y configuración del colegio»).
+
+| Ruta | Qué hace |
+|---|---|
+| `GET /cuentas/{c}/panel/configuracion` | `ConfiguracionColegio`: `cuestionarios` (obligatorios primero, por código: `codigo`, `nombre`, `descripcion`, `obligatorio`, `visibilidad_apoderado` y `visible`, lo efectivo: SIEMPRE sí, NUNCA no, SEGUN_COLEGIO según la fila) y `registros` (por bloque del estudiante en el orden del camino, la Ciudad al final: `codigo`, `nombre` y sus registros con `codigo`, `titulo`, `requerida` y `destacado`). Número fijo de consultas. |
+| `POST /acciones/configurar-colegio` | `{cuenta, visibles, destacados}` reemplaza todo (un borrado y una inserción por tabla) y responde la configuración nueva. 422 si un código no existe, si el instrumento no es SEGUN_COLEGIO o si la actividad no es un registro del estudiante. Sin eventos ni notificaciones. |
 
 ## Definiciones
 

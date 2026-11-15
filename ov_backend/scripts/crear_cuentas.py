@@ -5,9 +5,9 @@ Columnas: `rol` (ESTUDIANTE, APODERADO u ORIENTADORA), `codigo`, `nombre` (un al
 genera una), `hijos` (solo APODERADO: códigos separados por punto y coma) y `parentesco` (solo APODERADO).
 
 - El salón que no existe se escribe como `AAAA-S` (promoción y sección: `2026-C`) y se crea con ese código en
-  `col-piloto`; otro formato, o una promoción y sección que el colegio ya tiene, es un error de fila. Se crea con la
-  configuración de 5A (instrumentos, prioritarios y visibilidad
-  para el apoderado). La orientadora del CSV queda asignada solo a su salón.
+  `col-piloto`; otro formato, o una promoción y sección que el colegio ya tiene, es un error de fila. La configuración
+  (cuestionarios visibles para el apoderado y registros destacados) es del colegio, así que no se copia nada. La
+  orientadora del CSV queda asignada solo a su salón.
 - Todo va en una transacción: si una fila falla, no se crea nada. Las cuentas que ya existen (por código) se saltan y se
   informan, sin modificarlas.
 - `--simular` valida y lista lo que crearía, sin escribir.
@@ -25,7 +25,6 @@ import secrets
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from types import SimpleNamespace
 
 RAIZ = Path(__file__).resolve().parents[1]
 if str(RAIZ) not in sys.path:
@@ -39,11 +38,10 @@ from app.config import cargar_configuracion  # noqa: E402
 from app.core.parametros import MINIMO_CARACTERES_CONTRASENA  # noqa: E402
 from app.services.acceso import normalizar_correo  # noqa: E402
 from datos.cargador import (  # noqa: E402
-    _cargar_salones, asignar_orientadoras, crear_cuentas, crear_salones, vincular_familias,
+    asignar_orientadoras, crear_cuentas, crear_salones, vincular_familias,
 )
 
 COLEGIO = 'col-piloto'
-SALON_MODELO = '5A'
 ROLES = ('ESTUDIANTE', 'APODERADO', 'ORIENTADORA')
 COLUMNAS = ('rol', 'codigo', 'nombre', 'salon', 'correo', 'contrasena', 'hijos', 'parentesco')
 MAXIMO_PARENTESCO = 30
@@ -175,32 +173,12 @@ def planificar(sesion, filas: list[Fila]) -> tuple[Plan, list[str]]:
     return plan, errores
 
 
-def _configuracion_modelo(sesion, salon_nuevo: str):
-    """Las tuplas de 5A para `_cargar_salones`: instrumentos (prioritario, visible al apoderado) y prioritarios."""
-    modelo = sesion.scalar(select(m.Salon).where(m.Salon.codigo == SALON_MODELO))
-    if modelo is None:
-        raise ErrorCuentas(f'No existe el salón modelo {SALON_MODELO}')
-    instrumentos = sesion.execute(select(m.Instrumento.codigo, m.SalonInstrumento.es_prioritario,
-                                         m.SalonInstrumento.visible_apoderado)
-                                  .join(m.Instrumento, m.Instrumento.id == m.SalonInstrumento.instrumento_id)
-                                  .where(m.SalonInstrumento.salon_id == modelo.id)).all()
-    actividades = sesion.scalars(select(m.Actividad.codigo).join(
-        m.SalonActividadPrioritaria, m.SalonActividadPrioritaria.actividad_id == m.Actividad.id)
-        .where(m.SalonActividadPrioritaria.salon_id == modelo.id)).all()
-    return SimpleNamespace(SALON_INSTRUMENTOS=tuple((salon_nuevo, i, p, v) for i, p, v in instrumentos),
-                           SALON_ACTIVIDADES_PRIORITARIAS=tuple((salon_nuevo, a) for a in actividades))
-
-
 def aplicar(sesion, plan: Plan) -> None:
     """Escribe el plan con las funciones del cargador. Quien llama abre y confirma la transacción."""
     colegio = sesion.scalar(select(m.Colegio).where(m.Colegio.codigo == COLEGIO))
     salones = {s.codigo: s for s in sesion.scalars(select(m.Salon))}
     nuevos = crear_salones(sesion, {COLEGIO: colegio}, [(s, int(s[:4]), s[5:], COLEGIO) for s in plan.salones_nuevos])
     salones.update(nuevos)
-    if nuevos:
-        actividades = {a.codigo: a for a in sesion.scalars(select(m.Actividad))}
-        for codigo in nuevos:
-            _cargar_salones(_configuracion_modelo(sesion, codigo), sesion, salones, actividades)
     for f in plan.nuevas:
         if not f.contrasena:
             f.contrasena, f.generada = secrets.token_urlsafe(9), True
@@ -258,8 +236,8 @@ def main(argumentos=None) -> int:
         return 1
     verbo = 'Se crearían' if opciones.simular else 'Creadas'
     for salon in plan.salones_nuevos:
-        print(f'{"Se crearía" if opciones.simular else "Creado"} el salón {salon} en {COLEGIO}, con la configuración de '
-              f'{SALON_MODELO}')
+        print(f'{"Se crearía" if opciones.simular else "Creado"} el salón {salon} en {COLEGIO}, con la configuración '
+              'del colegio')
     print(f'{verbo} {len(plan.nuevas)} cuentas:')
     for f in plan.nuevas:
         extra = f' · hijos {", ".join(f.hijos)} ({f.parentesco})' if f.rol == 'APODERADO' else f' · salón {f.salon}'

@@ -1,4 +1,4 @@
-"""B07: temáticas, configuración del salón y referencias a cuestionarios al cargar; la carga fallida no deja filas."""
+"""B07: temáticas, configuración del colegio y referencias a cuestionarios al cargar; la carga fallida no deja filas."""
 
 import pytest
 from sqlalchemy import select
@@ -11,10 +11,11 @@ from datos import cargar, ruta
 
 # DATO DE PRUEBA: variantes que el cargador debe rechazar.
 VARIANTES = (
-    ('SALON_INSTRUMENTOS', (('5A', 'TEST-PARTIDA-LLEGADA', True, False),), 'no admite la marca de prioritario'),
-    ('SALON_INSTRUMENTOS', (('5Z', 'TEST-RIASEC', True, False),), 'salón o instrumento inexistente'),
-    ('SALON_ACTIVIDADES_PRIORITARIAS', (('5A', 't-inicio'),), 'no es una actividad de registro'),
-    ('SALON_ACTIVIDADES_PRIORITARIAS', (('5A', 't-nula'),), 'salón o actividad inexistente'),
+    ('COLEGIO_INSTRUMENTOS_VISIBLES', (('col-piloto', 'TEST-PARTIDA-LLEGADA'),), 'no depende del colegio'),
+    ('COLEGIO_INSTRUMENTOS_VISIBLES', (('col-piloto', 'TEST-RIASEC'),), 'no depende del colegio'),
+    ('COLEGIO_INSTRUMENTOS_VISIBLES', (('col-otro', 'TEST-INTELIGENCIAS'),), 'colegio o instrumento inexistente'),
+    ('COLEGIO_ACTIVIDADES_DESTACADAS', (('col-piloto', 't-inicio'),), 'no es una actividad de registro'),
+    ('COLEGIO_ACTIVIDADES_DESTACADAS', (('col-piloto', 't-nula'),), 'colegio o actividad inexistente'),
     ('TEMATICAS_ACTIVIDADES', (('t-inicio', ('Z',)),), 'temática inexistente'),
     ('REFERENCIAS', (*ruta.REFERENCIAS, ('t-ref-mal', ('ACTIVIDAD', 't-eco'), 'RESPUESTA_CUESTIONARIO',
                                          ('APL-RIASEC', 'AUTO-01'))), 'que la aplicación APL-RIASEC no presenta'),
@@ -43,11 +44,19 @@ def test_tematicas_y_prioritarios_cargados(sesion):
     dimensiones = sesion.execute(select(m.Dimension.codigo, m.Tematica.codigo).join(
         m.Tematica, m.Tematica.id == m.Dimension.tematica_id).order_by(m.Dimension.orden)).all()
     assert dimensiones == [(f'AUTO-{c}', c) for c in 'ABCDE']
-    configuracion = sesion.execute(select(m.Salon.codigo, m.Instrumento.codigo, m.SalonInstrumento.es_prioritario,
-                                          m.SalonInstrumento.visible_apoderado).select_from(m.SalonInstrumento).join(
-        m.Salon, m.Salon.id == m.SalonInstrumento.salon_id).join(
-        m.Instrumento, m.Instrumento.id == m.SalonInstrumento.instrumento_id)).all()
-    assert configuracion == [('5A', 'TEST-RIASEC', True, True)]
-    assert sesion.execute(select(m.Salon.codigo, m.Actividad.codigo).select_from(m.SalonActividadPrioritaria).join(
-        m.Salon, m.Salon.id == m.SalonActividadPrioritaria.salon_id).join(
-        m.Actividad, m.Actividad.id == m.SalonActividadPrioritaria.actividad_id)).all() == [('5A', 't-expectativas')]
+    instrumentos = sesion.execute(select(m.Instrumento.codigo, m.Instrumento.obligatorio,
+                                         m.Instrumento.visibilidad_apoderado).order_by(m.Instrumento.codigo)).all()
+    assert instrumentos == [('TEST-HABILIDADES', False, 'SEGUN_COLEGIO'), ('TEST-INTELIGENCIAS', False, 'SEGUN_COLEGIO'),
+                            ('TEST-PARTIDA-LLEGADA', True, 'NUNCA'), ('TEST-RIASEC', True, 'SIEMPRE')]
+    assert sesion.scalars(select(m.ColegioInstrumentoVisible)).all() == []
+    assert sesion.execute(select(m.Colegio.codigo, m.Actividad.codigo).select_from(m.ColegioActividadDestacada).join(
+        m.Colegio, m.Colegio.id == m.ColegioActividadDestacada.colegio_id).join(
+        m.Actividad, m.Actividad.id == m.ColegioActividadDestacada.actividad_id)).all() == [('col-piloto', 't-expectativas')]
+
+
+def test_un_instrumento_segun_colegio_no_puede_ser_obligatorio(monkeypatch, tmp_path):
+    from datos import fijos
+    url = f'sqlite:///{(tmp_path / "obligatorio.db").as_posix()}'
+    monkeypatch.setitem(fijos.CONFIGURACION_INSTRUMENTOS, 'TEST-HABILIDADES', (True, m.VisibilidadApoderado.SEGUN_COLEGIO))
+    with pytest.raises(ValueError, match='no puede depender del colegio'):
+        cargar.preparar_base(url, 'ruta', crear_tablas=True)

@@ -2,7 +2,7 @@
   "conteo": [],
   "dimensiones": [],
   "estado": "SIN_PARTIDA",
-  "etiqueta": "CAMINO",
+  "etiqueta": "REQUISITO",
   "fecha_llegada": null,
   "fecha_partida": null,
   "instrumento": "TEST-PARTIDA-LLEGADA",

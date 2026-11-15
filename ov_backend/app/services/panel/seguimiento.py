@@ -30,10 +30,6 @@ from app.services.panel.comun import (
 ORDEN_ESPACIO = {Espacio.MISIONES_CAMPO: 0, Espacio.CIUDAD: 1}
 
 
-def salones_del_alcance(alcance: Alcance) -> list[int]:
-    return [alcance.salon.id] if alcance.salon else sorted(alcance.salones)
-
-
 def _planes(sesion: Session, ids: list[int]) -> tuple[set[int], set[int]]:
     """Con Plan A (tarjeta activa de prioridad 1) y con sus tres planes (tres tarjetas activas)."""
     activas = Counter()
@@ -94,7 +90,7 @@ def _test(lecturas: Lecturas, parametros: dict) -> tuple[TestPanel, dict[int, st
     motivos = Counter(revisar.values())
     return TestPanel(
         instrumento=instrumento.codigo, nombre=instrumento.nombre,
-        etiqueta=etiqueta_cuestionario(sesion, instrumento.id, actividades, salones_del_alcance(lecturas.alcance)),
+        etiqueta=etiqueta_cuestionario(sesion, instrumento.id, actividades),
         listo=contados["LISTO"], por_revisar=contados["POR_REVISAR"], perfil_plano=motivos["PLANO"],
         prisa=motivos["PRISA"], en_curso=contados["EN_CURSO"], sin_empezar=contados["SIN_EMPEZAR"]), estados
 
@@ -141,15 +137,13 @@ def _cuestionarios(lecturas: Lecturas, parametros: dict) -> list[CuestionarioPan
                    if instrumentos[a.instrumento_id].tipo_resultado == TipoResultado.COMPARACION]
     vigentes = con_resultado_vigente(sesion, ids, [a.id for a in aplicaciones if a not in comparacion])
     completas = _respondidas_completas(sesion, ids, comparacion, actividades)
-    salones = salones_del_alcance(lecturas.alcance)
-
     def orden(aplicacion):
         posiciones = [_posicion_actividad(definiciones, a) for a in actividades[aplicacion.id]]
         return min(posiciones, default=(3,)), aplicacion.codigo
 
     return [CuestionarioPanel(
         aplicacion=a.codigo, nombre=a.nombre,
-        etiqueta=etiqueta_cuestionario(sesion, a.instrumento_id, actividades[a.id], salones),
+        etiqueta=etiqueta_cuestionario(sesion, a.instrumento_id, actividades[a.id]),
         n=len((completas if a in comparacion else vigentes)[a.id]),
     ) for a in sorted(aplicaciones, key=orden)]
 

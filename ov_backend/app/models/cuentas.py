@@ -43,20 +43,20 @@ class Cuenta(Base):
     opcion_inicial_id: Mapped[int | None] = mapped_column(ForeignKey("carrera.id"), default=None)
 
 
-class SalonActividadPrioritaria(Base):
-    """Registro que la orientadora marca para su salón, para verlo destacado en el perfil (B07; se configura en B14)."""
-    __tablename__ = "salon_actividad_prioritaria"
-    salon_id: Mapped[int] = mapped_column(ForeignKey("salon.id"), primary_key=True)
+class ColegioActividadDestacada(Base):
+    """Registro que la orientadora ve destacado en el perfil de sus estudiantes; uno para todos los salones del
+    colegio. Lo escribe la orientadora, así que no está en la caché de definiciones."""
+    __tablename__ = "colegio_actividad_destacada"
+    colegio_id: Mapped[int] = mapped_column(ForeignKey("colegio.id"), primary_key=True)
     actividad_id: Mapped[int] = mapped_column(ForeignKey("actividad.id"), primary_key=True)
 
 
-class SalonInstrumento(Base):
-    """Configuración de un cuestionario en el salón: prioritario (requisito de T2) y visible al apoderado."""
-    __tablename__ = "salon_instrumento"
-    salon_id: Mapped[int] = mapped_column(ForeignKey("salon.id"), primary_key=True)
+class ColegioInstrumentoVisible(Base):
+    """Cuestionario SEGUN_COLEGIO que el apoderado ve en su portal, para todos los salones del colegio. Lo escribe la
+    orientadora, así que no está en la caché de definiciones."""
+    __tablename__ = "colegio_instrumento_visible"
+    colegio_id: Mapped[int] = mapped_column(ForeignKey("colegio.id"), primary_key=True)
     instrumento_id: Mapped[int] = mapped_column(ForeignKey("instrumento.id"), primary_key=True)
-    es_prioritario: Mapped[bool] = mapped_column(default=False, server_default=false())
-    visible_apoderado: Mapped[bool] = mapped_column(default=False, server_default=false())
 
 
 class OrientadoraSalon(Base):

@@ -39,13 +39,13 @@
   "cuestionarios": [
     {
       "aplicacion": "APL-PARTIDA",
-      "etiqueta": "CAMINO",
+      "etiqueta": "REQUISITO",
       "n": 2,
       "nombre": "Punto de partida"
     },
     {
       "aplicacion": "APL-LLEGADA",
-      "etiqueta": "CAMINO",
+      "etiqueta": "REQUISITO",
       "n": 1,
       "nombre": "Punto de llegada"
     },

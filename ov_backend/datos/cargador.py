@@ -190,7 +190,8 @@ def _cargar_estructura(m, sesion):
     sesion.flush()
     return {'BLOQUE': bloques, 'ACTIVIDAD': actividades, 'FICHA': fichas, 'TESTIMONIO': testimonios,
             'CONVERSACION': conversaciones,
-            'INSIGNIA': insignias, 'NIVEL': niveles, 'PREGUNTA_DIARIO': preguntas, 'SALON': salones}
+            'INSIGNIA': insignias, 'NIVEL': niveles, 'PREGUNTA_DIARIO': preguntas, 'SALON': salones,
+            'COLEGIO': colegios}
 
 
 def _puntaje_maximo_caso(m, codigo, tipo, minimo):
@@ -633,22 +634,24 @@ def _insertar_en_orden(sesion, items, referencias):
             raise ValueError('Las referencias y las elecciones por referencia forman un ciclo')
 
 
-def _cargar_salones(m, sesion, salones, actividades):
+def _cargar_configuracion_colegios(m, sesion, colegios, actividades):
+    """Cuestionarios visibles para el apoderado (solo SEGUN_COLEGIO) y registros destacados (solo REGISTRO) de cada
+    colegio."""
     instrumentos = {i.codigo: i for i in sesion.scalars(select(modelos.Instrumento))}
-    for salon, instrumento, prioritario, _ in m.SALON_INSTRUMENTOS:
-        if salon not in salones or instrumento not in instrumentos:
-            raise ValueError(f'La configuración de {salon} apunta a un salón o instrumento inexistente: {instrumento}')
-        if prioritario and instrumentos[instrumento].tipo_resultado == modelos.TipoResultado.COMPARACION:
-            raise ValueError(f'{instrumento} es obligatorio por diseño y no admite la marca de prioritario')
-    for salon, actividad in m.SALON_ACTIVIDADES_PRIORITARIAS:
-        if salon not in salones or actividad not in actividades:
-            raise ValueError(f'El prioritario de {salon} apunta a un salón o actividad inexistente: {actividad}')
+    for colegio, instrumento in m.COLEGIO_INSTRUMENTOS_VISIBLES:
+        if colegio not in colegios or instrumento not in instrumentos:
+            raise ValueError(f'La configuración de {colegio} apunta a un colegio o instrumento inexistente: {instrumento}')
+        if instrumentos[instrumento].visibilidad_apoderado != modelos.VisibilidadApoderado.SEGUN_COLEGIO:
+            raise ValueError(f'La visibilidad de {instrumento} no depende del colegio')
+    for colegio, actividad in m.COLEGIO_ACTIVIDADES_DESTACADAS:
+        if colegio not in colegios or actividad not in actividades:
+            raise ValueError(f'El destacado de {colegio} apunta a un colegio o actividad inexistente: {actividad}')
         if actividades[actividad].tipo != modelos.TipoActividad.REGISTRO:
-            raise ValueError(f'El prioritario {actividad} de {salon} no es una actividad de registro')
-    sesion.add_all(modelos.SalonInstrumento(salon_id=salones[s].id, instrumento_id=instrumentos[i].id,
-                                            es_prioritario=p, visible_apoderado=v) for s, i, p, v in m.SALON_INSTRUMENTOS)
-    sesion.add_all(modelos.SalonActividadPrioritaria(salon_id=salones[s].id, actividad_id=actividades[a].id)
-                   for s, a in m.SALON_ACTIVIDADES_PRIORITARIAS)
+            raise ValueError(f'El destacado {actividad} de {colegio} no es una actividad de registro')
+    sesion.add_all(modelos.ColegioInstrumentoVisible(colegio_id=colegios[c].id, instrumento_id=instrumentos[i].id)
+                   for c, i in m.COLEGIO_INSTRUMENTOS_VISIBLES)
+    sesion.add_all(modelos.ColegioActividadDestacada(colegio_id=colegios[c].id, actividad_id=actividades[a].id)
+                   for c, a in m.COLEGIO_ACTIVIDADES_DESTACADAS)
 
 
 def _cargar_reglas(m, sesion, objetivos):
@@ -775,7 +778,8 @@ def cargar(sesion: Session, modulo) -> None:
     _cargar_preguntas_batalla(m, sesion, objetivos['ACTIVIDAD'], objetivos['FICHA'])
     _cargar_catalogo(m, sesion)
     _cargar_registros(m, sesion, objetivos['ACTIVIDAD'], base)
-    _cargar_salones(m, sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])
+    objetivos.pop('SALON')
+    _cargar_configuracion_colegios(m, sesion, objetivos.pop('COLEGIO'), objetivos['ACTIVIDAD'])
     _cargar_reglas(m, sesion, objetivos)
     _cargar_alertas(m, sesion)
     sesion.flush()

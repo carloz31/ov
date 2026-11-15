@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.parametros import CORRELACION_MINIMA
 from app.database import TipoJSON
 from app.models.base import Base, busqueda_de, enumerado
-from app.models.enums import MomentoAplicacion, TipoResultado
+from app.models.enums import MomentoAplicacion, TipoResultado, VisibilidadApoderado
 
 
 class Instrumento(Base):
@@ -28,6 +28,12 @@ class Instrumento(Base):
     # La guía de dimensiones del resultado arranca abierta.
     guia_abierta: Mapped[bool] = mapped_column(default=False, server_default=false())
     tipo_resultado: Mapped[TipoResultado] = mapped_column(enumerado(TipoResultado), default=TipoResultado.DESTACADAS)
+    # Ajuste panel-entrevistas-configuracion: un obligatorio es requisito (partida e intereses) y no se configura;
+    # la visibilidad para el apoderado es una definición, salvo SEGUN_COLEGIO (`colegio_instrumento_visible`).
+    obligatorio: Mapped[bool] = mapped_column(default=False, server_default=false())
+    visibilidad_apoderado: Mapped[VisibilidadApoderado] = mapped_column(
+        enumerado(VisibilidadApoderado), default=VisibilidadApoderado.SEGUN_COLEGIO,
+        server_default=text("'SEGUN_COLEGIO'"))
     # Aviso de velocidad (HU-096): umbral = palabras × ms_por_palabra + ms_respuesta, que cubre decidir y los dos
     # toques (la opción y «Continuar»); racha_aviso es cuántos ítems rápidos seguidos disparan el aviso.
     ms_por_palabra: Mapped[int] = mapped_column(default=150, server_default=text("150"))

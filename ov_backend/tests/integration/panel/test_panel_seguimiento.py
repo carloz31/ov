@@ -118,7 +118,8 @@ def test_otros_cuestionarios_en_orden_con_etiqueta(aplicacion, cliente, sesion):
     resultado(sesion, 'est-luis', aplicacion='APL-HABILIDADES')
     sesion.commit()
     assert [(c['aplicacion'], c['etiqueta'], c['n']) for c in panel(cliente)['cuestionarios']] == [
-        ('APL-PARTIDA', 'CAMINO', 1), ('APL-LLEGADA', 'CAMINO', 0), ('APL-INTELIGENCIAS', 'OPCIONAL', 0),
+        # Ajuste panel-entrevistas-configuracion: partida y llegada es obligatorio (REQUISITO).
+        ('APL-PARTIDA', 'REQUISITO', 1), ('APL-LLEGADA', 'REQUISITO', 0), ('APL-INTELIGENCIAS', 'OPCIONAL', 0),
         ('APL-HABILIDADES', 'OPCIONAL', 1)]
 
 
@@ -137,8 +138,8 @@ def test_acceso_por_salon_y_todos_mis_salones(aplicacion, cliente, sesion):
     sesion.commit()
     todos = panel(cliente, salon=None)
     assert todos['salon'] is None and todos['total_estudiantes'] == 6
-    # El test de intereses es requisito en 5A y no en 5B.
-    assert todos['test']['etiqueta'] == 'REQUISITO_ALGUNOS'
+    # Ajuste panel-entrevistas-configuracion: el test de intereses es obligatorio en todos los salones.
+    assert todos['test']['etiqueta'] == 'REQUISITO'
     assert panel(cliente, salon='5B')['total_estudiantes'] == 1
     filas = cliente.get('/cuentas/ori-carmen/panel/estudiantes', params={'conjunto': 'avisos'}).json()
     assert {'codigo': 'est-beto', 'nombre': 'Beto', 'salon': {'codigo': '5B', 'promocion': 2026, 'seccion': 'B'}} in filas

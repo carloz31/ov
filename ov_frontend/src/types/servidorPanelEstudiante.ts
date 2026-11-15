@@ -114,7 +114,7 @@ export type NotaBorrada = { nota: number; borrada: boolean }
 
 // --- Tests ---
 
-export type EtiquetaInstrumentoPerfil = 'REQUISITO' | 'REQUISITO_ALGUNOS' | 'CAMINO' | 'OPCIONAL'
+export type EtiquetaInstrumentoPerfil = 'REQUISITO' | 'CAMINO' | 'OPCIONAL'
 export type BarraInteres = { codigo: string; nombre: string; valor: number; en_codigo: boolean }
 export type PlanFrenteAreas = { prioridad: number; carrera: string; en_areas: boolean }
 export type TestIntereses = {

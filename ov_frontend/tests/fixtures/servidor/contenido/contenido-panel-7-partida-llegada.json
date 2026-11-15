@@ -228,7 +228,7 @@
     }
   ],
   "estado": "CON_LLEGADA",
-  "etiqueta": "CAMINO",
+  "etiqueta": "REQUISITO",
   "fecha_llegada": "2026-10-07",
   "fecha_partida": "2026-10-07",
   "instrumento": "TEST-PARTIDA-LLEGADA",

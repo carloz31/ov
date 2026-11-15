@@ -31,7 +31,8 @@ def test_tests_solo_partida_con_respuestas_bajas_e_item_inverso(aplicacion, clie
     sesion.commit()
     datos = pestana(cliente, '/tests')
     partida = datos['partida_llegada']
-    assert partida['resumen']['estado'] == 'SOLO_PARTIDA' and partida['etiqueta'] == 'CAMINO'
+    # Ajuste panel-entrevistas-configuracion: partida y llegada es obligatorio, así que es REQUISITO.
+    assert partida['resumen']['estado'] == 'SOLO_PARTIDA' and partida['etiqueta'] == 'REQUISITO'
     assert [g['codigo'] for g in partida['grupos']] == ['BAJAS']
     # El ítem 4 es inverso: «Muy de acuerdo» cuenta como la respuesta más baja.
     assert _afirmaciones(partida['grupos'][0]) == [

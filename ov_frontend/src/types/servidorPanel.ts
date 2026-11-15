@@ -22,7 +22,7 @@ export type AlertaPanel = {
 }
 export type GrupoAlertaPanel = { codigo: string; nombre: string; alertas: AlertaPanel[] }
 export type AvisosPanel = { con_avisos: number; grupos: GrupoAlertaPanel[] }
-export type EtiquetaCuestionario = 'REQUISITO' | 'REQUISITO_ALGUNOS' | 'CAMINO' | 'OPCIONAL'
+export type EtiquetaCuestionario = 'REQUISITO' | 'CAMINO' | 'OPCIONAL'
 export type EstadoTest = 'LISTO' | 'POR_REVISAR' | 'EN_CURSO' | 'SIN_EMPEZAR'
 export type TestPanel = {
   instrumento: string

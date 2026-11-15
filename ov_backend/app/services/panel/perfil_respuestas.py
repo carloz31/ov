@@ -24,7 +24,7 @@ from app.schemas.panel_estudiante import (
 from app.services.avance import por_espacio
 from app.services.panel.contexto_lectura import LecturaContexto
 from app.services.panel.perfil_acceso import estudiante_de_orientadora
-from app.services.panel.respuestas_resumen import destacados_del_salon, etiquetas
+from app.services.panel.respuestas_resumen import destacados_del_colegio, etiquetas
 from app.services.registro.contexto import con_marcadores, depende_de_otros, eco_cambiado
 from app.services.registro.eleccion import FUENTES_PIEZAS, es_otra
 
@@ -106,7 +106,7 @@ def respuestas(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahor
         EventoUso.cuenta_id == cuenta_id, EventoUso.tipo == TipoEventoUso.COMPLETA_ACTIVIDAD,
         EventoUso.id_referencia.in_(ids)).group_by(EventoUso.id_referencia)).all()) if ids else {}
     vigentes = _vigentes(sesion, cuenta_id, ids)
-    destacados = set(destacados_del_salon(sesion, acceso.estudiante.salon_id))
+    destacados = set(destacados_del_colegio(sesion, acceso.salon.salon.colegio_id))
     items = {i.id: i for i in contexto(sesion).definiciones.listar(ItemRegistro) if i.actividad_id in set(ids)}
     lectura = LecturaContexto(sesion, acceso.estudiante, list(items.values()))
     filas, leer_primero = [], []

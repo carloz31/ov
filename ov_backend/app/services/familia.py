@@ -22,10 +22,10 @@ from app.models import (
     MomentoAplicacion,
     ResultadoInstrumento,
     Rol,
-    SalonInstrumento,
+    Salon,
     TipoEventoUso,
-    TipoResultado,
     VinculoFamiliar,
+    VisibilidadApoderado,
 )
 from app.schemas.cuentas import NivelActual
 from app.schemas.familia import (
@@ -93,10 +93,14 @@ def _exigir_apoderado(cuenta: Cuenta) -> None:
 
 
 def _hijos(sesion: Session, cuenta: Cuenta) -> list[Cuenta]:
-    """Los hijos de sus vínculos activos, por código de vínculo (el primero es el hijo por defecto)."""
-    return list(sesion.scalars(select(Cuenta).join(VinculoFamiliar, VinculoFamiliar.estudiante_id == Cuenta.id).where(
+    """Los hijos de sus vínculos activos, por código de vínculo (el primero es el hijo por defecto). Deja en el
+    contexto el colegio de cada uno, que decide sus cuestionarios visibles."""
+    filas = sesion.execute(select(Cuenta, Salon.colegio_id).join(
+        VinculoFamiliar, VinculoFamiliar.estudiante_id == Cuenta.id).outerjoin(Salon, Salon.id == Cuenta.salon_id).where(
         VinculoFamiliar.apoderado_id == cuenta.id, VinculoFamiliar.es_activo.is_(True),
-    ).order_by(VinculoFamiliar.codigo)))
+    ).order_by(VinculoFamiliar.codigo)).all()
+    contexto(sesion).colegios_cuenta.update({hijo.id: colegio_id for hijo, colegio_id in filas})
+    return [hijo for hijo, _ in filas]
 
 
 def _hijo(sesion: Session, cuenta: Cuenta, estudiante: str | None = None) -> Cuenta:
@@ -112,14 +116,17 @@ def _hijo(sesion: Session, cuenta: Cuenta, estudiante: str | None = None) -> Cue
     return hijos[0]
 
 
-def _aplicaciones_visibles(sesion: Session, salon_id: int | None) -> list[Aplicacion]:
-    """Aplicaciones de los instrumentos visibles al apoderado en el salón, por código de instrumento y, dentro de él,
-    por momento (la partida antes que la llegada) y código. Partida y llegada (COMPARACION) nunca, aunque el salón
-    la marque visible: mide también la presión que el estudiante siente de su familia (ajuste resultados-intereses)."""
-    definiciones = contexto(sesion).definiciones
-    visibles = {fila.instrumento_id for fila in definiciones.listar(SalonInstrumento)
-                if fila.salon_id == salon_id and fila.visible_apoderado
-                and definiciones.obtener(Instrumento, fila.instrumento_id).tipo_resultado != TipoResultado.COMPARACION}
+def _aplicaciones_visibles(sesion: Session, hijo: Cuenta) -> list[Aplicacion]:
+    """Aplicaciones de los instrumentos que el apoderado ve del hijo, por código de instrumento y, dentro de él, por
+    momento (la partida antes que la llegada) y código: los SIEMPRE y los SEGUN_COLEGIO que el colegio del hijo hace
+    visibles; un NUNCA (partida y llegada) jamás. El hijo viene de `_hijos`, que dejó su colegio en el contexto."""
+    actual = contexto(sesion)
+    definiciones = actual.definiciones
+    colegio_id = actual.colegios_cuenta.get(hijo.id)
+    elegidos = actual.instrumentos_visibles(colegio_id) if colegio_id is not None else set()
+    visibles = {i.id for i in definiciones.listar(Instrumento)
+                if i.visibilidad_apoderado == VisibilidadApoderado.SIEMPRE
+                or (i.visibilidad_apoderado == VisibilidadApoderado.SEGUN_COLEGIO and i.id in elegidos)}
     aplicaciones = [a for a in definiciones.listar(Aplicacion) if a.instrumento_id in visibles]
     return sorted(aplicaciones, key=lambda a: (definiciones.obtener(Instrumento, a.instrumento_id).codigo,
                                               list(MomentoAplicacion).index(a.momento), a.codigo))
@@ -128,7 +135,8 @@ def _aplicaciones_visibles(sesion: Session, salon_id: int | None) -> list[Aplica
 def _cuestionarios(sesion: Session, hijos: list[Cuenta]) -> dict[int, list[CuestionarioHijo]]:
     """Los cuestionarios visibles de cada hijo con la fecha de su resultado vigente por aplicación (una consulta)."""
     definiciones = contexto(sesion).definiciones
-    por_hijo = {hijo.id: _aplicaciones_visibles(sesion, hijo.salon_id) for hijo in hijos}
+    contexto(sesion).cargar_configuracion({c for c in contexto(sesion).colegios_cuenta.values() if c is not None})
+    por_hijo = {hijo.id: _aplicaciones_visibles(sesion, hijo) for hijo in hijos}
     ids = {aplicacion.id for aplicaciones in por_hijo.values() for aplicacion in aplicaciones}
     fechas = {}
     if ids:
@@ -181,7 +189,7 @@ def resultados_hijo(sesion: Session, cuenta: Cuenta, estudiante: str | None = No
     if not _diploma(sesion, cuenta).obtenido:
         raise ErrorAccion("Completa tus actividades para ver los resultados de tu hijo")
     hijo = _hijo(sesion, cuenta, estudiante)
-    aplicaciones = {aplicacion.id: aplicacion for aplicacion in _aplicaciones_visibles(sesion, hijo.salon_id)}
+    aplicaciones = {aplicacion.id: aplicacion for aplicacion in _aplicaciones_visibles(sesion, hijo)}
     if not aplicaciones:
         return []
     resultados = sesion.scalars(select(ResultadoInstrumento).where(

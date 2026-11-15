@@ -133,8 +133,9 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     sql = salida.getvalue()
     # Ajuste registros: la tabla `texto_fijo` (0049). Ajuste registros llm (lote 2): 0050 rehace `respuesta_registro`.
     # Ajuste llm-sugerencias: `respaldo_paso` (0055). Ajuste panel-salon: las tres tablas del panel (0056).
-    # Ajuste panel-estudiantes: `nota_orientadora` (0057).
-    assert sql.count('CREATE TABLE ') == 108
+    # Ajuste panel-estudiantes: `nota_orientadora` (0057). Ajuste panel-entrevistas-configuracion: las dos tablas de
+    # configuración del colegio (0059).
+    assert sql.count('CREATE TABLE ') == 110
     assert 'esquema_version' not in sql
     assert "json_typeof(criterios_objetivo) = 'array'" in sql
     assert "json_typeof(criterios_faltantes) = 'array'" in sql
@@ -147,8 +148,9 @@ def test_migracion_y_modelos_compilan_para_postgresql(monkeypatch):
     # `ocupacion.en_test`.
     # Ajuste registros: `sensible` (respuesta y evaluación) y `requiere_atencion` (respuesta). Ajuste registros llm
     # (lote 2): la `respuesta_registro` de 0050 suma `sensible`, `seguimiento_sin_evaluar` y `eco_cambiado`. Ajuste
-    # front de registros (lote 1): 25, con `respuesta_registro.repregunta_cerrada` (0052).
-    assert sql.count('BOOLEAN DEFAULT false') == 25
+    # front de registros (lote 1): 25, con `respuesta_registro.repregunta_cerrada` (0052). Ajuste
+    # panel-entrevistas-configuracion: 26, con `instrumento.obligatorio` (0059).
+    assert sql.count('BOOLEAN DEFAULT false') == 26
     assert 'BOOLEAN DEFAULT 0' not in sql and 'BOOLEAN DEFAULT 1' not in sql
     dialecto = postgresql.dialect()
     for tabla in Base.metadata.sorted_tables:
@@ -477,9 +479,12 @@ def test_downgrade_con_items_con_eleccion_falla_sin_perder_catalogo_ni_estado(ba
         # Nada baja de 0050: el esquema y los datos quedan como en 0050. Ajuste llm-sugerencias: 0055, que sí bajó, se
         # llevó la tabla de catálogo `respaldo_paso` (se vuelve a cargar al subir); ajuste panel-salon: 0056 se llevó las
         # tres tablas del panel.
-        # Ajuste panel-estudiantes: 0057 se llevó `nota_orientadora`.
-        posteriores = {'respaldo_paso', 'grupo_alerta', 'alerta', 'parametro', 'nota_orientadora'}
-        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) - posteriores | {'alembic_version'}
+        # Ajuste panel-estudiantes: 0057 se llevó `nota_orientadora`. Ajuste panel-entrevistas-configuracion: 0059
+        # devolvió la configuración por salón en lugar de la del colegio.
+        posteriores = {'respaldo_paso', 'grupo_alerta', 'alerta', 'parametro', 'nota_orientadora',
+                       'colegio_instrumento_visible', 'colegio_actividad_destacada'}
+        assert set(inspect(motor).get_table_names()) == set(Base.metadata.tables) - posteriores | {
+            'alembic_version', 'salon_instrumento', 'salon_actividad_prioritaria'}
         with motor.connect() as conexion:
             assert conexion.scalar(text('SELECT version_num FROM alembic_version')) == '0050'
             for tabla in (t for t in Base.metadata.sorted_tables if t.name not in posteriores):

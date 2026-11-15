@@ -59,7 +59,7 @@ def _partes(sesion: Session, acceso: Acceso, aplicaciones: list[Aplicacion]) -> 
 def _etiqueta(sesion: Session, instrumento: Instrumento, aplicaciones: list[Aplicacion], acceso: Acceso) -> str:
     actividades = set().union(*actividades_de_aplicaciones(sesion, [a.id for a in aplicaciones]).values()) \
         if aplicaciones else set()
-    return etiqueta_cuestionario(sesion, instrumento.id, actividades, [acceso.estudiante.salon_id])
+    return etiqueta_cuestionario(sesion, instrumento.id, actividades)
 
 
 # --- Test de intereses ---------------------------------------------------------------------------

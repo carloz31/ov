@@ -23,7 +23,7 @@ TABLAS_ESTADO = {
 def test_tablas_indices_y_claves_foraneas(aplicacion, cliente):
     inspector = inspect(aplicacion.state.motor_bd)
     esperadas = {
-        "colegio", "salon", "salon_instrumento", "salon_actividad_prioritaria", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "pregunta_batalla", "seccion", "presentacion", "ficha",
+        "colegio", "salon", "colegio_instrumento_visible", "colegio_actividad_destacada", "cuenta", "orientadora_salon", "vinculo_familiar", "bloque", "actividad", "tematica", "actividad_tematica", "pregunta_batalla", "seccion", "presentacion", "ficha",
         "testimonio",
         "pregunta_diario", "conversacion", "grupo_insignia", "insignia", "nivel", "familia_carrera",
         "carrera", "regla_desbloqueo", "condicion_desbloqueo",

@@ -112,6 +112,13 @@ class TipoResultado(StrEnum):
     COMPARACION = "COMPARACION"
 
 
+class VisibilidadApoderado(StrEnum):
+    """Si el apoderado ve el resultado de un cuestionario: siempre, nunca o según lo que elija el colegio."""
+    SIEMPRE = "SIEMPRE"
+    NUNCA = "NUNCA"
+    SEGUN_COLEGIO = "SEGUN_COLEGIO"
+
+
 class ZonaDimension(StrEnum):
     """Lectura en palabras del promedio de una dimensión de partida o llegada (B07)."""
     FUERTE = "FUERTE"

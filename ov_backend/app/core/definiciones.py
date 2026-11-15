@@ -19,8 +19,8 @@ MODELOS_FIJOS = (
     modelos.EscalaRespuesta, modelos.OpcionEscala, modelos.ItemInstrumento,
     modelos.ActividadItem, modelos.Aplicacion, modelos.AplicacionActividad,
     modelos.ListaOpciones, modelos.OpcionLista, modelos.ItemRegistro,
-    modelos.Referencia, modelos.Tematica, modelos.ActividadTematica, modelos.SalonInstrumento,
-    modelos.SalonActividadPrioritaria, modelos.SeccionTarjeta, modelos.ReferenciaRubro, modelos.ReferenciaCamino,
+    modelos.Referencia, modelos.Tematica, modelos.ActividadTematica,
+    modelos.SeccionTarjeta, modelos.ReferenciaRubro, modelos.ReferenciaCamino,
     modelos.RespaldoPaso, modelos.PreguntaBaseGuion, modelos.TipoReaccion, modelos.TextoFijo,
 )
 
