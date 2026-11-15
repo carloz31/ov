@@ -302,3 +302,18 @@ def test_una_fila_mas_de_eleccion_registro_no_suma_consultas(ejemplos):
         with aplicacion.state.fabrica_sesiones() as sesion:
             sesion.execute(m.Alerta.__table__.delete().where(m.Alerta.codigo == 't-dia-cuesta'))
             sesion.commit()
+
+
+def test_los_estudiantes_de_ejemplo_muestran_cada_tema(ejemplos):
+    """`scripts/sembrar_panel_ejemplo.py`: cada tema aparece al menos una vez; el caso 7 pasa el tope."""
+    aplicacion, cliente = ejemplos
+    temas = {codigo: [t['codigo'] for t in cliente.get(f'{BASE}/estudiantes/{codigo}').json()['temas']]
+             for codigo in (f'est-panel-{n}' for n in range(1, 9))}
+    assert {'voces-chocan', 'valores-fuera-del-plan', 'plan-se-ve-lejos', 'plan-conoce-poco'} <= set(temas['est-panel-5'])
+    assert {'llegada-sin-avance', 'plan-fuera-areas', 'plan-poco-entusiasmo'} <= set(temas['est-panel-7'])
+    assert len(temas['est-panel-7']) >= 6 and 'plan-b-desanima' not in temas['est-panel-7']
+    assert temas['est-panel-8'] == []
+    with aplicacion.state.fabrica_sesiones() as sesion:
+        todos = set(sesion.scalars(select(m.Alerta.codigo).join(m.GrupoAlerta).where(
+            m.GrupoAlerta.codigo == 'para-conversar')))
+    assert todos == set().union(*map(set, temas.values()))

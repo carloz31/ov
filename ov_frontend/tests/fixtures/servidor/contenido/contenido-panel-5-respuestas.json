@@ -135,7 +135,7 @@
     },
     {
       "actividad": "b4-5",
-      "cambio_despues": false,
+      "cambio_despues": true,
       "ciudad": false,
       "destacado": false,
       "estado": "COMPLETADO",

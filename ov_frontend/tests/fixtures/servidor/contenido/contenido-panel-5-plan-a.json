@@ -125,16 +125,19 @@
   "por_que": {
     "idea_origen": "MIA",
     "motivos": [
-      "Ayudar a otros",
-      "Me gusta explicar"
+      "Crear",
+      "Aprender"
     ],
-    "relato": "Cuando ayudé a mi primo con sus tareas sentí que explicar me hace feliz."
+    "relato": "DATO DE PRUEBA: me gusta entender a la gente."
   },
   "prioridad": 1,
   "realidad": {
     "camino": "Prepararme primero",
     "ciclos": 10,
-    "complicaciones": [],
+    "complicaciones": [
+      "Económicas",
+      "DATO DE PRUEBA: queda lejos de mi casa"
+    ],
     "costo_carrera": 6000,
     "costo_primer_anio": 1200,
     "financiamiento": [

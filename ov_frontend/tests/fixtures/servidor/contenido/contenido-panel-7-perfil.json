@@ -130,9 +130,14 @@
   },
   "temas": [
     {
-      "codigo": "plan-idea-ajena",
+      "codigo": "voces-chocan",
+      "destino": "RESPUESTAS",
+      "texto": "Marcó que lo que se espera en su entorno y lo que quiere hacer al terminar el colegio chocan. La voz que eligió: Mamá."
+    },
+    {
+      "codigo": "plan-poco-entusiasmo",
       "destino": "PLANES",
-      "texto": "La idea de estudiar Ingeniería de Petroleo y Gas Natural (su Plan A) vino de su familia."
+      "texto": "Marcó «Poco» en «Me entusiasma» frente a su Plan A (Ingeniería de Petroleo y Gas Natural). La idea de estudiarla vino de su familia."
     },
     {
       "codigo": "plan-fuera-areas",
@@ -140,9 +145,20 @@
       "texto": "Su Plan A (Ingeniería de Petroleo y Gas Natural) no está entre sus áreas sugeridas."
     },
     {
-      "codigo": "dimension-por-trabajar",
+      "codigo": "forma-de-decidir",
+      "destino": "RESPUESTAS",
+      "texto": "Sobre cómo decide las cosas importantes, marcó: «Termino haciendo lo que otros esperan»."
+    },
+    {
+      "codigo": "proyecto-poco-seguro",
+      "destino": "RESPUESTAS",
+      "texto": "Frente a su proyecto, marcó «Poco seguro/a»."
+    },
+    {
+      "codigo": "llegada-sin-avance",
       "destino": "TESTS",
-      "texto": "En su punto de llegada, «Decisión propia» quedó por trabajar."
+      "texto": "Entre la partida y la llegada: «Decisión propia» bajó."
     }
-  ]
+  ],
+  "temas_visibles": 4
 }

@@ -26,7 +26,7 @@
       "institucion": null,
       "medidores": {
         "capacidad": null,
-        "entusiasmo": null,
+        "entusiasmo": 1,
         "recursos": null
       },
       "motivo_principal": "Estabilidad",

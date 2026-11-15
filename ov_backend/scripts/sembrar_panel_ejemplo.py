@@ -261,6 +261,12 @@ def sembrar_casos(s: Sembrador) -> list[str]:
                                                         'hallazgo': 'DATO DE PRUEBA: el ciclo dura cuatro meses.'})
         s.pedir('POST', '/acciones/planes/medidores', {'cuenta': 'est-panel-5', 'carrera': PSICOLOGIA,
                                                        'entusiasmo': 3, 'capacidad': 2, 'recursos': 1})
+        # Ajuste pendientes-orientadora: temas `voces-chocan`, `valores-fuera-del-plan` (sus motivos no están en su
+        # podio), `plan-se-ve-lejos` con complicaciones y `plan-conoce-poco` con dudas (de arriba).
+        s.guardar('est-panel-5', 'PSICOLOGIA', 'POR_QUE', {'idea_origen': 'MIA', 'motivos': [
+            {'opcion': 'CREAR'}, {'opcion': 'APRENDER'}], 'relato': 'DATO DE PRUEBA: me gusta entender a la gente.'})
+        _complicaciones(s, 'est-panel-5', ('ECONOMICAS', None), (None, 'DATO DE PRUEBA: queda lejos de mi casa'))
+        _elegir(s, 'est-panel-5', 'b1-3-contraste', ('CHOCAN', 'Chocan'))
         s.respuestas('est-panel-5', 'b1-3')[-1].tipo_final = 'vacio'  # b1-3 es el destacado de 5A
         s.respuestas('est-panel-5', 'b1-7')[0].estado = m.EstadoRespuestaRegistro.ABIERTO
         otra = next((r for r in s.respuestas('est-panel-5', 'b4-1') if r.opciones_elegidas), None)
@@ -292,6 +298,15 @@ def sembrar_casos(s: Sembrador) -> list[str]:
         s.avanzar('est-panel-7', 'b4-5', partida=s.autopercepcion(lambda d: {'AUTO-D': 4}.get(d, 2)))
         _plan_fuera_de_areas(s, 'est-panel-7', [PSICOLOGIA, PERIODISMO])
         s.avanzar_resto('est-panel-7', llegada=s.autopercepcion(lambda d: {'AUTO-D': 2}.get(d, 4)))
+        # Ajuste pendientes-orientadora: seis temas, más que el tope. Respondió la moneda (`DESANIME`) antes de cambiar su
+        # Plan B, así que `plan-b-desanima` no aparece.
+        plan_a = s.sesion.scalar(select(m.Carrera.codigo).join(m.TarjetaCarrera).where(
+            m.TarjetaCarrera.cuenta_id == s.cuenta('est-panel-7').id, m.TarjetaCarrera.prioridad == 1))
+        s.pedir('POST', '/acciones/planes/medidores', {'cuenta': 'est-panel-7', 'carrera': plan_a, 'entusiasmo': 1})
+        _elegir(s, 'est-panel-7', 'b1-3-contraste', ('CHOCAN', 'Chocan'))
+        _elegir(s, 'est-panel-7', 'b4-2-estilo', ('LO_QUE_ESPERAN', 'Termino haciendo lo que otros esperan'))
+        _elegir(s, 'est-panel-7', 'b4-5-moneda', ('DESANIME', 'Me desanimé'))
+        _elegir(s, 'est-panel-7', 'b5-1-seguridad', ('POCO', 'Poco seguro/a'))
         s.senales('est-panel-7', 3, 4, 4)
     if 'est-panel-8' in hecho:  # 8 · Avanzado y sin avisos; habilidades sociales e inteligencias reveladas.
         s.ingreso('est-panel-8', 0)
@@ -326,6 +341,27 @@ def _avanzar_resto(self, codigo, llegada):
 
 
 Sembrador.avanzar_resto = _avanzar_resto
+
+
+def _elegir(s: Sembrador, codigo, item, *elegidas):
+    """Lo marcado en el intento vigente de un ítem, tal como se mostró (el recorrido marca la primera opción)."""
+    respuesta = s.sesion.scalar(select(m.RespuestaRegistro).join(m.ProgresoActividad).join(
+        m.ItemRegistro, m.ItemRegistro.id == m.RespuestaRegistro.item_registro_id).where(
+        m.ProgresoActividad.cuenta_id == s.cuenta(codigo).id, m.ItemRegistro.codigo == item,
+        m.RespuestaRegistro.vigente))
+    respuesta.opciones_elegidas = [{'codigo': c, 'texto': t} for c, t in elegidas]
+
+
+def _complicaciones(s: Sembrador, codigo, *filas):
+    """Complicaciones del Plan A, directo en la base (de la lista o escritas a mano), sin pedir sugerencias."""
+    tarjeta = s.sesion.scalar(select(m.TarjetaCarrera).where(m.TarjetaCarrera.cuenta_id == s.cuenta(codigo).id,
+                                                             m.TarjetaCarrera.prioridad == 1))
+    for opcion, otro in filas:
+        tarjeta.ultimo_numero_complicacion += 1
+        opcion_id = s.sesion.scalar(select(m.OpcionLista.id).join(m.ListaOpciones).where(
+            m.ListaOpciones.codigo == 'DIFICULTADES', m.OpcionLista.codigo == opcion)) if opcion else None
+        s.sesion.add(m.ComplicacionTarjeta(tarjeta_id=tarjeta.id, numero=tarjeta.ultimo_numero_complicacion,
+                                           opcion_id=opcion_id, texto_otro=otro, creada_en=s.ahora))
 
 
 def _plan_fuera_de_areas(s: Sembrador, codigo, planes):
