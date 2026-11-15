@@ -1,6 +1,7 @@
 import { enviar, obtener } from './cliente'
 import type {
   AvanceEstudiantePerfil,
+  DetallePartidaLlegada,
   NotaBorrada,
   NotaPerfil,
   PaginaEstudiantes,
@@ -10,7 +11,6 @@ import type {
   RegistroLectura,
   RespuestaServidor,
   RespuestasEstudiante,
-  RespuestasPartidaLlegada,
   ResultadoPublico,
   TestsEstudiante,
 } from '@/types/servidor'
@@ -63,7 +63,7 @@ export function obtenerTests(
 export function obtenerPartidaLlegada(
   cuenta: string,
   estudiante: string,
-): Promise<RespuestaServidor<RespuestasPartidaLlegada>> {
+): Promise<RespuestaServidor<DetallePartidaLlegada>> {
   return obtener(perfil(cuenta, estudiante, '/tests/partida-llegada'))
 }
 

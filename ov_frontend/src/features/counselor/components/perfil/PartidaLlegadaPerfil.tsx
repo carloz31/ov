@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/Button'
 import { BloquePanel } from '@/features/counselor/components/panel/PanelComun'
 import { etiquetasCuestionario } from '@/lib/servidor/adaptadoresPanel'
 import { fechaCorta, textosCambio, textosZona } from '@/lib/servidor/adaptadoresPanelEstudiante'
-import type { Afirmacion, CambioPerfil, GrupoAfirmaciones, PartidaLlegada } from '@/types/servidor'
+import type { Afirmacion, GrupoAfirmaciones, PartidaLlegada } from '@/types/servidor'
 import { ChipPerfil, type TonoChip } from './ChipPerfil'
-import { TONO_ZONA } from '@/features/counselor/lib/perfilEstudiante'
+import { TONO_CAMBIO, TONO_ZONA } from '@/features/counselor/lib/perfilEstudiante'
 
 const TITULOS: Record<GrupoAfirmaciones['codigo'], string> = {
   BAJAS: '',
@@ -12,7 +12,6 @@ const TITULOS: Record<GrupoAfirmaciones['codigo'], string> = {
   SIGUEN_BAJAS: 'Siguen bajas',
   MEJORARON: 'Mejoraron',
 }
-const TONO_CAMBIO: Record<CambioPerfil, TonoChip> = { SUBIO: 'exito', IGUAL: 'neutro', BAJO: 'aviso' }
 const TONO_GRUPO: Record<GrupoAfirmaciones['codigo'], TonoChip> = {
   BAJAS: 'aviso',
   BAJARON: 'aviso',
@@ -132,7 +131,7 @@ export function PartidaLlegadaPerfil({
             )}
           </div>
           <Button variant="outline" className="min-h-11 w-fit" onClick={onVerTodas}>
-            Ver todas sus respuestas
+            Ver detalle por dimensión
           </Button>
         </>
       )}

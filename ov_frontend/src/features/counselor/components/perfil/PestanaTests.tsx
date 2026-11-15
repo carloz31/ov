@@ -7,6 +7,7 @@ import { textosTest } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import { usePartidaLlegadaPerfil, useTestsPerfil } from '@/store/servidor/panelEstudiante'
 import type { OtroCuestionario } from '@/types/servidor'
 import { ChipPerfil } from './ChipPerfil'
+import { DetallePartidaLlegada } from './DetallePartidaLlegada'
 import { EsperaBloque } from './EsperaBloque'
 import { PartidaLlegadaPerfil } from './PartidaLlegadaPerfil'
 import { TestInteresesPerfil } from './TestInteresesPerfil'
@@ -19,8 +20,8 @@ function Volver({ texto, onClick }: { texto: string; onClick: () => void }) {
   )
 }
 
-// «Ver todas sus respuestas»: cada afirmación con las dos etiquetas, por dimensión; se pide al abrirla.
-function TodasLasRespuestas({ modelo }: { modelo: ModeloPerfilEstudiante }) {
+// Ajuste color-partida-llegada: «Ver detalle por dimensión»; se pide al abrirlo.
+function DetalleDimensiones({ modelo }: { modelo: ModeloPerfilEstudiante }) {
   const { carga, reintentar } = usePartidaLlegadaPerfil(modelo.estudiante)
   return (
     <div className="space-y-4">
@@ -28,22 +29,7 @@ function TodasLasRespuestas({ modelo }: { modelo: ModeloPerfilEstudiante }) {
       {!carga?.datos ? (
         <EsperaBloque carga={carga} onReintentar={reintentar} />
       ) : (
-        carga.datos.dimensiones.map((d) => (
-          <BloquePanel key={d.codigo} titulo={d.nombre}>
-            <ul className="divide-y divide-border">
-              {d.afirmaciones.map((a) => (
-                <li key={a.item} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                  <span className="min-w-0 flex-1">«{a.enunciado}»</span>
-                  <span className="flex items-center gap-2">
-                    <ChipPerfil>{a.partida ?? 'Sin responder'}</ChipPerfil>
-                    <span aria-hidden="true">→</span>
-                    <ChipPerfil>{a.llegada ?? 'Aún no responde'}</ChipPerfil>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </BloquePanel>
-        ))
+        <DetallePartidaLlegada datos={carga.datos} />
       )}
     </div>
   )
@@ -109,7 +95,7 @@ export function PestanaTests({
         {resultado}
       </div>
     )
-  if (modelo.todas) return <TodasLasRespuestas modelo={modelo} />
+  if (modelo.todas) return <DetalleDimensiones modelo={modelo} />
   if (!carga?.datos) return <EsperaBloque carga={carga} onReintentar={reintentar} />
   const datos = carga.datos
   return (

@@ -1,4 +1,5 @@
 import type {
+  CambioAfirmacion,
   CambioPerfil,
   DestinoPerfil,
   DimensionPartida,
@@ -26,6 +27,40 @@ export const textosZona: Record<ZonaPerfil, string> = {
   POR_TRABAJAR: 'Por trabajar',
 }
 export const textosCambio: Record<CambioPerfil, string> = { SUBIO: 'Subió', IGUAL: 'Igual', BAJO: 'Bajó' }
+// Ajuste color-partida-llegada: el cambio de una afirmación en el detalle por dimensión.
+export const textosCambioAfirmacion: Record<CambioAfirmacion, string> = {
+  BAJO: 'Bajó',
+  SIGUE_BAJA: 'Sigue baja',
+  MEJORO: 'Mejoró',
+  IGUAL: 'Igual',
+}
+// «3 por trabajar», «1 bajó», «4 subieron».
+export function textoConteo(codigo: ZonaPerfil | CambioPerfil, cantidad: number) {
+  const uno = cantidad === 1
+  const textos: Record<ZonaPerfil | CambioPerfil, string> = {
+    POR_TRABAJAR: 'por trabajar',
+    EN_CAMINO: 'en camino',
+    FUERTE: uno ? 'fuerte' : 'fuertes',
+    BAJO: uno ? 'bajó' : 'bajaron',
+    SUBIO: uno ? 'subió' : 'subieron',
+    IGUAL: uno ? 'igual' : 'iguales',
+  }
+  return `${cantidad} ${textos[codigo]}`
+}
+// «Partida respondida el 28 oct. Aún no responde la llegada.» o «… y llegada el 4 dic.»
+export function lineaFechasPartida(partida: string, llegada: string | null) {
+  return llegada
+    ? `Partida respondida el ${fechaCorta(partida)} y llegada el ${fechaCorta(llegada)}.`
+    : `Partida respondida el ${fechaCorta(partida)}. Aún no responde la llegada.`
+}
+// La explicación de «Respuesta baja», con el número del parámetro.
+export function textoRespuestaBaja(opcionesBajas: number) {
+  const cuantas =
+    opcionesBajas === 1
+      ? 'la opción menos favorable'
+      : `una de las ${opcionesBajas === 2 ? 'dos' : opcionesBajas} opciones menos favorables`
+  return `es ${cuantas}, con las afirmaciones en sentido contrario ya consideradas.`
+}
 export const textosEtiqueta: Record<EtiquetaRespuesta, string> = {
   REQUIERE_ATENCION: 'Requiere atención',
   SIN_CONTENIDO: 'Sin contenido',

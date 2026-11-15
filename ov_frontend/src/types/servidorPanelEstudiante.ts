@@ -146,8 +146,38 @@ export type PartidaLlegada = {
   resumen: PartidaResumen
   grupos: GrupoAfirmaciones[]
 }
-export type DimensionRespuestas = { codigo: string; nombre: string; afirmaciones: Afirmacion[] }
-export type RespuestasPartidaLlegada = { dimensiones: DimensionRespuestas[] }
+// Ajuste color-partida-llegada: «Ver detalle por dimensión», ya ordenado y clasificado por el servidor.
+export type CambioAfirmacion = 'BAJO' | 'SIGUE_BAJA' | 'MEJORO' | 'IGUAL'
+export type AfirmacionDetalle = {
+  item: string
+  enunciado: string
+  partida: string | null
+  llegada: string | null
+  partida_baja: boolean
+  llegada_baja: boolean
+  cambio: CambioAfirmacion | null
+}
+export type DimensionDetalle = {
+  codigo: string
+  nombre: string
+  zona_partida: ZonaPerfil | null
+  zona_llegada: ZonaPerfil | null
+  cambio: CambioPerfil | null
+  afirmaciones: AfirmacionDetalle[]
+}
+export type ConteoDetalle = { codigo: ZonaPerfil | CambioPerfil; cantidad: number }
+export type DetallePartidaLlegada = {
+  instrumento: string
+  nombre: string
+  etiqueta: EtiquetaInstrumentoPerfil
+  lectura: string
+  estado: PartidaResumen['estado']
+  fecha_partida: string | null
+  fecha_llegada: string | null
+  opciones_bajas: number
+  conteo: ConteoDetalle[]
+  dimensiones: DimensionDetalle[]
+}
 export type OtroCuestionario = {
   instrumento: string
   nombre: string

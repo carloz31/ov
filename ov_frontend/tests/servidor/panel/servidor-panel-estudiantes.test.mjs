@@ -240,6 +240,49 @@ test('Tests: barras de intereses, partida y llegada en palabras con sus grupos y
   const partida = texto(html(PartidaLlegadaPerfil, { datos: tests.partida_llegada, onVerTodas() {} }))
   assert.match(partida, /Aún no responde/)
   assert.match(partida, /Cuando responda la llegada, aquí irán primero las que bajaron/)
+  assert.match(partida, /Ver detalle por dimensión/)
+})
+
+test('detalle por dimensión: sin partida, solo partida y con llegada, en el orden y con los tonos del servidor', () => {
+  // Ajuste color-partida-llegada §2.
+  const app = orientadora()
+  const { DetallePartidaLlegada } = app.load(
+    'src/features/counselor/components/perfil/DetallePartidaLlegada.tsx',
+  )
+  const sin = texto(html(DetallePartidaLlegada, { datos: fx('1-partida-llegada') }))
+  assert.match(sin, /detalle por dimensión .*Aún no responde su punto de partida\./)
+  assert.doesNotMatch(sin, /Afirmación/)
+
+  const datosPartida = fx('5-partida-llegada')
+  const partidaHtml = html(DetallePartidaLlegada, { datos: datosPartida })
+  const partida = texto(partidaHtml)
+  assert.match(partida, /Partida respondida el \d+ \w+\. Aún no responde la llegada\./)
+  assert.ok(partida.includes(datosPartida.lectura.slice(0, 40)))
+  assert.match(partida, /Respuesta baja es una de las dos opciones menos favorables/)
+  for (const c of datosPartida.conteo) assert.match(partida, new RegExp(`${c.cantidad} (por trabajar|en camino|fuertes?)`))
+  // Los bloques salen en el orden del servidor, con la rejilla de dos columnas.
+  const posiciones = datosPartida.dimensiones.map((d) => partidaHtml.indexOf(`>${d.nombre}<`))
+  assert.deepEqual(posiciones, [...posiciones].sort((a, b) => a - b))
+  assert.match(partidaHtml, /lg:grid-cols-2/)
+  const baja = datosPartida.dimensiones.flatMap((d) => d.afirmaciones).find((a) => a.partida_baja)
+  assert.ok(baja, 'el caso 5 tiene alguna respuesta baja')
+  assert.match(partidaHtml, new RegExp(`bg-warning-soft text-warning-text">${baja.partida}<`))
+  assert.doesNotMatch(partidaHtml, /puntaje|Cambio</i)
+
+  const datosLlegada = fx('7-partida-llegada')
+  const llegadaHtml = html(DetallePartidaLlegada, { datos: datosLlegada })
+  const llegada = texto(llegadaHtml)
+  assert.match(llegada, /Partida respondida el \d+ \w+ y llegada el \d+ \w+\./)
+  assert.match(llegada, /\d+ bajó|\d+ bajaron/)
+  assert.match(llegada, /Bajó Sigue baja Mejoró Igual/)
+  assert.match(llegada, /Afirmación Partida · .* Llegada · .* Cambio/)
+  assert.doesNotMatch(llegadaHtml, /lg:grid-cols-2/)
+  const sigue = datosLlegada.dimensiones.flatMap((d) => d.afirmaciones).find((a) => a.cambio === 'SIGUE_BAJA')
+  assert.ok(sigue, 'el caso 7 tiene una afirmación que sube y sigue baja')
+  assert.match(llegadaHtml, /bg-warning-soft text-warning-text">Sigue baja</)
+  assert.match(llegadaHtml, /bg-success-soft text-success-text">Mejoró</)
+  assert.match(llegada, new RegExp(`${datosLlegada.dimensiones[0].nombre} .*→`))
+  assert.doesNotMatch(llegadaHtml, /puntaje/i)
 })
 
 test('Planes de un vistazo, plan completo y Avance sin cartas ni diario', async () => {
