@@ -64,6 +64,9 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 - `misiones_camino_sin_inicio`: la cuenta completó al menos `parametro` actividades distintas del bloque CAMINO, sin contar la de orden 1.
 - `planes_listos_para_comparar` (B11): al menos `parametro` planes con todas sus secciones `para_comparar` (POR_QUE y REALIDAD) en LISTA (`planes.md`). Importa el dominio de planes dentro de la función, porque los planes usan el motor para saber qué secciones están abiertas.
 - `pasos_plan_a` (B11): el plan A (prioridad 1) tiene al menos `parametro` pasos, en cualquier estado.
+- `actividades_completas(tipo)` (ajuste logros): las actividades de los bloques del estudiante, sin el bloque LUMI y, con `tipo`, solo las de ese tipo, con un COMPLETA_ACTIVIDAD de la cuenta. Lee solo los conteos y las definiciones (sin consultas propias); una batalla y un caso solo emiten COMPLETA_ACTIVIDAD al superarse. El total sale del contenido cargado. Se registra con cuatro nombres: `todas_las_batallas`, `todos_los_casos`, `todos_los_registros` y `todas_las_actividades` (sin filtro).
+- `todas_las_conversaciones` (ajuste logros): todas las `conversacion` cargadas con un COMPLETA_CONVERSACION de la cuenta; también sin consultas propias.
+- `planes_completos` (ajuste logros): al menos `parametro` planes activos con sus cuatro secciones en LISTA (`planes.md`). Lee de la caché de planes y mira primero solo las tarjetas: si las que tienen todas sus secciones guardadas no alcanzan, no carga las filas hijas.
 - `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en dos casos:
   - la aplicación ENTRADA (la partida) de todo instrumento COMPARACION;
   - todas las aplicaciones de cada instrumento que `salon_instrumento` marca `es_prioritario` en su salón.
@@ -75,6 +78,10 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 - `salon_instrumento`: por cuestionario, `es_prioritario` (requisito de T2, la «decisión») y `visible_apoderado`.
 
 Son catálogo, como las temáticas. La carga rechaza un COMPARACION prioritario y una actividad prioritaria que no sea de registro.
+
+**Avance** (ajuste logros): un evaluador puede devolver `Avance(actual, requerido)` en vez de un booleano; `evaluar_regla` lo convierte en `cumplido = actual >= requerido`, y un total de 0 no cumple. `ResultadoEvaluador` lleva entonces `actual` y `requerido`, que llegan en `GET progreso`, en los motivos de bloqueo y en `nuevos_desbloqueos`; sin avance no se serializan. Hoy dan avance los tres evaluadores de logros.
+
+**Caché de planes** (ajuste logros): `ContextoConsultas.planes_de(cuenta, hijas)` guarda durante la petición los planes activos de la cuenta en dos niveles: las tarjetas (1 consulta) y, solo si se piden, sus filas hijas (8). `invalidar_eventos` los borra junto con los conteos, así que nunca se leen planes de antes de la escritura de la acción. La usan `planes_listos_para_comparar`, `por_que_en_planes` (por `contar_listos_para_comparar`) y `planes_completos`; `pasos_plan_a` y `GET planes` no.
 
 Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: (evaluador, parámetro)}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 
@@ -94,6 +101,8 @@ Las reglas de `datos/contenido.py` siguen estos principios (ajuste carga-activid
 7. **Todo objetivo cargado tiene al menos una regla** (la de su bloque cuenta para la primera actividad de un tramo), salvo los abiertos desde el inicio a propósito: B0, b0-1, LUMI (sus actividades sí tienen regla), FAMILIA, p1 y el nivel 1 (el de partida). Las preguntas DIARIA no llevan regla: entran al sorteo del día. Un objetivo sin regla está disponible desde el principio.
 8. Varias reglas sobre el mismo objetivo son alternativas (basta una); las condiciones de una regla se suman.
 10. **Mensajes de bloqueo del estudiante (ajuste lumi-mensajes)**: dicen qué hacer en la plataforma, no una frase de la historia: «Completa la misión «{título}».», «Gana «{batalla}».», «… con respuestas desarrolladas» para un REGISTRO_ADECUADO, y para un COMPLETA_BLOQUE la última requerida del tramo con su nombre; «, en el camino» / «, en la ciudad» si la misión está en el otro mapa, y la sección de «Mis planes» que hay que llenar si la condición es de un plan. `tests/integration/datos/test_mensajes_reglas_contenido.py` exige que cada condición con referencia nombre su título entre «» (salvo `R-conv-1` y `R-conv-2`, que solo esperan la carta). Si cambia un título, cambia el mensaje. El mensaje es fijo: una regla con varias condiciones cuya primera suele estar ya cumplida al verse (`R-B4`, `R-b5-1`) dice primero lo que falta y la otra con «si aún no lo hiciste».
+
+11. **Insignias y niveles (ajuste logros)**: 25 insignias del estudiante en cuatro páginas, una regla `R-<código>` cada una; las que llevan evaluador tienen la condición que las reevalúa. Ninguna premia velocidad, intentos ni favoritos, ni pide como requerida una actividad opcional. Su mensaje de bloqueo es el requisito, con el título de lo que nombra la condición. Son la única excepción a «los recuerdos de Lumi no desbloquean nada»: una regla INSIGNIA puede pedir los recuerdos (`lumi-1`…`lumi-5`), porque no abre contenido; ninguna regla, tampoco de insignia, depende del bloque LUMI (el cargador lo rechaza). Los niveles son 5, cada uno con una sola condición COMPLETA_BLOQUE (B0, B2, B3 y B5), sin evaluador; su mensaje nombra la última requerida del tramo, como los tramos.
 
 Además: toda regla `CONVERSACION` lleva `ESCRIBE_CARTA`; ninguna regla nombra una actividad `t-` del camino; y toda ficha de la que sale una pregunta de batalla se obtiene con una actividad que está entre los requisitos de la batalla.
 

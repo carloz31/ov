@@ -110,6 +110,7 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 ## Motor y referencias
 
 - Reglas `SECCION_PLAN` abren las secciones; los evaluadores `planes_listos_para_comparar` y `pasos_plan_a` son los requisitos de comparar (4.5) y del proyecto (5.1) (`motor.md`). Sus reglas se reevalúan con ACTUALIZA_PLAN.
+- Ajuste logros: `contar_listos_para_comparar` y `planes_completos` leen los planes de la caché de la petición (`ContextoConsultas.planes_de`), así que varios evaluadores de planes cargan una sola vez. `planes_completos` (un plan con sus cuatro secciones en LISTA, sin medidores) mira primero solo las tarjetas: una sección sin `guardada_*_en` está POR_EMPEZAR, y si los planes con las cuatro guardadas no alcanzan el parámetro, no carga las filas hijas. `DatosPlanes` y `cargar_planes` viven en `app/core/planes.py` y `consultas.py` los reexporta.
 - Referencias sin fuente PLANES, PLAN (con `cita`), PASOS_PLAN_A y OPCION_INICIAL (`referencias.md`).
 
 ## Carga
