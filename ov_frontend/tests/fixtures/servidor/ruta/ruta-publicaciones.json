@@ -7,7 +7,11 @@
           "codigo": "est-ana",
           "lo_que_pensaba": null,
           "nombre": "Ana",
-          "salon": "5A"
+          "salon": {
+            "codigo": "5A",
+            "promocion": 2026,
+            "seccion": "A"
+          }
         }
       ],
       "codigo": "ENT-00000000000000000000000000000006",

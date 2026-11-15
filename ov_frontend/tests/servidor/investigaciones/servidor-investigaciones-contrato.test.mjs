@@ -88,7 +88,7 @@ test('la orientadora: reacción reportada primero, con el salón de su autor', (
   const detalle = jsonServidor('ruta/ruta-publicacion-detalle')
   const [primera] = detalle.reacciones
   assert.equal(primera.reportes.length, 1)
-  assert.equal(primera.autor.salon, '5A')
+  assert.deepEqual(primera.autor.salon, { codigo: '5A', promocion: 2026, seccion: 'A' })
 })
 
 test('«Lo que cambió» cita lo que pensaba antes, y sus contenidos existen con su eco', () => {

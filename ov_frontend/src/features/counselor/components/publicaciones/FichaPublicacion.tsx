@@ -3,7 +3,7 @@ import { VideoYoutube } from '@/components/common/VideoYoutube'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { fechaNumerica } from '@/lib/servidor/adaptadoresInvestigaciones'
-import type { PublicacionDetalle } from '@/types/servidor'
+import type { PublicacionDetalle, SalonDatos } from '@/types/servidor'
 
 function Fila({
   etiqueta,
@@ -31,7 +31,7 @@ export function FichaPublicacion({
   nombresTipos,
 }: {
   datos: PublicacionDetalle
-  nombreSalon: (codigo: string | null) => string
+  nombreSalon: (salon: SalonDatos | null) => string
   nombresTipos: Record<string, string>
 }) {
   const total = Object.values(datos.reacciones_por_tipo).reduce((a, b) => a + b, 0)

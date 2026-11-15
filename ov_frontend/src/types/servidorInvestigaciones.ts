@@ -1,4 +1,5 @@
 // app/schemas/investigaciones.py (B13; F09): investigación, guion, entrevistas, reacciones y la tabla de la orientadora.
+import type { SalonDatos } from './servidor'
 export type EstadoInvestigacion = 'EN_CURSO' | 'GUIA_LISTA' | 'PUBLICADA'
 export type OrigenPreguntaGuion = 'SUGERIDA' | 'PROPIA'
 export type CampoLoQuePienso = 'DIA' | 'NECESITA' | 'DUDA'
@@ -111,11 +112,11 @@ export type FichaEntrevistaEntrada = {
 }
 // --- Orientadora ---
 export type EstadoPublicacion = 'SIN_DESTACAR' | 'DESTACADA' | 'LEYENDA'
-// `salon`: código del salón; `lo_que_pensaba`, solo en el detalle.
+// `salon`: el salón del autor; `lo_que_pensaba`, solo en el detalle.
 export type AutorPublicacion = {
   codigo: string
   nombre: string
-  salon: string | null
+  salon: SalonDatos | null
   lo_que_pensaba?: LoQuePienso | null
 }
 export type FilaPublicacion = {
@@ -145,7 +146,7 @@ export type ReportePublico = {
   detalle: string | null
   fecha_hora: string
 }
-export type AutorModerado = PersonaInvestigacion & { salon: string | null }
+export type AutorModerado = PersonaInvestigacion & { salon: SalonDatos | null }
 export type ReaccionModerada = {
   codigo: string
   autor: AutorModerado

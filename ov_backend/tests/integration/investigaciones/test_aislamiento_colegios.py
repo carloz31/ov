@@ -26,7 +26,7 @@ def colegios(aplicacion, cliente, monkeypatch):
         sesion.flush()
         salon_b = sesion.scalar(select(m.Salon).where(m.Salon.codigo == '5B'))
         salon_b.colegio_id = otro.id
-        salon_c = m.Salon(codigo='5C', nombre='Quinto C', colegio_id=sesion.scalar(
+        salon_c = m.Salon(codigo='5C', promocion=2026, seccion='C', colegio_id=sesion.scalar(
             select(m.Salon.colegio_id).where(m.Salon.codigo == '5A')))
         sesion.add(salon_c)
         sesion.flush()
@@ -114,7 +114,7 @@ def test_leyenda_muestra_y_cuenta_lo_de_todo_su_colegio_y_nada_de_otro(cliente, 
         assert {r['autor']['codigo'] for r in ficha['lista_reacciones']} == {'est-luis', 'est-cami', 'ori-carmen'}
         assert ficha['reacciones'] == 2 and ficha['reacciones_por_tipo'] == {'APRENDI': 2} and ficha['favoritos'] == 2
     moderada = pedir(cliente, 'GET', f'/cuentas/ori-carmen/publicaciones/{codigo}')
-    assert {(r['autor']['codigo'], r['autor']['salon']) for r in moderada['reacciones']} == {
+    assert {(r['autor']['codigo'], r['autor']['salon'] and r['autor']['salon']['codigo']) for r in moderada['reacciones']} == {
         ('est-luis', '5A'), ('est-cami', '5C'), ('ori-carmen', None)}
 
 

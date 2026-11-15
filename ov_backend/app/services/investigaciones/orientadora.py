@@ -14,6 +14,7 @@ from app.models import (
     TipoEventoUso, TipoReaccion,
 )
 from app.schemas.acciones import RespuestaAccion
+from app.schemas.cuentas import SalonDatos
 from app.schemas.investigaciones import (
     AutorModerado, AutorPublicacion, ComentarEntrada, DestacarEntrada, EntrevistaEntrada, FilaPublicacion,
     LoQuePienso, PaginaPublicaciones, PublicacionDetalle, ReaccionModerada, ReporteEntrada, ReportePublico,
@@ -115,9 +116,13 @@ def _pendientes_de_entrevista():
     return exists().where(Reporte.entrevista_id == Entrevista.id, Reporte.estado == EstadoReporte.PENDIENTE)
 
 
+def _salones(sesion: Session) -> dict[int, SalonDatos]:
+    return {s.id: SalonDatos.model_validate(s) for s in sesion.scalars(select(Salon))}
+
+
 def _autores_con_salon(sesion: Session, ids) -> dict[int, list[AutorPublicacion]]:
     autores = autores_de(sesion, ids)
-    salones = dict(sesion.execute(select(Salon.id, Salon.codigo)).all())
+    salones = _salones(sesion)
     return {entrevista_id: [AutorPublicacion(codigo=c.codigo, nombre=c.nombre, salon=salones.get(c.salon_id))
                             for c in cuentas] for entrevista_id, cuentas in autores.items()}
 
@@ -210,7 +215,7 @@ def detalle_publicacion(sesion: Session, codigo_cuenta: str, codigo: str) -> Pub
         if reporte.reaccion_id is not None:
             por_reaccion.setdefault(reporte.reaccion_id, []).append(reporte)
     definiciones = contexto(sesion).definiciones
-    codigos_salon = dict(sesion.execute(select(Salon.id, Salon.codigo)).all())
+    codigos_salon = _salones(sesion)
     reacciones = [ReaccionModerada(
         codigo=r.codigo, autor=AutorModerado(**gente[c.id].model_dump(), salon=codigos_salon.get(c.salon_id)),
         tipo=None if r.tipo_reaccion_id is None else definiciones.obtener(TipoReaccion, r.tipo_reaccion_id).codigo,

@@ -136,9 +136,9 @@ def consultar_sesion(sesion: Session, actor: Actor) -> SesionRespuesta:
         hijos = [HijoSesion(codigo=c, nombre=n, salon=s, parentesco=p) for c, n, s, p in filas]
     elif actor.rol == Rol.ORIENTADORA:
         filas = sesion.execute(
-            select(Salon.codigo, Salon.nombre, OrientadoraSalon.es_principal)
+            select(Salon.codigo, Salon.promocion, Salon.seccion, OrientadoraSalon.es_principal)
             .join(OrientadoraSalon, OrientadoraSalon.salon_id == Salon.id)
             .where(OrientadoraSalon.orientadora_id == actor.id).order_by(Salon.codigo))
-        salones = [SalonSesion(codigo=c, nombre=n, es_principal=p) for c, n, p in filas]
+        salones = [SalonSesion(codigo=c, promocion=a, seccion=s, es_principal=p) for c, a, s, p in filas]
     return SesionRespuesta(cuenta=CuentaResumen.model_validate(cuenta), expira_en=actor.expira_en,
                            hijos=hijos, salones=salones)

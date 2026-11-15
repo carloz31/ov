@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
+import { nombreSalon, salonesConNombre } from '@/lib/nombreSalon'
 import { datosSesion } from '@/store/accesoStore'
 import {
   cargarListaEntrevistas,
@@ -8,12 +9,11 @@ import {
   useListaEntrevistas,
   useRevisionEntrevistas,
 } from '@/store/servidor/entrevistas'
-import type { EstadoPublicacion, FiltrosPublicaciones } from '@/types/servidor'
+import type { EstadoPublicacion, FiltrosPublicaciones, SalonDatos } from '@/types/servidor'
 
 const ESPERA_BUSQUEDA = 300
-// El nombre de uno de sus salones (de la sesión); otro salón, su código.
-export const nombreSalon = (codigo: string | null) =>
-  datosSesion().salones.find((s) => s.codigo === codigo)?.nombre ?? codigo ?? '—'
+// El nombre del salón de un autor (ajuste panel-entrevistas-configuracion: también de los que no son suyos).
+export const nombreSalonAutor = (salon: SalonDatos | null) => (salon ? nombreSalon(salon) : '—')
 
 // F09 (api, boceto 12): la tabla de publicaciones de la orientadora, con buscador, salón, estado y «Con
 // reportes». El salón va en la URL (`?salon=`), como en local; la tabla se revalida al abrirla.
@@ -45,7 +45,7 @@ export function usePublicacionesServidor() {
   }
   const lista = useListaEntrevistas('publicaciones', filtros, true)
   return {
-    salones: datosSesion().salones,
+    salones: salonesConNombre(datosSesion().salones),
     salon,
     elegirSalon: (codigo: string) => setParams(codigo ? { salon: codigo } : {}, { replace: true }),
     texto,
@@ -61,7 +61,7 @@ export function usePublicacionesServidor() {
     hayMas: !!lista && lista.estado === 'listo' && lista.items.length < lista.total,
     mostrarMas: () => void cargarListaEntrevistas('publicaciones', filtros, true),
     reintentar: () => void reintentarListaEntrevistas('publicaciones', filtros),
-    nombreSalon,
+    nombreSalonAutor,
   }
 }
 export type ModeloPublicaciones = ReturnType<typeof usePublicacionesServidor>

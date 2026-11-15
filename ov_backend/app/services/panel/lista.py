@@ -12,7 +12,7 @@ from app.core.contexto import usar_contexto
 from app.exceptions import ErrorAccion
 from app.models import Carrera, TarjetaCarrera
 from app.models.base import sin_tildes
-from app.schemas.panel import SalonPanel
+from app.schemas.cuentas import SalonDatos
 from app.schemas.panel_estudiante import AccesoLista, FilaEstudiante, OpcionAviso, PaginaEstudiantes
 from app.services.panel.alertas import calcular_alertas
 from app.services.panel.comun import Lecturas, entero, leer_parametros, resolver_alcance
@@ -84,7 +84,7 @@ def lista_estudiantes(sesion: Session, codigo_cuenta: str, salon: str | None, bu
     for e in alcance.estudiantes:
         suyas = por_estudiante.get(e.id, [])
         filas.append(FilaEstudiante(
-            codigo=e.codigo, nombre=e.nombre, salon=alcance.salones[e.salon_id].nombre, tramo=tramo_de(lecturas, e.id),
+            codigo=e.codigo, nombre=e.nombre, salon=SalonDatos.model_validate(alcance.salones[e.salon_id]), tramo=tramo_de(lecturas, e.id),
             test=estados[e.id], plan_a=planes.get(e.id), dias_sin_ingreso=dias_sin_ingreso(lecturas, e.id),
             aviso=suyas[0].nombre_perfil(e.id) if suyas else None, avisos_mas=max(len(suyas) - 1, 0)))
     ids_por_codigo = {e.codigo: e.id for e in alcance.estudiantes}
@@ -114,7 +114,7 @@ def lista_estudiantes(sesion: Session, codigo_cuenta: str, salon: str | None, bu
                    for f in elegidas if f.aviso is not None}
     ordenadas = _ordenar(elegidas, orden, importancia)
     return PaginaEstudiantes(
-        salon=SalonPanel(codigo=alcance.salon.codigo, nombre=alcance.salon.nombre) if alcance.salon else None,
+        salon=SalonDatos.model_validate(alcance.salon) if alcance.salon else None,
         total_estudiantes=len(filas), total=len(ordenadas), accesos=accesos,
         avisos=[OpcionAviso(codigo=c.alerta.codigo, nombre=c.nombre_perfil(0)) for c in alertas],
         items=ordenadas[desde:desde + limite])

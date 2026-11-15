@@ -4,7 +4,9 @@ Columnas: `rol` (ESTUDIANTE, APODERADO u ORIENTADORA), `codigo`, `nombre` (un al
 (estudiante y orientadora; el apoderado va sin salón), `correo` (ficticio: nav07@ov.test), `contrasena` (vacía: se
 genera una), `hijos` (solo APODERADO: códigos separados por punto y coma) y `parentesco` (solo APODERADO).
 
-- El salón que no existe se crea en `col-piloto`, con la configuración de 5A (instrumentos, prioritarios y visibilidad
+- El salón que no existe se escribe como `AAAA-S` (promoción y sección: `2026-C`) y se crea con ese código en
+  `col-piloto`; otro formato, o una promoción y sección que el colegio ya tiene, es un error de fila. Se crea con la
+  configuración de 5A (instrumentos, prioritarios y visibilidad
   para el apoderado). La orientadora del CSV queda asignada solo a su salón.
 - Todo va en una transacción: si una fila falla, no se crea nada. Las cuentas que ya existen (por código) se saltan y se
   informan, sin modificarlas.
@@ -18,6 +20,7 @@ genera una), `hijos` (solo APODERADO: códigos separados por punto y coma) y `pa
 
 import argparse
 import csv
+import re
 import secrets
 import sys
 from dataclasses import dataclass, field
@@ -44,6 +47,7 @@ SALON_MODELO = '5A'
 ROLES = ('ESTUDIANTE', 'APODERADO', 'ORIENTADORA')
 COLUMNAS = ('rol', 'codigo', 'nombre', 'salon', 'correo', 'contrasena', 'hijos', 'parentesco')
 MAXIMO_PARENTESCO = 30
+FORMATO_SALON_NUEVO = re.compile(r'(\d{4})-([A-Z])')
 
 
 class ErrorCuentas(Exception):
@@ -139,6 +143,8 @@ def planificar(sesion, filas: list[Fila]) -> tuple[Plan, list[str]]:
     colegio = sesion.scalar(select(m.Colegio).where(m.Colegio.codigo == COLEGIO))
     if colegio is None:
         errores.append(f'No existe el colegio {COLEGIO}: la base no tiene el conjunto cargado')
+    ocupados = {(s.promocion, s.seccion): s.codigo for s in salones.values()
+                if colegio is not None and s.colegio_id == colegio.id}
     estudiantes_csv = {f.codigo for f in filas if f.rol == 'ESTUDIANTE'}
     for f in filas:
         donde = f'Fila {f.numero} ({f.codigo})'
@@ -150,7 +156,13 @@ def planificar(sesion, filas: list[Fila]) -> tuple[Plan, list[str]]:
         if f.salon and f.salon in salones and colegio is not None and salones[f.salon].colegio_id != colegio.id:
             errores.append(f'{donde}: el salón {f.salon} es de otro colegio')
         if f.salon and f.salon not in salones and f.salon not in plan.salones_nuevos:
-            plan.salones_nuevos.append(f.salon)
+            if (formato := FORMATO_SALON_NUEVO.fullmatch(f.salon)) is None:
+                errores.append(f'{donde}: el salón nuevo {f.salon} debe escribirse como promoción y sección (2026-C)')
+            elif colegio is not None and (igual := ocupados.get((int(formato[1]), formato[2]))):
+                errores.append(f'{donde}: el colegio ya tiene la promoción {formato[1]} sección {formato[2]} '
+                               f'(salón {igual})')
+            else:
+                plan.salones_nuevos.append(f.salon)
         for hijo in f.hijos:
             if hijo in estudiantes_csv:
                 continue
@@ -183,7 +195,7 @@ def aplicar(sesion, plan: Plan) -> None:
     """Escribe el plan con las funciones del cargador. Quien llama abre y confirma la transacción."""
     colegio = sesion.scalar(select(m.Colegio).where(m.Colegio.codigo == COLEGIO))
     salones = {s.codigo: s for s in sesion.scalars(select(m.Salon))}
-    nuevos = crear_salones(sesion, {COLEGIO: colegio}, [(s, s, COLEGIO) for s in plan.salones_nuevos])
+    nuevos = crear_salones(sesion, {COLEGIO: colegio}, [(s, int(s[:4]), s[5:], COLEGIO) for s in plan.salones_nuevos])
     salones.update(nuevos)
     if nuevos:
         actividades = {a.codigo: a for a in sesion.scalars(select(m.Actividad))}

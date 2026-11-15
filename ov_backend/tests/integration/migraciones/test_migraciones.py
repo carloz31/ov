@@ -325,6 +325,48 @@ def test_migracion_0047_pone_los_salones_en_un_colegio_y_lo_quita_al_bajar(tmp_p
         motor.dispose()
 
 
+def _salones_en_0057(tmp_path, monkeypatch, filas):
+    url = f'sqlite:///{(tmp_path / "salones.db").as_posix()}'
+    monkeypatch.setenv('DATABASE_URL', url)
+    configuracion = Config(str(RUTA_CONFIGURACION))
+    command.upgrade(configuracion, '0057')
+    motor = database.crear_motor_bd(url)
+    with motor.begin() as conexion:
+        conexion.execute(text("INSERT INTO colegio (id, codigo, nombre) VALUES (1, 'col', 'Colegio')"))
+        for i, (codigo, nombre) in enumerate(filas, start=1):
+            conexion.execute(text('INSERT INTO salon (id, codigo, nombre, colegio_id) VALUES (:i, :c, :n, 1)'),
+                             {'i': i, 'c': codigo, 'n': nombre})
+    return configuracion, motor
+
+
+def test_migracion_0058_deduce_promocion_y_seccion_y_las_hace_unicas(tmp_path, monkeypatch):
+    # DATO DE PRUEBA: la sección sale de la letra final del nombre o, si no termina en letra, del código.
+    configuracion, motor = _salones_en_0057(tmp_path, monkeypatch, [('5A', 'Quinto A'), ('5b', 'Grupo 2')])
+    try:
+        command.upgrade(configuracion, '0058')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT codigo, promocion, seccion FROM salon ORDER BY id')).all() == [
+                ('5A', 2026, 'A'), ('5b', 2026, 'B')]
+        with pytest.raises(IntegrityError), motor.begin() as conexion:
+            conexion.execute(text("INSERT INTO salon (codigo, promocion, seccion, colegio_id) "
+                                  "VALUES ('otro', 2026, 'A', 1)"))
+        command.downgrade(configuracion, '0057')
+        with motor.connect() as conexion:
+            assert conexion.execute(text('SELECT codigo, nombre FROM salon ORDER BY id')).all() == [
+                ('5A', '5A'), ('5b', '5b')]
+    finally:
+        motor.dispose()
+
+
+def test_migracion_0058_falla_con_el_codigo_del_salon_sin_seccion(tmp_path, monkeypatch):
+    configuracion, motor = _salones_en_0057(tmp_path, monkeypatch, [('5A', 'Quinto A'), ('S-01', 'Grupo 1')])
+    try:
+        with pytest.raises(RuntimeError, match='S-01'):
+            command.upgrade(configuracion, '0058')
+    finally:
+        motor.dispose()
+
+
 def test_migracion_0047_en_base_vacia_no_crea_colegios(base_migrada):
     _, _, motor = base_migrada
     with motor.connect() as conexion:

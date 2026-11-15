@@ -91,9 +91,10 @@ def _validar_origen_testimonios(m):
 
 
 def crear_salones(sesion, colegios, filas):
-    """Los salones de `filas` (código, nombre, colegio), en los colegios de `colegios` (código → Colegio). Los deja con
-    id. Los usan el cargador y `scripts/crear_cuentas.py`."""
-    salones = {c: modelos.Salon(codigo=c, nombre=n, colegio_id=colegios[colegio].id) for c, n, colegio in filas}
+    """Los salones de `filas` (código, promoción, sección, colegio), en los colegios de `colegios` (código → Colegio).
+    Los deja con id. Los usan el cargador y `scripts/crear_cuentas.py`."""
+    salones = {c: modelos.Salon(codigo=c, promocion=p, seccion=s, colegio_id=colegios[colegio].id)
+               for c, p, s, colegio in filas}
     sesion.add_all(salones.values())
     sesion.flush()
     return salones

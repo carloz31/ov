@@ -24,7 +24,8 @@
     "nombre": "Luciana Paredes Soto",
     "salon": {
       "codigo": "5A",
-      "nombre": "Quinto A"
+      "promocion": 2026,
+      "seccion": "A"
     },
     "tramo": {
       "codigo": "B5",

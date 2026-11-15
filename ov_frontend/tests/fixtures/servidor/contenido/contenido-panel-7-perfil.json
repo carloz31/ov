@@ -11,7 +11,8 @@
     "nombre": "Ana Lucía Álvarez Rojas",
     "salon": {
       "codigo": "5A",
-      "nombre": "Quinto A"
+      "promocion": 2026,
+      "seccion": "A"
     },
     "tramo": {
       "codigo": "TERMINO",

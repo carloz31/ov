@@ -19,9 +19,9 @@ _spec.loader.exec_module(crear_cuentas)
 
 CLAVE = 'DATO-DE-PRUEBA-2026'
 FILAS = [
-    ('ORIENTADORA', 'ori-prueba', 'Orientadora', '5P', 'ori@ov.test', CLAVE, '', ''),
-    ('ESTUDIANTE', 'nav-01', 'Navegante-01', '5P', 'nav01@ov.test', CLAVE, '', ''),
-    ('ESTUDIANTE', 'nav-02', 'Navegante-02', '5P', 'nav02@ov.test', CLAVE, '', ''),
+    ('ORIENTADORA', 'ori-prueba', 'Orientadora', '2026-C', 'ori@ov.test', CLAVE, '', ''),
+    ('ESTUDIANTE', 'nav-01', 'Navegante-01', '2026-C', 'nav01@ov.test', CLAVE, '', ''),
+    ('ESTUDIANTE', 'nav-02', 'Navegante-02', '2026-C', 'nav02@ov.test', CLAVE, '', ''),
     ('APODERADO', 'fam-01', 'Familia-01', '', 'fam01@ov.test', CLAVE, 'nav-01', 'madre'),
     ('APODERADO', 'fam-12', 'Familia-12', '', 'fam12@ov.test', CLAVE, 'nav-01;nav-02', 'madre'),
 ]
@@ -86,6 +86,12 @@ def test_el_estudiante_creado_ingresa_completa_b0_1_y_abre_b1_1(creadas, cliente
     assert registro.status_code == 200 and registro.json()['items']
 
 
+def test_el_salon_nuevo_toma_su_promocion_y_su_seccion_del_codigo(creadas):
+    with creadas.state.fabrica_sesiones() as sesion:
+        salon = sesion.scalar(select(m.Salon).where(m.Salon.codigo == '2026-C'))
+        assert (salon.promocion, salon.seccion) == (2026, 'C')
+
+
 def test_el_salon_nuevo_tiene_la_configuracion_de_5a_y_su_orientadora_solo_lo_ve_ella(creadas, cliente_contenido):
     cliente = cliente_contenido
     with creadas.state.fabrica_sesiones() as sesion:
@@ -96,14 +102,14 @@ def test_el_salon_nuevo_tiene_la_configuracion_de_5a_y_su_orientadora_solo_lo_ve
             prioritarias = sorted(p.actividad_id for p in sesion.scalars(select(m.SalonActividadPrioritaria).where(
                 m.SalonActividadPrioritaria.salon_id == salon.id)))
             return salon.colegio_id, instrumentos, prioritarias
-        assert configuracion('5P') == configuracion('5A')
+        assert configuracion('2026-C') == configuracion('5A')
     ori = _token(cliente, 'ori@ov.test')
-    assert [s['codigo'] for s in cliente.get('/sesion', headers=ori).json()['salones']] == ['5P']
-    assert cliente.get('/cuentas/ori-prueba/panel/seguimiento?salon=5P', headers=ori).status_code == 200
+    assert [s['codigo'] for s in cliente.get('/sesion', headers=ori).json()['salones']] == ['2026-C']
+    assert cliente.get('/cuentas/ori-prueba/panel/seguimiento?salon=2026-C', headers=ori).status_code == 200
     carmen = _token(cliente, 'carmen.orientadora@example.com', 'Carmen2026!')
-    assert '5P' not in [s['codigo'] for s in cliente.get('/sesion', headers=carmen).json()['salones']]
-    assert cliente.get('/cuentas/ori-carmen/panel/seguimiento?salon=5P', headers=carmen).status_code != 200
-    lista = cliente.get('/cuentas/ori-prueba/panel/lista-estudiantes?salon=5P', headers=ori)
+    assert '2026-C' not in [s['codigo'] for s in cliente.get('/sesion', headers=carmen).json()['salones']]
+    assert cliente.get('/cuentas/ori-carmen/panel/seguimiento?salon=2026-C', headers=carmen).status_code != 200
+    lista = cliente.get('/cuentas/ori-prueba/panel/lista-estudiantes?salon=2026-C', headers=ori)
     assert lista.status_code == 200 and 'Navegante-01' in lista.text and 'est-ana' not in lista.text
 
 
@@ -145,15 +151,18 @@ def test_una_segunda_ejecucion_no_crea_ni_cambia_nada(creadas, tmp_path):
 
 
 @pytest.mark.parametrize('fila, error', (
-    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '5P', 'nav09@ov.test', 'corta', '', ''), 'menos de 8'),
+    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '2026-C', 'nav09@ov.test', 'corta', '', ''), 'menos de 8'),
     (('ESTUDIANTE', 'nav-09', 'Navegante-09', '', 'nav09@ov.test', CLAVE, '', ''), 'falta el salón'),
-    (('ESTUDIANTE', 'nav-01', 'Navegante-09', '5P', 'nav09@ov.test', CLAVE, '', ''), 'código repetido'),
-    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '5P', 'NAV01@ov.test', CLAVE, '', ''), 'correo repetido'),
+    (('ESTUDIANTE', 'nav-01', 'Navegante-09', '2026-C', 'nav09@ov.test', CLAVE, '', ''), 'código repetido'),
+    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '2026-C', 'NAV01@ov.test', CLAVE, '', ''), 'correo repetido'),
     (('APODERADO', 'fam-09', 'Familia-09', '', 'fam09@ov.test', CLAVE, 'nav-99', 'madre'), 'no existe'),
     (('APODERADO', 'fam-09', 'Familia-09', '', 'fam09@ov.test', CLAVE, 'apo-rosa', 'madre'), 'no es un estudiante'),
     (('APODERADO', 'fam-09', 'Familia-09', '', 'fam09@ov.test', CLAVE, 'nav-01', ''), 'parentesco'),
-    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '5P', 'ana.estudiante@example.com', CLAVE, '', ''), 'ya es de la cuenta'),
-    (('JEFE', 'nav-09', 'Navegante-09', '5P', 'nav09@ov.test', CLAVE, '', ''), 'rol'),
+    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '2026-C', 'ana.estudiante@example.com', CLAVE, '', ''), 'ya es de la cuenta'),
+    (('JEFE', 'nav-09', 'Navegante-09', '2026-C', 'nav09@ov.test', CLAVE, '', ''), 'rol'),
+    # Ajuste panel-entrevistas-configuracion: el salón nuevo se escribe como promoción y sección, y no repite uno.
+    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '5C', 'nav09@ov.test', CLAVE, '', ''), 'promoción y sección'),
+    (('ESTUDIANTE', 'nav-09', 'Navegante-09', '2026-A', 'nav09@ov.test', CLAVE, '', ''), 'salón 5A'),
 ))
 def test_una_fila_invalida_no_crea_ninguna_cuenta(aplicacion_contenido, tmp_path, fila, error):
     antes = _conteos(aplicacion_contenido)

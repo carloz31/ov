@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 from app.schemas.instrumentos import ResultadoPublico
 
-from app.schemas.panel import SalonPanel
+from app.schemas.cuentas import SalonDatos
 
 EstadoTest = Literal["LISTO", "POR_REVISAR", "EN_CURSO", "SIN_EMPEZAR"]
 Destino = Literal["TESTS", "PLANES", "RESPUESTAS", "AVANCE"]
@@ -30,7 +30,7 @@ class TramoEstudiante(BaseModel):
 class FilaEstudiante(BaseModel):
     codigo: str
     nombre: str
-    salon: str
+    salon: SalonDatos
     tramo: TramoEstudiante
     test: EstadoTest
     plan_a: str | None
@@ -52,7 +52,7 @@ class OpcionAviso(BaseModel):
 
 
 class PaginaEstudiantes(BaseModel):
-    salon: SalonPanel | None
+    salon: SalonDatos | None
     total_estudiantes: int
     total: int
     accesos: list[AccesoLista]
@@ -71,7 +71,7 @@ class ApoderadoCabecera(BaseModel):
 class CabeceraEstudiante(BaseModel):
     codigo: str
     nombre: str
-    salon: SalonPanel
+    salon: SalonDatos
     dias_sin_ingreso: int | None
     apoderado: ApoderadoCabecera | None
     tramo: TramoEstudiante

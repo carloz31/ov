@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Textarea } from '@/components/ui/Textarea'
 import { fechaRelativa, iniciales, lineaReportes } from '@/lib/servidor/adaptadoresInvestigaciones'
+import type { SalonDatos } from '@/types/servidor'
 import type { ModeloPublicacion } from '../../hooks/usePublicacionDetalle'
 
 // F09 (boceto 12b): reacciones y comentarios, los reportados primero, con «Descartar reporte» y «Eliminar
@@ -14,7 +15,7 @@ export function ReaccionesModeradas({
   nombresTipos,
 }: {
   m: ModeloPublicacion
-  nombreSalon: (codigo: string | null) => string
+  nombreSalon: (salon: SalonDatos | null) => string
   nombresTipos: Record<string, string>
 }) {
   const datos = m.datos!

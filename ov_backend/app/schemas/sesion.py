@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
-from app.schemas.cuentas import CuentaResumen
+from app.schemas.cuentas import CuentaResumen, SalonDatos
 
 
 class IngresoEntrada(BaseModel):
@@ -23,9 +23,7 @@ class HijoSesion(BaseModel):
     parentesco: str | None
 
 
-class SalonSesion(BaseModel):
-    codigo: str
-    nombre: str
+class SalonSesion(SalonDatos):
     es_principal: bool
 
 

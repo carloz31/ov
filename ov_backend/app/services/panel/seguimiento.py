@@ -12,9 +12,10 @@ from app.models import (
     Actividad, ActividadItem, Aplicacion, Audiencia, Bloque, Espacio, Instrumento, ProgresoActividad, RespuestaItem,
     TarjetaCarrera, TipoEventoUso, TipoResultado,
 )
+from app.schemas.cuentas import SalonDatos
 from app.schemas.panel import (
     AlertaPanel, AvisosPanel, BandaSeguridad, CuestionarioPanel, DetenidosPanel, GrupoAlertaPanel, IndicadoresPanel,
-    SalonPanel, SeguimientoPanel, SeguridadPanel, TestPanel, TramoPanel,
+    SeguimientoPanel, SeguridadPanel, TestPanel, TramoPanel,
 )
 from app.models.base import sin_tildes
 from app.services.familia import rutas_completas
@@ -212,7 +213,7 @@ def seguimiento(sesion: Session, codigo_cuenta: str, salon: str | None, ahora: d
     actividad, estudiantes, dias = detenidos(lecturas, parametros)
     return SeguimientoPanel(
         fecha=ahora.date(),
-        salon=SalonPanel(codigo=alcance.salon.codigo, nombre=alcance.salon.nombre) if alcance.salon else None,
+        salon=SalonDatos.model_validate(alcance.salon) if alcance.salon else None,
         total_estudiantes=len(alcance.ids),
         indicadores=_indicadores(lecturas, parametros, estados),
         avisos=_avisos(lecturas, parametros),

@@ -141,7 +141,7 @@ def test_acceso_por_salon_y_todos_mis_salones(aplicacion, cliente, sesion):
     assert todos['test']['etiqueta'] == 'REQUISITO_ALGUNOS'
     assert panel(cliente, salon='5B')['total_estudiantes'] == 1
     filas = cliente.get('/cuentas/ori-carmen/panel/estudiantes', params={'conjunto': 'avisos'}).json()
-    assert {'codigo': 'est-beto', 'nombre': 'Beto', 'salon': 'Quinto B'} in filas
+    assert {'codigo': 'est-beto', 'nombre': 'Beto', 'salon': {'codigo': '5B', 'promocion': 2026, 'seccion': 'B'}} in filas
 
 
 def test_avance_bajo_compara_contra_su_propio_salon_en_todos_mis_salones(aplicacion, cliente, sesion):

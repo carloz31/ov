@@ -34,7 +34,7 @@ Todas las lecturas son `GET /cuentas/{c}/panel/...` de la propia orientadora (po
 | `/panel/seguimiento` | `SeguimientoPanel`: `fecha`, `salon`, `total_estudiantes`, `indicadores`, `avisos` (grupos y alertas con cantidad > 0, con `nombres` si caben en `PANEL_NOMBRES_VISIBLES_ALERTA`), `test` (instrumento principal: listo, por revisar con perfil plano y prisa, en curso, sin empezar, y su etiqueta), `cuestionarios` (una fila por aplicación de los demás instrumentos, en el orden del camino y luego la ciudad, con etiqueta REQUISITO, REQUISITO_ALGUNOS, CAMINO u OPCIONAL), `tramos` (SIN_EMPEZAR, cada bloque del camino, TERMINO), `detenidos` y `seguridad` (bandas con `desde`/`hasta` de los parámetros y `sin_senales`). |
 | `/panel/intereses?orden_areas=&orden_instituciones=` | `InteresesPanel`: `con_planes`, `con_favoritos`, el top de `areas` e `instituciones` (con `total` y `plan_a_sin_institucion`), `formacion`, `complicaciones` y `frente_test`. |
 | `/panel/areas`, `/panel/instituciones` (`orden`, `buscar`, `tipo`, `limite` 20 hasta 50, `desde`) | Página `{total, items, tipos}` de las filas con algún interesado; `tipos`, los presentes para el filtro. |
-| `/panel/estudiantes?conjunto=&valor=` | `list[EstudiantePanel]` (`codigo`, `nombre`, `salon`) de un conjunto: `avisos`, `alerta`, `test`, `tramo`, `detenidos`, `seguridad_baja`, `area`, `institucion` o `plan_fuera_test`. Desconocido: 422. |
+| `/panel/estudiantes?conjunto=&valor=` | `list[EstudiantePanel]` (`codigo`, `nombre`, `salon`: `SalonDatos`) de un conjunto: `avisos`, `alerta`, `test`, `tramo`, `detenidos`, `seguridad_baja`, `area`, `institucion` o `plan_fuera_test`. Desconocido: 422. |
 
 Ninguna respuesta lleva texto del diario ni de registros.
 

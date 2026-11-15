@@ -6,6 +6,7 @@ from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints, f
 
 from app.models.enums import CampoLoQuePienso, EstadoInvestigacion, MotivoReporte, OrigenPreguntaGuion
 from app.schemas.acciones import AccionCuenta
+from app.schemas.cuentas import SalonDatos
 
 
 Texto = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
@@ -315,10 +316,10 @@ EstadoPublicacion = Literal['SIN_DESTACAR', 'DESTACADA', 'LEYENDA']
 
 
 class AutorPublicacion(BaseModel):
-    """`salon`: código del salón (nulo si la cuenta no tiene). `lo_que_pensaba`: solo en el detalle."""
+    """`salon`: el salón del autor (nulo si la cuenta no tiene). `lo_que_pensaba`: solo en el detalle."""
     codigo: str
     nombre: str
-    salon: str | None
+    salon: SalonDatos | None
     lo_que_pensaba: LoQuePienso | None = None
 
 
@@ -354,8 +355,8 @@ class ReportePublico(BaseModel):
 
 
 class AutorModerado(PersonaInvestigacion):
-    """F09: con el código de su salón (nulo si la cuenta no tiene), para la orientadora con todos sus salones."""
-    salon: str | None
+    """F09: con su salón (nulo si la cuenta no tiene), para la orientadora con todos sus salones."""
+    salon: SalonDatos | None
 
 
 class ReaccionModerada(BaseModel):

@@ -2,26 +2,46 @@
   {
     "codigo": "est-ana",
     "nombre": "Ana",
-    "salon": "Quinto A"
+    "salon": {
+      "codigo": "5A",
+      "promocion": 2026,
+      "seccion": "A"
+    }
   },
   {
     "codigo": "est-luis",
     "nombre": "Luis",
-    "salon": "Quinto A"
+    "salon": {
+      "codigo": "5A",
+      "promocion": 2026,
+      "seccion": "A"
+    }
   },
   {
     "codigo": "est-mia",
     "nombre": "Mía",
-    "salon": "Quinto A"
+    "salon": {
+      "codigo": "5A",
+      "promocion": 2026,
+      "seccion": "A"
+    }
   },
   {
     "codigo": "est-sol",
     "nombre": "Sol",
-    "salon": "Quinto A"
+    "salon": {
+      "codigo": "5A",
+      "promocion": 2026,
+      "seccion": "A"
+    }
   },
   {
     "codigo": "est-teo",
     "nombre": "Teo",
-    "salon": "Quinto A"
+    "salon": {
+      "codigo": "5A",
+      "promocion": 2026,
+      "seccion": "A"
+    }
   }
 ]

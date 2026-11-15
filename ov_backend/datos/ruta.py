@@ -19,7 +19,8 @@ from datos.fijos import validar_distribucion_items
 COLEGIOS = (('col-piloto', 'Technology School - Sede Palao'),)
 
 # (código, nombre, colegio)
-SALONES = (('5A', 'Quinto A', 'col-piloto'), ('5B', 'Quinto B', 'col-piloto'))
+# (código, promoción, sección, colegio): el front los nombra según el año en curso («Quinto A» en 2026).
+SALONES = (('5A', 2026, 'A', 'col-piloto'), ('5B', 2026, 'B', 'col-piloto'))
 
 # (código, nombre, rol, salón, correo, contraseña). B17: credenciales de prueba, iguales a las de
 # `datos/usuarios_prueba.txt` y a los usuarios del modo local del front. Los correos usan example.com (reservado).

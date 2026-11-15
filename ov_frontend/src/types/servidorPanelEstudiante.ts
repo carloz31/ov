@@ -1,7 +1,7 @@
 import type { ResultadoPublico } from './servidorInstrumentos'
 // Ajuste panel-estudiantes: copia de `app/schemas/panel_estudiante.py` (lista y perfil del estudiante para la
 // orientadora). Ninguna respuesta trae diario, cartas, puntajes de partida y llegada ni datos del LLM.
-import type { SalonPanel } from './servidorPanel'
+import type { SalonDatos } from './servidor'
 
 export type EstadoTestPanel = 'LISTO' | 'POR_REVISAR' | 'EN_CURSO' | 'SIN_EMPEZAR'
 export type DestinoPerfil = 'TESTS' | 'PLANES' | 'RESPUESTAS' | 'AVANCE'
@@ -16,7 +16,7 @@ export type TramoEstudiante = { codigo: string; numero: number; total: number; n
 export type FilaEstudiante = {
   codigo: string
   nombre: string
-  salon: string
+  salon: SalonDatos
   tramo: TramoEstudiante
   test: EstadoTestPanel
   plan_a: string | null
@@ -27,7 +27,7 @@ export type FilaEstudiante = {
 export type AccesoLista = { codigo: string; nombre: string | null; cantidad: number }
 export type OpcionAviso = { codigo: string; nombre: string }
 export type PaginaEstudiantes = {
-  salon: SalonPanel | null
+  salon: SalonDatos | null
   total_estudiantes: number
   total: number
   accesos: AccesoLista[]
@@ -45,7 +45,7 @@ export type ApoderadoCabecera = {
 export type CabeceraEstudiante = {
   codigo: string
   nombre: string
-  salon: SalonPanel
+  salon: SalonDatos
   dias_sin_ingreso: number | null
   apoderado: ApoderadoCabecera | null
   tramo: TramoEstudiante

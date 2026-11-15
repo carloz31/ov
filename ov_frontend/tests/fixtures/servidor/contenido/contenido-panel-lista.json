@@ -55,7 +55,11 @@
       "dias_sin_ingreso": 9,
       "nombre": "Camila Cárdenas Ruiz",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "B1",
@@ -71,7 +75,11 @@
       "dias_sin_ingreso": 0,
       "nombre": "Luciana Paredes Soto",
       "plan_a": "Psicología",
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "LISTO",
       "tramo": {
         "codigo": "B5",
@@ -87,7 +95,11 @@
       "dias_sin_ingreso": null,
       "nombre": "Ana",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "SIN_EMPEZAR",
@@ -103,7 +115,11 @@
       "dias_sin_ingreso": 12,
       "nombre": "Andrea Vargas Luna",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "B0",
@@ -119,7 +135,11 @@
       "dias_sin_ingreso": null,
       "nombre": "Elena Espinoza León",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "SIN_EMPEZAR",
@@ -135,7 +155,11 @@
       "dias_sin_ingreso": null,
       "nombre": "Luis",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "SIN_EMPEZAR",
@@ -151,7 +175,11 @@
       "dias_sin_ingreso": null,
       "nombre": "Mía",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "SIN_EMPEZAR",
@@ -167,7 +195,11 @@
       "dias_sin_ingreso": null,
       "nombre": "Sol",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "SIN_EMPEZAR",
@@ -183,7 +215,11 @@
       "dias_sin_ingreso": null,
       "nombre": "Teo",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "SIN_EMPEZAR",
@@ -199,7 +235,11 @@
       "dias_sin_ingreso": 1,
       "nombre": "Diego Mendoza Salas",
       "plan_a": "Psicología",
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "POR_REVISAR",
       "tramo": {
         "codigo": "B3",
@@ -215,7 +255,11 @@
       "dias_sin_ingreso": 2,
       "nombre": "Fabián Ortiz Vega",
       "plan_a": "Psicología",
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "POR_REVISAR",
       "tramo": {
         "codigo": "B3",
@@ -231,7 +275,11 @@
       "dias_sin_ingreso": 0,
       "nombre": "Ana Lucía Álvarez Rojas",
       "plan_a": "Ingeniería de Petroleo y Gas Natural",
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "LISTO",
       "tramo": {
         "codigo": "TERMINO",
@@ -247,7 +295,11 @@
       "dias_sin_ingreso": 0,
       "nombre": "Fabio Flores Vega",
       "plan_a": "Psicología",
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "LISTO",
       "tramo": {
         "codigo": "B4",
@@ -259,7 +311,8 @@
   ],
   "salon": {
     "codigo": "5A",
-    "nombre": "Quinto A"
+    "promocion": 2026,
+    "seccion": "A"
   },
   "total": 13,
   "total_estudiantes": 13

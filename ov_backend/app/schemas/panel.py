@@ -6,10 +6,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-
-class SalonPanel(BaseModel):
-    codigo: str
-    nombre: str
+from app.schemas.cuentas import SalonDatos
 
 
 class IndicadoresPanel(BaseModel):
@@ -99,7 +96,7 @@ class SeguridadPanel(BaseModel):
 
 class SeguimientoPanel(BaseModel):
     fecha: date
-    salon: SalonPanel | None
+    salon: SalonDatos | None
     total_estudiantes: int
     indicadores: IndicadoresPanel
     avisos: AvisosPanel
@@ -113,7 +110,7 @@ class SeguimientoPanel(BaseModel):
 class EstudiantePanel(BaseModel):
     codigo: str
     nombre: str
-    salon: str
+    salon: SalonDatos
 
 
 # --- Intereses del salón (spec §5) ------------------------------------------------------------------

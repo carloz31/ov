@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import usar_contexto
 from app.exceptions import ErrorAccion
+from app.schemas.cuentas import SalonDatos
 from app.schemas.panel import EstudiantePanel
 from app.services.panel.alertas import calcular_alertas
 from app.services.panel.comun import (
@@ -91,5 +92,5 @@ def estudiantes_del_conjunto(sesion: Session, codigo_cuenta: str, salon: str | N
     if calcular is None:
         raise _no_encontrado()
     ids = calcular(Lecturas(sesion, alcance), leer_parametros(sesion), valor)
-    return [EstudiantePanel(codigo=e.codigo, nombre=e.nombre, salon=alcance.salones[e.salon_id].nombre)
+    return [EstudiantePanel(codigo=e.codigo, nombre=e.nombre, salon=SalonDatos.model_validate(alcance.salones[e.salon_id]))
             for e in alcance.estudiantes if e.id in ids]

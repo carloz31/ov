@@ -33,8 +33,8 @@ def sesion():
         colegio = m.Colegio(codigo='col', nombre='Colegio')
         sesion.add(colegio)
         sesion.flush()
-        salones = [m.Salon(codigo='5A', nombre='5A', colegio_id=colegio.id),
-                   m.Salon(codigo='5B', nombre='5B', colegio_id=colegio.id)]
+        salones = [m.Salon(codigo='5A', promocion=2026, seccion='A', colegio_id=colegio.id),
+                   m.Salon(codigo='5B', promocion=2026, seccion='B', colegio_id=colegio.id)]
         sesion.add_all(salones)
         sesion.flush()
         ana = m.Cuenta(codigo='ana', nombre='Ana', rol=m.Rol.ESTUDIANTE, salon_id=salones[0].id)

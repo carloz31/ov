@@ -54,7 +54,7 @@ def test_lista_orden_inicial_aviso_principal_y_accesos(aplicacion, cliente, sesi
     assert codigos[0] == 'est-luis'  # su aviso más importante es del grupo de orden 1
     luis = datos['items'][0]
     assert luis['aviso'] == 'Poca seguridad en sus últimas señales' and luis['avisos_mas'] == 1
-    assert datos['salon'] == {'codigo': '5A', 'nombre': 'Quinto A'} and datos['total_estudiantes'] == 5
+    assert datos['salon'] == {'codigo': '5A', 'promocion': 2026, 'seccion': 'A'} and datos['total_estudiantes'] == 5
     accesos = {a['codigo']: a['cantidad'] for a in datos['accesos']}
     assert [a['codigo'] for a in datos['accesos']] == ['todos', 'con_avisos', 'conversar', 'sin_avisos']
     assert accesos['todos'] == 5 and accesos['conversar'] == 1

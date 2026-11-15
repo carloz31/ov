@@ -95,7 +95,7 @@ def test_tabla_y_detalle_de_la_orientadora(cliente):
     assert tabla['total'] == 1 and tabla['favoritos_leyenda'] == 3
     fila, = tabla['items']
     assert fila['codigo'] == codigo and fila['estado'] == 'SIN_DESTACAR' and fila['de_sus_salones']
-    assert fila['autores'] == [{'codigo': 'est-ana', 'nombre': 'Ana', 'salon': '5A', 'lo_que_pensaba': None}]
+    assert fila['autores'] == [{'codigo': 'est-ana', 'nombre': 'Ana', 'salon': {'codigo': '5A', 'promocion': 2026, 'seccion': 'A'}, 'lo_que_pensaba': None}]
     assert (fila['reacciones'], fila['reportes_pendientes'], fila['comentarios_reportados']) == (1, 0, 1)
     assert publicaciones(cliente, con_reportes=True)['total'] == 1
     assert publicaciones(cliente, estado='DESTACADA')['total'] == 0
@@ -107,7 +107,7 @@ def test_tabla_y_detalle_de_la_orientadora(cliente):
     reportada, = ficha['reacciones']
     assert reportada['reportes'][0]['motivo'] == 'OFENSIVO' and 'cuenta' not in reportada['reportes'][0]
     # F09: el autor de cada reacción trae su salón (la orientadora puede tener varios).
-    assert reportada['autor']['codigo'] == 'est-luis' and reportada['autor']['salon'] == '5A'
+    assert reportada['autor']['codigo'] == 'est-luis' and reportada['autor']['salon']['codigo'] == '5A'
     assert [t['codigo'] for t in ficha['tipos_reaccion']] == ['APRENDI', 'ME_GUSTO', 'CURIOSIDAD', 'MI_CAMINO']
     # Descartar el reporte lo saca del filtro sin tocar la reacción.
     orientadora(cliente, 'descartar-reporte', {'reporte': reportada['reportes'][0]['codigo']})

@@ -10,7 +10,8 @@
     {
       "codigo": "5A",
       "es_principal": true,
-      "nombre": "Quinto A"
+      "promocion": 2026,
+      "seccion": "A"
     }
   ]
 }

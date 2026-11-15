@@ -14,6 +14,16 @@ class CuentaResumen(BaseModel):
     rol: Rol
 
 
+class SalonDatos(BaseModel):
+    """Un salón: su código, la promoción (año de egreso) y la sección. El front lo nombra según el año en curso
+    («Quinto A», «Promoción 2024 A»)."""
+    model_config = ConfigDict(from_attributes=True)
+
+    codigo: str
+    promocion: int
+    seccion: str
+
+
 class NivelActual(BaseModel):
     numero: int
     titulo: str

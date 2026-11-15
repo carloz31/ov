@@ -10,7 +10,7 @@ from app.core.contexto import contexto, usar_contexto
 from app.models import (
     Audiencia, Bloque, Cuenta, Dimension, FamiliaCarrera, Institucion, MomentoAplicacion, VinculoFamiliar,
 )
-from app.schemas.panel import SalonPanel
+from app.schemas.cuentas import SalonDatos
 from app.schemas.panel_estudiante import (
     ApoderadoCabecera, AvisoPerfil, CabeceraEstudiante, DimensionInteres, DimensionPartida, GrupoAvisosPerfil,
     InstitucionPlan, InteresesResumen, PartidaResumen, PerfilEstudiante, PlanResumen, TemaPerfil, TramoEstudiante,
@@ -74,7 +74,7 @@ def _cabecera(acceso: Acceso, lecturas: Lecturas) -> CabeceraEstudiante:
                   else "INGRESO" if cuenta_apoderado.id in lecturas.ingreso_apoderados else "AUN_NO_INGRESA")
         apoderado = ApoderadoCabecera(nombre=cuenta_apoderado.nombre, parentesco=vinculo[0].parentesco, estado=estado)
     return CabeceraEstudiante(codigo=estudiante.codigo, nombre=estudiante.nombre,
-                              salon=SalonPanel(codigo=salon.codigo, nombre=salon.nombre),
+                              salon=SalonDatos.model_validate(salon),
                               dias_sin_ingreso=dias_sin_ingreso(lecturas, estudiante.id), apoderado=apoderado,
                               tramo=tramo_de(lecturas, estudiante.id))
 

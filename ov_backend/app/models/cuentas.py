@@ -15,10 +15,14 @@ class Colegio(Base):
 
 
 class Salon(Base):
+    """Un salón es una promoción (año de egreso) y una sección de un colegio; el front lo nombra según el año en curso
+    («Quinto A», «Promoción 2024 A»). `codigo` es solo el identificador."""
     __tablename__ = "salon"
+    __table_args__ = (UniqueConstraint("colegio_id", "promocion", "seccion"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(unique=True)
-    nombre: Mapped[str]
+    promocion: Mapped[int]
+    seccion: Mapped[str]
     colegio_id: Mapped[int] = mapped_column(ForeignKey("colegio.id"))
 
 

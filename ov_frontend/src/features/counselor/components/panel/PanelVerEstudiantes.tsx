@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { nombreSalon } from '@/lib/nombreSalon'
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/Sheet'
 import type { PedidoVer } from '@/features/counselor/hooks/usePanelSalon'
 import { appPaths } from '@/routes/paths'
@@ -48,7 +49,7 @@ export function PanelVerEstudiantes({
                 >
                   {e.nombre}
                 </Link>
-                <span className="text-sm text-muted-foreground">{e.salon}</span>
+                <span className="text-sm text-muted-foreground">{nombreSalon(e.salon)}</span>
               </li>
             ))}
           </ul>

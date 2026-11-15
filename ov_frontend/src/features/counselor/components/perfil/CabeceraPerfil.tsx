@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/Card'
+import { nombreSalon } from '@/lib/nombreSalon'
 import { avanceCabecera, textoIngreso, textosApoderado } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import type { CabeceraEstudiante } from '@/types/servidor'
 
@@ -15,7 +16,7 @@ export function CabeceraPerfil({ cabecera }: { cabecera: CabeceraEstudiante }) {
       <div className="min-w-0">
         <h1 className="text-2xl font-bold">{cabecera.nombre}</h1>
         <p className="text-sm text-muted-foreground">
-          {cabecera.salon.nombre} ·{' '}
+          {nombreSalon(cabecera.salon)} ·{' '}
           {cabecera.dias_sin_ingreso === null ? ingreso : `Último ingreso: ${ingreso}`} · {apoderado}
         </p>
       </div>

@@ -529,7 +529,7 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert detalle_orientadora.autores[0].lo_que_pensaba.duda == '¿Es peligroso?'
     # F09: la reacción reportada va primero, con el salón de su autor.
     reportada = detalle_orientadora.reacciones[0]
-    assert (reportada.autor.codigo, reportada.autor.salon, len(reportada.reportes)) == ('est-luis', '5A', 1)
+    assert (reportada.autor.codigo, reportada.autor.salon.codigo, len(reportada.reportes)) == ('est-luis', '5A', 1)
     en_curso = InvestigacionesCuenta.model_validate(datos['investigaciones-en-curso']).en_curso
     assert en_curso.estado == 'EN_CURSO' and en_curso.sugerencias and en_curso.sugerencias_vigentes
     luis = InvestigacionesCuenta.model_validate(datos['investigaciones-luis'])

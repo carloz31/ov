@@ -75,4 +75,4 @@ def test_sesion_de_la_orientadora_trae_sus_salones(cliente_sin_token, aplicacion
     cuerpo = cliente_sin_token.get('/sesion', headers=con_token(token_de(aplicacion, 'ori-carmen'))).json()
     assert cuerpo['cuenta']['rol'] == 'ORIENTADORA'
     assert cuerpo['hijos'] == []
-    assert cuerpo['salones'] == [{'codigo': '5A', 'nombre': 'Quinto A', 'es_principal': True}]
+    assert cuerpo['salones'] == [{'codigo': '5A', 'promocion': 2026, 'seccion': 'A', 'es_principal': True}]

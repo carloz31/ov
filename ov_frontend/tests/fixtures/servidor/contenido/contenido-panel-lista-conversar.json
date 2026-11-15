@@ -55,7 +55,11 @@
       "dias_sin_ingreso": 9,
       "nombre": "Camila Cárdenas Ruiz",
       "plan_a": null,
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "SIN_EMPEZAR",
       "tramo": {
         "codigo": "B1",
@@ -71,7 +75,11 @@
       "dias_sin_ingreso": 0,
       "nombre": "Luciana Paredes Soto",
       "plan_a": "Psicología",
-      "salon": "Quinto A",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
       "test": "LISTO",
       "tramo": {
         "codigo": "B5",
@@ -83,7 +91,8 @@
   ],
   "salon": {
     "codigo": "5A",
-    "nombre": "Quinto A"
+    "promocion": 2026,
+    "seccion": "A"
   },
   "total": 2,
   "total_estudiantes": 13

@@ -1,6 +1,6 @@
 // app/schemas/panel.py · Panel del salón de la orientadora (ajuste panel-salon): GET /cuentas/{c}/panel/*. Todo
 // conteo es de estudiantes distintos; nada del diario ni de registros.
-export type SalonPanel = { codigo: string; nombre: string }
+import type { SalonDatos } from './servidor'
 export type IndicadoresPanel = {
   ingresaron: number
   dias_ingreso: number
@@ -53,7 +53,7 @@ export type BandaSeguridad = {
 export type SeguridadPanel = { bandas: BandaSeguridad[]; sin_senales: number }
 export type SeguimientoPanel = {
   fecha: string
-  salon: SalonPanel | null
+  salon: SalonDatos | null
   total_estudiantes: number
   indicadores: IndicadoresPanel
   avisos: AvisosPanel
@@ -63,7 +63,7 @@ export type SeguimientoPanel = {
   detenidos: DetenidosPanel | null
   seguridad: SeguridadPanel
 }
-export type EstudiantePanel = { codigo: string; nombre: string; salon: string }
+export type EstudiantePanel = { codigo: string; nombre: string; salon: SalonDatos }
 
 export type TipoFormacion = 'UNIVERSIDAD' | 'INSTITUTO' | 'FFAA_POLICIA'
 export type GestionPanel = 'PUBLICA' | 'PRIVADA'

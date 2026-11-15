@@ -4,6 +4,7 @@ import { PantallaCargaPortal } from '@/components/staff/PantallaCargaPortal'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
+import type { SalonDatos } from '@/types/servidor'
 import type { ModeloPublicacion } from '../../hooks/usePublicacionDetalle'
 import { EstadoPublicacionBadges } from './EstadoPublicacionBadges'
 import { FichaPublicacion } from './FichaPublicacion'
@@ -50,7 +51,7 @@ export function DetallePublicacion({
   nombreSalon,
 }: {
   m: ModeloPublicacion
-  nombreSalon: (codigo: string | null) => string
+  nombreSalon: (salon: SalonDatos | null) => string
 }) {
   const d = m.datos
   const nombresTipos = Object.fromEntries((d?.tipos_reaccion ?? []).map((t) => [t.codigo, t.nombre]))
@@ -90,7 +91,9 @@ export function DetallePublicacion({
                   </span>
                 )}
                 {!d.de_sus_salones && (
-                  <span className="text-sm text-muted-foreground">Promoción anterior · solo lectura</span>
+                  <span className="text-sm text-muted-foreground">
+                    {[...new Set(d.autores.map((a) => nombreSalon(a.salon)))].join(', ')} · solo lectura
+                  </span>
                 )}
               </div>
             </div>

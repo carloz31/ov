@@ -21,7 +21,9 @@ export type CuentaResumen = { codigo: string; nombre: string; rol: RolCuenta }
 export type IngresoEntrada = { usuario: string; contrasena: string }
 export type IngresoRespuesta = { token: string; expira_en: string; cuenta: CuentaResumen }
 export type HijoSesion = { codigo: string; nombre: string; salon: string | null; parentesco: string | null }
-export type SalonSesion = { codigo: string; nombre: string; es_principal: boolean }
+// app/schemas/cuentas.py · Ajuste panel-entrevistas-configuracion: el front lo nombra con `nombreSalon` (lib/).
+export type SalonDatos = { codigo: string; promocion: number; seccion: string }
+export type SalonSesion = SalonDatos & { es_principal: boolean }
 export type SesionRespuesta = {
   cuenta: CuentaResumen
   expira_en: string

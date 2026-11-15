@@ -8,7 +8,11 @@
         "necesita": "DATO DE PRUEBA: estudiar en un instituto y practicar."
       },
       "nombre": "Ana",
-      "salon": "5A"
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      }
     }
   ],
   "codigo": "ENT-00000000000000000000000000000006",
@@ -36,7 +40,11 @@
           "titulo": "Recolector de pistas"
         },
         "nombre": "Luis",
-        "salon": "5A",
+        "salon": {
+          "codigo": "5A",
+          "promocion": 2026,
+          "seccion": "A"
+        },
         "vitrina": []
       },
       "codigo": "REA-00000000000000000000000000000007",

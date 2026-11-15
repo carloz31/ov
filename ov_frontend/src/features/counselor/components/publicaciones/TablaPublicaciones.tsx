@@ -42,14 +42,14 @@ function Fila({
   m: ModeloPublicaciones
   favoritosLeyenda: number
 }) {
-  const salones = [...new Set(fila.autores.map((a) => a.salon))]
+  const salones = [...new Set(fila.autores.map((a) => m.nombreSalonAutor(a.salon)))]
   return (
     <TableRow className="hover:bg-transparent">
       <TableCell className="px-2.5 py-3 whitespace-normal break-words">
         {fila.autores.map((a) => a.nombre).join(', ')}
       </TableCell>
       <TableCell className="px-2.5 py-3 whitespace-normal">
-        {fila.de_sus_salones ? salones.map(m.nombreSalon).join(', ') : 'Promoción anterior'}
+        {salones.join(', ')}
       </TableCell>
       <TableCell className="px-2.5 py-3 whitespace-normal break-words"><strong>{fila.familia.nombre}</strong>
         <br />
@@ -111,7 +111,7 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
         </label>
         <Select value={m.salon || 'todos'} onValueChange={(v) => m.elegirSalon(v === 'todos' ? '' : v)}>
           <SelectTrigger aria-label="Filtrar por salón" className="min-h-11 w-full bg-card sm:w-52">
-            <SelectValue>{m.salon ? m.nombreSalon(m.salon) : 'Todos los salones'}</SelectValue>
+            <SelectValue>{m.salon ? (m.salones.find((s) => s.codigo === m.salon)?.nombre ?? m.salon) : 'Todos los salones'}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos los salones</SelectItem>
