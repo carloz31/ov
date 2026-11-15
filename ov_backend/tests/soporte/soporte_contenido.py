@@ -10,6 +10,7 @@ from soporte_planes import crear, guardar, por_que_lista, realidad_lista
 from soporte_ruta import FECHA, pedir, responder, responder_registro, revelar
 
 from datos import contenido
+from scripts import prerrequisitos_contenido
 
 
 CAMINO = ('B0', 'B1', 'B2', 'B3', 'B4', 'B5')
@@ -66,8 +67,15 @@ def avanzar(cliente, desde, hasta, completar_con=completar):
     for codigo in REQUERIDAS[REQUERIDAS.index(desde):REQUERIDAS.index(hasta) + 1]:
         if codigo == 'b3-10':
             revelar_para_b4(cliente)
+        # Ajuste desbloqueos: la carta, el caso y el guion que piden b1-4, b1-7 y b3-2, y la misión de Anselmo tras b1-7.
+        prerrequisitos_contenido.antes_de(codigo, lambda nombre, datos: accion(cliente, nombre, datos))
         completar_con(cliente, codigo)
+        prerrequisitos_contenido.despues_de(codigo, lambda actividad: completar(cliente, actividad))
         if codigo == 'b3-8':
             preparar_planes(cliente)
         if codigo == 'b4-5':
             guardar(cliente, PSICOLOGIA, 'PASOS', {'pasos': [{'tipo': 'conversar', 'texto': 'Hablar con una psicóloga.'}]})
+
+
+def accion(cliente, nombre, datos, cuenta='est-ana', esperado=200):
+    return pedir(cliente, 'POST', f'/acciones/{nombre}', {'cuenta': cuenta, 'fecha_hora': FECHA, **datos}, esperado)

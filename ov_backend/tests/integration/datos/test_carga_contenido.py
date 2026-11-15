@@ -22,7 +22,8 @@ def base(tmp_path_factory):
 
 def test_carga_conteos(base):
     conteos, _ = base
-    assert conteos['cuenta'] == 8
+    # Ajuste desbloqueos: un apoderado de prueba para cada estudiante de `ruta` sin vínculo (beto, mía, teo, sol).
+    assert conteos['cuenta'] == 12
     # Ajuste registros (adaptación autorizada para `contenido`): salen b2-6, ma6, b4-a y ma9. Ajuste registros llm
     # (lote 2): los 19 registros tienen 29 ítems (22 de los requeridos y 7 de los opcionales).
     assert conteos['actividad'] == 83 + 5  # 77 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi provisionales
@@ -154,3 +155,12 @@ def test_ocupaciones_con_su_codigo_onet(base):
     assert not any(codigo.startswith('onet-') for codigo, _ in codigos)
     # Bombero (33-2011.00) tiene `en_catalogo = 0` en la curaduría: ya no se carga.
     assert '33-2011.00' not in {codigo for codigo, _ in codigos}
+
+
+def test_todo_estudiante_tiene_un_vinculo_activo(base):
+    """Ajuste desbloqueos: b1-4 pide la carta, que exige un vínculo activo. Una sola consulta para todos."""
+    _, sesion = base
+    activo = select(m.VinculoFamiliar.id).where(m.VinculoFamiliar.estudiante_id == m.Cuenta.id,
+                                                m.VinculoFamiliar.es_activo).exists()
+    sin_vinculo = sesion.scalars(select(m.Cuenta.codigo).where(m.Cuenta.rol == m.Rol.ESTUDIANTE, ~activo)).all()
+    assert sin_vinculo == []
