@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto
 from app.models import (
     Aplicacion, Dimension, Instrumento, MomentoAplicacion, ResultadoDimension, ResultadoInstrumento, TipoResultado,
+    ZonaDimension,
 )
 from app.services.instrumentos.calculo import calcular_zona
 from app.services.instrumentos.consultas import items_por_dimension
@@ -67,3 +68,40 @@ def mediciones(sesion: Session, ids: list[int]) -> dict[int, dict[MomentoAplicac
 def mediciones_del_alcance(lecturas) -> dict[int, dict[MomentoAplicacion, Medicion]]:
     """`mediciones` de los estudiantes de unas `Lecturas`, una vez por petición (temas y partida del perfil)."""
     return lecturas.una_vez("mediciones", lambda: mediciones(lecturas.sesion, lecturas.alcance.ids))
+
+
+# --- Comparación de partida y llegada (ajuste pendientes-orientadora) ----------------------------------
+# La usan la tarjeta «De la partida a la llegada» del Resumen y el tema `llegada-sin-avance`; el detalle de partida y
+# llegada la ampliará. Solo zonas: nunca puntajes.
+
+ORDEN_ZONAS = {ZonaDimension.POR_TRABAJAR.value: 0, ZonaDimension.EN_CAMINO.value: 1, ZonaDimension.FUERTE.value: 2}
+
+
+def cambio(partida: str | None, llegada: str | None) -> str | None:
+    """SUBIO, BAJO o IGUAL entre dos zonas; nulo si falta una."""
+    if partida is None or llegada is None:
+        return None
+    diferencia = ORDEN_ZONAS[llegada] - ORDEN_ZONAS[partida]
+    return "SUBIO" if diferencia > 0 else "BAJO" if diferencia < 0 else "IGUAL"
+
+
+@dataclass(frozen=True)
+class ComparacionDimension:
+    dimension: Dimension
+    zona_partida: str | None
+    zona_llegada: str | None
+    cambio: str | None
+
+    @property
+    def sigue_por_trabajar(self) -> bool:
+        return self.zona_partida == self.zona_llegada == ZonaDimension.POR_TRABAJAR.value
+
+
+def comparar(dimensiones: list[Dimension], partida: Medicion, llegada: Medicion | None) -> list[ComparacionDimension]:
+    """Por dimensión (en el orden dado), su zona de partida, la de llegada (si la hay) y el cambio."""
+    comparadas = []
+    for d in dimensiones:
+        zona_partida = partida.zonas.get(d.id)
+        zona_llegada = llegada.zonas.get(d.id) if llegada else None
+        comparadas.append(ComparacionDimension(d, zona_partida, zona_llegada, cambio(zona_partida, zona_llegada)))
+    return comparadas

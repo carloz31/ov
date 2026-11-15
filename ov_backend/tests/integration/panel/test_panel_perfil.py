@@ -108,8 +108,8 @@ def test_perfil_cabecera_avisos_temas_y_tarjetas(aplicacion, cliente, sesion):
     evento(sesion, 'est-ana', TipoEventoUso.INGRESO, 0)
     senales(sesion, 'est-ana', 2, 1, 2)
     plan = tarjeta(sesion, 'est-ana', ENFERMERIA, 1, INST_UNI)
-    plan.idea_origen = m.OrigenIdea.FAMILIA
-    conocimiento(sesion, plan, DIA_NORMAL='NO')
+    plan.idea_origen, plan.entusiasmo = m.OrigenIdea.FAMILIA, 1
+    conocimiento(sesion, plan, DIA_NORMAL='NO', CURSOS='NO', INGRESO='NO')
     tarjeta(sesion, 'est-ana', PSICOLOGIA, 2)
     medicion(sesion, 'est-ana', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR', 'AUTO-B': 'FUERTE'})
     sesion.commit()
@@ -122,9 +122,11 @@ def test_perfil_cabecera_avisos_temas_y_tarjetas(aplicacion, cliente, sesion):
     seguridad = datos['avisos'][0]['avisos'][0]
     assert seguridad == {'codigo': 'seguridad-baja', 'nombre': 'Poca seguridad en sus últimas señales',
                          'descripcion': 'Marcó 2, 1 y 2 de 5 (el 17, 18 y 19 de octubre).', 'destino': 'AVANCE'}
-    assert [t['codigo'] for t in datos['temas']] == ['plan-idea-ajena', 'dimension-por-trabajar']
-    assert datos['temas'][0] == {'codigo': 'plan-idea-ajena', 'destino': 'PLANES',
-                                 'texto': 'La idea de estudiar Enfermería (su Plan A) vino de su familia.'}
+    # Ajuste pendientes-orientadora: las reglas definitivas (con solo la partida no hay tema) y el tope.
+    assert [t['codigo'] for t in datos['temas']] == ['plan-poco-entusiasmo', 'plan-conoce-poco']
+    assert datos['temas'][0] == {'codigo': 'plan-poco-entusiasmo', 'destino': 'PLANES', 'texto': (
+        'Marcó «Poco» en «Me entusiasma» frente a su Plan A (Enfermería). La idea de estudiarla vino de su familia.')}
+    assert datos['temas_visibles'] == 4
     assert datos['intereses']['estado'] == 'SIN_EMPEZAR' and datos['intereses']['codigo'] == []
     assert [(p['prioridad'], p['carrera'], p['en_areas']) for p in datos['planes']] == [
         (1, 'Enfermería', None), (2, 'Psicología', None)]

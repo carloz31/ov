@@ -26,12 +26,10 @@ from app.services.instrumentos.consultas import (
 )
 from app.services.panel.autopercepcion import dimensiones_de, instrumento_autopercepcion
 from app.services.panel.comun import (
-    Lecturas, actividades_de_aplicaciones, aplicaciones_de, entero, etiqueta_cuestionario,
-    leer_parametros,
+    Lecturas, actividades_de_aplicaciones, aplicaciones_de, en_areas, entero, etiqueta_cuestionario,
+    intereses_vigentes, leer_parametros, planes_activos,
 )
-from app.services.panel.perfil import (
-    en_areas, intereses_vigentes, partida_resumen, planes_activos,
-)
+from app.services.panel.perfil import partida_resumen
 from app.services.panel.perfil_acceso import Acceso, estudiante_de_orientadora
 
 

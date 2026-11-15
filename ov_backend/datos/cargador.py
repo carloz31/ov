@@ -44,6 +44,7 @@ _DICCIONARIOS = frozenset({
     'PROPIEDADES', 'DESCRIPCIONES', 'CONFIGURACION_BATALLAS', 'CONFIGURACION_CASOS', 'PROPIEDADES_ITEMS',
     'TEXTOS_INSIGNIAS', 'PAGINAS_INSIGNIAS', 'PISTAS_INSIGNIAS', 'CITAS_LUMI', 'TEXTOS_CONDICIONES',
     'EVALUADORES_REGLAS', 'CARRERAS_RUTA', 'INSTITUCIONES_RUTA', 'UBICACIONES_RUTA', 'VARIANTES_DIARIO', 'TARJETAS',
+    'TEXTOS_PERFIL_ALERTAS',
 })
 
 
@@ -711,6 +712,56 @@ def _cargar_catalogo(m, sesion):
                        for p, letra in enumerate(letras, start=1))
 
 
+def _cargar_alertas(m, sesion):
+    """Ajuste pendientes-orientadora: las alertas propias del conjunto (temas que nombran sus ítems), en los grupos
+    de `fijos`."""
+    if not m.ALERTAS:
+        return
+    grupos = dict(sesion.execute(select(modelos.GrupoAlerta.codigo, modelos.GrupoAlerta.id)).all())
+    fijos.cargar_alertas(sesion, grupos, m.ALERTAS, m.TEXTOS_PERFIL_ALERTAS)
+
+
+def validar_alertas(sesion: Session) -> None:
+    """Una fila de tema mal armada falla al cargar, no al consultar: cada `item` y cada ítem de `datos` existe y es de
+    elección, cada código de `opciones` es una opción de su ítem, cada medidor es una columna de medidor y el podio de
+    `valores_fuera_del_plan` usa la lista `VALORES` (la de los motivos del plan)."""
+    items = {i.codigo: i for i in sesion.scalars(select(modelos.ItemRegistro))}
+    listas = {i: c for i, c in sesion.execute(select(modelos.ListaOpciones.id, modelos.ListaOpciones.codigo))}
+    opciones_lista = {}
+    for lista_id, codigo in sesion.execute(select(modelos.OpcionLista.lista_id, modelos.OpcionLista.codigo)):
+        opciones_lista.setdefault(lista_id, set()).add(codigo)
+
+    def item_de_eleccion(alerta, codigo):
+        item = items.get(codigo)
+        if item is None:
+            raise ValueError(f'La alerta {alerta} nombra un ítem que no existe: {codigo}')
+        if item.lista_id is None and not item.opciones_propias and item.fuente_opciones is None:
+            raise ValueError(f'La alerta {alerta} nombra un ítem sin elección: {codigo}')
+        return item
+
+    for alerta in sesion.scalars(select(modelos.Alerta)):
+        p = alerta.parametros or {}
+        if alerta.evaluador == 'eleccion_registro':
+            item = item_de_eleccion(alerta.codigo, p.get('item'))
+            validas = opciones_lista.get(item.lista_id, set()) | {o['codigo'] for o in item.opciones_propias or ()}
+            ajenas = sorted(set(p.get('opciones') or ()) - validas)
+            if not p.get('opciones') or ajenas:
+                raise ValueError(f'La alerta {alerta.codigo} usa opciones que no son de {item.codigo}: {ajenas}')
+            for otro in (p.get('datos') or {}).values():
+                item_de_eleccion(alerta.codigo, otro)
+            planes = set(p.get('omitir_si_cambio') or ()) | set(p.get('valores_requeridos') or ())
+            if planes - {'plan_a', 'plan_b'}:
+                raise ValueError(f'La alerta {alerta.codigo} compara planes desconocidos: {sorted(planes)}')
+        elif alerta.evaluador == 'valores_fuera_del_plan':
+            item = item_de_eleccion(alerta.codigo, p.get('item'))
+            if listas.get(item.lista_id) != 'VALORES':
+                raise ValueError(f'La alerta {alerta.codigo} necesita un podio de la lista VALORES: {item.codigo}')
+        elif alerta.evaluador == 'plan_medidor':
+            desconocidos = sorted(set(p.get('medidores') or ()) - set(fijos.MEDIDORES_PLAN))
+            if not p.get('medidores') or desconocidos:
+                raise ValueError(f'La alerta {alerta.codigo} usa medidores que no existen: {desconocidos}')
+
+
 def cargar(sesion: Session, modulo) -> None:
     """Carga `fijos` y las tuplas de `modulo`. La validación de la distribución de ítems la llama el módulo de datos
     después (`validar_distribucion_items`), para que una falla tardía revierta toda la carga."""
@@ -725,4 +776,6 @@ def cargar(sesion: Session, modulo) -> None:
     _cargar_registros(m, sesion, objetivos['ACTIVIDAD'], base)
     _cargar_salones(m, sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])
     _cargar_reglas(m, sesion, objetivos)
+    _cargar_alertas(m, sesion)
     sesion.flush()
+    validar_alertas(sesion)

@@ -808,6 +808,33 @@ ITEMS_REGISTRO = (
 # Ajuste registros llm (lote 2): las tarjetas del LLM v7, una por ítem con LLM (y por opción con tarjeta propia).
 TARJETAS = tarjetas_registros.TARJETAS
 
+# Ajuste pendientes-orientadora: temas «Para conversar» que salen de una elección de registro. Misma forma que
+# `fijos.ALERTAS` (código, grupo, nombre, descripción, evaluador, parámetros) y que `fijos.TEXTOS_PERFIL_ALERTAS`;
+# su orden lo fija `fijos.ORDEN_PARA_CONVERSAR`. La carga valida ítems y opciones.
+ALERTAS = (
+    ('voces-chocan', 'para-conversar', 'Lo que se espera y lo que quiere chocan', None, 'eleccion_registro',
+     {'item': 'b1-3-contraste', 'opciones': ['CHOCAN'], 'datos': {'persona': 'b1-3-voz'},
+      'frases': {'voz': ' La voz que eligió: {persona}.'}}),
+    ('valores-fuera-del-plan', 'para-conversar', 'Sus valores no están entre los motivos de su Plan A', None,
+     'valores_fuera_del_plan', {'item': 'b2-3-valores'}),
+    ('plan-b-desanima', 'para-conversar', 'Su Plan B lo desanima', None, 'eleccion_registro',
+     {'item': 'b4-5-moneda', 'opciones': ['DESANIME'], 'omitir_si_cambio': ['plan_a', 'plan_b'],
+      'valores_requeridos': ['plan_b']}),
+    ('forma-de-decidir', 'para-conversar', 'Su forma de decidir', None, 'eleccion_registro',
+     {'item': 'b4-2-estilo', 'opciones': ['LO_QUE_ESPERAN', 'MIEDO']}),
+    ('proyecto-poco-seguro', 'para-conversar', 'Poca seguridad en su proyecto', None, 'eleccion_registro',
+     {'item': 'b5-1-seguridad', 'opciones': ['POCO'], 'omitir_si_cambio': ['plan_a']}),
+)
+TEXTOS_PERFIL_ALERTAS = {
+    'voces-chocan': (None, 'Marcó que lo que se espera en su entorno y lo que quiere hacer al terminar el colegio '
+                           'chocan.{voz}', 'RESPUESTAS'),
+    'valores-fuera-del-plan': (None, 'Lo que más valora en un trabajo ({valores}) no aparece entre los motivos de su '
+                                     'Plan A ({motivos}).', 'PLANES'),
+    'plan-b-desanima': (None, 'Al imaginar que le tocaba su Plan B ({plan_b}), marcó «{opcion}».', 'RESPUESTAS'),
+    'forma-de-decidir': (None, 'Sobre cómo decide las cosas importantes, marcó: «{opcion}».', 'RESPUESTAS'),
+    'proyecto-poco-seguro': (None, 'Frente a su proyecto, marcó «{opcion}».', 'RESPUESTAS'),
+}
+
 # (código, (tipo de dueño, dueño), tipo, fuente). Ajuste registros llm (lote 2): las que leen los ecos, los
 # marcadores y las opciones; el contenido de las piezas (§4) lo lee `contexto.py` directamente.
 REFERENCIAS = (

@@ -19,8 +19,8 @@ from app.schemas.panel_estudiante import (
     AntesDePlanes, Conoce, DudaCompleta, Medidores, PasoCompleto, PlanCompleto, PlanesEstudiante, PlanVistazo,
     PorQue, PreguntaConoce, Realidad, SeccionCompleta,
 )
-from app.services.panel.comun import entero, leer_parametros
-from app.services.panel.perfil import en_areas, institucion_plan, intereses_vigentes
+from app.services.panel.comun import en_areas, entero, intereses_vigentes, leer_parametros
+from app.services.panel.perfil import institucion_plan
 from app.services.panel.perfil_acceso import estudiante_de_orientadora
 from app.services.panel.temas import LISTA_CONOCIMIENTO
 from app.services.planes.consultas import (

@@ -198,3 +198,51 @@ def sembrar_ejemplo(aplicacion):
     sembrar(aplicacion, AHORA_EJEMPLO)
     fijar_ahora(aplicacion, AHORA_EJEMPLO)
 
+
+
+def registro(sesion, codigo, item, elegidas=(), sensible=False, tipo_final=None, valores=None,
+             estado=m.EstadoRespuestaRegistro.COMPLETADO, texto='DATO DE PRUEBA: respuesta'):
+    """DATO DE PRUEBA (ajuste pendientes-orientadora): un intento vigente de un ítem de registro, con lo marcado
+    tal como se mostró (`[(código, texto)]`) y sus `valores_contexto`. Si ya había uno vigente, este es un intento
+    nuevo (la edición) y el anterior pasa al histórico."""
+    fila_item = sesion.scalar(select(m.ItemRegistro).where(m.ItemRegistro.codigo == item))
+    cuenta_id = cuenta(sesion, codigo).id
+    progreso = sesion.scalar(select(m.ProgresoActividad).where(m.ProgresoActividad.cuenta_id == cuenta_id,
+                                                               m.ProgresoActividad.actividad_id == fila_item.actividad_id))
+    if progreso is None:
+        progreso = m.ProgresoActividad(cuenta_id=cuenta_id, actividad_id=fila_item.actividad_id,
+                                       estado=m.EstadoProgreso.EN_CURSO)
+        sesion.add(progreso)
+        sesion.flush()
+    anteriores = sesion.scalars(select(m.RespuestaRegistro).where(
+        m.RespuestaRegistro.progreso_id == progreso.id, m.RespuestaRegistro.item_registro_id == fila_item.id)).all()
+    for anterior in anteriores:
+        anterior.vigente = False
+    sesion.flush()
+    fila = m.RespuestaRegistro(progreso_id=progreso.id, item_registro_id=fila_item.id, intento=len(anteriores) + 1,
+                               opciones_elegidas=[{'codigo': c, 'texto': t} for c, t in elegidas],
+                               valores_contexto=valores, primera_respuesta=texto, tipo_final=tipo_final,
+                               estado=estado, sensible=sensible, creada_en=AHORA, actualizada_en=AHORA)
+    sesion.add(fila)
+    sesion.flush()
+    return fila
+
+
+def motivos(sesion, tarjeta_fila, *opciones, otros=()):
+    """DATO DE PRUEBA: motivos de «Por qué la elijo» (códigos de la lista VALORES y, después, escritos a mano)."""
+    posicion = 0
+    for codigo in opciones:
+        posicion += 1
+        opcion_id = sesion.scalar(select(m.OpcionLista.id).join(m.ListaOpciones).where(
+            m.ListaOpciones.codigo == 'VALORES', m.OpcionLista.codigo == codigo))
+        sesion.add(m.MotivoTarjeta(tarjeta_id=tarjeta_fila.id, posicion=posicion, opcion_id=opcion_id))
+    for texto in otros:
+        posicion += 1
+        sesion.add(m.MotivoTarjeta(tarjeta_id=tarjeta_fila.id, posicion=posicion, texto_otro=texto))
+
+
+def duda(sesion, tarjeta_fila, numero, abierta=True):
+    """DATO DE PRUEBA: una duda propia del plan."""
+    sesion.add(m.DudaTarjeta(tarjeta_id=tarjeta_fila.id, numero=numero, origen=m.OrigenDuda.PROPIA,
+                             texto=f'DATO DE PRUEBA: duda {numero}', creada_en=AHORA,
+                             estado=m.EstadoDuda.ABIERTA if abierta else m.EstadoDuda.CERRADA))

@@ -1,1 +1,15 @@
 # Decisiones de la spec en curso
+
+## Ajuste pendientes-orientadora (reglas de «Para conversar»)
+
+- Las cinco filas de registro (`voces-chocan`, `valores-fuera-del-plan`, `plan-b-desanima`, `forma-de-decidir`, `proyecto-poco-seguro`) van en `datos/contenido.py` (`ALERTAS`, `TEXTOS_PERFIL_ALERTAS`) y no en `fijos.py`: nombran ítems que `ruta` no tiene (decisión del usuario). `fijos.ORDEN_PARA_CONVERSAR` fija el orden de los diez; en `ruta` quedan las cinco de planes y llegada en su lugar (2, 3, 5, 6, 10).
+- Medidores: son columnas (`entusiasmo`, `capacidad`, `recursos`, 1–3); los temas citan el nivel y el nombre que ve el estudiante («Poco», «Me entusiasma»), de `MEDIDORES_PLAN` y `NIVELES_MEDIDOR` en `fijos.py` (decisión del usuario). El texto dice «Marcó «Poco» en…» en lugar de «Marcó Bajo en…».
+- `omitir_si_cambio` compara por nombre de carrera lo guardado en `valores_contexto` (marcadores `plan_a`/`plan_b` o, sin ellos, los ecos mostrados) con el plan cargado. Se omite si el plan ya no existe o cambió; sin valor guardado, se omite solo si la fila lo nombra en `valores_requeridos` (la moneda, por `{plan_b}`) (decisión del usuario).
+- `plan_fuera_de_areas` deja de construir `DatosIntereses` y de llamar a `frente_test`: usa `intereses_vigentes` y `en_areas` del Resumen (`comun.areas_de_planes`), con el mismo criterio. Esas lecturas son por cuenta: los temas solo se evalúan en el perfil, de un estudiante.
+- `intereses_vigentes`, `planes_activos` y `en_areas` pasan de `perfil.py` a `comun.py` para que `temas.py` no importe `perfil`. `ORDEN_ZONAS`, `cambio` y la nueva `comparar` pasan a `autopercepcion.py` (las amplía el detalle de partida y llegada).
+- Las lecturas de planes de los temas (motivos, conocimiento, dudas, complicaciones) se hacen por tabla y solo la primera vez que una regla las pide (`Lecturas.una_vez`), no con una declaración `necesita` por evaluador: es más simple y da lo mismo, porque una fila inactiva no se evalúa.
+- `calcular_alertas` deja en `Lecturas.filas_activas` las filas activas antes de evaluar, para que `temas._registros` lea en una consulta los ítems de todas (`item` y `datos`).
+- Las frases opcionales de `eleccion_registro` van en `parametros.frases`; una frase que usa una clave de `datos` sin valor (exclusiva, sensible o sin elección) queda vacía.
+- Sin defecto en el código, opcionales de la fila: `datos`, `frases`, `omitir_si_cambio`, `valores_requeridos` (`eleccion_registro`); `origenes`, `textos_origen`, `con_complicaciones`, `frases` (`plan_medidor`).
+- Pruebas adaptadas, con autorización de la spec (retira las reglas iniciales): `test_panel_temas.py` (reescrito), `test_panel_perfil.py::test_perfil_cabecera_avisos_temas_y_tarjetas` (temas nuevos y `temas_visibles`), `test_datos_panel.py` (orden) y `test_semilla_ruta.py` (17 parámetros).
+- Presupuesto del Resumen (consultas, estudiantes de ejemplo de `contenido`): est-panel-5, 43 → 39; est-panel-7, 44 → 37. Lo protege `test_resumen_con_los_diez_temas_cuesta_como_mucho_dos_consultas_mas`.

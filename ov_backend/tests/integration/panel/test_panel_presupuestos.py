@@ -2,7 +2,8 @@
 los elementos de cada estudiante (planes, dudas, pasos, complicaciones, señales, diario, cuestionarios con resultado,
 registros respondidos). Patrón pocos frente a muchos: se cuenta cada ruta con el salón de `ruta` poblado, después de
 sumar doce estudiantes con lo mismo y después de duplicar lo de cada estudiante; las tres cuentas son iguales. La
-pestaña Respuestas con los registros de `contenido` (ecos y piezas) se mide en `test_panel_contexto_lectura.py`."""
+pestaña Respuestas con los registros de `contenido` (ecos y piezas) se mide en `test_panel_contexto_lectura.py`.
+El Resumen con los diez temas de `contenido` se mide contra su cuenta antes del ajuste pendientes-orientadora."""
 
 from datetime import timedelta
 
@@ -244,3 +245,60 @@ def test_respuestas_no_crecen_con_los_registros_respondidos(aplicacion, cliente,
     assert len(set(cuentas[1:])) == 1, cuentas
     detalle = {a: _medir(aplicacion, cliente, f'{PERFIL}/respuestas/{a}').cantidad for a in respondidos}
     assert len(set(detalle.values())) == 1, detalle
+
+
+# --- Resumen con los diez temas de `contenido` (ajuste pendientes-orientadora) ------------------------------------
+# Consultas del Resumen antes del ajuste, con los temas iniciales, sobre los estudiantes de ejemplo (medidas en F0):
+# est-panel-5, 43; est-panel-7, 44. El ajuste acepta como mucho dos más; al cerrarlo eran 39 y 37.
+ANTES_DEL_AJUSTE = {'est-panel-5': 43, 'est-panel-7': 44}
+
+
+@pytest.fixture(scope='module')
+def ejemplos(plantilla_contenido, tmp_path_factory):
+    from app.main import crear_aplicacion
+    from soporte_acceso import ClienteConToken
+    from soporte_bases import copiar_plantilla
+    from soporte_llm import ClientePrueba
+    from soporte_panel import sembrar_ejemplo
+    aplicacion = crear_aplicacion(copiar_plantilla(
+        plantilla_contenido, tmp_path_factory.mktemp('panel-presupuesto-temas') / 'contenido.db'))
+    aplicacion.state.cliente_llm = ClientePrueba()
+    sembrar_ejemplo(aplicacion)
+    try:
+        with ClienteConToken(aplicacion) as cliente:
+            yield aplicacion, cliente
+    finally:
+        aplicacion.state.motor_bd.dispose()
+
+
+def test_resumen_con_los_diez_temas_cuesta_como_mucho_dos_consultas_mas(ejemplos):
+    aplicacion, cliente = ejemplos
+    with aplicacion.state.fabrica_sesiones() as sesion:
+        activos = sesion.scalars(select(m.Alerta.codigo).join(m.GrupoAlerta).where(
+            m.GrupoAlerta.codigo == 'para-conversar', m.Alerta.activa)).all()
+    assert len(activos) == 10
+    for codigo, antes in ANTES_DEL_AJUSTE.items():
+        cliente.get(f'{BASE}/estudiantes/{codigo}')  # la caché de definiciones ya cargada, como en la medición de F0
+        ahora = _medir(aplicacion, cliente, f'{BASE}/estudiantes/{codigo}')
+        assert ahora.cantidad <= antes + 2, f'{codigo}: {ahora.cantidad} consultas (antes {antes})\n{ahora.diagnostico}'
+
+
+def test_una_fila_mas_de_eleccion_registro_no_suma_consultas(ejemplos):
+    aplicacion, cliente = ejemplos
+    ruta = f'{BASE}/estudiantes/est-panel-5'
+    cliente.get(ruta)
+    antes = _medir(aplicacion, cliente, ruta)
+    with aplicacion.state.fabrica_sesiones() as sesion:
+        grupo = sesion.scalar(select(m.GrupoAlerta.id).where(m.GrupoAlerta.codigo == 'para-conversar'))
+        # DATO DE PRUEBA: un tema más sobre otro ítem de registro.
+        sesion.add(m.Alerta(codigo='t-dia-cuesta', grupo_id=grupo, nombre='Le cuesta imaginar su día',
+                            evaluador='eleccion_registro', parametros={'item': 'b1-7-dia', 'opciones': ['CUESTA']},
+                            orden=11, descripcion_perfil='Marcó «{opcion}».', destino=m.DestinoPerfil.RESPUESTAS))
+        sesion.commit()
+    try:
+        despues = _medir(aplicacion, cliente, ruta)
+        assert despues.cantidad == antes.cantidad, despues.diagnostico
+    finally:
+        with aplicacion.state.fabrica_sesiones() as sesion:
+            sesion.execute(m.Alerta.__table__.delete().where(m.Alerta.codigo == 't-dia-cuesta'))
+            sesion.commit()

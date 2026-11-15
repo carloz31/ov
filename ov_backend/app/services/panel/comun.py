@@ -1,6 +1,6 @@
 """Lo compartido del panel del salón (ajuste panel-salon): alcance de la orientadora, parámetros, posición en el
 camino, estado del instrumento principal y último check-in. Todo se lee por lotes: una consulta por dato para todo
-el salón, nunca una por estudiante."""
+el salón, nunca una por estudiante; las del perfil (al final) son de un solo estudiante."""
 
 from collections import defaultdict
 from dataclasses import dataclass
@@ -14,11 +14,13 @@ from sqlalchemy.orm import Session
 from app.core.contexto import contexto
 from app.exceptions import ErrorAccion
 from app.models import (
-    Actividad, Aplicacion, AplicacionActividad, Bloque, CheckIn, ConversacionVinculo, Cuenta, Espacio,
-    EstadoProgreso, EventoUso, Instrumento, Parametro, ProgresoActividad, RespuestaItem, ResultadoInstrumento,
-    RitmoAplicacion, Rol, Salon, SalonInstrumento, TipoEventoUso, VinculoFamiliar,
+    Actividad, Aplicacion, AplicacionActividad, Bloque, Carrera, CheckIn, ConversacionVinculo, Cuenta, Espacio,
+    EstadoProgreso, EventoUso, FamiliaCarrera, Institucion, Instrumento, Parametro, ProgresoActividad, RespuestaItem,
+    ResultadoInstrumento, RitmoAplicacion, Rol, Salon, SalonInstrumento, TarjetaCarrera, TipoEventoUso,
+    VinculoFamiliar,
 )
 from app.services.avance import por_espacio, tramos_del_camino
+from app.services.instrumentos.consultas import intereses_por_cuenta
 from app.services.investigaciones.acciones import exigir_orientadora
 
 SIN_EMPEZAR = "SIN_EMPEZAR"
@@ -305,6 +307,8 @@ class Lecturas:
         self.alcance = alcance
         self.companeros = companeros
         self._memo: dict = {}
+        # (evaluador, parámetros) de las alertas activas que se están calculando (`calcular_alertas`).
+        self.filas_activas: list[tuple[str, dict]] = []
 
     def una_vez(self, clave, calcular):
         """Auditoría del panel (H5): una lectura que varias piezas de la petición comparten se calcula una vez."""
@@ -379,3 +383,72 @@ class Lecturas:
         return {cuenta_id for cuenta_id in self.alcance.ids
                 if (ultimo := self.ultimo_ingreso.get(cuenta_id)) is None
                 or dias_desde(self.alcance.ahora, ultimo) >= dias}
+
+
+# --- Lecturas del perfil de un estudiante (ajuste pendientes-orientadora) ---------------------------
+# Las comparten el Resumen, las pestañas del perfil y los temas «Para conversar»; son por cuenta porque el perfil es
+# de un solo estudiante.
+
+def intereses_vigentes(sesion: Session, cuenta_id: int, parametros: dict):
+    """El resultado vigente del instrumento principal y, si no es plano, su código y familias recomendadas. Una
+    lectura por cuenta y petición (auditoría del panel, H5: el Resumen lo pedía dos veces)."""
+    datos = contexto(sesion)
+    if not hasattr(datos, "intereses_vigentes"):
+        datos.intereses_vigentes = {}
+    if cuenta_id not in datos.intereses_vigentes:
+        datos.intereses_vigentes[cuenta_id] = _leer_intereses_vigentes(sesion, cuenta_id, parametros)
+    return datos.intereses_vigentes[cuenta_id]
+
+
+def _leer_intereses_vigentes(sesion: Session, cuenta_id: int, parametros: dict):
+    instrumento, aplicaciones = aplicaciones_de(sesion, parametros["PANEL_INSTRUMENTO_PRINCIPAL"])
+    resultado = sesion.scalar(select(ResultadoInstrumento).where(
+        ResultadoInstrumento.cuenta_id == cuenta_id, ResultadoInstrumento.aplicacion_id.in_([a.id for a in aplicaciones]),
+        ResultadoInstrumento.anulado_en.is_(None)).order_by(ResultadoInstrumento.calculado_en.desc()))
+    codigo, familias = None, []
+    if resultado is not None and not resultado.perfil_plano:
+        codigo, familias = intereses_por_cuenta(sesion, [resultado]).get(cuenta_id, (None, []))
+    return instrumento, aplicaciones, resultado, codigo, familias
+
+
+PlanActivo = tuple[TarjetaCarrera, Carrera, Institucion | None]
+
+
+def planes_activos_de(sesion: Session, ids: list[int]) -> dict[int, list[PlanActivo]]:
+    """Los planes activos de cada cuenta, por prioridad, con su carrera e institución: una consulta."""
+    por_cuenta = defaultdict(list)
+    if ids:
+        for tarjeta, carrera, institucion in sesion.execute(select(TarjetaCarrera, Carrera, Institucion).join(
+                Carrera, Carrera.id == TarjetaCarrera.carrera_id).outerjoin(
+                Institucion, Institucion.id == TarjetaCarrera.institucion_id).where(
+                TarjetaCarrera.cuenta_id.in_(ids), TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad)):
+            por_cuenta[tarjeta.cuenta_id].append((tarjeta, carrera, institucion))
+    return por_cuenta
+
+
+def planes_activos(sesion: Session, cuenta_id: int) -> list[PlanActivo]:
+    return planes_activos_de(sesion, [cuenta_id]).get(cuenta_id, [])
+
+
+def en_areas(sesion: Session, carreras: list[Carrera], familias: list[str], hay_resultado: bool) -> dict[int, bool]:
+    """Por carrera, si su familia está entre las áreas sugeridas (solo con resultado vigente no plano)."""
+    if not hay_resultado:
+        return {}
+    codigos = dict(sesion.execute(select(FamiliaCarrera.id, FamiliaCarrera.codigo).where(
+        FamiliaCarrera.id.in_({c.familia_id for c in carreras}))).all()) if carreras else {}
+    return {c.id: codigos.get(c.familia_id) in familias for c in carreras}
+
+
+def planes_del_perfil(lecturas: "Lecturas", cuenta_id: int) -> list[PlanActivo]:
+    """Los planes activos del alcance, una vez por petición: «Lo que está pensando» y los temas leen lo mismo."""
+    return lecturas.una_vez("planes", lambda: planes_activos_de(lecturas.sesion, lecturas.alcance.ids)).get(
+        cuenta_id, [])
+
+
+def areas_de_planes(lecturas: "Lecturas", cuenta_id: int) -> dict[int, bool]:
+    """`en_areas` de sus planes activos, una vez por petición (el Resumen y `plan-fuera-areas`)."""
+    def calcular():
+        _, _, _, codigo, familias = intereses_vigentes(lecturas.sesion, cuenta_id, lecturas.parametros)
+        carreras = [c for _, c, _ in planes_del_perfil(lecturas, cuenta_id)]
+        return en_areas(lecturas.sesion, carreras, familias, codigo is not None)
+    return lecturas.una_vez(("areas_de_planes", cuenta_id), calcular)

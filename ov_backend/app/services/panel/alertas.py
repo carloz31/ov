@@ -123,7 +123,7 @@ EVALUADORES_ALERTA: dict[str, EvaluadorAlerta] = {
     "familia_pendiente": EvaluadorAlerta(_familia_pendiente, {
         "textos_motivo": {"SIN_VINCULO": "No tiene un apoderado vinculado",
                           "SIN_INGRESO": "Su apoderado tiene cuenta, pero no ha ingresado"}}),
-    # Ajuste panel-estudiantes: temas «Para conversar».
+    # Temas «Para conversar» (ajuste panel-estudiantes; reglas del ajuste pendientes-orientadora).
     **{nombre: EvaluadorAlerta(funcion, defectos) for nombre, (funcion, defectos) in EVALUADORES_TEMAS.items()},
 }
 
@@ -157,13 +157,18 @@ def calcular_alertas(lecturas: Lecturas, en_inicio: bool | None = True) -> list[
                 .order_by(GrupoAlerta.orden, Alerta.orden, Alerta.codigo))
     if en_inicio is not None:
         consulta = consulta.where(GrupoAlerta.en_inicio.is_(en_inicio))
-    calculadas = []
+    filas = []
     for alerta, grupo in lecturas.sesion.execute(consulta):
         evaluador = EVALUADORES_ALERTA.get(alerta.evaluador)
         if evaluador is None:
             registro.warning("La alerta %s usa un evaluador que no existe: %s", alerta.codigo, alerta.evaluador)
             continue
-        parametros = {**evaluador.defectos, **(alerta.parametros or {})}
+        filas.append((alerta, grupo, evaluador, {**evaluador.defectos, **(alerta.parametros or {})}))
+    # Ajuste pendientes-orientadora: las filas activas se conocen antes de evaluar, para que los evaluadores de temas
+    # lean juntos los registros de todos sus ítems (`temas._registros`).
+    lecturas.filas_activas = [(alerta.evaluador, parametros) for alerta, _, _, parametros in filas]
+    calculadas = []
+    for alerta, grupo, evaluador, parametros in filas:
         calculadas.append(AlertaCalculada(grupo, alerta, resolver_texto(alerta.nombre, parametros),
                                           resolver_texto(alerta.descripcion, parametros), parametros,
                                           evaluador.funcion(lecturas, parametros)))

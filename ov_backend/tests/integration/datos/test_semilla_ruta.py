@@ -48,10 +48,11 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # Ajuste panel-salon: dos grupos de alertas, seis alertas y diez parámetros del panel. Ajuste
         # panel-estudiantes: el grupo «Para conversar», sus cinco temas, seis parámetros y la lista común
         # CONOCIMIENTO_ORIENTADORA (cinco opciones).
-        'grupo_alerta': 3, 'alerta': 11, 'parametro': 16}
+        'grupo_alerta': 3, 'alerta': 11, 'parametro': 17}
     # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
     # Ajuste llm-sugerencias: entra `respaldo_paso`. Ajuste panel-salon: entran las tres tablas del panel.
-    # Ajuste panel-estudiantes: entra `nota_orientadora` (estado, vacía).
+    # Ajuste panel-estudiantes: entra `nota_orientadora` (estado, vacía). Ajuste pendientes-orientadora: entra
+    # `PANEL_TEMAS_VISIBLES`; las alertas siguen siendo 11 en `ruta` (salen tres temas y entran tres).
     assert len(Base.metadata.tables) == 98
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name

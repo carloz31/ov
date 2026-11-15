@@ -160,7 +160,9 @@ class NotaPerfil(BaseModel):
 class PerfilEstudiante(BaseModel):
     cabecera: CabeceraEstudiante
     avisos: list[GrupoAvisosPerfil]
-    temas: list[TemaPerfil]
+    temas: list[TemaPerfil] = Field(description="Todos los temas que cumple, en su orden.")
+    temas_visibles: int = Field(description="Temas que se muestran antes de «Ver los N temas restantes» "
+                                            "(PANEL_TEMAS_VISIBLES).")
     intereses: InteresesResumen | None
     planes: list[PlanResumen]
     partida: PartidaResumen

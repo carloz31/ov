@@ -1,5 +1,6 @@
 """Ajuste panel-estudiantes §3: textos de perfil de los avisos y temas «Para conversar», con sus bordes; los temas
-son filas de un grupo fuera del Inicio y no cuentan en él."""
+son filas de un grupo fuera del Inicio y no cuentan en él. Ajuste pendientes-orientadora: las reglas de planes y de
+partida y llegada (las de registro, sobre `contenido`, están en `test_panel_temas_registro.py`)."""
 
 from datetime import timedelta
 
@@ -9,8 +10,8 @@ from app import models as m
 from app.models import TipoEventoUso
 from soporte_catalogo_ruta import ENFERMERIA, PSICOLOGIA
 from soporte_panel import (
-    AHORA, alerta, alertas_de, complicacion, conocimiento, cuenta, evento, fijar_ahora, medicion, panel, resultado,
-    senales, tarjeta,
+    AHORA, alerta, alertas_de, complicacion, conocimiento, cuenta, duda, evento, fijar_ahora, medicion, panel,
+    resultado, senales, tarjeta,
 )
 from soporte_retiro import ciclo
 
@@ -47,57 +48,108 @@ def test_seguridad_baja_con_fechas_de_dos_meses(aplicacion, sesion):
     assert alertas_de(sesion, 'est-ana')['seguridad-baja'][1] == 'Marcó 2, 1 y 2 de 5 (el 29 de septiembre, 1 y 2 de noviembre).'
 
 
-def test_temas_de_planes_con_sus_bordes(aplicacion, sesion):
-    plan_ana = tarjeta(sesion, 'est-ana', ENFERMERIA, 1)
-    plan_ana.idea_origen = m.OrigenIdea.FAMILIA
-    conocimiento(sesion, plan_ana, DIA_NORMAL='NO', CURSOS='NO', INGRESO='NO', DONDE_TRABAJAR='SI')
-    complicacion(sesion, plan_ana, opcion='ECONOMICAS', numero=1)
-    complicacion(sesion, plan_ana, otro='DATO DE PRUEBA: el examen de admisión', numero=2)
-    plan_luis = tarjeta(sesion, 'est-luis', PSICOLOGIA, 1)
-    plan_luis.idea_origen = m.OrigenIdea.MIA
-    conocimiento(sesion, plan_luis, DIA_NORMAL='NO', CURSOS='NO', INGRESO='MAS_O_MENOS')  # dos «No»: no alcanza
-    secundario = tarjeta(sesion, 'est-luis', ENFERMERIA, 2)
-    secundario.idea_origen = m.OrigenIdea.FAMILIA  # solo cuenta el Plan A
+def test_plan_medidor_poco_entusiasmo_con_y_sin_idea_de_la_familia(aplicacion, sesion):
+    ana = tarjeta(sesion, 'est-ana', ENFERMERIA, 1)
+    ana.entusiasmo, ana.idea_origen = 1, m.OrigenIdea.FAMILIA
+    luis = tarjeta(sesion, 'est-luis', PSICOLOGIA, 1)
+    luis.entusiasmo, luis.idea_origen = 1, m.OrigenIdea.MIA
+    mia = tarjeta(sesion, 'est-mia', PSICOLOGIA, 1)
+    mia.entusiasmo = 2  # «Algo»: no cumple
+    tarjeta(sesion, 'est-teo', PSICOLOGIA, 1)  # sin marcar: no cuenta
+    secundario = tarjeta(sesion, 'est-sol', PSICOLOGIA, 2)
+    secundario.entusiasmo = 1  # solo cuenta el Plan A; sin Plan A no hay tema
     sesion.commit()
-    ana = alertas_de(sesion, 'est-ana', en_inicio=False)
-    assert ana['plan-idea-ajena'][1] == 'La idea de estudiar Enfermería (su Plan A) vino de su familia.'
-    assert ana['plan-conoce-poco'][1] == ('Dice conocer poco su Plan A: respondió «No» a 3 de 5 preguntas (cómo es un '
-                                          'día normal, qué cursos lleva y cómo se ingresa).')
-    assert ana['plan-complicaciones'][1] == ('Ve como posibles complicaciones de su Plan A: económicas y DATO DE '
-                                             'PRUEBA: el examen de admisión.')
-    assert list(ana) == ['plan-idea-ajena', 'plan-conoce-poco', 'plan-complicaciones']
-    assert alertas_de(sesion, 'est-luis', en_inicio=False) == {}
+    assert alertas_de(sesion, 'est-ana', en_inicio=False)['plan-poco-entusiasmo'][1] == (
+        'Marcó «Poco» en «Me entusiasma» frente a su Plan A (Enfermería). La idea de estudiarla vino de su familia.')
+    assert alertas_de(sesion, 'est-luis', en_inicio=False)['plan-poco-entusiasmo'][1] == (
+        'Marcó «Poco» en «Me entusiasma» frente a su Plan A (Psicología).')
+    for codigo in ('est-mia', 'est-teo', 'est-sol'):
+        assert 'plan-poco-entusiasmo' not in alertas_de(sesion, codigo, en_inicio=False)
 
 
-def test_parametro_cambiado_en_la_base_y_tema_nuevo_con_evaluador_existente(aplicacion, sesion):
+def test_plan_se_ve_lejos_con_dos_medidores_y_complicaciones(aplicacion, sesion):
+    ana = tarjeta(sesion, 'est-ana', ENFERMERIA, 1)
+    ana.capacidad, ana.recursos = 1, 1
+    complicacion(sesion, ana, opcion='ECONOMICAS', numero=1)
+    complicacion(sesion, ana, otro='DATO DE PRUEBA: el examen de admisión', numero=2)
+    luis = tarjeta(sesion, 'est-luis', PSICOLOGIA, 1)
+    luis.capacidad, luis.recursos = 3, 1
+    sesion.commit()
+    assert alertas_de(sesion, 'est-ana', en_inicio=False)['plan-se-ve-lejos'][1] == (
+        'Marcó «Poco» en «Me siento capaz» y «Tengo cómo lograrlo» frente a su Plan A (Enfermería). Ve como '
+        'posibles complicaciones: económicas y DATO DE PRUEBA: el examen de admisión.')
+    assert alertas_de(sesion, 'est-luis', en_inicio=False)['plan-se-ve-lejos'][1] == (
+        'Marcó «Poco» en «Tengo cómo lograrlo» frente a su Plan A (Psicología).')
+
+
+def test_plan_conoce_poco_con_cero_una_y_varias_dudas(aplicacion, sesion):
+    planes = {}
+    for codigo, abiertas in (('est-ana', 0), ('est-luis', 1), ('est-mia', 3)):
+        plan = planes[codigo] = tarjeta(sesion, codigo, ENFERMERIA, 1)
+        conocimiento(sesion, plan, DIA_NORMAL='NO', CURSOS='NO', INGRESO='NO', DONDE_TRABAJAR='SI')
+        for numero in range(1, abiertas + 1):
+            duda(sesion, plan, numero)
+    duda(sesion, planes['est-ana'], 9, abierta=False)  # una cerrada no cuenta
+    plan_teo = tarjeta(sesion, 'est-teo', PSICOLOGIA, 1)
+    conocimiento(sesion, plan_teo, DIA_NORMAL='NO', CURSOS='NO', INGRESO='MAS_O_MENOS')  # dos «No»: no alcanza
+    sesion.commit()
+    inicio = 'Dice conocer poco su Plan A: respondió «No» a 3 de 5 preguntas.'
+    assert alertas_de(sesion, 'est-ana', en_inicio=False)['plan-conoce-poco'][1] == inicio
+    assert alertas_de(sesion, 'est-luis', en_inicio=False)['plan-conoce-poco'][1] == f'{inicio} Tiene 1 duda abierta.'
+    assert alertas_de(sesion, 'est-mia', en_inicio=False)['plan-conoce-poco'][1] == f'{inicio} Tiene 3 dudas abiertas.'
+    assert 'plan-conoce-poco' not in alertas_de(sesion, 'est-teo', en_inicio=False)
+
+
+def test_parametros_cambiados_en_la_base_y_tema_nuevo_con_evaluador_existente(aplicacion, sesion):
     plan = tarjeta(sesion, 'est-ana', ENFERMERIA, 1)
-    plan.idea_origen = m.OrigenIdea.MIA
+    plan.entusiasmo, plan.recursos = 2, 3
     conocimiento(sesion, plan, DIA_NORMAL='NO', CURSOS='NO')
     sesion.execute(update(m.Alerta).where(m.Alerta.codigo == 'plan-conoce-poco').values(parametros={'minimo_no': 2}))
+    poco = sesion.scalar(select(m.Alerta).where(m.Alerta.codigo == 'plan-poco-entusiasmo'))
+    poco.parametros = {**poco.parametros, 'nivel_maximo': 2}
     grupo = sesion.scalar(select(m.GrupoAlerta).where(m.GrupoAlerta.codigo == 'para-conversar'))
-    # DATO DE PRUEBA: una variante de un evaluador existente con otro origen y otro texto.
-    sesion.add(m.Alerta(codigo='t-idea-propia', grupo_id=grupo.id, nombre='Idea propia', evaluador='plan_idea_ajena',
-                        parametros={'origenes': ['MIA'], 'textos_origen': {'MIA': 'de sí'}}, orden=9,
-                        descripcion_perfil='{carrera}: la idea vino {origen}.', destino=m.DestinoPerfil.PLANES))
+    # DATO DE PRUEBA: una variante de un evaluador existente sobre otro medidor y con otro texto.
+    sesion.add(m.Alerta(codigo='t-recursos-altos', grupo_id=grupo.id, nombre='Recursos', evaluador='plan_medidor',
+                        parametros={'medidores': ['recursos'], 'nivel_maximo': 3,
+                                    'nombres_medidores': {'recursos': 'Tengo cómo lograrlo'},
+                                    'niveles': ['Poco', 'Algo', 'Mucho']}, orden=0,
+                        descripcion_perfil='{medidor}: {nivel}.', destino=m.DestinoPerfil.PLANES))
     sesion.commit()
     ana = alertas_de(sesion, 'est-ana', en_inicio=False)
-    assert ana['plan-conoce-poco'][1].startswith('Dice conocer poco su Plan A: respondió «No» a 2 de 5')
-    assert ana['t-idea-propia'][1] == 'Enfermería: la idea vino de sí.'
-    assert 'plan-idea-ajena' not in ana
-
-
-def test_dimension_por_trabajar_usa_la_llegada_si_existe(aplicacion, sesion):
-    medicion(sesion, 'est-ana', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR', 'AUTO-A': 'POR_TRABAJAR'}, hace_dias=30)
-    medicion(sesion, 'est-luis', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR'}, hace_dias=30)
-    medicion(sesion, 'est-luis', 'APL-LLEGADA', {'AUTO-D': 'POR_TRABAJAR'})
-    medicion(sesion, 'est-mia', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR'}, hace_dias=30)
-    medicion(sesion, 'est-mia', 'APL-LLEGADA', {})
+    assert ana['plan-conoce-poco'][1] == 'Dice conocer poco su Plan A: respondió «No» a 2 de 5 preguntas.'
+    assert ana['plan-poco-entusiasmo'][1] == 'Marcó «Algo» en «Me entusiasma» frente a su Plan A (Enfermería).'
+    assert ana['t-recursos-altos'][1] == 'Tengo cómo lograrlo: Mucho.'
+    assert list(ana)[0] == 't-recursos-altos'  # el `orden` de la base es el de la lista
+    sesion.execute(update(m.Alerta).where(m.Alerta.codigo == 't-recursos-altos').values(activa=False))
     sesion.commit()
-    assert alertas_de(sesion, 'est-ana', en_inicio=False)['dimension-por-trabajar'][1] == (
-        'En su punto de partida, «Claridad» y «Confianza» quedó por trabajar.')
-    assert alertas_de(sesion, 'est-luis', en_inicio=False)['dimension-por-trabajar'][1] == (
-        'En su punto de llegada, «Decisión propia» quedó por trabajar.')
-    assert alertas_de(sesion, 'est-mia', en_inicio=False) == {}
+    assert 't-recursos-altos' not in alertas_de(sesion, 'est-ana', en_inicio=False)
+
+
+def test_llegada_sin_avance_con_sus_bordes(aplicacion, sesion):
+    # Solo partida: no hay tema (eso ya se ve en «Cómo empezó»).
+    medicion(sesion, 'est-ana', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR'}, hace_dias=30)
+    # Una dimensión que baja.
+    medicion(sesion, 'est-luis', 'APL-PARTIDA', {'AUTO-D': 'FUERTE'}, hace_dias=30)
+    medicion(sesion, 'est-luis', 'APL-LLEGADA', {'AUTO-D': 'EN_CAMINO'})
+    # Una que sigue por trabajar.
+    medicion(sesion, 'est-mia', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR'}, hace_dias=30)
+    medicion(sesion, 'est-mia', 'APL-LLEGADA', {'AUTO-E': 'POR_TRABAJAR'})
+    # Las dos a la vez.
+    medicion(sesion, 'est-teo', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR', 'AUTO-D': 'FUERTE', 'AUTO-A': 'FUERTE'},
+             hace_dias=30)
+    medicion(sesion, 'est-teo', 'APL-LLEGADA', {'AUTO-E': 'POR_TRABAJAR'})
+    # Todas suben o se mantienen fuera de «por trabajar».
+    medicion(sesion, 'est-sol', 'APL-PARTIDA', {'AUTO-E': 'POR_TRABAJAR'}, hace_dias=30)
+    medicion(sesion, 'est-sol', 'APL-LLEGADA', {'AUTO-E': 'FUERTE'})
+    sesion.commit()
+    assert 'llegada-sin-avance' not in alertas_de(sesion, 'est-ana', en_inicio=False)
+    assert alertas_de(sesion, 'est-luis', en_inicio=False)['llegada-sin-avance'][1] == (
+        'Entre la partida y la llegada: «Decisión propia» bajó.')
+    assert alertas_de(sesion, 'est-mia', en_inicio=False)['llegada-sin-avance'][1] == (
+        'Entre la partida y la llegada: «Confianza» sigue por trabajar.')
+    assert alertas_de(sesion, 'est-teo', en_inicio=False)['llegada-sin-avance'][1] == (
+        'Entre la partida y la llegada: «Claridad» y «Decisión propia» bajó; «Confianza» sigue por trabajar.')
+    assert 'llegada-sin-avance' not in alertas_de(sesion, 'est-sol', en_inicio=False)
 
 
 def test_plan_fuera_de_areas_con_el_criterio_del_inicio(aplicacion, cliente, sesion):
@@ -119,13 +171,13 @@ def test_plan_fuera_de_areas_con_el_criterio_del_inicio(aplicacion, cliente, ses
 def test_los_temas_no_cuentan_en_el_inicio(aplicacion, cliente, sesion):
     fijar_ahora(aplicacion)
     plan = tarjeta(sesion, 'est-ana', ENFERMERIA, 1)
-    plan.idea_origen = m.OrigenIdea.FAMILIA
+    plan.entusiasmo = 1
     sesion.commit()
     datos = panel(cliente)
     assert [g['codigo'] for g in datos['avisos']['grupos']] == ['atras']
-    assert alerta(datos, 'plan-idea-ajena') is None
-    assert 'plan-idea-ajena' in alertas_de(sesion, 'est-ana', en_inicio=False)
-    assert 'plan-idea-ajena' not in alertas_de(sesion, 'est-ana', en_inicio=True)
+    assert alerta(datos, 'plan-poco-entusiasmo') is None
+    assert 'plan-poco-entusiasmo' in alertas_de(sesion, 'est-ana', en_inicio=False)
+    assert 'plan-poco-entusiasmo' not in alertas_de(sesion, 'est-ana', en_inicio=True)
 
 
 def test_avance_bajo_nombra_el_tramo_de_la_mediana_del_salon(aplicacion, cliente, sesion):

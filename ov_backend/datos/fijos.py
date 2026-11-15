@@ -924,6 +924,20 @@ GRUPOS_ALERTA = (('conversar', 'Conversar pronto'), ('atras', 'Se están quedand
 # el Resumen del perfil).
 GRUPOS_FUERA_DE_INICIO = frozenset({'para-conversar'})
 
+# Ajuste pendientes-orientadora: los medidores de un plan (columnas de `tarjeta_carrera`, 1 a 3) con los nombres y
+# niveles que ve el estudiante. Son la única fuente de los textos de los temas; `scripts/verificar_contenido_front.py`
+# comprueba que coincidan con `MEDIDORES` y `ESCALA_MEDIDOR` del front.
+MEDIDORES_PLAN = {'entusiasmo': 'Me entusiasma', 'capacidad': 'Me siento capaz', 'recursos': 'Tengo cómo lograrlo'}
+NIVELES_MEDIDOR = ('Poco', 'Algo', 'Mucho')
+_TEXTOS_MEDIDORES = {'nombres_medidores': dict(MEDIDORES_PLAN), 'niveles': list(NIVELES_MEDIDOR)}
+
+# El orden de los temas «Para conversar» (es su prioridad: así se listan y así se corta el tope). Incluye los de
+# `contenido`; un conjunto que no declara alguno simplemente no lo tiene.
+ORDEN_PARA_CONVERSAR = ('voces-chocan', 'plan-poco-entusiasmo', 'plan-fuera-areas', 'valores-fuera-del-plan',
+                        'plan-se-ve-lejos', 'plan-conoce-poco', 'plan-b-desanima', 'forma-de-decidir',
+                        'proyecto-poco-seguro', 'llegada-sin-avance')
+ORDENES_FIJOS = {'para-conversar': ORDEN_PARA_CONVERSAR}
+
 # Alertas: (código, grupo, nombre, descripción, evaluador, parámetros). El orden dentro del grupo es el de la tupla.
 # `{clave}` en el nombre o la descripción se resuelve con los parámetros. Una alerta de un tipo nuevo necesita un
 # evaluador nuevo en `app/services/panel/alertas.py`; una variante de uno existente es solo una fila.
@@ -944,16 +958,22 @@ ALERTAS = (
     ('familia-pendiente', 'atras', 'Su familia aún no se registra', None, 'familia_pendiente', {'textos_motivo': {
         'SIN_VINCULO': 'No tiene un apoderado vinculado',
         'SIN_INGRESO': 'Su apoderado tiene cuenta, pero no ha ingresado'}}),
-    # Ajuste panel-estudiantes: temas «Para conversar». Entradas a la conversación, no urgencias.
-    ('plan-idea-ajena', 'para-conversar', 'La idea de su Plan A vino de otra persona', None, 'plan_idea_ajena',
-     {'origenes': ['FAMILIA', 'CONOCIDO'],
-      'textos_origen': {'FAMILIA': 'de su familia', 'CONOCIDO': 'de alguien que conoce'}}),
-    ('plan-conoce-poco', 'para-conversar', 'Conoce poco su Plan A', None, 'plan_conoce_poco', {'minimo_no': 3}),
-    ('plan-complicaciones', 'para-conversar', 'Complicaciones de su Plan A', None, 'plan_complicaciones', {}),
+    # Temas «Para conversar» (ajuste panel-estudiantes; reglas definitivas del ajuste pendientes-orientadora). Las de
+    # registro nombran ítems de `contenido` y están en `datos/contenido.py` (`ALERTAS`); su orden lo fija
+    # `ORDEN_PARA_CONVERSAR`.
+    ('plan-poco-entusiasmo', 'para-conversar', 'Poco entusiasmo con su Plan A', None, 'plan_medidor',
+     {'medidores': ['entusiasmo'], 'nivel_maximo': 1, 'origenes': ['FAMILIA', 'CONOCIDO'],
+      'textos_origen': {'FAMILIA': 'de su familia', 'CONOCIDO': 'de alguien que conoce'},
+      'frases': {'idea': ' La idea de estudiarla vino {origen}.'}, **_TEXTOS_MEDIDORES}),
     ('plan-fuera-areas', 'para-conversar', 'Su Plan A no está entre sus áreas sugeridas', None, 'plan_fuera_de_areas',
      {}),
-    ('dimension-por-trabajar', 'para-conversar', 'Dimensiones por trabajar', None, 'dimension_por_trabajar',
-     {'textos_momento': {'ENTRADA': 'partida', 'SALIDA': 'llegada'}}),
+    ('plan-se-ve-lejos', 'para-conversar', 'Su Plan A se ve lejos', None, 'plan_medidor',
+     {'medidores': ['capacidad', 'recursos'], 'nivel_maximo': 1, 'con_complicaciones': True,
+      'frases': {'complicaciones': ' Ve como posibles complicaciones: {lista}.'}, **_TEXTOS_MEDIDORES}),
+    ('plan-conoce-poco', 'para-conversar', 'Conoce poco su Plan A', None, 'plan_conoce_poco',
+     {'minimo_no': 3, 'frases': {'duda': ' Tiene {n} duda abierta.', 'dudas': ' Tiene {n} dudas abiertas.'}}),
+    ('llegada-sin-avance', 'para-conversar', 'Sin avance entre la partida y la llegada', None, 'llegada_sin_avance',
+     {'textos_detalle': {'bajo': '{dimensiones} bajó', 'sigue': '{dimensiones} sigue por trabajar'}}),
 )
 
 # Ajuste panel-estudiantes: textos cuando se habla de un estudiante (lista y perfil) y pestaña del perfil a la que
@@ -968,12 +988,13 @@ TEXTOS_PERFIL_ALERTAS = {
                     'AVANCE'),
     'test-por-revisar': ('Test de intereses por revisar', '{motivo}.', 'TESTS'),
     'familia-pendiente': ('Su familia aún no se registra', '{motivo}.', 'AVANCE'),
-    'plan-idea-ajena': (None, 'La idea de estudiar {carrera} (su Plan A) vino {origen}.', 'PLANES'),
-    'plan-conoce-poco': (None, 'Dice conocer poco su Plan A: respondió «No» a {cantidad} de {total} preguntas '
-                               '({preguntas}).', 'PLANES'),
-    'plan-complicaciones': (None, 'Ve como posibles complicaciones de su Plan A: {complicaciones}.', 'PLANES'),
+    'plan-poco-entusiasmo': (None, 'Marcó «{nivel}» en «{medidor}» frente a su Plan A ({carrera}).{idea}', 'PLANES'),
     'plan-fuera-areas': (None, 'Su Plan A ({carrera}) no está entre sus áreas sugeridas.', 'PLANES'),
-    'dimension-por-trabajar': (None, 'En su punto de {momento}, {dimensiones} quedó por trabajar.', 'TESTS'),
+    'plan-se-ve-lejos': (None, 'Marcó «{nivel}» en {medidores} frente a su Plan A ({carrera}).{complicaciones}',
+                         'PLANES'),
+    'plan-conoce-poco': (None, 'Dice conocer poco su Plan A: respondió «No» a {cantidad} de {total} preguntas.{dudas}',
+                         'PLANES'),
+    'llegada-sin-avance': (None, 'Entre la partida y la llegada: {detalle}.', 'TESTS'),
 }
 
 # Parámetros del panel: (código, valor, uso). El servidor convierte el valor.
@@ -993,6 +1014,7 @@ PARAMETROS_PANEL = (
     ('PANEL_OPCIONES_BAJAS', '2', 'Una respuesta de partida o llegada es «baja» si está entre las N opciones '
                                   'inferiores de su escala (con los ítems inversos ya invertidos).'),
     ('PANEL_AFIRMACIONES_POR_GRUPO', '5', 'Máximo de afirmaciones por grupo en «Afirmaciones para conversar».'),
+    ('PANEL_TEMAS_VISIBLES', '4', 'Temas «Para conversar» visibles en el Resumen antes de «Ver los N temas restantes».'),
     ('PANEL_DUDAS_VISIBLES', '4', 'Dudas visibles en el plan completo antes de «Ver las N restantes».'),
     ('PANEL_FILAS_ESTUDIANTES', '20', 'Tamaño de página de la lista de estudiantes.'),
     ('PANEL_MAXIMO_CARACTERES_NOTA', '1000', 'Tope de caracteres de una nota de la orientadora.'),
@@ -1004,15 +1026,25 @@ def _cargar_panel(sesion):
               for orden, (c, n) in enumerate(GRUPOS_ALERTA, start=1)}
     sesion.add_all(grupos.values())
     sesion.flush()
+    cargar_alertas(sesion, {c: g.id for c, g in grupos.items()}, ALERTAS, TEXTOS_PERFIL_ALERTAS)
+    sesion.add_all(modelos.Parametro(codigo=c, valor=v, descripcion=d) for c, v, d in PARAMETROS_PANEL)
+
+
+def cargar_alertas(sesion, grupos: dict[str, int], alertas, textos) -> None:
+    """Filas de `alerta` con sus textos de perfil. El orden dentro del grupo es el de `ORDENES_FIJOS` si el grupo lo
+    tiene (así `contenido` puede sumar filas en su lugar) y, si no, el de la tupla. `datos/contenido.py` también la
+    usa."""
     ordenes = Counter()
-    for c, g, n, d, e, p in ALERTAS:
+    for c, g, n, d, e, p in alertas:
         ordenes[g] += 1
-        nombre_perfil, descripcion_perfil, destino = TEXTOS_PERFIL_ALERTAS[c]
-        sesion.add(modelos.Alerta(codigo=c, grupo_id=grupos[g].id, nombre=n, descripcion=d, evaluador=e,
-                                  parametros=dict(p), orden=ordenes[g], nombre_perfil=nombre_perfil,
+        if g in ORDENES_FIJOS and c not in ORDENES_FIJOS[g]:
+            raise ValueError(f'La alerta {c} no está en el orden de su grupo {g}')
+        orden = ORDENES_FIJOS[g].index(c) + 1 if g in ORDENES_FIJOS else ordenes[g]
+        nombre_perfil, descripcion_perfil, destino = textos[c]
+        sesion.add(modelos.Alerta(codigo=c, grupo_id=grupos[g], nombre=n, descripcion=d, evaluador=e,
+                                  parametros=dict(p), orden=orden, nombre_perfil=nombre_perfil,
                                   descripcion_perfil=descripcion_perfil,
                                   destino=modelos.DestinoPerfil(destino) if destino else None))
-    sesion.add_all(modelos.Parametro(codigo=c, valor=v, descripcion=d) for c, v, d in PARAMETROS_PANEL)
 
 
 def cargar(sesion: Session) -> Fijos:

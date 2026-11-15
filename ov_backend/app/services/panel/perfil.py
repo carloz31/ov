@@ -8,8 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Audiencia, Bloque, Carrera, Cuenta, Dimension, FamiliaCarrera, Institucion, MomentoAplicacion,
-    ResultadoInstrumento, TarjetaCarrera, VinculoFamiliar,
+    Audiencia, Bloque, Cuenta, Dimension, FamiliaCarrera, Institucion, MomentoAplicacion, VinculoFamiliar,
 )
 from app.schemas.panel import SalonPanel
 from app.schemas.panel_estudiante import (
@@ -17,20 +16,17 @@ from app.schemas.panel_estudiante import (
     InstitucionPlan, InteresesResumen, PartidaResumen, PerfilEstudiante, PlanResumen, TemaPerfil, TramoEstudiante,
 )
 from app.services.familia import rutas_completas
-from app.services.instrumentos.consultas import avance_aplicacion, intereses_por_cuenta
+from app.services.instrumentos.consultas import avance_aplicacion
 from app.services.panel.alertas import AlertaCalculada, calcular_alertas
 from app.services.panel.autopercepcion import (
-    dimensiones_de, instrumento_autopercepcion, mediciones, mediciones_del_alcance,
+    comparar, dimensiones_de, instrumento_autopercepcion, mediciones, mediciones_del_alcance,
 )
 from app.services.panel.comun import (
-    Lecturas, aplicaciones_de, dias_desde, entero,
+    Lecturas, aplicaciones_de, areas_de_planes, dias_desde, entero, intereses_vigentes, planes_del_perfil,
 )
 from app.services.panel.notas import notas_de
 from app.services.panel.perfil_acceso import Acceso, estudiante_de_orientadora
 from app.services.panel.respuestas_resumen import resumen_respuestas
-
-ORDEN_ZONAS = {"POR_TRABAJAR": 0, "EN_CAMINO": 1, "FUERTE": 2}
-
 
 # --- Piezas compartidas con la lista ---------------------------------------------------------------
 
@@ -96,31 +92,10 @@ def _avisos(alertas: list[AlertaCalculada], cuenta_id: int) -> list[GrupoAvisosP
 
 
 def _temas(lecturas: Lecturas, cuenta_id: int) -> list[TemaPerfil]:
+    """Todos los temas que cumple, en el orden de la base; el front corta en `temas_visibles`."""
     return [TemaPerfil(codigo=c.alerta.codigo, texto=c.descripcion_perfil(cuenta_id) or c.nombre_perfil(cuenta_id),
                        destino=c.alerta.destino)
             for c in calcular_alertas(lecturas, en_inicio=False) if cuenta_id in c.datos]
-
-
-def intereses_vigentes(sesion: Session, cuenta_id: int, parametros: dict):
-    """El resultado vigente del instrumento principal y, si no es plano, su código y familias recomendadas. Una
-    lectura por cuenta y petición (auditoría del panel, H5: el Resumen lo pedía dos veces)."""
-    datos = contexto(sesion)
-    if not hasattr(datos, "intereses_vigentes"):
-        datos.intereses_vigentes = {}
-    if cuenta_id not in datos.intereses_vigentes:
-        datos.intereses_vigentes[cuenta_id] = _leer_intereses_vigentes(sesion, cuenta_id, parametros)
-    return datos.intereses_vigentes[cuenta_id]
-
-
-def _leer_intereses_vigentes(sesion: Session, cuenta_id: int, parametros: dict):
-    instrumento, aplicaciones = aplicaciones_de(sesion, parametros["PANEL_INSTRUMENTO_PRINCIPAL"])
-    resultado = sesion.scalar(select(ResultadoInstrumento).where(
-        ResultadoInstrumento.cuenta_id == cuenta_id, ResultadoInstrumento.aplicacion_id.in_([a.id for a in aplicaciones]),
-        ResultadoInstrumento.anulado_en.is_(None)).order_by(ResultadoInstrumento.calculado_en.desc()))
-    codigo, familias = None, []
-    if resultado is not None and not resultado.perfil_plano:
-        codigo, familias = intereses_por_cuenta(sesion, [resultado]).get(cuenta_id, (None, []))
-    return instrumento, aplicaciones, resultado, codigo, familias
 
 
 def _intereses(lecturas: Lecturas, acceso: Acceso, parametros: dict, estados, motivos) -> InteresesResumen | None:
@@ -143,41 +118,16 @@ def _intereses(lecturas: Lecturas, acceso: Acceso, parametros: dict, estados, mo
         partes_total=sum(a.actividades.total for a in avances))
 
 
-def planes_activos(sesion: Session, cuenta_id: int) -> list[tuple[TarjetaCarrera, Carrera, Institucion | None]]:
-    filas = sesion.execute(select(TarjetaCarrera, Carrera, Institucion).join(
-        Carrera, Carrera.id == TarjetaCarrera.carrera_id).outerjoin(
-        Institucion, Institucion.id == TarjetaCarrera.institucion_id).where(
-        TarjetaCarrera.cuenta_id == cuenta_id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad))
-    return list(filas)
-
-
-def en_areas(sesion: Session, carreras: list[Carrera], familias: list[str], hay_resultado: bool) -> dict[int, bool]:
-    """Por carrera, si su familia está entre las áreas sugeridas (solo con resultado vigente no plano)."""
-    if not hay_resultado:
-        return {}
-    codigos = dict(sesion.execute(select(FamiliaCarrera.id, FamiliaCarrera.codigo).where(
-        FamiliaCarrera.id.in_({c.familia_id for c in carreras}))).all()) if carreras else {}
-    return {c.id: codigos.get(c.familia_id) in familias for c in carreras}
-
-
 def institucion_plan(institucion: Institucion | None) -> InstitucionPlan | None:
     return None if institucion is None else InstitucionPlan(nombre=institucion.nombre, tipo=institucion.tipo,
                                                             gestion=institucion.gestion)
 
 
-def _planes(sesion: Session, cuenta_id: int, parametros: dict) -> list[PlanResumen]:
-    planes = planes_activos(sesion, cuenta_id)
-    _, _, _, codigo, familias = intereses_vigentes(sesion, cuenta_id, parametros)
-    dentro = en_areas(sesion, [c for _, c, _ in planes], familias, codigo is not None)
+def _planes(lecturas: Lecturas, cuenta_id: int) -> list[PlanResumen]:
+    planes = planes_del_perfil(lecturas, cuenta_id)
+    dentro = areas_de_planes(lecturas, cuenta_id)
     return [PlanResumen(prioridad=t.prioridad, carrera=c.nombre, institucion=institucion_plan(i),
                         en_areas=dentro.get(c.id)) for t, c, i in planes]
-
-
-def cambio(partida: str | None, llegada: str | None) -> str | None:
-    if partida is None or llegada is None:
-        return None
-    diferencia = ORDEN_ZONAS[llegada] - ORDEN_ZONAS[partida]
-    return "SUBIO" if diferencia > 0 else "BAJO" if diferencia < 0 else "IGUAL"
 
 
 def partida_resumen(sesion: Session, cuenta_id: int, lecturas: Lecturas | None = None) -> PartidaResumen:
@@ -188,12 +138,9 @@ def partida_resumen(sesion: Session, cuenta_id: int, lecturas: Lecturas | None =
     partida, llegada = por_momento.get(MomentoAplicacion.ENTRADA), por_momento.get(MomentoAplicacion.SALIDA)
     if instrumento is None or partida is None:
         return PartidaResumen(estado="SIN_PARTIDA", fecha_partida=None, fecha_llegada=None, dimensiones=[])
-    dimensiones = []
-    for d in dimensiones_de(sesion, instrumento):
-        zona_partida = partida.zonas.get(d.id)
-        zona_llegada = llegada.zonas.get(d.id) if llegada else None
-        dimensiones.append(DimensionPartida(codigo=d.codigo, nombre=d.nombre, zona_partida=zona_partida,
-                                            zona_llegada=zona_llegada, cambio=cambio(zona_partida, zona_llegada)))
+    dimensiones = [DimensionPartida(codigo=c.dimension.codigo, nombre=c.dimension.nombre, zona_partida=c.zona_partida,
+                                    zona_llegada=c.zona_llegada, cambio=c.cambio)
+                   for c in comparar(dimensiones_de(sesion, instrumento), partida, llegada)]
     return PartidaResumen(estado="CON_LLEGADA" if llegada else "SOLO_PARTIDA", fecha_partida=partida.fecha.date(),
                           fecha_llegada=llegada.fecha.date() if llegada else None, dimensiones=dimensiones)
 
@@ -210,8 +157,9 @@ def perfil(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahora: d
         cabecera=_cabecera(acceso, lecturas),
         avisos=_avisos(calcular_alertas(lecturas), cuenta_id),
         temas=_temas(lecturas, cuenta_id),
+        temas_visibles=entero(parametros, "PANEL_TEMAS_VISIBLES"),
         intereses=_intereses(lecturas, acceso, parametros, estados, motivos),
-        planes=_planes(sesion, cuenta_id, parametros),
+        planes=_planes(lecturas, cuenta_id),
         partida=partida_resumen(sesion, cuenta_id, lecturas),
         respuestas=resumen_respuestas(sesion, acceso.estudiante, acceso.salon.salon),
         notas=notas_de(sesion, acceso.orientadora.id, cuenta_id))
