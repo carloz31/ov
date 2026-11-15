@@ -94,7 +94,7 @@ Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-
 
 **Partida y llegada (COMPARACION):**
 - Cada aplicación (ENTRADA = partida, SALIDA = llegada) se revela por separado y guarda sus dimensiones, sin perfil plano. El reinicio responde 409.
-- **Zona** de una dimensión: el promedio de sus ítems (puntaje ÷ número de ítems, con los inversos aplicados). Es FUERTE si es ≥ `UMBRAL_ZONA_FUERTE` (3,5), EN_CAMINO si es ≥ `UMBRAL_ZONA_EN_CAMINO` (2,5) y POR_TRABAJAR en otro caso.
+- **Zona** de una dimensión: el promedio de sus ítems (puntaje ÷ número de ítems, con los inversos aplicados). Es FUERTE si es ≥ `UMBRAL_ZONA_FUERTE` (3,25: en promedio, más que «Bastante de acuerdo»), EN_CAMINO si es ≥ `UMBRAL_ZONA_EN_CAMINO` (2,25) y POR_TRABAJAR en otro caso («Poco de acuerdo» o menos). La zona no se guarda: se calcula al leer, desde la suma guardada de la dimensión, así que un cambio de umbral aplica a todos los resultados sin recalcularlos.
 - El estudiante recibe solo zonas y textos, nunca puntajes. El detalle numérico es de la orientadora y llega con su vista de resultados (B14).
 - La partida es obligatoria y la marca de prioritario no aplica a este tipo (`motor.md`).
 

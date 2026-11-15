@@ -8,20 +8,29 @@ import { ZONAS } from '../lib/partidaLlegada'
 // números, promedios ni umbrales.
 const SIGNIFICADOS: Record<ZonaDimension, string> = {
   POR_TRABAJAR:
-    'Es una parte del camino donde aún hay mucho por descubrir. Las actividades te ayudan a avanzar en ella.',
-  EN_CAMINO: 'Ya diste pasos en esta parte. Seguir explorando te ayuda a afirmarla.',
-  FUERTE: 'Te sientes seguro en esta parte. Puede ser tu punto de apoyo para las demás.',
+    'Hoy sientes poca seguridad en esta parte: todavía hay bastante por descubrir. Las actividades te ayudan a avanzar en ella.',
+  EN_CAMINO: 'Tienes algunas cosas claras y otras todavía no. Seguir explorando te ayuda a afirmarla.',
+  FUERTE: 'Sientes seguridad en casi todo lo de esta parte. Puede ser tu punto de apoyo para las demás.',
 }
 
 export function ZoneGuide({ cerrar }: { cerrar: () => void }) {
   return (
-    <Parchment id="guia-zonas" className="sx-d-result-panel sx-d-result-guide" aria-labelledby="titulo-guia-zonas">
+    <Parchment
+      id="guia-zonas"
+      className="sx-d-result-panel sx-d-result-guide"
+      aria-labelledby="titulo-guia-zonas"
+    >
       <div className="sx-d-result-section-head">
         <div>
           <p className="sx-d-eyebrow">Guía rápida</p>
           <h2 id="titulo-guia-zonas">¿Qué significa cada zona?</h2>
         </div>
-        <button type="button" className="sx-d-action sx-d-action-ghost" aria-label="Cerrar guía" onClick={cerrar}>
+        <button
+          type="button"
+          className="sx-d-action sx-d-action-ghost"
+          aria-label="Cerrar guía"
+          onClick={cerrar}
+        >
           <X aria-hidden="true" />
         </button>
       </div>

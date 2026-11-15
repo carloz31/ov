@@ -50,9 +50,9 @@ def test_partida_se_revela_con_zonas_en_palabras(cliente):
     assert [(e['tipo'], e['referencia']) for e in revelado['eventos_registrados']] == [('REVELA_RESULTADO', 'APL-PARTIDA')]
     resultado = pedir(cliente, 'GET', f'{RUTA}/resultado?aplicacion=APL-PARTIDA')
     sin_numeros(resultado)
-    # A tiene un ítem inverso: 2, 2, 2 y 5 − 2 = 3 dan 2,25.
+    # A tiene un ítem inverso: 2, 2, 2 y 5 − 2 = 3 dan 2,25, el borde de En camino (umbrales 2,25 y 3,25).
     assert [(d['codigo'], d['tematica'], d['zona']) for d in resultado['dimensiones']] == [
-        ('AUTO-A', 'A', 'POR_TRABAJAR'), ('AUTO-B', 'B', 'POR_TRABAJAR'), ('AUTO-C', 'C', 'POR_TRABAJAR'),
+        ('AUTO-A', 'A', 'EN_CAMINO'), ('AUTO-B', 'B', 'POR_TRABAJAR'), ('AUTO-C', 'C', 'POR_TRABAJAR'),
         ('AUTO-D', 'D', 'POR_TRABAJAR'), ('AUTO-E', 'E', 'POR_TRABAJAR')]
     pedir(cliente, 'GET', f'{RUTA}/resultado?aplicacion=APL-LLEGADA', esperado=409)
     revelar(cliente, instrumento=INSTRUMENTO, aplicacion='APL-PARTIDA', esperado=409)
@@ -80,7 +80,8 @@ def test_comparacion_por_dimension_con_items_y_actividades_de_la_tematica(client
     assert (comparacion['partida'], comparacion['llegada']) == ('APL-PARTIDA', 'APL-LLEGADA')
     assert [(d['codigo'], d['tematica'], d['zona_partida'], d['zona_llegada'], d['actividades_completadas'])
             for d in comparacion['dimensiones']] == [
-        ('AUTO-A', 'A', 'EN_CAMINO', 'EN_CAMINO', 1), ('AUTO-B', 'B', 'EN_CAMINO', 'FUERTE', 2),
+        # A en la llegada: 4, 4, 4 y el inverso 5 − 4 = 1 dan 3,25, el borde de Fuerte.
+        ('AUTO-A', 'A', 'EN_CAMINO', 'FUERTE', 1), ('AUTO-B', 'B', 'EN_CAMINO', 'FUERTE', 2),
         ('AUTO-C', 'C', 'EN_CAMINO', 'FUERTE', 0), ('AUTO-D', 'D', 'EN_CAMINO', 'FUERTE', 0),
         ('AUTO-E', 'E', 'EN_CAMINO', 'FUERTE', 0)]
     assert [len(d['items']) for d in comparacion['dimensiones']] == [4, 4, 4, 4, 3]

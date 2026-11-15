@@ -23,9 +23,10 @@ RELLENO_SEGUNDA_OCUPACION = 0.5
 ZONAS_PREPARACION_AMPLIA = (4, 5)
 ZONAS_PREPARACION_INTERMEDIA = (2, 3)
 
-# B07: zona de una dimensión de partida o llegada según su promedio (inclusivo). Provisional.
-UMBRAL_ZONA_FUERTE = 3.5
-UMBRAL_ZONA_EN_CAMINO = 2.5
+# B07: zona de una dimensión de partida o llegada según su promedio (inclusivo), con los inversos invertidos.
+# Con 3,5 y 2,5, «Bastante de acuerdo» en todo no llegaba a Fuerte y las dimensiones de tres ítems eran más exigentes.
+UMBRAL_ZONA_FUERTE = 3.25
+UMBRAL_ZONA_EN_CAMINO = 2.25
 
 # §5.6: longitud del código de interés y corte para detectar empates.
 LONGITUD_CODIGO_INTERES = 3
