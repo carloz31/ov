@@ -104,7 +104,7 @@ Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-
 
   La zona no se guarda: se calcula al leer, desde la suma guardada de la dimensión, así que un cambio de umbral aplica a todos los resultados sin recalcularlos ni migrar nada. Los textos del estudiante (`ZoneGuide`, la síntesis) no nombran números ni umbrales.
 - El estudiante recibe solo zonas y textos, nunca puntajes. El detalle numérico es de la orientadora y llega con su vista de resultados (B14).
-- La partida es obligatoria y la marca de prioritario no aplica a este tipo (`motor.md`).
+- Partida y llegada es `obligatorio` y el apoderado nunca lo ve (`NUNCA`); como requisito solo cuenta la partida (`motor.md`).
 
 ## Reiniciar — `POST /acciones/reiniciar-instrumento`
 
