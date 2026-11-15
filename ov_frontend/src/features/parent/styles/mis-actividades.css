@@ -269,8 +269,31 @@ button.pa-chip {
     text-align: left;
   }
 }
-/* Celular: más compacto y el botón a todo el ancho. */
+/* Celular: más compacto y el botón a todo el ancho. En la cabecera, el título usa todo el ancho (las iniciales son
+   decorativas) y «Ver» del diploma baja bajo su texto. */
 @media (max-width: 560px) {
+  .pa-cabecera {
+    gap: 16px;
+    padding: 20px 16px;
+  }
+  .pa-iniciales {
+    display: none;
+  }
+  .pa-cabecera h1 {
+    font-size: 24px;
+  }
+  .pa-panel {
+    padding: 14px;
+  }
+  .pa-diploma {
+    flex-wrap: wrap;
+  }
+  .pa-diploma > div {
+    flex: 1 1 160px;
+  }
+  .pa-diploma .pa-boton-ver {
+    flex: 1 0 100%;
+  }
   .pa-fila {
     grid-template-columns: 40px minmax(0, 1fr);
     gap: 12px 14px;
