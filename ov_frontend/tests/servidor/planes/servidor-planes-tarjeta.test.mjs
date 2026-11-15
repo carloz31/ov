@@ -74,7 +74,7 @@ test('sin ?seccion= abre la primera abierta no lista; el menú lleva títulos de
   assert.match(marcado, new RegExp(familia.planes[0].secciones[3].bloqueo[0].mensaje))
   const barra = elementos(MenuSeccionesPlan(menu.props), (e) => e.type?.name === 'TrailBar')[0]
   assert.equal(barra.props.label, '0 de 4 secciones listas')
-  assert.doesNotMatch(marcado, /Qué tan real es|Mis pasos(?! )/)
+  assert.doesNotMatch(marcado, /Por qué(?! la elijo)|Mis pasos(?! )/)
 })
 
 test('POR_QUE en lectura con la repregunta fija y sin «Cómo encaja contigo» (ajuste coherencia-bloque3)', async () => {

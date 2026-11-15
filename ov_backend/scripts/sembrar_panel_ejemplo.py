@@ -191,7 +191,7 @@ class Sembrador:
                     {'tipo': 'conversar', 'texto': 'DATO DE PRUEBA: hablar con una psicóloga.'}]})
 
     def preparar_planes(self, codigo):
-        """Como el recorrido de pruebas: Psicología (A) y Periodismo (B), con «Por qué» y «Qué tan real es»."""
+        """Como el recorrido de pruebas: Psicología (A) y Periodismo (B), con «Por qué» y «Cómo lo haría realidad»."""
         from soporte_planes import por_que_lista, realidad_lista
         for carrera in ('PSICOLOGIA', 'PERIODISMO'):
             self.crear_plan(codigo, carrera)

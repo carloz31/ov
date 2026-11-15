@@ -4,7 +4,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-11-14 · Ajuste panel-estudiantes · Nombres de las secciones en el plan completo de la orientadora
 
-- **Dato:** el `nombre` de cada `seccion_tarjeta` («Por qué», «Qué tanto la conozco», «Qué tan real es», «Mis pasos»), escrito con la voz del estudiante.
+- **Dato:** el `nombre` de cada `seccion_tarjeta` («Por qué», «Qué tanto la conozco», «Cómo lo haría realidad», «Mis pasos»), escrito con la voz del estudiante.
 - **Dónde se mostraría:** los títulos de las cuatro tarjetas del plan completo en la pestaña Planes del perfil del estudiante.
 - **Opciones:** títulos del front para la orientadora, como el boceto 10 («Por qué la elige», «Qué tanto la conoce», «Su realidad», «Sus pasos»); un nombre para la orientadora en `seccion_tarjeta`; dejar los de la base.
 - **Si no se muestra:** la orientadora lee los nombres con la voz del estudiante.
