@@ -659,8 +659,11 @@ def _cargar_reglas(m, sesion, objetivos):
     for codigo, tipo, objetivo, mensaje, condiciones in m.REGLAS:
         if not mensaje.strip():
             raise ValueError(f'La regla {codigo} no tiene mensaje de bloqueo')
-        # Los recuerdos de Lumi no desbloquean nada: ninguna regla depende de ellos ni de su bloque (F05).
-        if any(referencia in (*m.RECUERDOS_LUMI, 'LUMI') for _, referencia, _, _ in condiciones):
+        # Los recuerdos de Lumi no desbloquean nada: ninguna regla depende de ellos ni de su bloque (F05). Ajuste
+        # logros: una insignia sí puede pedir los recuerdos («Alguien preguntó»), porque no abre contenido; del
+        # bloque LUMI no depende ninguna.
+        recuerdos = () if tipo == 'INSIGNIA' else tuple(m.RECUERDOS_LUMI)
+        if any(referencia in (*recuerdos, 'LUMI') for _, referencia, _, _ in condiciones):
             raise ValueError(f'La regla {codigo} depende de un recuerdo de Lumi o de su bloque')
         regla = modelos.ReglaDesbloqueo(codigo=codigo, nombre=f'Desbloquear {objetivo}', mensaje_bloqueo=mensaje,
             tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id,

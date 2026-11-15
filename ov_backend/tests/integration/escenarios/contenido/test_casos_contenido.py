@@ -62,7 +62,8 @@ def test_superar_c1_abre_sus_dos_voces_y_solo_esas(cliente_contenido):
     assert fallido['nuevos_desbloqueos'] == [] and fallido['ocupaciones_nuevas'] == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/coleccion') == []
     superado = resolver(cliente, 5, [ARQUEOLOGO, CONSERVADOR])
-    assert {d['regla'] for d in superado['nuevos_desbloqueos']} == {'R-tc1-1', 'R-tc1-2'}
+    # Ajuste logros: el primer caso también da la insignia «Caso cerrado»; las voces son solo esas dos.
+    assert {d['regla'] for d in superado['nuevos_desbloqueos'] if d['tipo_objetivo'] != 'INSIGNIA'} == {'R-tc1-1', 'R-tc1-2'}
     assert [(o['ocupacion'], o['caso']) for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == [
         (ARQUEOLOGO, 'c1'), (CONSERVADOR, 'c1')]
     estados = {t['codigo']: t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')}

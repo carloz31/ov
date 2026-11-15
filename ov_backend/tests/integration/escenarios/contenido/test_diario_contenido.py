@@ -173,6 +173,7 @@ def test_los_cinco_recuerdos_de_lumi_se_abren_con_cinco_cartas_en_dos_dias(clien
     [lumi] = [b for b in pedir(cliente, 'GET', '/cuentas/est-ana/actividades') if b['codigo'] == 'LUMI']
     assert [a['codigo'] for a in lumi['actividades']] == list(contenido.RECUERDOS_LUMI)
     resumen = pedir(cliente, 'GET', '/cuentas/est-ana/resumen')
+    # Ajuste logros: escuchar los cinco da la insignia «Alguien preguntó», pero ningún recuerdo abre contenido.
     for codigo in contenido.RECUERDOS_LUMI:
-        assert completar(cliente, codigo)['nuevos_desbloqueos'] == []
+        assert [d for d in completar(cliente, codigo)['nuevos_desbloqueos'] if d['tipo_objetivo'] != 'INSIGNIA'] == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/resumen') == resumen

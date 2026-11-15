@@ -16,12 +16,17 @@ from soporte_ruta import FECHA, eleccion_minima
 
 REGISTROS = sorted({i[0] for i in contenido.ITEMS_REGISTRO})
 # (GET registro, responder, entregar): el máximo medido en el recorrido y en la reedición de cada registro.
+# Ajuste logros: dos entregas obtienen una insignia y suman solo sus INSERT (desbloqueo y notificación), no lecturas.
+# La prueba no separa los SELECT; hoy la entrega de b1-6 hace 9 (y 5 escrituras) y la de ma8, 16 (y 5 escrituras).
+# - b1-6, entregar 13 → 14: «Senderos que no estaban en el mapa» (tercer registro desarrollado), INSERT de la
+#   notificación (el desbloqueo va en el mismo INSERT que los de esa entrega).
+# - ma8, entregar 19 → 21: «Bitácora completa» (último registro), INSERT del desbloqueo y de la notificación.
 TECHO = {
-    'b1-1': (5, 18, 16), 'b1-3': (7, 20, 22), 'b1-6': (3, 16, 13), 'b1-7': (5, 18, 19),
+    'b1-1': (5, 18, 16), 'b1-3': (7, 20, 22), 'b1-6': (3, 16, 14), 'b1-7': (5, 18, 19),
     'b2-3': (3, 16, 13), 'b2-4': (6, 19, 20), 'b3-4': (7, 20, 20), 'b3-a': (4, 14, 13),
     'b4-1': (34, 51, 45), 'b4-2': (3, 16, 14), 'b4-5': (12, 25, 28), 'b5-1': (11, 24, 22),
     'b5-3': (11, 24, 25), 'h1': (4, 15, 14), 'h2': (4, 15, 14), 'h3': (9, 20, 20),
-    'ma3': (4, 15, 14), 'ma4': (3, 14, 13), 'ma8': (9, 20, 19),
+    'ma3': (4, 15, 14), 'ma4': (3, 14, 13), 'ma8': (9, 20, 21),
 }
 
 

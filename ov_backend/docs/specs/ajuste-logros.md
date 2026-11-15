@@ -377,7 +377,7 @@ Las que existen de `ruta` (`t-ins-*`) no cambian. Se agregan:
 - **Presupuestos:**
   - `completar-actividad`, `responder-batalla`, `guardar-seccion` y `GET logros` no crecen con estas insignias. Se miden con y sin ellas, o se extiende `tests/integration/motor/test_presupuestos_motor.py` y `tests/integration/planes/test_presupuesto_planes.py`.
   - `guardar-seccion` carga los planes una sola vez por evaluación, aunque haya varias reglas de planes pendientes.
-  - Con R-b4-1, R-b4-5 y R-b5-1 ya obtenidas y las insignias de planes pendientes, `guardar-seccion`, `guardar-medidores`, `marcar-paso-hecho` y `ordenar-planes` hacen a lo más una consulta más que hoy (la de tarjetas), salvo cuando hay al menos `parametro` planes con sus cuatro secciones guardadas.
+  - Con R-b4-1, R-b4-5 y R-b5-1 ya obtenidas y las insignias de planes pendientes, `guardar-seccion`, `guardar-medidores`, `marcar-paso-hecho` y `ordenar-planes` hacen a lo más dos lecturas más que hoy (la de conteos de eventos y la de tarjetas), salvo cuando hay al menos `parametro` planes con sus cuatro secciones guardadas. (Corregido al implementar: decía «una consulta más»; ver `decisiones.md`.)
   - `GET /progreso/INSIGNIA` de una insignia con evaluador hace a lo más las consultas de hoy más una carga de planes, y solo la de tarjetas si ningún plan tiene sus cuatro secciones guardadas.
 
 ## 5. Front

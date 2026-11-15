@@ -24,9 +24,6 @@ PROVISIONALES = (
     ('Cuentas, colegios, salones, vínculos y orientadoras', 'ruta.CUENTAS, COLEGIOS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
-
-    ('Insignias, grupos, textos, pistas y evaluadores de vistas', 'ruta.INSIGNIAS, GRUPOS_INSIGNIA, PAGINAS_INSIGNIAS, TEXTOS_INSIGNIAS, PISTAS_INSIGNIAS, REGLAS, EVALUADORES_REGLAS, TEXTOS_CONDICIONES', 'ajuste de logros'),
-    ('Niveles y citas de Lumi', 'ruta.NIVELES, CITAS_LUMI', 'ajuste de logros'),
 )
 
 COLEGIOS = ruta.COLEGIOS
@@ -1140,20 +1137,167 @@ VARIANTES_DIARIO = {
     },
 }
 
-# Ajuste coherencia-bloque0: «La primera chispa» la entrega b0-1, no el bloque entero; sus textos se sobrescriben aquí
-# (como `R-t-ins-1`) para no tocar `ruta`, cuyas pruebas los leen.
-INSIGNIAS = tuple(
-    (*i[:3], 'Da el primer paso de tu viaje.', *i[4:]) if i[0] == 't-ins-1' else i for i in ruta.INSIGNIAS
+# Ajuste logros: las insignias del estudiante, en cuatro páginas del pasaporte. Ninguna premia velocidad, intentos ni
+# favoritos ni depende de una actividad opcional como requerida; ningún texto nombra códigos de actividad.
+# (código, nombre, descripción (historia), requisito, oculta).
+INSIGNIAS = (
+    # La luz que despeja caminos
+    ('ins-chispa', 'La primera chispa',
+     'Antes de buscar un destino decidiste mirar. Ese primer paso, el de aceptar que todavía no sabes, es el que abre '
+     'todos los demás.', 'Conoce a Lumi en el muelle.', False),
+    ('ins-primera-sombra', 'La primera sombra',
+     'Toda idea equivocada proyecta una sombra. La primera que disipes te enseñará que se vencen con información, no '
+     'con suerte.', 'Gana tu primera batalla.', False),
+    ('ins-destello', 'Destello intacto',
+     'Enfrentaste una idea equivocada sin perder ni un destello. Contrastar lo que crees con lo que sabes te deja '
+     'mirar con más claridad.', 'Gana una batalla sin perder destellos.', True),
+    ('ins-sin-sombras', 'Ninguna sombra en pie',
+     'Algunas sombras se esconden y solo aparecen cuando respondes con calma. Esta insignia es para quien las '
+     'encuentra todas.', 'Gana todas las batallas de la isla, también las que aparecen en el camino.', False),
+    ('ins-helena', 'Lo que Helena descifró',
+     'Helena guarda tres páginas en blanco con tu nombre. Cuando las descifres, dirán algo de ti que hoy solo '
+     'intuyes.',
+     'En el libro de Helena, rompe los sellos de «Lo que te atrae hacer», «Cómo te relacionas» y «Tus formas de ser '
+     'inteligente».', False),
+    ('ins-bitacora', 'Bitácora completa',
+     'Cada registro es una página de tu bitácora. Algunas solo aparecen cuando las anteriores dicen algo de verdad.',
+     'Completa todos los registros, también los que aparecen en el camino y en la ciudad.', False),
+    ('ins-faro', 'Más allá del faro',
+     'Cruza la isla de punta a punta. Lo que viene después ya no está en ningún mapa.',
+     'Abre el pergamino en la sala de la luz.', False),
+    ('ins-isla', 'La isla entera',
+     'No te quedaste en el camino marcado: entraste a cada rincón de la isla, también a los que había que ganarse.',
+     'Completa todas las misiones del camino y de la ciudad, incluidas las opcionales.', True),
+    # Huellas en la ciudad
+    ('ins-caso', 'Caso cerrado',
+     'En la Central, cada caso es un problema real que se resuelve con las personas correctas. El primero es el más '
+     'difícil de armar.', 'Resuelve tu primer caso en la Central.', False),
+    ('ins-expediente', 'Expediente completo',
+     'Seis lugares, seis problemas y muchos oficios distintos. Quien los resuelve todos conoce la ciudad mejor que '
+     'nadie.', 'Resuelve los seis casos de la Central.', False),
+    ('ins-carreras', 'Diez caminos a la vista',
+     'Te asomaste a diez carreras distintas. Mirar varias antes de elegir es la mejor forma de no quedarte con la '
+     'primera.', 'Mira el detalle de diez carreras distintas en el catálogo.', True),
+    ('ins-ocupaciones', 'Diez oficios, diez vidas',
+     'Conociste diez formas distintas de pasar un día de trabajo. Cada una es otra manera de imaginarte en el futuro.',
+     'Mira el detalle de diez ocupaciones distintas en el catálogo.', True),
+    ('ins-puertas', 'Todas las puertas',
+     'Conociste todas las formas de seguir estudiando. Saber qué puertas existen te deja elegir con más libertad.',
+     'Mira instituciones de todos los tipos.', True),
+    ('ins-voz', 'Voz de la ciudad',
+     'Conversaste con alguien que ejerce un oficio y lo compartiste con tu salón. Preguntar a quien ya recorrió el '
+     'camino lo vuelve más real.', 'Publica una entrevista.', False),
+    ('ins-leyenda', 'Leyenda',
+     'Tu entrevista quedó como Leyenda: la verán otros salones y otras promociones.',
+     'Logra que tu entrevista sea Leyenda.', False),
+    # El mapa que trazo
+    ('ins-plan-a', 'Un destino en el mapa',
+     'Un plan no es una promesa: es una opción real que puedes mirar, mover y cambiar. El primero es el que da nombre '
+     'al viaje.', 'Crea tu Plan A en «Mis planes».', False),
+    ('ins-plan-b', 'Otra ruta posible',
+     'Tener una segunda opción no es dudar de la primera: es tener por dónde seguir si el camino cambia.',
+     'Crea tu Plan B en «Mis planes».', False),
+    ('ins-plan-c', 'Tres rumbos',
+     'Con tres opciones sobre la mesa puedes compararlas de verdad y ver qué tienen en común.',
+     'Crea tu Plan C en «Mis planes».', False),
+    ('ins-plan-completo', 'Rumbo trazado',
+     'Por qué la eliges, qué sabes de ella, qué tan real es y cuáles son tus próximos pasos: cuando un plan tiene todo '
+     'eso, ya puedes conversarlo en casa.', 'Completa las cuatro secciones de uno de tus planes.', False),
+    ('ins-planes-completos', 'Ningún cabo suelto',
+     'Tus tres planes quedaron completos. Ya no son ideas sueltas: son tres rutas que puedes comparar y defender.',
+     'Completa las cuatro secciones de tus tres planes.', True),
+    # Lo que no se ve a simple vista
+    ('ins-senderos', 'Senderos que no estaban en el mapa',
+     'Te tomaste en serio tus respuestas, y la isla te mostró caminos que no estaban en el mapa.',
+     'Completa tres registros con respuestas desarrolladas.', True),
+    ('ins-lumi', 'Alguien preguntó',
+     'A Lumi nadie le preguntó adónde quería ir. Tú le escribiste, y te contó su historia completa.',
+     'Escucha los cinco recuerdos de Lumi en tu diario.', True),
+    ('ins-brujula', 'Brújula interna',
+     'La brújula de Iván señala la ciudad. Hay otra que solo tú sabes leer: cómo te sientes con tu decisión, día a '
+     'día.', 'Haz tu check-in en cinco días distintos.', False),
+    ('ins-conversacion', 'La otra mitad de la historia',
+     'Tu familia también tiene una versión de tu camino. Escucharla no decide por ti: te da la otra mitad.',
+     'Completa una conversación con tu familia en «En familia».', False),
+    ('ins-sobremesa', 'Sobremesa larga',
+     'Conversaron de lo que te gusta, de lo que temen y de lo que esperan. Pocas mesas aguantan tanta sobremesa.',
+     'Completa todas las conversaciones con tu familia.', True),
 )
+# {insignia: (frase destacada, cómo se consiguió en pasado)}.
 TEXTOS_INSIGNIAS = {
-    **ruta.TEXTOS_INSIGNIAS,
-    't-ins-1': (ruta.TEXTOS_INSIGNIAS['t-ins-1'][0], 'diste el primer paso de tu viaje.'),
+    'ins-chispa': ('Una nueva mirada viaja contigo.', 'conociste a Lumi en el muelle.'),
+    'ins-primera-sombra': ('La primera sombra siempre parece la más grande.', 'ganaste tu primera batalla.'),
+    'ins-destello': ('La información hace brillar tu camino.', 'ganaste una batalla sin perder destellos.'),
+    'ins-sin-sombras': ('Ninguna idea falsa te sigue el paso.', 'ganaste todas las batallas de la isla.'),
+    'ins-helena': ('Conocerte también se aprende.', 'rompiste los tres sellos del libro de Helena.'),
+    'ins-bitacora': ('Lo que escribes también te orienta.', 'completaste todos los registros de la isla.'),
+    'ins-faro': ('El viaje sigue, ahora sin mapa.', 'abriste el pergamino en la sala de la luz.'),
+    'ins-isla': ('Ningún rincón quedó a oscuras.', 'completaste todas las misiones de la isla.'),
+    'ins-caso': ('Cada oficio tiene su lugar en el equipo.', 'resolviste tu primer caso en la Central.'),
+    'ins-expediente': ('La ciudad ya no tiene secretos para ti.', 'resolviste los seis casos de la Central.'),
+    'ins-carreras': ('Elegir empieza por mirar.', 'miraste diez carreras distintas en el catálogo.'),
+    'ins-ocupaciones': ('Un oficio es una forma de vivir el día.', 'miraste diez ocupaciones distintas en el catálogo.'),
+    'ins-puertas': ('Conocer las puertas también es avanzar.', 'miraste instituciones de todos los tipos.'),
+    'ins-voz': ('Preguntar abre caminos.', 'publicaste una entrevista.'),
+    'ins-leyenda': ('Tu voz llega lejos.', 'tu entrevista llegó a Leyenda.'),
+    'ins-plan-a': ('Elegir un rumbo no cierra los demás.', 'creaste tu Plan A.'),
+    'ins-plan-b': ('Dos rutas, más libertad.', 'creaste tu Plan B.'),
+    'ins-plan-c': ('Comparar también es decidir.', 'creaste tu Plan C.'),
+    'ins-plan-completo': ('Un rumbo claro se puede contar.', 'completaste las cuatro secciones de un plan.'),
+    'ins-planes-completos': ('Tres rutas, ningún cabo suelto.', 'completaste las cuatro secciones de tus tres planes.'),
+    'ins-senderos': ('Pensar despacio abre atajos.', 'completaste tres registros con respuestas desarrolladas.'),
+    'ins-lumi': ('Escuchar también es un camino.', 'escuchaste los cinco recuerdos de Lumi.'),
+    'ins-brujula': ('Lo que sientes también orienta.', 'hiciste tu check-in en cinco días distintos.'),
+    'ins-conversacion': ('Dos miradas ven más lejos.', 'completaste una conversación con tu familia.'),
+    'ins-sobremesa': ('En casa también se encuentra el rumbo.', 'completaste todas las conversaciones con tu familia.'),
 }
-GRUPOS_INSIGNIA = ruta.GRUPOS_INSIGNIA
-PAGINAS_INSIGNIAS = ruta.PAGINAS_INSIGNIAS
-PISTAS_INSIGNIAS = ruta.PISTAS_INSIGNIAS
-NIVELES = ruta.NIVELES
-CITAS_LUMI = ruta.CITAS_LUMI
+# Páginas del pasaporte: (código, nombre, orden).
+GRUPOS_INSIGNIA = (('G-camino', 'La luz que despeja caminos', 1), ('G-ciudad', 'Huellas en la ciudad', 2),
+                   ('G-planes', 'El mapa que trazo', 3), ('G-oculto', 'Lo que no se ve a simple vista', 4))
+_PAGINAS = {
+    'G-camino': ('ins-chispa', 'ins-primera-sombra', 'ins-destello', 'ins-sin-sombras', 'ins-helena', 'ins-bitacora',
+                 'ins-faro', 'ins-isla'),
+    'G-ciudad': ('ins-caso', 'ins-expediente', 'ins-carreras', 'ins-ocupaciones', 'ins-puertas', 'ins-voz',
+                 'ins-leyenda'),
+    'G-planes': ('ins-plan-a', 'ins-plan-b', 'ins-plan-c', 'ins-plan-completo', 'ins-planes-completos'),
+    'G-oculto': ('ins-senderos', 'ins-lumi', 'ins-brujula', 'ins-conversacion', 'ins-sobremesa'),
+}
+# {insignia: (página, orden dentro de la página)}.
+PAGINAS_INSIGNIAS = {codigo: (pagina, orden) for pagina, codigos in _PAGINAS.items()
+                     for orden, codigo in enumerate(codigos, start=1)}
+# Pista de Lumi de cada oculta, visible mientras no se obtiene.
+PISTAS_INSIGNIAS = {
+    'ins-destello': 'No todo brillo sobrevive a una batalla. El que no se apaga ni una vez, deja huella.',
+    'ins-isla': 'Hay quienes cruzan la isla y quienes la recorren entera.',
+    'ins-carreras': 'Una carrera vista es una puerta entreabierta. ¿Cuántas te animas a abrir?',
+    'ins-ocupaciones': 'Detrás de cada carrera hay oficios muy distintos. Asómate a unos cuantos.',
+    'ins-puertas': 'Hay más de una puerta para estudiar. Asómate a todas antes de elegir una.',
+    'ins-planes-completos': 'Un plan completo es un buen comienzo. ¿Y si los tres lo estuvieran?',
+    'ins-senderos': 'Hay caminos que solo aparecen cuando alguien se toma su tiempo para responder.',
+    'ins-lumi': 'Lumi guarda una historia que nunca le contó a nadie. Quizá solo espera que alguien le escriba.',
+    'ins-sobremesa': 'Hay conversaciones que no caben en una sola noche.',
+}
+
+# Adenda de niveles: cada nivel es una fase del camino; el título dice en qué parte va, no cuánto vale.
+# (número, título, descripción).
+NIVELES = (
+    (1, 'Visitante del muelle', 'Acabas de llegar a la isla. Todavía no hay mapa: solo ganas de mirar.'),
+    (2, 'Caminante sin apuro', 'Ya tienes compañía, un punto de partida y permiso para dudar.'),
+    (3, 'Detective de pistas propias',
+     'Juntaste pistas sobre tu historia, lo que valoras y lo que se te da bien. Ahora sabes mejor qué buscas.'),
+    (4, 'Navegante de oficios',
+     'Recorriste el puerto y ya sabes cómo se ven por dentro los estudios y el trabajo.'),
+    (5, 'Timonel de rumbo propio',
+     'Ordenaste tus opciones, trazaste tus pasos y abriste el pergamino. Lo que sigue se decide fuera de la isla.'),
+)
+# Cita de Lumi de cada nivel, bajo su descripción en el pasaporte.
+CITAS_LUMI = {
+    1: 'Mirar con calma también es avanzar.',
+    2: 'Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.',
+    3: 'Conocerte no te encierra: te da por dónde empezar.',
+    4: 'Un mapa no te dice adónde ir; te muestra por dónde podrías.',
+    5: 'Yo también voy a buscar mi camino. Gracias por enseñarme cómo.',
+}
 
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición: (evento, referencia,
 # conteo, mínimo). Principios en `docs/sistema/motor.md` («Reglas del contenido»).
@@ -1342,21 +1486,80 @@ REGLAS = (
     ('R-d-conv-fortalezas', 'PREGUNTA_DIARIO', 'd-conv-fortalezas', 'Se abre cuando tú y tu familia respondan «Fortalezas que quizá no vemos».', (('COMPLETA_CONVERSACION', 'conv-6', 'EVENTOS', 1),)),
 
     ('R-d-conv-acompanar', 'PREGUNTA_DIARIO', 'd-conv-acompanar', 'Se abre cuando tú y tu familia respondan «Ayúdame como lo necesito».', (('COMPLETA_CONVERSACION', 'conv-10', 'EVENTOS', 1),)),
-    # PROVISIONAL: insignia de inicio y niveles.
-
-    ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
-    ('R-NIV-2', 'NIVEL', 2, 'Termina el primer tramo para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
-    ('R-NIV-3', 'NIVEL', 3, 'Termina el primer tramo y mira tres carreras para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 3))),
+    # Adenda de niveles: cada nivel se obtiene al cerrar un tramo del camino; sin evaluador, una condición.
+    ('R-NIV-2', 'NIVEL', 2, 'Completa «Dudar también es avanzar», la última misión del tramo «Inicio».', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
+    ('R-NIV-3', 'NIVEL', 3, 'Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».', (('COMPLETA_BLOQUE', 'B2', 'EVENTOS', 1),)),
+    ('R-NIV-4', 'NIVEL', 4, 'Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional».', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1),)),
+    ('R-NIV-5', 'NIVEL', 5, 'Completa «Lo que decía el pergamino», la última misión del tramo «Mi decisión».', (('COMPLETA_BLOQUE', 'B5', 'EVENTOS', 1),)),
     # Ajuste coherencia-lumi: el recuerdo n se abre al llegar al nivel n de amistad (mismo umbral y mismo conteo).
     *((f'R-{codigo}', 'ACTIVIDAD', codigo, mensaje, (('ESCRIBE_ENTRADA_DIARIO', None, 'EVENTOS_TOPE_DIARIO', umbral),))
       for codigo, umbral, mensaje in zip(RECUERDOS_LUMI, UMBRALES_AMISTAD, MENSAJES_RECUERDOS_LUMI, strict=True)),
-    # PROVISIONAL: insignias de vistas, tal cual en `ruta`.
-    *(r for r in ruta.REGLAS if r[1] == 'INSIGNIA' and r[2] != 't-ins-1'),
+    # Ajuste logros: una regla por insignia. Las que llevan evaluador (`EVALUADORES_REGLAS`) tienen la condición que
+    # debe reevaluarlas. El mensaje es el requisito, con el título de lo que nombra la condición.
+    ('R-ins-chispa', 'INSIGNIA', 'ins-chispa', 'Conoce a Lumi en el muelle: completa la misión «Bienvenida: la vocación se construye».', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
+    ('R-ins-primera-sombra', 'INSIGNIA', 'ins-primera-sombra', 'Gana tu primera batalla.', (('SUPERA_BATALLA', None, 'EVENTOS', 1),)),
+    ('R-ins-destello', 'INSIGNIA', 'ins-destello', 'Gana una batalla sin perder destellos.', (('VENCE_DESAFIO_INTACTO', None, 'EVENTOS', 1),)),
+    ('R-ins-sin-sombras', 'INSIGNIA', 'ins-sin-sombras', 'Gana todas las batallas de la isla, también las que aparecen en el camino.', (('SUPERA_BATALLA', None, 'EVENTOS', 1),)),
+    ('R-ins-helena', 'INSIGNIA', 'ins-helena', 'En el libro de Helena, rompe los sellos de «Lo que te atrae hacer», «Cómo te relacionas» y «Tus formas de ser inteligente».', (
+        ('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1), ('REVELA_RESULTADO', 'APL-HABILIDADES', 'EVENTOS', 1),
+        ('REVELA_RESULTADO', 'APL-INTELIGENCIAS', 'EVENTOS', 1))),
+    ('R-ins-bitacora', 'INSIGNIA', 'ins-bitacora', 'Completa todos los registros, también los que aparecen en el camino y en la ciudad.', (('COMPLETA_ACTIVIDAD', None, 'EVENTOS', 1),)),
+    ('R-ins-faro', 'INSIGNIA', 'ins-faro', 'Abre el pergamino en la sala de la luz: completa la misión «Lo que decía el pergamino».', (('COMPLETA_ACTIVIDAD', 'b5-5', 'EVENTOS', 1),)),
+    ('R-ins-isla', 'INSIGNIA', 'ins-isla', 'Completa todas las misiones del camino y de la ciudad, incluidas las opcionales.', (('COMPLETA_ACTIVIDAD', None, 'EVENTOS', 1),)),
+    ('R-ins-caso', 'INSIGNIA', 'ins-caso', 'Resuelve tu primer caso en la Central.', (('SUPERA_CASO', None, 'EVENTOS', 1),)),
+    ('R-ins-expediente', 'INSIGNIA', 'ins-expediente', 'Resuelve los seis casos de la Central.', (('SUPERA_CASO', None, 'EVENTOS', 1),)),
+    ('R-ins-carreras', 'INSIGNIA', 'ins-carreras', 'Mira el detalle de diez carreras distintas en el catálogo.', (('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 10),)),
+    ('R-ins-ocupaciones', 'INSIGNIA', 'ins-ocupaciones', 'Mira el detalle de diez ocupaciones distintas en el catálogo.', (('VISTA_OCUPACION', None, 'REFERENCIAS_DISTINTAS', 10),)),
+    ('R-ins-puertas', 'INSIGNIA', 'ins-puertas', 'Mira instituciones de todos los tipos.', (('VISTA_INSTITUCION', None, 'EVENTOS', 1),)),
+    ('R-ins-voz', 'INSIGNIA', 'ins-voz', 'Publica una entrevista.', (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
+    ('R-ins-leyenda', 'INSIGNIA', 'ins-leyenda', 'Logra que tu entrevista sea Leyenda.', (('ENTREVISTA_LEYENDA', None, 'EVENTOS', 1),)),
+    ('R-ins-plan-a', 'INSIGNIA', 'ins-plan-a', 'Crea tu Plan A en «Mis planes».', (('CREA_PLAN', None, 'REFERENCIAS_DISTINTAS', 1),)),
+    ('R-ins-plan-b', 'INSIGNIA', 'ins-plan-b', 'Crea tu Plan B en «Mis planes».', (('CREA_PLAN', None, 'REFERENCIAS_DISTINTAS', 2),)),
+    ('R-ins-plan-c', 'INSIGNIA', 'ins-plan-c', 'Crea tu Plan C en «Mis planes».', (('CREA_PLAN', None, 'REFERENCIAS_DISTINTAS', 3),)),
+    ('R-ins-plan-completo', 'INSIGNIA', 'ins-plan-completo', 'Completa las cuatro secciones de uno de tus planes.', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
+    ('R-ins-planes-completos', 'INSIGNIA', 'ins-planes-completos', 'Completa las cuatro secciones de tus tres planes.', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
+    ('R-ins-senderos', 'INSIGNIA', 'ins-senderos', 'Completa tres registros con respuestas desarrolladas.', (('REGISTRO_ADECUADO', None, 'REFERENCIAS_DISTINTAS', 3),)),
+    ('R-ins-lumi', 'INSIGNIA', 'ins-lumi', 'Escucha los cinco recuerdos de Lumi en tu diario: «De dónde vengo», «Lo que escribí en el tronco», «Un poco de todo», «Hasta la mitad» y «Lo que elijo yo».',
+     tuple(('COMPLETA_ACTIVIDAD', codigo, 'EVENTOS', 1) for codigo in RECUERDOS_LUMI)),
+    ('R-ins-brujula', 'INSIGNIA', 'ins-brujula', 'Haz tu check-in en cinco días distintos.', (('REGISTRA_CHECK_IN', None, 'DIAS_DISTINTOS', 5),)),
+    ('R-ins-conversacion', 'INSIGNIA', 'ins-conversacion', 'Completa una conversación con tu familia en «En familia».', (('COMPLETA_CONVERSACION', None, 'EVENTOS', 1),)),
+    ('R-ins-sobremesa', 'INSIGNIA', 'ins-sobremesa', 'Completa todas las conversaciones con tu familia.', (('COMPLETA_CONVERSACION', None, 'EVENTOS', 1),)),
 )
 
-# PROVISIONAL: textos de las condiciones de insignias y niveles, de `ruta` (mismos códigos de regla).
-TEXTOS_CONDICIONES = {**ruta.TEXTOS_CONDICIONES, 'R-t-ins-1': ('Conoce a Lumi en el muelle',), 'R-NIV-2': ('Termina el primer tramo',),
-                      'R-NIV-3': ('Termina el primer tramo', 'Mira tres carreras distintas')}
+# Texto de cada condición, en el orden de su regla: niveles e insignias (ajuste logros).
+TEXTOS_CONDICIONES = {
+    'R-NIV-2': ('Termina el tramo «Inicio»',),
+    'R-NIV-3': ('Termina el tramo «Me conozco»',),
+    'R-NIV-4': ('Termina el tramo «Exploro el mundo profesional»',),
+    'R-NIV-5': ('Termina el tramo «Mi decisión»',),
+    'R-ins-chispa': ('Completa la misión «Bienvenida: la vocación se construye»',),
+    'R-ins-primera-sombra': ('Gana una batalla',),
+    'R-ins-destello': ('Gana una batalla sin perder destellos',),
+    'R-ins-sin-sombras': ('Batallas ganadas',),
+    'R-ins-helena': ('Rompe el sello de «Lo que te atrae hacer»', 'Rompe el sello de «Cómo te relacionas»',
+                     'Rompe el sello de «Tus formas de ser inteligente»'),
+    'R-ins-bitacora': ('Registros completados',),
+    'R-ins-faro': ('Completa la misión «Lo que decía el pergamino»',),
+    'R-ins-isla': ('Misiones completadas',),
+    'R-ins-caso': ('Resuelve un caso de la Central',),
+    'R-ins-expediente': ('Casos resueltos',),
+    'R-ins-carreras': ('Carreras distintas vistas',),
+    'R-ins-ocupaciones': ('Ocupaciones distintas vistas',),
+    'R-ins-puertas': ('Mira instituciones de todos los tipos',),
+    'R-ins-voz': ('Publica una entrevista',),
+    'R-ins-leyenda': ('Logra que tu entrevista sea Leyenda',),
+    'R-ins-plan-a': ('Crea un plan en «Mis planes»',),
+    'R-ins-plan-b': ('Planes creados',),
+    'R-ins-plan-c': ('Planes creados',),
+    'R-ins-plan-completo': ('Planes con sus cuatro secciones completas',),
+    'R-ins-planes-completos': ('Planes con sus cuatro secciones completas',),
+    'R-ins-senderos': ('Registros con respuestas desarrolladas',),
+    'R-ins-lumi': ('Escucha «De dónde vengo»', 'Escucha «Lo que escribí en el tronco»', 'Escucha «Un poco de todo»',
+                   'Escucha «Hasta la mitad»', 'Escucha «Lo que elijo yo»'),
+    'R-ins-brujula': ('Días con check-in',),
+    'R-ins-conversacion': ('Completa una conversación con tu familia',),
+    'R-ins-sobremesa': ('Conversaciones completadas',),
+}
 
 # Reglas con evaluador especial: {regla: (evaluador, parámetro)}. Cada una lleva también la condición cuyo evento
 # debe reevaluarla (ACTUALIZA_PLAN en las de planes).
@@ -1366,8 +1569,15 @@ EVALUADORES_REGLAS = {
     'R-b4-1': ('por_que_en_planes', 1),
     'R-b4-5': ('por_que_en_planes', 2),
     'R-b5-1': ('pasos_plan_a', 1),
-    # PROVISIONAL: insignias de vistas, de `ruta`.
-    **{r: v for r, v in ruta.EVALUADORES_REGLAS.items() if r.startswith('R-t-ins-')},
+    # Ajuste logros: insignias con evaluador (el total sale del contenido cargado, sin cifras fijas).
+    'R-ins-sin-sombras': ('todas_las_batallas', None),
+    'R-ins-bitacora': ('todos_los_registros', None),
+    'R-ins-isla': ('todas_las_actividades', None),
+    'R-ins-expediente': ('todos_los_casos', None),
+    'R-ins-puertas': ('instituciones_tipos_distintos', None),
+    'R-ins-plan-completo': ('planes_completos', 1),
+    'R-ins-planes-completos': ('planes_completos', 3),
+    'R-ins-sobremesa': ('todas_las_conversaciones', None),
 }
 
 
