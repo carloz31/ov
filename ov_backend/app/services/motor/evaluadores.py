@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from dataclasses import dataclass
 from functools import partial
 
 from sqlalchemy import func, select
@@ -6,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.models import (
-    Actividad, Aplicacion, Bloque, Carrera, Cuenta, Dimension, HighPoint, Institucion, Instrumento,
+    Actividad, Aplicacion, Audiencia, Bloque, Carrera, Conversacion, Cuenta, Dimension, Espacio, HighPoint, Institucion, Instrumento,
     MomentoAplicacion, PasoTarjeta, ResultadoDimension, ResultadoInstrumento, SalonInstrumento, TipoCarrera, TipoEventoUso,
-    TarjetaCarrera, TipoResultado,
+    SeccionTarjeta, TarjetaCarrera, TipoActividad, TipoResultado,
 )
 from app.services.instrumentos.calculo import calcular_codigo_interes
 
@@ -193,7 +194,72 @@ def pasos_plan_a(sesion: Session, cuenta: Cuenta) -> bool:
     return pasos >= minimo
 
 
-EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
+@dataclass(frozen=True)
+class Avance:
+    """Ajuste logros: resultado de un evaluador que da su avance («5 de 8»). Se cumple con `actual >= requerido`;
+    un total de 0 no cumple (como `vistas_diversas` con un catálogo vacío)."""
+    actual: int
+    requerido: int
+
+    @property
+    def cumplido(self) -> bool:
+        return self.requerido > 0 and self.actual >= self.requerido
+
+
+def _referencias_de(datos, cuenta: Cuenta, evento: TipoEventoUso) -> set[int]:
+    """Referencias distintas de los eventos de la cuenta, de los conteos ya cargados (sin consultas propias). Los
+    conteos se invalidan en `registrar_eventos` tras insertar, así que incluyen los de la misma acción."""
+    datos.cargar_conteos([cuenta.id])
+    return {referencia for tipo, referencia in datos.conteos[cuenta.id] if tipo == evento and referencia is not None}
+
+
+@usar_contexto
+def actividades_completas(sesion: Session, cuenta: Cuenta, tipo: TipoActividad | None = None) -> Avance:
+    """Ajuste logros: las actividades de los bloques del estudiante (sin el bloque LUMI) y, con `tipo`, solo las de
+    ese tipo, con un COMPLETA_ACTIVIDAD de la cuenta. Una batalla o un caso solo lo emiten al superarse."""
+    datos = contexto(sesion)
+    definiciones = datos.definiciones
+    bloques = {bloque.id for bloque in definiciones.listar(Bloque)
+               if bloque.audiencia == Audiencia.ESTUDIANTE and bloque.espacio != Espacio.LUMI}
+    actividades = {actividad.id for actividad in definiciones.listar(Actividad)
+                   if actividad.bloque_id in bloques and (tipo is None or actividad.tipo == tipo)}
+    completadas = _referencias_de(datos, cuenta, TipoEventoUso.COMPLETA_ACTIVIDAD) & actividades
+    return Avance(len(completadas), len(actividades))
+
+
+@usar_contexto
+def todas_las_conversaciones(sesion: Session, cuenta: Cuenta) -> Avance:
+    """Ajuste logros: todas las conversaciones cargadas con un COMPLETA_CONVERSACION de la cuenta."""
+    datos = contexto(sesion)
+    conversaciones = {conversacion.id for conversacion in datos.definiciones.listar(Conversacion)}
+    completas = _referencias_de(datos, cuenta, TipoEventoUso.COMPLETA_CONVERSACION) & conversaciones
+    return Avance(len(completas), len(conversaciones))
+
+
+@usar_contexto
+def planes_completos(sesion: Session, cuenta: Cuenta) -> Avance | bool:
+    """Ajuste logros: al menos `parametro` planes activos con todas sus secciones en LISTA (`planes.md`).
+
+    Mira primero solo las tarjetas (caché de planes de la petición): una sección sin guardar está POR_EMPEZAR, así
+    que si las tarjetas con todas sus secciones guardadas no alcanzan, no carga las filas hijas."""
+    from app.services.planes.consultas import GUARDADA, estado_seccion, secciones_abiertas
+    datos = contexto(sesion)
+    minimo = _parametro_positivo(datos, 'planes completos')
+    codigos = [seccion.codigo for seccion in datos.definiciones.listar(SeccionTarjeta)]
+    planes = datos.planes_de(cuenta.id)
+    guardadas = [t for t in planes.tarjetas if all(getattr(t, GUARDADA[codigo]) is not None for codigo in codigos)]
+    if not guardadas:
+        return Avance(0, minimo)
+    if len(guardadas) < minimo:
+        return False
+    planes = datos.planes_de(cuenta.id, hijas=True)
+    abiertas = secciones_abiertas(sesion, cuenta)
+    completos = sum(all(estado_seccion(codigo, abiertas[codigo], t, planes) == 'LISTA' for codigo in codigos)
+                    for t in guardadas)
+    return Avance(completos, minimo)
+
+
+EVALUADORES: dict[str, Callable[[Session, Cuenta], bool | Avance]] = {
     "carreras_familias_distintas": partial(vistas_diversas, clase='CARRERA', atributo='familia'),
     "ocupaciones_high_point_distinto": partial(vistas_diversas, clase='OCUPACION', atributo='high_point'),
     "instituciones_tipos_distintos": partial(vistas_diversas, clase='INSTITUCION', atributo='tipo'),
@@ -204,4 +270,11 @@ EVALUADORES: dict[str, Callable[[Session, Cuenta], bool]] = {
     # Ajuste registros llm (lote 2): b4-1 pide el «por qué» del Plan A y b4-5, el del A y el del B.
     "por_que_en_planes": por_que_en_planes,
     "pasos_plan_a": pasos_plan_a,
+    # Ajuste logros: insignias de `contenido` con avance («N de M»).
+    "todas_las_batallas": partial(actividades_completas, tipo=TipoActividad.BATALLA),
+    "todos_los_casos": partial(actividades_completas, tipo=TipoActividad.CASO),
+    "todos_los_registros": partial(actividades_completas, tipo=TipoActividad.REGISTRO),
+    "todas_las_actividades": actividades_completas,
+    "todas_las_conversaciones": todas_las_conversaciones,
+    "planes_completos": planes_completos,
 }

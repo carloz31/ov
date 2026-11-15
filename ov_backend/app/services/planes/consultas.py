@@ -2,7 +2,6 @@
 
 Una consulta por tabla de la tarjeta, sea cual sea el número de planes; listas y secciones salen de la caché."""
 
-from dataclasses import dataclass, field
 from fractions import Fraction
 from math import floor
 
@@ -10,13 +9,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.core.contexto import contexto, usar_contexto
+from app.core.planes import DatosPlanes, cargar_planes  # noqa: F401 (reexportados)
 from app.core.parametros import CICLOS_POR_ANIO, MAXIMO_PLANES, MINIMO_CARACTERES_RELATO
 from app.exceptions import ErrorAccion
 from app.models import (
-    Carrera, ComplicacionTarjeta, ConocimientoTarjeta, Cuenta, DudaTarjeta, FinanciamientoTarjeta, FrecuenciaGasto,
-    GastoTarjeta, Institucion, InstitucionCarrera, ListaOpciones, MotivoTarjeta, OpcionLista, PasoTarjeta,
-    PreguntaConocimiento, ReferenciaCamino, ReferenciaRubro, SeccionTarjeta, SugerenciaTarjeta, TarjetaCarrera,
-    TipoObjetivo,
+    Carrera, Cuenta, FrecuenciaGasto, Institucion, InstitucionCarrera, ListaOpciones, OpcionLista,
+    PreguntaConocimiento, ReferenciaCamino, ReferenciaRubro, SeccionTarjeta, TipoObjetivo,
 )
 from app.schemas.planes import (
     AvisoPlanes, CaminoTarjeta, ComplicacionPublica, DudaPublica, Elegida, GastoPublico, InstitucionPlan, Medidores,
@@ -106,40 +104,7 @@ def opciones_tarjeta(sesion: Session) -> OpcionesTarjeta:
 
 # --- Lectura agrupada -----------------------------------------------------------------------------
 
-@dataclass
-class DatosPlanes:
-    """Las tarjetas de una cuenta por prioridad y sus filas agrupadas por tarjeta."""
-    tarjetas: list
-    motivos: dict = field(default_factory=dict)
-    conocimiento: dict = field(default_factory=dict)
-    dudas: dict = field(default_factory=dict)
-    gastos: dict = field(default_factory=dict)
-    financiamiento: dict = field(default_factory=dict)
-    complicaciones: dict = field(default_factory=dict)
-    sugerencias: dict = field(default_factory=dict)
-    pasos: dict = field(default_factory=dict)
-
-
-def cargar_planes(sesion: Session, cuenta: Cuenta) -> DatosPlanes:
-    datos = DatosPlanes(tarjetas=list(sesion.scalars(select(TarjetaCarrera).where(
-        TarjetaCarrera.cuenta_id == cuenta.id, TarjetaCarrera.activa).order_by(TarjetaCarrera.prioridad))))
-    ids = [tarjeta.id for tarjeta in datos.tarjetas]
-    if not ids:
-        return datos
-    for atributo, modelo, orden in (
-        ('motivos', MotivoTarjeta, MotivoTarjeta.posicion), ('conocimiento', ConocimientoTarjeta, None),
-        ('dudas', DudaTarjeta, DudaTarjeta.numero), ('gastos', GastoTarjeta, GastoTarjeta.posicion),
-        ('financiamiento', FinanciamientoTarjeta, FinanciamientoTarjeta.posicion),
-        ('complicaciones', ComplicacionTarjeta, ComplicacionTarjeta.numero),
-        ('sugerencias', SugerenciaTarjeta, SugerenciaTarjeta.numero), ('pasos', PasoTarjeta, PasoTarjeta.posicion),
-    ):
-        consulta = select(modelo).where(modelo.tarjeta_id.in_(ids))
-        if orden is not None:
-            consulta = consulta.order_by(orden)
-        agrupadas = getattr(datos, atributo)
-        for fila in sesion.scalars(consulta):
-            agrupadas.setdefault(fila.tarjeta_id, []).append(fila)
-    return datos
+# `DatosPlanes` y `cargar_planes` viven en `app/core/planes.py` (ajuste logros) y se reexportan aquí.
 
 
 # --- Estado de las secciones ----------------------------------------------------------------------
@@ -177,7 +142,7 @@ def contar_listos_para_comparar(sesion: Session, cuenta: Cuenta, secciones=None,
     abiertas = secciones_abiertas(sesion, cuenta)
     para_comparar = ([s.codigo for s in contexto(sesion).definiciones.listar(SeccionTarjeta) if s.para_comparar]
                      if secciones is None else list(secciones))
-    datos = cargar_planes(sesion, cuenta)
+    datos = contexto(sesion).planes_de(cuenta.id, hijas=True)
     return sum(all(estado_seccion(c, abiertas[c], t, datos) == 'LISTA' for c in para_comparar)
                for t in datos.tarjetas if prioridades is None or t.prioridad in prioridades)
 

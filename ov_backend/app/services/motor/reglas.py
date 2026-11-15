@@ -14,7 +14,7 @@ from app.schemas.motor import (
     DesbloqueoNuevo, MotivoBloqueo, ProgresoCondicion, ResultadoEvaluador, ResultadoRegla,
 )
 from app.services.notificaciones import crear_varias, se_anuncia
-from app.services.motor.evaluadores import EVALUADORES
+from app.services.motor.evaluadores import EVALUADORES, Avance
 from app.services.motor.referencias import (
     MODELOS_OBJETIVO, objetivo_legible, precargar_referencias, referencia_legible,
 )
@@ -60,7 +60,12 @@ def evaluar_regla(sesion: Session, cuenta: Cuenta, regla: ReglaDesbloqueo) -> Re
                 resultados[clave] = evaluador(sesion, cuenta)
             finally:
                 datos.regla_en_evaluacion = anterior
-        especial = ResultadoEvaluador(nombre=regla.evaluador_especial, cumplido=resultados[clave])
+        resultado = resultados[clave]
+        # Ajuste logros: un evaluador puede dar su avance; se cumple con `actual >= requerido` y un total de 0 no cumple.
+        especial = (ResultadoEvaluador(nombre=regla.evaluador_especial, cumplido=resultado.cumplido,
+                                       actual=resultado.actual, requerido=resultado.requerido)
+                    if isinstance(resultado, Avance)
+                    else ResultadoEvaluador(nombre=regla.evaluador_especial, cumplido=resultado))
     return ResultadoRegla(
         cumple=all(condicion.cumplida for condicion in condiciones)
         and (especial is None or especial.cumplido),

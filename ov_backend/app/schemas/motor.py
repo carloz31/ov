@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, model_serializer
 
 from app.models import TipoConteo, TipoEventoUso, TipoObjetivo
 
@@ -36,8 +36,20 @@ class ProgresoCondicion(BaseModel):
 
 
 class ResultadoEvaluador(BaseModel):
+    """Ajuste logros: `actual` y `requerido` son el avance del evaluador, si lo da; sin avance no se serializan,
+    para que las respuestas de los evaluadores que solo dicen sí o no no cambien."""
     nombre: str
     cumplido: bool
+    actual: int | None = None
+    requerido: int | None = None
+
+    @model_serializer(mode='wrap')
+    def _sin_avance_nulo(self, serializar):
+        datos = serializar(self)
+        for campo in ('actual', 'requerido'):
+            if datos.get(campo) is None:
+                datos.pop(campo, None)
+        return datos
 
 
 class ResultadoRegla(BaseModel):
