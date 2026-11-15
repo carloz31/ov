@@ -24,8 +24,9 @@ export function PartidaLlegadaSynthesis({ modelo }: { modelo: ModeloPartidaLlega
           ))}
         </ul>
         <p>
-          Empezar con varias partes por trabajar es lo más común: para eso es el camino. Cada actividad te
-          ayuda con alguna de ellas.
+          {modelo.dimensiones.every((d) => d.zonaPartida === 'FUERTE')
+            ? 'Empiezas con todas las partes fuertes. El camino te sirve para ponerlo a prueba y afinar lo que ya tienes claro.'
+            : 'Empezar con partes en camino o por trabajar es lo más común: para eso es el camino. Cada actividad te ayuda con alguna de ellas.'}
         </p>
         <p className="sx-d-pl-sealed">
           <LockKeyhole aria-hidden="true" />

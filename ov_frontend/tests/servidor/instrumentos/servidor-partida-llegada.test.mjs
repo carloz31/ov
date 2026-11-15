@@ -97,6 +97,20 @@ test('solo partida: la vista pide ítems y respuestas y muestra un banderín y �
   )
 })
 
+test('solo partida: el texto de la síntesis según haya partes en camino o por trabajar, o todas fuertes', async () => {
+  // Pedido del usuario junto con los umbrales de zona (3,25 y 2,25).
+  const app = preparar()
+  libroServidor(app, PARTIDA())
+  assert.match(vista(app), /Empezar con partes en camino o por trabajar es lo más común: para eso es el camino\./)
+  const fuertes = copia(jsonServidor('ruta/ruta-resultado-partida'))
+  for (const d of fuertes.dimensiones) if (d.zona) d.zona = 'FUERTE'
+  const otra = preparar()
+  libroServidor(otra, { 'APL-PARTIDA': fuertes })
+  const todas = vista(otra)
+  assert.match(todas, /Empiezas con todas las partes fuertes\. El camino te sirve para ponerlo a prueba/)
+  assert.doesNotMatch(todas, /lo más común/)
+})
+
 test('solo partida: si fallan las respuestas, la sección de ítems avisa y el panel de zonas sigue visible', async () => {
   const app = preparar({ respuestas: () => ({ status: 500, body: { detail: { mensaje: 'Falla de prueba' } } }) })
   libroServidor(app, PARTIDA())
