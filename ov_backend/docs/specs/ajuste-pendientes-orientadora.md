@@ -7,7 +7,7 @@ Rama `ajuste/pendientes-orientadora` desde `main` (ya tiene panel-estudiantes y 
 1. **Ítems de `contenido`:** las cinco filas de registro nombran ítems que `ruta` no tiene. Van en `datos/contenido.py`; `fijos.py` guarda las cinco de planes/llegada. Decidido.
 2. **Medidores:** no hay tabla de medidores; son columnas `entusiasmo`, `capacidad`, `recursos` (1–3) de `tarjeta_carrera`, y el estudiante ve «Poco/Algo/Mucho». Sus nombres solo están en el front. Los medidores se nombran por columna, y sus nombres y el texto del nivel («Poco») van en `parametros` de la fila. Textos: «Marcó «Poco» en «{medidor}» frente a su Plan A ({carrera}).{idea}». Decidido.
 3. Códigos reales (§9.1): «chocan» = `CHOCAN` (propia de `b1-3-contraste`); «Me da miedo equivocarme» = `MIEDO` (lista `ESTILOS`); la exclusiva de `b1-3-voz` = `NADIE`. Moneda: `DESANIME`; seguridad: `POCO`.
-4. `valores_contexto` (§9.2): `b4-5-moneda` guarda `marcadores.plan_a` / `plan_b` (el nombre de la carrera mostrado). `b5-1-seguridad` no tiene marcadores, pero `ecos_mostrar` guarda el eco `proyecto` con `carrera` del Plan A. Sí alcanza. La comparación es por nombre de carrera contra el plan cargado. Un intento sin ese valor guardado (no debería haber) no se omite: se anota en decisiones.
+4. `valores_contexto` (§9.2): `b4-5-moneda` guarda `marcadores.plan_a` / `plan_b` (el nombre de la carrera mostrado). `b5-1-seguridad` no tiene marcadores, pero `ecos_mostrar` guarda el eco `proyecto` con `carrera` del Plan A. Sí alcanza. La comparación es por nombre de carrera contra el plan cargado. Sin ese valor guardado, vale la observación 3 de abajo.
 5. `{plan_b}` sale de `marcadores.plan_b` y `{opcion}` de `opciones_elegidas[].texto`: tal como se mostró.
 6. El nombre del ajuste es `pendientes-orientadora` (como se invocó); el texto se llamaba `temas-conversar`.
 
@@ -52,7 +52,7 @@ Rama `ajuste/pendientes-orientadora` desde `main` (ya tiene panel-estudiantes y 
 
 ## Qué no cambia
 
-Avisos del Inicio, lista y «Ver»: no evalúan temas y sus presupuestos quedan iguales. `resolver_contexto`, `contexto_lectura.py`, el flujo del registro, el cálculo de resultados y los planes del estudiante no se tocan. Tampoco cambian `plan_fuera_de_areas`, las demás pestañas del perfil ni el diseño (`06-perfil-resumen.png`).
+Avisos del Inicio, lista y «Ver»: no evalúan temas y sus presupuestos quedan iguales. `resolver_contexto`, `contexto_lectura.py`, el flujo del registro, el cálculo de resultados y los planes del estudiante no se tocan. Tampoco cambian el criterio de `plan_fuera_de_areas` (sí sus lecturas, observación 4), las demás pestañas del perfil (salvo los medidores de Planes, observación 1) ni el diseño (`06-perfil-resumen.png`).
 
 ## Modelo de datos
 
