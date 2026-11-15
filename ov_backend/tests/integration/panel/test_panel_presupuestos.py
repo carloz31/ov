@@ -317,3 +317,32 @@ def test_los_estudiantes_de_ejemplo_muestran_cada_tema(ejemplos):
         todos = set(sesion.scalars(select(m.Alerta.codigo).join(m.GrupoAlerta).where(
             m.GrupoAlerta.codigo == 'para-conversar')))
     assert todos == set().union(*map(set, temas.values()))
+
+
+# --- Partida y llegada (ajuste color-partida-llegada) ---------------------------------------------------------------
+# Consultas medidas sobre los ejemplos de `contenido` antes del ajuste: detalle 7, `/respuestas` 3 (partida, llegada
+# y RIASEC), `/comparacion` 7. El detalle suma la lectura de zonas (`partida_resumen`); `/respuestas` de partida y
+# llegada suma la del parámetro (excepción a §4.4, decisión del usuario); RIASEC y `/comparacion` no suman nada.
+PRESUPUESTO_PARTIDA = {
+    '/cuentas/ori-carmen/panel/estudiantes/est-panel-1/tests/partida-llegada': 7,
+    '/cuentas/ori-carmen/panel/estudiantes/est-panel-5/tests/partida-llegada': 8,
+    '/cuentas/ori-carmen/panel/estudiantes/est-panel-7/tests/partida-llegada': 8,
+    '/cuentas/est-panel-7/actividades/b0-3/respuestas': 4,
+    '/cuentas/est-panel-7/actividades/b5-2/respuestas': 4,
+    '/cuentas/est-panel-7/actividades/h-intereses-1/respuestas': 3,
+    '/cuentas/est-panel-7/instrumentos/TEST-PARTIDA-LLEGADA/comparacion': 7,
+}
+
+
+def test_presupuesto_de_las_lecturas_de_partida_y_llegada(ejemplos):
+    from soporte_acceso import cuenta_de_peticion
+    aplicacion, cliente = ejemplos
+    medidas = {}
+    for ruta in PRESUPUESTO_PARTIDA:
+        cabeceras = {'Authorization': f'Bearer {token_de(aplicacion, cuenta_de_peticion(ruta, None))}'}
+        cliente.get(ruta, headers=cabeceras)  # la caché de definiciones ya cargada
+        with ContadorConsultas(aplicacion.state.motor_bd) as contador:
+            respuesta = cliente.get(ruta, headers=cabeceras)
+        assert respuesta.status_code == 200, respuesta.text
+        medidas[ruta] = contador.cantidad
+    assert medidas == PRESUPUESTO_PARTIDA

@@ -12,7 +12,7 @@ from app.schemas.instrumentos import ResultadoPublico
 from app.schemas.panel_estudiante import (
     AvanceEstudiantePerfil, BorrarNotaEntrada, EditarNotaEntrada, EscribirNotaEntrada, NotaBorrada, NotaPerfil,
     PaginaEstudiantes, PerfilEstudiante, PlanCompleto, PlanesEstudiante, RegistroLectura, RespuestasEstudiante,
-    RespuestasPartidaLlegada, TestsEstudiante,
+    DetallePartidaLlegada, TestsEstudiante,
 )
 from app.services.panel import estudiantes as estudiantes_panel
 from app.services.panel import intereses as intereses_panel
@@ -88,7 +88,7 @@ def consultar_tests(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora
 
 
 @router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/tests/partida-llegada",
-            response_model=RespuestasPartidaLlegada)
+            response_model=DetallePartidaLlegada)
 def consultar_partida_llegada(cuenta: str, estudiante: str, sesion: SesionBD, ahora: Ahora):
     return _consultar(lambda: perfil_tests.respuestas_partida_llegada(sesion, cuenta, estudiante, ahora))
 

@@ -16,3 +16,13 @@
 - Front: `nivelMedidor` vive en `adaptadoresPlanes.ts`, junto a `ESCALA_MEDIDOR`, y reemplaza a `textoMedidor` («Bajo/Medio/Alto») en la pestaña Planes del perfil (vistazo y plan completo), que nombra los medidores con `MEDIDORES` (decisión del usuario: las mismas palabras que el estudiante y que los temas). No va en `adaptadoresPanelEstudiante.ts` porque los adaptadores cargados aislados en las pruebas solo importan tipos y `fechas.ts`.
 - Front: con un solo tema oculto, el enlace dice «Ver el tema restante»; con más, «Ver los N temas restantes». El despliegue es estado local del bloque.
 - `scripts/verificar_contenido_front.py` compara `fijos.MEDIDORES_PLAN` y `fijos.NIVELES_MEDIDOR` con `MEDIDORES` y `ESCALA_MEDIDOR` del front.
+
+## Ajuste color-partida-llegada (detalle por dimensión y colores)
+
+- Las únicas definiciones de «respuesta baja» (`es_respuesta_baja`), de la dirección por valor (`direccion_respuesta`) y del cambio de una afirmación para la orientadora (`cambio_afirmacion`, que recibe la marca de baja de la llegada) están en `services/instrumentos/calculo.py`; las usan el panel y las lecturas del estudiante.
+- Un solo lector de la tabla `parametro`: `services/instrumentos/parametros.py` (`leer_parametros`, `entero`); `panel/comun.py` los reexporta (decisión del usuario).
+- Excepción a §4.4 (decisión del usuario): `GET …/actividades/{a}/respuestas` de una actividad de un instrumento COMPARACION lee el parámetro (+1 consulta: 3 → 4); RIASEC y las demás quedan en 3. `RespuestaPublica.baja` es nula fuera de COMPARACION.
+- `/comparacion` suma `ComparacionItem.direccion` sin consultas nuevas (el puntaje de la opción va en la misma SELECT; la escala y el inverso, de la caché).
+- El detalle de la orientadora pasa de 7 a 8 consultas (las zonas de `partida_resumen`, que el texto permite); la pestaña Tests baja de 34 a 33 (el parámetro se lee una vez). Los presupuestos de las rutas de partida y llegada, del panel y del estudiante, quedan en `test_panel_presupuestos.py` sobre los ejemplos de `contenido` (y no en `test_presupuestos_instrumentos.py`, que mide sobre `ruta`), porque ahí hay partida y llegada respondidas.
+- El detalle sin el instrumento de partida y llegada responde 404 (antes, una lista vacía); sin partida respondida, `estado = SIN_PARTIDA` y sin dimensiones.
+- Pruebas adaptadas (el texto autoriza el cambio de la respuesta del detalle y suma `direccion`): `test_panel_pestanas.py::test_tests_partida_y_llegada_en_tres_grupos_con_tope` (la forma del detalle) y `test_partida_llegada.py::test_comparacion_por_dimension_con_items_y_actividades_de_la_tematica` (`direccion` en los ítems).

@@ -250,15 +250,49 @@ class PartidaLlegada(BaseModel):
     grupos: list[GrupoAfirmaciones]
 
 
-class DimensionRespuestas(BaseModel):
+CambioAfirmacion = Literal["BAJO", "SIGUE_BAJA", "MEJORO", "IGUAL"]
+
+
+class AfirmacionDetalle(BaseModel):
+    """Una afirmación con las etiquetas que marcó, si cada una es baja y su único cambio (nulo en solo partida o si
+    falta una respuesta). Sin valores ni puntajes."""
+    item: str
+    enunciado: str
+    partida: str | None
+    llegada: str | None
+    partida_baja: bool
+    llegada_baja: bool
+    cambio: CambioAfirmacion | None
+
+
+class DimensionDetalle(BaseModel):
     codigo: str
     nombre: str
-    afirmaciones: list[Afirmacion]
+    zona_partida: Zona | None
+    zona_llegada: Zona | None
+    cambio: Cambio | None
+    afirmaciones: list[AfirmacionDetalle]
 
 
-class RespuestasPartidaLlegada(BaseModel):
-    """«Ver todas sus respuestas»: cada afirmación con las etiquetas que marcó, sin puntajes."""
-    dimensiones: list[DimensionRespuestas]
+class ConteoDetalle(BaseModel):
+    """Cuántas dimensiones hay por zona (solo partida) o por cambio de zona (con llegada); sin ceros."""
+    codigo: Zona | Cambio
+    cantidad: int
+
+
+class DetallePartidaLlegada(BaseModel):
+    """Ajuste color-partida-llegada: el detalle por dimensión, ordenado por lo que pide atención y ya clasificado; el
+    front solo pinta. `lectura` es la de la orientadora; `opciones_bajas`, el parámetro que define «respuesta baja»."""
+    instrumento: str
+    nombre: str
+    etiqueta: Etiqueta
+    lectura: str
+    estado: Literal["SIN_PARTIDA", "SOLO_PARTIDA", "CON_LLEGADA"]
+    fecha_partida: date | None
+    fecha_llegada: date | None
+    opciones_bajas: int
+    conteo: list[ConteoDetalle]
+    dimensiones: list[DimensionDetalle]
 
 
 class OtroCuestionario(BaseModel):

@@ -15,12 +15,13 @@ from app.core.contexto import contexto
 from app.exceptions import ErrorAccion
 from app.models import (
     Actividad, Aplicacion, AplicacionActividad, Bloque, Carrera, CheckIn, ConversacionVinculo, Cuenta, Espacio,
-    EstadoProgreso, EventoUso, FamiliaCarrera, Institucion, Instrumento, Parametro, ProgresoActividad, RespuestaItem,
+    EstadoProgreso, EventoUso, FamiliaCarrera, Institucion, Instrumento, ProgresoActividad, RespuestaItem,
     ResultadoInstrumento, RitmoAplicacion, Rol, Salon, SalonInstrumento, TarjetaCarrera, TipoEventoUso,
     VinculoFamiliar,
 )
 from app.services.avance import por_espacio, tramos_del_camino
 from app.services.instrumentos.consultas import intereses_por_cuenta
+from app.services.instrumentos.parametros import entero, leer_parametros  # noqa: F401 (reexportados)
 from app.services.investigaciones.acciones import exigir_orientadora
 
 SIN_EMPEZAR = "SIN_EMPEZAR"
@@ -71,13 +72,7 @@ def alcance_de_salones(sesion: Session, ids_salones: list[int], ahora: datetime,
 
 # --- Parámetros ----------------------------------------------------------------------------------
 
-def leer_parametros(sesion: Session) -> dict[str, str]:
-    return dict(sesion.execute(select(Parametro.codigo, Parametro.valor)).all())
-
-
-def entero(parametros: dict[str, str], codigo: str) -> int:
-    """El valor de un parámetro del panel; si falta, es un dato fijo ausente y la lectura falla."""
-    return int(parametros[codigo])
+# `leer_parametros` y `entero` son los de `instrumentos.parametros` (un solo lector de la tabla); se reexportan aquí.
 
 
 # --- Camino --------------------------------------------------------------------------------------

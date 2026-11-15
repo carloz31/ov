@@ -57,10 +57,12 @@ def test_tests_partida_y_llegada_en_tres_grupos_con_tope(aplicacion, cliente, se
     sesion.commit()
     grupos = {g['codigo']: g for g in pestana(cliente, '/tests', 'est-luis')['partida_llegada']['grupos']}
     assert len(grupos['BAJARON']['afirmaciones']) == 1
+    # Ajuste color-partida-llegada: el detalle por dimensión (sus casos, en `test_panel_detalle_partida.py`).
     todas = pestana(cliente, '/tests/partida-llegada', 'est-luis')['dimensiones']
-    assert [d['codigo'] for d in todas] == ['AUTO-A', 'AUTO-B', 'AUTO-C', 'AUTO-D', 'AUTO-E']
-    assert todas[0]['afirmaciones'][0] == {'item': 'AUTO-01', 'enunciado': todas[0]['afirmaciones'][0]['enunciado'],
-                                           'partida': 'Bastante de acuerdo', 'llegada': 'Nada de acuerdo'}
+    assert {d['codigo'] for d in todas} == {'AUTO-A', 'AUTO-B', 'AUTO-C', 'AUTO-D', 'AUTO-E'}
+    primera = next(a for d in todas for a in d['afirmaciones'] if a['item'] == 'AUTO-01')
+    assert (primera['partida'], primera['llegada'], primera['cambio']) == ('Bastante de acuerdo', 'Nada de acuerdo',
+                                                                           'BAJO')
     assert sum(len(d['afirmaciones']) for d in todas) == 19
 
 
