@@ -1635,6 +1635,64 @@ def validar_piezas(sesion: Session) -> None:
             raise ValueError(f'El ítem {codigo} no tiene la exclusiva {exclusiva}')
 
 
+# DATO DE PRUEBA (ajuste panel-entrevistas-configuracion §4): entrevistas de muestra para ver la tabla y el detalle de
+# Publicaciones de ori-carmen con datos. No las carga el cargador: las siembra `scripts/sembrar_panel_ejemplo.py` con
+# sus estudiantes de ejemplo (que `datos.cargar contenido` corre por defecto), en este orden. Enlaces de YouTube de
+# prueba (el video no se reproduce); títulos, personas y resúmenes inventados. `familia`: código del catálogo. Cada
+# entrevista lleva su estado y lo que la deja así: `reacciones` (cuenta, tipo, comentario), `favoritos` (cuentas),
+# `comentario` (de ori-carmen), `reportes` (cuenta, motivo; sobre la entrevista), `reporte_reaccion` (quien reporta,
+# motivo; sobre la primera reacción), `destacar` y `ocultar`. La sexta es de un salón egresado (`SALON_EGRESADO`).
+SALON_EGRESADO = ('2024-A', 2024, 'A', 'col-piloto', 'est-2024a-1', 'Valeria Quispe Ramos')
+ENTREVISTAS_EJEMPLO = (
+    {'autores': ('est-panel-7',), 'familia': '524',
+     'titulo': 'Un día revisando tableros eléctricos', 'profesional': 'Ing. Jorge Salazar',
+     'dedicacion': 'Supervisa instalaciones eléctricas en edificios de oficinas', 'duracion': '14 min',
+     'enlace': 'https://youtu.be/DATOprueba1',
+     'resumen': 'Jorge cuenta cómo revisa un tablero antes de energizarlo y por qué la seguridad va primero. Dice '
+                'que lo más difícil fue aprender a leer planos y que hoy trabaja con un equipo de cinco técnicos.',
+     'reacciones': (('est-panel-3', 'APRENDI', 'Aprendí que antes de tocar un tablero se corta la energía y se '
+                                               'comprueba dos veces.'),
+                    ('est-panel-4', 'ME_GUSTO', None)),
+     'comentario': 'Muy buena la pregunta sobre seguridad. ¿Qué otra duda te quedó para una segunda entrevista?'},
+    {'autores': ('est-panel-5', 'est-panel-8'), 'familia': '524',
+     'titulo': 'Energía solar en el colegio de mi barrio', 'profesional': 'Ing. Carla Mendoza',
+     'dedicacion': 'Diseña sistemas de paneles solares para colegios y postas', 'duracion': '18 min',
+     'enlace': 'https://youtu.be/DATOprueba2',
+     'resumen': 'Carla explica cómo calcula cuántos paneles necesita un colegio y qué estudió para llegar ahí. '
+                'Recomienda practicar matemáticas y visitar una instalación antes de decidir.',
+     'favoritos': ('est-panel-3',), 'destacar': True},
+    {'autores': ('est-panel-8',), 'familia': '351',
+     'titulo': 'Lo que hace una abogada laboralista', 'profesional': 'Dra. Rosa Huamán',
+     'dedicacion': 'Asesora a trabajadores en conflictos con sus empleadores', 'duracion': '21 min',
+     'enlace': 'https://youtu.be/DATOprueba3',
+     'resumen': 'Rosa cuenta un caso que ganó para un grupo de trabajadoras y cómo se prepara para una audiencia. '
+                'Dice que leer mucho y escribir con claridad es lo que más usa cada día.',
+     'favoritos': ('est-panel-3', 'est-panel-4', 'est-panel-5'), 'destacar': True},
+    {'autores': ('est-panel-7',), 'familia': '531',
+     'titulo': 'Construir puentes en la sierra', 'profesional': 'Ing. Luis Ccama',
+     'dedicacion': 'Dirige obras de puentes y caminos rurales', 'duracion': '16 min',
+     'enlace': 'https://youtu.be/DATOprueba4',
+     'resumen': 'Luis habla de una obra que duró dos años y de cómo coordina con la comunidad. Cuenta que pasa '
+                'muchas semanas fuera de casa y que eso fue lo más difícil al empezar.',
+     'reacciones': (('est-panel-4', 'CURIOSIDAD', '¿Cuánto tiempo pasa lejos de su familia en cada obra?'),),
+     'reportes': (('est-panel-3', 'VIDEO'),), 'reporte_reaccion': ('est-panel-3', 'OFENSIVO')},
+    {'autores': ('est-panel-5',), 'familia': '341',
+     'titulo': 'Economía para entender los precios', 'profesional': 'Mg. Daniel Torres',
+     'dedicacion': 'Analiza precios de alimentos para una institución pública', 'duracion': '12 min',
+     'enlace': 'https://youtu.be/DATOprueba5',
+     'resumen': 'Daniel explica por qué sube el precio del pan y qué datos revisa cada semana. Recomienda '
+                'aprender a usar hojas de cálculo desde el colegio.',
+     'ocultar': True},
+    {'autores': ('est-2024a-1',), 'familia': '511',
+     'titulo': 'Programar apps para emprendimientos', 'profesional': 'Ing. Milagros Ríos',
+     'dedicacion': 'Desarrolla aplicaciones para pequeños negocios', 'duracion': '19 min',
+     'enlace': 'https://youtu.be/DATOprueba6',
+     'resumen': 'Milagros cuenta cómo hizo su primera app para la bodega de su tía y qué aprendió en el instituto. '
+                'Dice que lo importante es practicar con proyectos pequeños.',
+     'favoritos': ('est-panel-3', 'est-panel-4', 'est-panel-5'), 'destacar': True},
+)
+
+
 def cargar(sesion: Session) -> None:
     cargador.cargar(sesion, sys.modules[__name__])
     validar_distribucion_items(sesion)

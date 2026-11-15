@@ -13,6 +13,10 @@ Se niega a correr sin `--desarrollo` o si la configuración dice `ENTORNO=produc
 O, de una vez, al cargar el conjunto (por defecto; `--sin-ejemplos` lo omite): `uv run python -m datos.cargar contenido --vaciar`.
 `datos.cargar` corre este script con ENTORNO=desarrollo y sin clave del LLM solo para este proceso, también en la EC2.
 
+Al final siembra las entrevistas de muestra de `contenido.ENTREVISTAS_EJEMPLO` (ajuste panel-entrevistas-configuracion):
+las de 5A con las acciones reales y la del salón egresado `contenido.SALON_EGRESADO` (2024-A, sin orientadora ni
+credenciales) directo, con los eventos registrados por el motor.
+
 Cada estudiante y apoderado de ejemplo puede ingresar con las credenciales de `CREDENCIALES` (DATO DE PRUEBA, correos
 de example.com, dominio reservado). No van en `datos/usuarios_prueba.txt`, que es solo de `ruta`.
 """
@@ -355,7 +359,121 @@ def sembrar_casos(s: Sembrador) -> list[str]:
             s.pedir('POST', '/acciones/revelar-resultado', {'cuenta': 'est-panel-8', 'instrumento': instrumento})
         s.senales('est-panel-8', 4, 4, 5)
     s.sesion.commit()
+    sembrar_entrevistas(s, hecho)
     return nuevos
+
+
+# --- Entrevistas de muestra (ajuste panel-entrevistas-configuracion §4) -------------------------------------------
+
+def _guion(s: Sembrador, codigo, familia):
+    """Una investigación nueva con guía lista sobre `familia` (la anterior ya se publicó)."""
+    s.pedir('POST', '/acciones/guardar-lo-que-pienso', {'cuenta': codigo, 'familia': familia, 'dia': TEXTO,
+                                                        'necesita': TEXTO, 'duda': TEXTO})
+    s.pedir('POST', '/acciones/guardar-guion', {'cuenta': codigo, 'descartadas': [], 'terminar': True, 'preguntas': [
+        {'origen': 'PROPIA', 'texto': 'DATO DE PRUEBA: ¿qué fue lo más difícil al empezar?'}]})
+
+
+def _publicar(s: Sembrador, datos) -> str:
+    autor, *coautores = datos['autores']
+    activa = s.sesion.scalar(select(m.Investigacion).where(
+        m.Investigacion.cuenta_id == s.cuenta(autor).id,
+        m.Investigacion.estado.in_((m.EstadoInvestigacion.EN_CURSO, m.EstadoInvestigacion.GUIA_LISTA))))
+    familia = None if activa is None else s.sesion.get(m.FamiliaCarrera, activa.familia_id).codigo
+    if activa is None or activa.estado != m.EstadoInvestigacion.GUIA_LISTA or familia != datos['familia']:
+        _guion(s, autor, datos['familia'])
+    ficha = {k: datos[k] for k in ('titulo', 'profesional', 'dedicacion', 'duracion', 'enlace', 'resumen')}
+    respuesta = s.pedir('POST', '/acciones/publicar-entrevista', {
+        'cuenta': autor, 'coautores': coautores, 'permiso': True, **ficha})
+    evento, = respuesta['por_cuenta'][autor]['eventos_registrados']
+    return evento['referencia']
+
+
+def _con_acciones(s: Sembrador, datos):
+    codigo = _publicar(s, datos)
+    sobre = {'entrevista': codigo}
+    for cuenta, tipo, comentario in datos.get('reacciones', ()):
+        s.pedir('POST', '/acciones/reaccionar-entrevista', {'cuenta': cuenta, **sobre, 'tipo': tipo,
+                                                            'comentario': comentario})
+    for cuenta in datos.get('favoritos', ()):
+        s.pedir('POST', '/acciones/marcar-favorito', {'cuenta': cuenta, 'tipo': 'ENTREVISTA', 'codigo': codigo})
+    if datos.get('comentario'):
+        s.pedir('POST', '/acciones/comentar-entrevista', {'cuenta': ORIENTADORA, **sobre, 'texto': datos['comentario']})
+    for cuenta, motivo in datos.get('reportes', ()):
+        s.pedir('POST', '/acciones/reportar', {'cuenta': cuenta, **sobre, 'motivo': motivo})
+    if datos.get('reporte_reaccion'):
+        cuenta, motivo = datos['reporte_reaccion']
+        reaccion = s.pedir('GET', f'/cuentas/{ORIENTADORA}/publicaciones/{codigo}')['reacciones'][0]['codigo']
+        s.pedir('POST', '/acciones/reportar', {'cuenta': cuenta, 'reaccion': reaccion, 'motivo': motivo})
+    if datos.get('destacar'):
+        s.pedir('POST', '/acciones/destacar-entrevista', {'cuenta': ORIENTADORA, **sobre, 'destacada': True})
+    if datos.get('ocultar'):
+        s.pedir('POST', '/acciones/ocultar-entrevista', {'cuenta': ORIENTADORA, **sobre})
+
+
+def _leyenda_directa(s: Sembrador, datos):
+    """La de un salón egresado, sin orientadora ni sección abierta: las filas se escriben directo y los eventos
+    (PUBLICA_ENTREVISTA, ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA, con su sello y su notificación) se registran con
+    las funciones del motor, como si hubiera pasado por las acciones."""
+    from uuid import uuid4
+
+    from app.core.contexto import usar_contexto
+    from app.models.base import sin_tildes
+    from app.services.investigaciones.acciones import evaluar_leyenda, registrar_en_autores
+    from app.services.motor.reglas import registrar_eventos
+    from soporte_ruta import FECHA
+
+    @usar_contexto
+    def escribir(sesion):
+        fecha = datetime.fromisoformat(FECHA)
+        autor = s.cuenta(datos['autores'][0])
+        familia = sesion.scalar(select(m.FamiliaCarrera).where(m.FamiliaCarrera.codigo == datos['familia']))
+        ficha = {k: datos[k] for k in ('titulo', 'profesional', 'dedicacion', 'duracion', 'enlace', 'resumen')}
+        entrevista = m.Entrevista(codigo=f'ENT-{uuid4().hex}', familia_id=familia.id, estado=m.EstadoEntrevista.PUBLICADA,
+                                  fecha_hora=fecha, busqueda=sin_tildes(
+                                      f"{ficha['titulo']} {ficha['profesional']} {ficha['dedicacion']} {familia.nombre}"),
+                                  **ficha)
+        sesion.add(entrevista)
+        sesion.flush()
+        sesion.add_all([m.EntrevistaAutor(entrevista_id=entrevista.id, cuenta_id=autor.id),
+                        m.Investigacion(codigo=f'INV-{uuid4().hex}', cuenta_id=autor.id, familia_id=familia.id,
+                                        estado=m.EstadoInvestigacion.PUBLICADA, piensa_dia=TEXTO,
+                                        piensa_necesita=TEXTO, piensa_duda=TEXTO, creada_en=fecha,
+                                        guia_lista_en=fecha, entrevista_id=entrevista.id)])
+        sesion.add_all(m.Favorito(cuenta_id=s.cuenta(fan).id, tipo=m.TipoFavorito.ENTREVISTA,
+                                  id_referencia=entrevista.id, fecha_hora=fecha) for fan in datos['favoritos'])
+        sesion.flush()
+        registrar_eventos(sesion, autor, [(m.TipoEventoUso.PUBLICA_ENTREVISTA, entrevista.id)], fecha)
+        entrevista.destacada_en, entrevista.destacada_por = fecha, s.cuenta(ORIENTADORA).id
+        sesion.flush()
+        registrar_en_autores(sesion, entrevista, m.TipoEventoUso.ENTREVISTA_DESTACADA, fecha)
+        evaluar_leyenda(sesion, entrevista, fecha)
+    escribir(s.sesion)
+    s.sesion.commit()
+
+
+def sembrar_entrevistas(s: Sembrador, hecho: set[str]) -> None:
+    """Las seis de `contenido.ENTREVISTAS_EJEMPLO`, en orden. Las de 5A usan las acciones reales (sus autores tienen la
+    sección INVESTIGACIONES abierta tras su siembra); la última, de un salón egresado, se escribe directo. Si un autor
+    ya existía antes de esta siembra, sus entrevistas no se siembran."""
+    codigo_salon, promocion, seccion, colegio, estudiante, nombre = contenido.SALON_EGRESADO
+    if s.cuenta(estudiante) is None:
+        salon = s.sesion.scalar(select(m.Salon).where(m.Salon.codigo == codigo_salon))
+        if salon is None:
+            colegio_id = s.sesion.scalar(select(m.Colegio.id).where(m.Colegio.codigo == colegio))
+            salon = m.Salon(codigo=codigo_salon, promocion=promocion, seccion=seccion, colegio_id=colegio_id)
+            s.sesion.add(salon)
+            s.sesion.flush()
+        s.sesion.add(m.Cuenta(codigo=estudiante, nombre=nombre, rol=m.Rol.ESTUDIANTE, salon_id=salon.id))
+        s.sesion.commit()
+        hecho = {*hecho, estudiante}
+        s.cliente.roles[estudiante] = m.Rol.ESTUDIANTE
+    for datos in contenido.ENTREVISTAS_EJEMPLO:
+        if not set(datos['autores']) <= hecho:
+            continue
+        if estudiante in datos['autores']:
+            _leyenda_directa(s, datos)
+        else:
+            _con_acciones(s, datos)
 
 
 def _alterna(item):

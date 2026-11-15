@@ -42,7 +42,7 @@ app/                    solo la aplicación; no lee archivos de datos
   core/                 parámetros, caché de definiciones y contexto de consultas
 datos/                  lo que llena la base: fijos.py, contenido.py, ruta.py, cargador.py, catalogo.py (CSV de archivos/catalogo/), cargar.py; tarjetas_registros/ (tarjetas del LLM v7)
 migrations/             migraciones de Alembic
-scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front, entrevistas de ejemplo, estudiantes de ejemplo del panel con `--desarrollo` (que `datos.cargar contenido` corre por defecto), lo que tres misiones de `contenido` piden fuera del camino en `prerrequisitos_contenido.py` (lo usan la siembra y `tests/soporte/soporte_contenido.py`, que lo importa de `scripts`), cuentas de una prueba desde un CSV con `crear_cuentas.py`)
+scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front, entrevistas de ejemplo, estudiantes y entrevistas de ejemplo del panel con `--desarrollo` (que `datos.cargar contenido` corre por defecto), lo que tres misiones de `contenido` piden fuera del camino en `prerrequisitos_contenido.py` (lo usan la siembra y `tests/soporte/soporte_contenido.py`, que lo importa de `scripts`), cuentas de una prueba desde un CSV con `crear_cuentas.py`)
 tests/                  pruebas (ver «Pruebas»)
 docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, historico/
 ```
