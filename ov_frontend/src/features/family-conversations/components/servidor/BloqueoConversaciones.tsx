@@ -21,11 +21,14 @@ const ENCONTRARA = [
 // F08 (A1): Conversaciones cerrada para el apoderado. El avance de su ruta y lo que falta, con el enlace a Mis
 // actividades; debajo, lo que encontrará (sin decir que el regalo es una carta). Sin diálogo de Lumi.
 export function BloqueoConversaciones({
+  apertura,
   completadas,
   total,
   siguiente,
   rutaActividades,
 }: {
+  // Ajuste desbloqueos: la actividad que abre la sección; sin ella, el texto de siempre.
+  apertura: string | null
   completadas: number
   total: number
   siguiente: { titulo: string; minutos: number } | null
@@ -45,7 +48,7 @@ export function BloqueoConversaciones({
             <LockKeyhole aria-hidden="true" size={36} />
           </span>
           <div>
-            <h3>Se abre al terminar sus actividades</h3>
+            <h3>{apertura ? `Se abre al completar «${apertura}»` : 'Se abre al terminar sus actividades'}</h3>
             <p>
               Primero le pedimos unas lecturas cortas sobre cómo acompañar sin decidir por él o ella. Con eso,
               las conversaciones tendrán mucho más sentido.

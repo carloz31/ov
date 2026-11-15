@@ -37,6 +37,8 @@ export function useFamiliaApoderado() {
   const [ideasAbiertas, setIdeasAbiertas] = useState(false)
   const [ayudaAbierta, setAyudaAbierta] = useState(false)
   const bloqueada = seccion.estado === 'error' && seccion.error?.tipo === 'bloqueado'
+  // Ajuste desbloqueos: el detalle del 409 (la regla de la sección), para decir qué actividad la abre.
+  const detalleBloqueo = seccion.estado === 'error' && seccion.error?.tipo === 'bloqueado' ? seccion.error.detalle : undefined
   const modelo: ModeloFamilia = {
     rol: 'apoderado',
     textos: textosApoderado(nombre),
@@ -55,6 +57,7 @@ export function useFamiliaApoderado() {
   return {
     m: modelo,
     bloqueada,
+    detalleBloqueo,
     hijos,
     hijo,
     elegirHijo,

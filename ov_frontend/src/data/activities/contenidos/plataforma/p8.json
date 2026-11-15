@@ -17,11 +17,11 @@
       "id": "p8-01",
       "tipo": "diapositiva",
       "etiqueta": "Para empezar",
-      "titulo": "Lo último de su ruta es una carta",
+      "titulo": "Para cerrar, volvamos a su carta",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Esta es la última actividad. Al terminarla, le vamos a pedir que le escriba unas líneas a su hijo o hija."
+          "texto": "Esta es la última actividad, y trata de su carta: las líneas para su hijo o hija que le pedimos al entrar a Conversaciones. Si ya la escribió, aquí verá cómo afinarla; si todavía no, cómo empezarla."
         },
         {
           "tipo": "parrafo",
@@ -29,7 +29,7 @@
         },
         {
           "tipo": "parrafo",
-          "texto": "No hace falta que sea larga ni que esté bien escrita. Antes de ver qué poner, le proponemos empezar por lo que más cuesta."
+          "texto": "No hace falta que sea larga ni que esté bien escrita. Antes de ver qué poner o qué cambiar, le proponemos empezar por lo que más cuesta."
         }
       ]
     },
@@ -279,11 +279,11 @@
           "pasos": [
             {
               "titulo": "Su carta",
-              "texto": "Se escribe en Conversaciones, y puede volver a editarla. Solo la leerá su hijo o hija: ni la orientadora ni el colegio la ven."
+              "texto": "Está en Conversaciones: puede escribirla o volver a editarla cuando quiera. Solo la leerá su hijo o hija: ni la orientadora ni el colegio la ven."
             },
             {
               "titulo": "Los temas para conversar",
-              "texto": "Se abren cuando guarde la carta. Son los que le adelantamos en la actividad anterior."
+              "texto": "Están en Conversaciones desde que guardó su carta. Si aún no la guardó, se abren al hacerlo."
             },
             {
               "titulo": "Su diploma y los resultados",
@@ -321,8 +321,8 @@
           "titulo": "Ahora",
           "pasos": [
             {
-              "titulo": "Escriba su carta",
-              "texto": "Vaya a Conversaciones. Un momento que recuerde, lo que siente y algo que hará."
+              "titulo": "Vuelva a su carta",
+              "texto": "Vaya a Conversaciones y léala otra vez, o escríbala si aún no lo hizo. Un momento que recuerde, lo que siente y algo que hará."
             }
           ]
         },

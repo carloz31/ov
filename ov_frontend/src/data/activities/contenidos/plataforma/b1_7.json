@@ -203,11 +203,11 @@
       "id": "b1-7-12",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Lo que explicó sobre mirar lejos y mirar cerca te lo dejé en la mochila: «El plan de vida». Vamos, que el volcán no queda cerca."
+      "texto": "Lo que explicó sobre mirar lejos y mirar cerca te lo dejé en la mochila: «El plan de vida». Y en la ciudad abrió el Centro de investigación: dicen que Anselmo busca a alguien con preguntas. Vamos, que el volcán no queda cerca."
     }
   ],
   "recompensa": {
-    "mensajeFin": "El artefacto vuelve a moverse: apunta al bosque del volcán. Lo que imaginaste no es una promesa; es una dirección."
+    "mensajeFin": "El artefacto vuelve a moverse: apunta al bosque del volcán. Lo que imaginaste no es una promesa; es una dirección. En la ciudad se abrió la misión «Una entrevista para Anselmo»."
   },
   "mapa": {
     "x": 920,

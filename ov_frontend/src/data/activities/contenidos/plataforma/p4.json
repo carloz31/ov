@@ -420,6 +420,10 @@
         },
         {
           "tipo": "parrafo",
+          "texto": "Con esta actividad se le abre Conversaciones: temas para responder con su hijo o hija, cada uno por su lado. Al entrar, lo primero que le pedimos es una carta breve para él o ella. Escríbala como le salga: puede editarla cuando quiera, y al final de su ruta verá cómo afinarla."
+        },
+        {
+          "tipo": "parrafo",
           "texto": "Al terminar recibe la ficha «Lo que no se dice en casa». Queda en Mis actividades, con las señales para darse cuenta y qué hacer cuando se lo cuente."
         }
       ]
