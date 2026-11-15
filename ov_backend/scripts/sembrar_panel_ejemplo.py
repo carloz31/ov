@@ -9,6 +9,11 @@ familia se escriben directo. No es parte de ningún conjunto ni se despliega. Si
 Se niega a correr sin `--desarrollo` o si la configuración dice `ENTORNO=produccion`:
 
     uv run python scripts/sembrar_panel_ejemplo.py --desarrollo
+
+O, de una vez, al cargar el conjunto: `uv run python -m datos.cargar contenido --vaciar --con-ejemplos`.
+
+Cada estudiante y apoderado de ejemplo puede ingresar con las credenciales de `CREDENCIALES` (DATO DE PRUEBA, correos
+de example.com, dominio reservado). No van en `datos/usuarios_prueba.txt`, que es solo de `ruta`.
 """
 
 import argparse
@@ -45,6 +50,12 @@ ESTUDIANTES = (
     ('est-panel-8', 'Fabio Flores Vega', 'Avanzado y sin avisos'),
 )
 # DATO DE PRUEBA: apoderados de los casos 5 a 8 (código, nombre, estudiante, parentesco).
+# DATO DE PRUEBA: (cuenta, correo, contraseña) para ingresar como cada estudiante y apoderado de ejemplo.
+CREDENCIALES = (
+    *((f'est-panel-{n}', f'panel{n}.estudiante@example.com', f'Panel{n}-2026!') for n in range(1, 9)),
+    *((f'apo-panel-{n}', f'panel{n}.apoderado@example.com', f'ApoPanel{n}-2026!') for n in (5, 6, 7, 8)),
+)
+
 APODERADOS = (('apo-panel-5', 'José Paredes', 'est-panel-5', 'padre'),
               ('apo-panel-6', 'Marta Ruiz', 'est-panel-6', 'madre'),
               ('apo-panel-7', 'Rocío Rojas', 'est-panel-7', 'madre'),
@@ -83,15 +94,21 @@ class Sembrador:
         return self.sesion.scalar(select(m.Cuenta).where(m.Cuenta.codigo == codigo))
 
     def crear_cuentas(self) -> list[str]:
+        from datos.cargador import _hash
         salon = self.sesion.scalar(select(m.Salon).where(m.Salon.codigo == SALON))
+        acceso = {codigo: (correo, _hash(contrasena)) for codigo, correo, contrasena in CREDENCIALES}
         nuevos = []
         for codigo, nombre, _ in ESTUDIANTES:
             if self.cuenta(codigo) is None:
-                self.sesion.add(m.Cuenta(codigo=codigo, nombre=nombre, rol=m.Rol.ESTUDIANTE, salon_id=salon.id))
+                correo, clave = acceso[codigo]
+                self.sesion.add(m.Cuenta(codigo=codigo, nombre=nombre, rol=m.Rol.ESTUDIANTE, salon_id=salon.id,
+                                         correo=correo, contrasena_hash=clave))
                 nuevos.append(codigo)
         for codigo, nombre, estudiante, parentesco in APODERADOS:
             if estudiante in nuevos:
-                self.sesion.add(m.Cuenta(codigo=codigo, nombre=nombre, rol=m.Rol.APODERADO))
+                correo, clave = acceso[codigo]
+                self.sesion.add(m.Cuenta(codigo=codigo, nombre=nombre, rol=m.Rol.APODERADO, correo=correo,
+                                         contrasena_hash=clave))
         self.sesion.flush()
         for codigo, _, estudiante, parentesco in APODERADOS:
             if estudiante in nuevos:

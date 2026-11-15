@@ -15,11 +15,10 @@ from app.models import (
     ActividadItem, Aplicacion, Dimension, Instrumento, ItemInstrumento, MomentoAplicacion, OpcionEscala,
     ProgresoActividad, RespuestaItem, ResultadoInstrumento, TipoResultado,
 )
-from app.schemas.instrumentos import ResultadoPublico
 from app.schemas.panel_estudiante import (
     Afirmacion, AfirmacionDetalle, BarraInteres, ConteoDetalle, DetallePartidaLlegada, DimensionDetalle,
-    DimensionInteres, GrupoAfirmaciones, OtroCuestionario, PartidaLlegada, PlanFrenteAreas, TestIntereses,
-    TestsEstudiante,
+    DimensionInteres, GrupoAfirmaciones, OtroCuestionario, PartidaLlegada, PlanFrenteAreas, ResultadoCompletoPerfil,
+    TestIntereses, TestsEstudiante,
 )
 from app.services.instrumentos.calculo import calcular_puntaje_item, cambio_afirmacion, es_respuesta_baja
 from app.services.instrumentos.consultas import (
@@ -310,9 +309,9 @@ def respuestas_partida_llegada(sesion: Session, codigo_cuenta: str, codigo_estud
 
 @usar_contexto
 def resultado_completo(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, aplicacion: str,
-                       ahora: datetime) -> ResultadoPublico:
-    """El resultado vigente de esa aplicación con los textos de la orientadora. Partida y llegada no: sus puntajes no
-    se exponen (su vista es la de Tests)."""
+                       ahora: datetime) -> ResultadoCompletoPerfil:
+    """El resultado vigente de esa aplicación con los textos de la orientadora y el nombre y la descripción del
+    instrumento (de la caché). Partida y llegada no: sus puntajes no se exponen (su vista es la de Tests)."""
     acceso = estudiante_de_orientadora(sesion, codigo_cuenta, codigo_estudiante, ahora)
     elegida = next((a for a in contexto(sesion).definiciones.listar(Aplicacion) if a.codigo == aplicacion), None)
     instrumento = contexto(sesion).definiciones.obtener(Instrumento, elegida.instrumento_id) if elegida else None
@@ -321,4 +320,6 @@ def resultado_completo(sesion: Session, codigo_cuenta: str, codigo_estudiante: s
     resultado = _vigente(sesion, acceso.estudiante.id, [elegida.id])
     if resultado is None:
         raise ErrorAccion("Resultado no encontrado", estado_http=404)
-    return representar_resultado(sesion, resultado, audiencia="orientadora", nombre=acceso.estudiante.nombre)
+    representado = representar_resultado(sesion, resultado, audiencia="orientadora", nombre=acceso.estudiante.nombre)
+    return ResultadoCompletoPerfil(**dict(representado), nombre_instrumento=instrumento.nombre,
+                                   descripcion_instrumento=instrumento.descripcion or "")

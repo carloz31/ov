@@ -79,6 +79,9 @@ def test_tests_intereses_con_resultado_y_resultado_completo_de_orientadora(aplic
     completo = pestana(cliente, '/tests/APL-RIASEC/resultado')
     assert completo['mensaje'] == instrumento.mensaje_orientadora.replace('{nombre}', 'Ana')
     assert completo['lectura'] == instrumento.lectura_orientadora.replace('{nombre}', 'Ana')
+    # «Qué mide este cuestionario»: el nombre y la descripción del instrumento, como los recibe el apoderado.
+    assert (completo['nombre_instrumento'], completo['descripcion_instrumento']) == (
+        instrumento.nombre, instrumento.descripcion)
     pestana(cliente, '/tests/APL-PARTIDA/resultado', esperado=404)  # sus puntajes no se exponen
     pestana(cliente, '/tests/APL-RIASEC/resultado', 'est-luis', esperado=404)
 

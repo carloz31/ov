@@ -6,6 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.schemas.instrumentos import ResultadoPublico
+
 from app.schemas.panel import SalonPanel
 
 EstadoTest = Literal["LISTO", "POR_REVISAR", "EN_CURSO", "SIN_EMPEZAR"]
@@ -248,6 +250,13 @@ class PartidaLlegada(BaseModel):
     mensaje: str
     resumen: PartidaResumen
     grupos: list[GrupoAfirmaciones]
+
+
+class ResultadoCompletoPerfil(ResultadoPublico):
+    """El resultado completo de un cuestionario para la orientadora, con el nombre y la descripción del instrumento
+    («Qué mide este cuestionario»), que el apoderado recibe en su catálogo y la orientadora no pedía."""
+    nombre_instrumento: str
+    descripcion_instrumento: str
 
 
 CambioAfirmacion = Literal["BAJO", "SIGUE_BAJA", "MEJORO", "IGUAL"]

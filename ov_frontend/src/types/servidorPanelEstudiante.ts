@@ -1,3 +1,4 @@
+import type { ResultadoPublico } from './servidorInstrumentos'
 // Ajuste panel-estudiantes: copia de `app/schemas/panel_estudiante.py` (lista y perfil del estudiante para la
 // orientadora). Ninguna respuesta trae diario, cartas, puntajes de partida y llegada ni datos del LLM.
 import type { SalonPanel } from './servidorPanel'
@@ -145,6 +146,11 @@ export type PartidaLlegada = {
   mensaje: string
   resumen: PartidaResumen
   grupos: GrupoAfirmaciones[]
+}
+// El resultado completo de un cuestionario para la orientadora, con el nombre y la descripción del instrumento.
+export type ResultadoCompletoPerfil = ResultadoPublico & {
+  nombre_instrumento: string
+  descripcion_instrumento: string
 }
 // Ajuste color-partida-llegada: «Ver detalle por dimensión», ya ordenado y clasificado por el servidor.
 export type CambioAfirmacion = 'BAJO' | 'SIGUE_BAJA' | 'MEJORO' | 'IGUAL'

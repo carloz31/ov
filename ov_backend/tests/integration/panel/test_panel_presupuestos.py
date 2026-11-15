@@ -361,3 +361,13 @@ def test_los_ejemplos_de_partida_y_llegada_muestran_cada_caso(ejemplos):
     assert dos['estado'] == 'SOLO_PARTIDA'
     bajas = {a['item'] for d in dos['dimensiones'] for a in d['afirmaciones'] if a['partida_baja']}
     assert 'AUTO-04' in bajas and 'AUTO-05' not in bajas
+
+
+def test_los_estudiantes_y_apoderados_de_ejemplo_pueden_ingresar(ejemplos):
+    """Sus credenciales de prueba están en `CREDENCIALES` de `scripts/sembrar_panel_ejemplo.py`."""
+    from sembrar_panel_ejemplo import CREDENCIALES
+    _, cliente = ejemplos
+    for codigo, correo, contrasena in (CREDENCIALES[4], CREDENCIALES[-1]):
+        respuesta = cliente.post('/sesion/ingresar', json={'usuario': correo, 'contrasena': contrasena})
+        assert respuesta.status_code == 200, respuesta.text
+        assert respuesta.json()['cuenta']['codigo'] == codigo

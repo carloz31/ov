@@ -5,6 +5,7 @@
     "codigo": "SIA",
     "hay_empate": false
   },
+  "descripcion_instrumento": "Descubre qué tipo de actividades te atraen y qué ocupaciones se parecen a ti.",
   "dimensiones": [
     {
       "codigo": "R",
@@ -265,6 +266,7 @@
   "instrumento": "TEST-RIASEC",
   "lectura": "Perfil de intereses RIASEC (Holland) en seis tipos, de 0 a 100. Las ocupaciones afines salen de comparar el perfil del estudiante con el de cada ocupación (porcentaje de parecido) y las familias de carreras, de las ocupaciones más afines. Es preferencia, no aptitud. Un perfil poco marcado o plano es información (intereses aún en formación), no un resultado fallido: conviene proponer experiencias antes que recomendar. Contrástelo con sus registros y con el cuestionario de partida y llegada.",
   "mensaje": "Resultado exploratorio: insumo para la tutoría, no diagnóstico.",
+  "nombre_instrumento": "Test de intereses",
   "ocupaciones": [
     {
       "banda": "MUY_AFIN",

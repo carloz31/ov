@@ -263,7 +263,7 @@ test('detalle por dimensión: sin partida, solo partida y con llegada, en el ord
   // Los bloques salen en el orden del servidor, con la rejilla de dos columnas.
   const posiciones = datosPartida.dimensiones.map((d) => partidaHtml.indexOf(`>${d.nombre}<`))
   assert.deepEqual(posiciones, [...posiciones].sort((a, b) => a - b))
-  assert.match(partidaHtml, /lg:grid-cols-2/)
+  assert.match(partidaHtml, /xl:grid-cols-2/)
   const baja = datosPartida.dimensiones.flatMap((d) => d.afirmaciones).find((a) => a.partida_baja)
   assert.ok(baja, 'el caso 5 tiene alguna respuesta baja')
   assert.match(partidaHtml, new RegExp(`bg-warning-soft text-warning-text">${baja.partida}<`))
@@ -276,7 +276,7 @@ test('detalle por dimensión: sin partida, solo partida y con llegada, en el ord
   assert.match(llegada, /\d+ bajó|\d+ bajaron/)
   assert.match(llegada, /Bajó Sigue baja Mejoró Igual/)
   assert.match(llegada, /Afirmación Partida · .* Llegada · .* Cambio/)
-  assert.doesNotMatch(llegadaHtml, /lg:grid-cols-2/)
+  assert.doesNotMatch(llegadaHtml, /xl:grid-cols-2/)
   const sigue = datosLlegada.dimensiones.flatMap((d) => d.afirmaciones).find((a) => a.cambio === 'SIGUE_BAJA')
   assert.ok(sigue, 'el caso 7 tiene una afirmación que sube y sigue baja')
   assert.match(llegadaHtml, /bg-warning-soft text-warning-text">Sigue baja</)

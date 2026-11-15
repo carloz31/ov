@@ -11,7 +11,7 @@ import type {
   RegistroLectura,
   RespuestaServidor,
   RespuestasEstudiante,
-  ResultadoPublico,
+  ResultadoCompletoPerfil,
   TestsEstudiante,
 } from '@/types/servidor'
 
@@ -71,7 +71,7 @@ export function obtenerResultado(
   cuenta: string,
   estudiante: string,
   aplicacion: string,
-): Promise<RespuestaServidor<ResultadoPublico>> {
+): Promise<RespuestaServidor<ResultadoCompletoPerfil>> {
   return obtener(perfil(cuenta, estudiante, `/tests/${encodeURIComponent(aplicacion)}/resultado`))
 }
 

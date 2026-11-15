@@ -53,7 +53,7 @@ function TablaDimension({ d, datos }: { d: DimensionDetalle; datos: Detalle }) {
   const conLlegada = datos.estado === 'CON_LLEGADA'
   return (
     <div className="overflow-x-auto">
-      <table className={conLlegada ? 'w-full min-w-[640px] text-sm' : 'w-full min-w-[420px] text-sm'}>
+      <table className={conLlegada ? 'w-full min-w-[640px] text-sm' : 'w-full min-w-[300px] text-sm'}>
         <thead className="bg-muted text-left text-xs">
           <tr>
             <th scope="col" className="px-3 py-2">
@@ -80,7 +80,7 @@ function TablaDimension({ d, datos }: { d: DimensionDetalle; datos: Detalle }) {
             return (
               <tr key={a.item} className="border-t border-border">
                 <td className="px-3 py-2">«{a.enunciado}»</td>
-                <td className="px-3 py-2">
+                <td className="whitespace-nowrap px-3 py-2">
                   <ChipPerfil tono={!conLlegada && a.partida_baja ? 'aviso' : 'neutro'}>
                     {a.partida ?? 'Sin responder'}
                   </ChipPerfil>
@@ -138,8 +138,8 @@ export function DetallePartidaLlegada({ datos }: { datos: Detalle }) {
                   </ChipPerfil>
                 ))
               ) : (
-                <span className="flex flex-wrap items-center gap-2 text-muted-foreground">
-                  <ChipPerfil tono="aviso">Respuesta baja</ChipPerfil>
+                <span className="text-muted-foreground">
+                  <ChipPerfil tono="aviso">Respuesta baja</ChipPerfil>{' '}
                   {textoRespuestaBaja(datos.opciones_bajas)}
                 </span>
               )}
@@ -148,7 +148,7 @@ export function DetallePartidaLlegada({ datos }: { datos: Detalle }) {
         )}
       </BloquePanel>
       {datos.dimensiones.length > 0 && (
-        <div className={conLlegada ? 'grid gap-4' : 'grid gap-4 lg:grid-cols-2 lg:items-start'}>
+        <div className={conLlegada ? 'grid gap-4' : 'grid gap-4 xl:grid-cols-2 xl:items-start'}>
           {datos.dimensiones.map((d) => (
             <Card key={d.codigo} className="flex min-w-0 flex-col gap-4 rounded-xl p-5 sm:p-6">
               <header className="flex flex-wrap items-center justify-between gap-2">

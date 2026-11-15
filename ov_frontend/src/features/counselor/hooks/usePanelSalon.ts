@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { alternarOrden, ordenValido } from '@/lib/servidor/adaptadoresPanel'
 import { appPaths } from '@/routes/paths'
-import { datosSesion } from '@/store/accesoStore'
+import { useDatosSesion } from '@/store/accesoStore'
 import type { ColumnaInteres, ConjuntoPanel } from '@/types/servidor'
 
 export const TODOS_LOS_SALONES = 'all'
@@ -15,7 +15,7 @@ export type PedidoVer = { titulo: string; conjunto: ConjuntoPanel; valor?: strin
 // así las listas completas heredan el orden y «Volver» regresa a la misma pestaña y salón.
 export function usePanelSalon() {
   const [params, setParams] = useSearchParams()
-  const salones = datosSesion().salones
+  const salones = useDatosSesion().salones
   const principal = salones.find((s) => s.es_principal)?.codigo ?? salones[0]?.codigo ?? TODOS_LOS_SALONES
   const pedido = params.get('salon')
   const salon = pedido === TODOS_LOS_SALONES || salones.some((s) => s.codigo === pedido) ? pedido! : principal

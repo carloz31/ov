@@ -8,11 +8,10 @@ from app.core.parametros import LIMITE_PAGINA_CATALOGO
 from app.dependencies import Ahora, SesionBD, ejecutar_accion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.schemas.panel import EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel
-from app.schemas.instrumentos import ResultadoPublico
 from app.schemas.panel_estudiante import (
     AvanceEstudiantePerfil, BorrarNotaEntrada, EditarNotaEntrada, EscribirNotaEntrada, NotaBorrada, NotaPerfil,
     PaginaEstudiantes, PerfilEstudiante, PlanCompleto, PlanesEstudiante, RegistroLectura, RespuestasEstudiante,
-    DetallePartidaLlegada, TestsEstudiante,
+    DetallePartidaLlegada, ResultadoCompletoPerfil, TestsEstudiante,
 )
 from app.services.panel import estudiantes as estudiantes_panel
 from app.services.panel import intereses as intereses_panel
@@ -94,7 +93,7 @@ def consultar_partida_llegada(cuenta: str, estudiante: str, sesion: SesionBD, ah
 
 
 @router.get("/cuentas/{cuenta}/panel/estudiantes/{estudiante}/tests/{aplicacion}/resultado",
-            response_model=ResultadoPublico)
+            response_model=ResultadoCompletoPerfil)
 def consultar_resultado(cuenta: str, estudiante: str, aplicacion: str, sesion: SesionBD, ahora: Ahora):
     return _consultar(lambda: perfil_tests.resultado_completo(sesion, cuenta, estudiante, aplicacion, ahora))
 

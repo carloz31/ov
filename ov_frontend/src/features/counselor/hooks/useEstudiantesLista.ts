@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { appPaths } from '@/routes/paths'
-import { datosSesion } from '@/store/accesoStore'
+import { useDatosSesion } from '@/store/accesoStore'
 import { useListaEstudiantes } from '@/store/servidor/panelEstudiante'
 import { TODOS_LOS_SALONES } from './usePanelSalon'
 
@@ -14,7 +14,7 @@ export const ESPERA_BUSQUEDA = 300
 // (`?q=`), aviso, estado del test, acceso rápido y orden viven en la URL; el perfil la recibe para «Volver».
 export function useEstudiantesLista() {
   const [params, setParams] = useSearchParams()
-  const salones = datosSesion().salones
+  const salones = useDatosSesion().salones
   const principal = salones.find((s) => s.es_principal)?.codigo ?? salones[0]?.codigo ?? TODOS_LOS_SALONES
   const pedido = params.get('salon')
   const salon = pedido === TODOS_LOS_SALONES || salones.some((s) => s.codigo === pedido) ? pedido! : principal

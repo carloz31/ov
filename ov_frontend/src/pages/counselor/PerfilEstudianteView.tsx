@@ -46,7 +46,16 @@ function ResultadoCompleto({
       rutas={appPaths.counselor.explorar}
     />
   ) : (
-    <QuestionnaireDetailContent servidor={resultadoFamilia(remoto, [])} nombre={nombre} />
+    <QuestionnaireDetailContent
+      servidor={resultadoFamilia(remoto, [
+        {
+          codigo: remoto.instrumento,
+          nombre: remoto.nombre_instrumento,
+          descripcion: remoto.descripcion_instrumento,
+        },
+      ])}
+      nombre={nombre}
+    />
   )
 }
 
