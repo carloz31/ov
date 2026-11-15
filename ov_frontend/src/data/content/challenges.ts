@@ -240,7 +240,7 @@ export const desafiosPlataforma: Challenge[] = [
       { tipo: 'ficha', id: 'F13', titulo: 'Salarios, demanda e informalidad' },
     ],
     banco: [],
-    recompensa: { titulo: 'El puesto cerró', lugar: 'la feria del malecón', href: '/student/map',
+    recompensa: { titulo: 'El puesto cerró', lugar: 'la caseta de Clotilde', href: '/student/map',
       mensajeFin: 'Un salario promedio es un dato de otras personas. Sirve para ubicarte, no para saber cuánto vas a ganar tú.' },
   },
   {
@@ -255,7 +255,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Cada anuncio que desmontes (qué verificar, qué promesa es dudosa, qué modalidad de admisión aplica) le quita un banderín. ' +
       'Sin banderines, el stand se cierra.',
     ilustracion: '/images/student/feriante.webp',
-    bloque: 3, orden: 7, obligatoria: true,
+    bloque: 3, orden: 7, obligatoria: false,
     ubicacion: 'Puerto, feria del malecón',
     duracionEstimadaMin: 8,
     personajeIds: ['feriante', 'companero'],
@@ -266,7 +266,7 @@ export const desafiosPlataforma: Challenge[] = [
       { tipo: 'ficha', id: 'F15', titulo: 'Cómo se ingresa' },
     ],
     banco: [],
-    recompensa: { titulo: 'El stand se cerró', lugar: 'la caseta de Clotilde', href: '/student/map',
+    recompensa: { titulo: 'El stand se cerró', lugar: 'el puerto', href: '/student/map',
       mensajeFin: 'Postular es un proceso con reglas publicadas. Si no encuentras las reglas, no confíes en la promesa.' },
   },
   {
@@ -281,7 +281,7 @@ export const desafiosPlataforma: Challenge[] = [
       'que no se contó, un crédito calculado con el sueldo equivocado o una beca que nadie pidió. Cada hueco que encuentres es un ' +
       'contrato que no se firma. Sin contratos, Clotilde cierra la caseta.',
     ilustracion: '/images/student/prestamista.webp',
-    bloque: 3, orden: 9, obligatoria: true,
+    bloque: 3, orden: 9, obligatoria: false,
     ubicacion: 'Puerto, caseta junto al muelle',
     duracionEstimadaMin: 8,
     personajeIds: ['prestamista', 'companero'],
@@ -289,7 +289,7 @@ export const desafiosPlataforma: Challenge[] = [
     vidasEnemigo: 5, vidasEstudiante: 3, opcionesPorPregunta: 4,
     requisitos: [{ tipo: 'ficha', id: 'F16', titulo: 'Cuánto cuesta y cómo pagarlo' }],
     banco: [],
-    recompensa: { titulo: 'La caseta cerró', lugar: 'el malecón al atardecer', href: '/student/map',
+    recompensa: { titulo: 'La caseta cerró', lugar: 'el puerto', href: '/student/map',
       mensajeFin: 'Antes de decidir dónde, calcula cuánto cuesta todo el camino y de dónde saldría cada sol.' },
   },
   {

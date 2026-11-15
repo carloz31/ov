@@ -6,10 +6,10 @@
   "subtitulo": "La caseta de Clotilde",
   "escenario": "playa",
   "bloque": 3,
-  "orden": 8,
+  "orden": 6,
   "obligatoria": true,
   "requisitos": [
-    "b3-7"
+    "b3-5"
   ],
   "ubicacion": "Puerto, caseta de préstamos junto al muelle",
   "duracionEstimadaMin": 12,
@@ -283,7 +283,7 @@
             [
               "Admisión",
               "Una vez",
-              "Inscripción al concurso, carpeta, exámenes médicos"
+              "Inscripción al examen de admisión, carpeta, exámenes médicos"
             ],
             [
               "Matrícula",
@@ -411,7 +411,7 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Lo de los costos te lo dejé en la mochila: «Cuánto cuesta y cómo pagarlo». Y en tu plan se abrió «Cómo lo haría realidad»."
+      "texto": "Lo de los costos te lo dejé en la mochila: «Cuánto cuesta y cómo pagarlo». Y en «Mis planes» se abrió «Cómo lo haría realidad»: ahí anotas por cuál de los caminos de Ulises irías, dónde estudiarías y cuánto costaría."
     }
   ],
   "recompensa": {

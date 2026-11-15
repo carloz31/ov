@@ -6,8 +6,8 @@
   "subtitulo": "El stand del Faro Dorado",
   "escenario": "playa",
   "bloque": 3,
-  "orden": 6,
-  "obligatoria": true,
+  "orden": 8,
+  "obligatoria": false,
   "requisitos": [
     "b3-5"
   ],
@@ -408,6 +408,7 @@
   "mapa": {
     "x": 460,
     "y": 550,
-    "icono": "informativa"
+    "icono": "informativa",
+    "origen": "b3-5"
   }
 }

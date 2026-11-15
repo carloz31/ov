@@ -72,11 +72,11 @@
     },
     {
       "estado": "COMPLETO",
-      "hechas": 10,
+      "hechas": 7,
       "nombre": "Exploro el mundo profesional",
       "numero": 4,
       "siguiente": null,
-      "total": 10
+      "total": 7
     },
     {
       "estado": "COMPLETO",

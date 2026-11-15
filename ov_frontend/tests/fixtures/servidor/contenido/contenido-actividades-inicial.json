@@ -873,108 +873,15 @@
             "regla": "R-B3"
           }
         ],
-        "codigo": "b3-6",
-        "contenido": "b3_6",
-        "descripcion": "El stand de la Universidad del Faro Dorado promete de todo. Aprende qué verificar y cómo se ingresa.",
-        "duracion_estimada_min": 12,
-        "estado": "BLOQUEADA",
-        "orden": 6,
-        "requerida": true,
-        "tipo": "INFORMATIVA",
-        "titulo": "Elegir una institución",
-        "visibilidad": "SIEMPRE",
-        "visible": true
-      },
-      {
-        "bloqueo": [
-          {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": "B2",
-                "requerido": 1,
-                "texto": null,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "COMPLETA_BLOQUE"
-              }
-            ],
-            "evaluador_especial": null,
-            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
-            "regla": "R-B3"
-          }
-        ],
-        "codigo": "b3-7",
-        "contenido": "b3_7",
-        "descripcion": "Desmonta los anuncios del Feriante uno por uno: qué verificar, qué promesa es dudosa, qué admisión aplica.",
-        "duracion_estimada_min": 8,
-        "estado": "BLOQUEADA",
-        "orden": 7,
-        "requerida": true,
-        "tipo": "BATALLA",
-        "titulo": "Batalla de las instituciones",
-        "visibilidad": "SIEMPRE",
-        "visible": true
-      },
-      {
-        "bloqueo": [
-          {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": "B2",
-                "requerido": 1,
-                "texto": null,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "COMPLETA_BLOQUE"
-              }
-            ],
-            "evaluador_especial": null,
-            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
-            "regla": "R-B3"
-          }
-        ],
         "codigo": "b3-8",
         "contenido": "b3_8",
         "descripcion": "Clotilde presta «fácil, rápido y sin preguntas». Antes de firmar, todo lo que cuesta estudiar y cómo pagarlo.",
         "duracion_estimada_min": 12,
         "estado": "BLOQUEADA",
-        "orden": 8,
+        "orden": 6,
         "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Cuánto cuesta estudiar",
-        "visibilidad": "SIEMPRE",
-        "visible": true
-      },
-      {
-        "bloqueo": [
-          {
-            "condiciones_faltantes": [
-              {
-                "actual": 0,
-                "cumplida": false,
-                "referencia": "B2",
-                "requerido": 1,
-                "texto": null,
-                "tipo_conteo": "EVENTOS",
-                "tipo_evento": "COMPLETA_BLOQUE"
-              }
-            ],
-            "evaluador_especial": null,
-            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
-            "regla": "R-B3"
-          }
-        ],
-        "codigo": "b3-9",
-        "contenido": "b3_9",
-        "descripcion": "Encuentra el hueco en cada presupuesto de la pila de Clotilde.",
-        "duracion_estimada_min": 8,
-        "estado": "BLOQUEADA",
-        "orden": 9,
-        "requerida": true,
-        "tipo": "BATALLA",
-        "titulo": "Batalla de los costos",
         "visibilidad": "SIEMPRE",
         "visible": true
       },
@@ -1002,12 +909,105 @@
         "descripcion": "Alejandra baja del barco: su cambio de rumbo, lo que cuesta cambiar y cómo escuchar la historia de otro. Cierra el tramo.",
         "duracion_estimada_min": 10,
         "estado": "BLOQUEADA",
-        "orden": 10,
+        "orden": 7,
         "requerida": true,
         "tipo": "INFORMATIVA",
         "titulo": "Caminos que no van en línea recta",
         "visibilidad": "SIEMPRE",
         "visible": true
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-6",
+        "contenido": "b3_6",
+        "descripcion": "El stand de la Universidad del Faro Dorado promete de todo. Aprende qué verificar y cómo se ingresa.",
+        "duracion_estimada_min": 12,
+        "estado": "BLOQUEADA",
+        "orden": 8,
+        "requerida": false,
+        "tipo": "INFORMATIVA",
+        "titulo": "Elegir una institución",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-7",
+        "contenido": "b3_7",
+        "descripcion": "Desmonta los anuncios del Feriante uno por uno: qué verificar, qué promesa es dudosa, qué admisión aplica.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 9,
+        "requerida": false,
+        "tipo": "BATALLA",
+        "titulo": "Batalla de las instituciones",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
+      },
+      {
+        "bloqueo": [
+          {
+            "condiciones_faltantes": [
+              {
+                "actual": 0,
+                "cumplida": false,
+                "referencia": "B2",
+                "requerido": 1,
+                "texto": null,
+                "tipo_conteo": "EVENTOS",
+                "tipo_evento": "COMPLETA_BLOQUE"
+              }
+            ],
+            "evaluador_especial": null,
+            "mensaje": "Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».",
+            "regla": "R-B3"
+          }
+        ],
+        "codigo": "b3-9",
+        "contenido": "b3_9",
+        "descripcion": "Encuentra el hueco en cada presupuesto de la pila de Clotilde.",
+        "duracion_estimada_min": 8,
+        "estado": "BLOQUEADA",
+        "orden": 10,
+        "requerida": false,
+        "tipo": "BATALLA",
+        "titulo": "Batalla de los costos",
+        "visibilidad": "AL_DESBLOQUEAR",
+        "visible": false
       },
       {
         "bloqueo": [
