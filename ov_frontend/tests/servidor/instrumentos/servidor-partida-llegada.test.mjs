@@ -64,7 +64,11 @@ test('solo partida: la vista pide ítems y respuestas y muestra un banderín y �
   assert.match(marcado, /<h1>[^<]*<\/h1><\/header>/)
   assert.match(marcado, /class="sx-d-result-lectura">Cada dimensión te muestra/)
   assert.match(marcado, /Tu punto de partida.*Así empiezas el camino\./)
-  assert.match(marcado, /<li>1 fuerte<\/li><li>1 en camino<\/li><li>3 por trabajar<\/li>/)
+  // Ajuste color-partida-llegada: los contadores con el tono de su zona.
+  assert.match(
+    marcado,
+    /<li class="sx-d-pl-chip-exito">1 fuerte<\/li><li>1 en camino<\/li><li class="sx-d-pl-chip-aviso">3 por trabajar<\/li>/,
+  )
   assert.match(marcado, /<strong>Tu punto de llegada<\/strong> Se revela al final del camino\./)
   assert.match(marcado, /El camino de cada parte/)
   assert.match(marcado, /Donde empiezas.*El banderín de llegada aparecerá al final del camino\./)
@@ -82,6 +86,15 @@ test('solo partida: la vista pide ítems y respuestas y muestra un banderín y �
     /Sé qué quiero hacer cuando termine el colegio\.<\/span><span role="cell"><span class="sx-d-pl-chip">Bastante de acuerdo/,
   )
   assert.doesNotMatch(marcado, /<details|Completaste|Se mantuvo|\bpuntaje\b|porcentaje|%/)
+  // Ajuste color-partida-llegada: la respuesta baja «Al inicio» en ámbar (la marca del servidor) y la leyenda.
+  const respuestas = jsonServidor('ruta/ruta-respuestas-t-partida').respuestas
+  assert.equal(cuenta(marcado, /sx-d-pl-chip sx-d-pl-chip-aviso">[^<]*de acuerdo</g), respuestas.filter((r) => r.baja).length)
+  const baja = respuestas.find((r) => r.baja)
+  assert.match(marcado, new RegExp(`sx-d-pl-chip sx-d-pl-chip-aviso">${baja.opcion.etiqueta}<`))
+  assert.match(
+    marcado,
+    /class="sx-d-pl-legend"><span>Zonas:<\/span><span class="sx-d-pl-chip sx-d-pl-chip-aviso">Por trabajar<\/span><span class="sx-d-pl-chip">En camino<\/span><span class="sx-d-pl-chip sx-d-pl-chip-exito">Fuerte<\/span><span>Las respuestas resaltadas son las que más puedes trabajar en el camino\.<\/span>/,
+  )
 })
 
 test('solo partida: si fallan las respuestas, la sección de ítems avisa y el panel de zonas sigue visible', async () => {
@@ -117,15 +130,31 @@ test('completo: contadores, dos banderines, ítems cambiados primero y los igual
   const c = marcado.slice(marcado.indexOf('<h3>Conocimiento de las opciones'), marcado.indexOf('<h3>Decisión propia'))
   assert.match(
     c,
-    /sx-d-pl-items sx-d-pl-items-cambio.*sx-d-pl-chip sx-d-pl-chip-strong">Bastante de acuerdo.*<summary>2 respuestas se mantuvieron<\/summary>.*sx-d-pl-items sx-d-pl-items-igual.*>=<.*>Igual</,
+    /sx-d-pl-items sx-d-pl-items-cambio.*sx-d-pl-chip sx-d-pl-chip-exito">Bastante de acuerdo.*<summary>2 respuestas se mantuvieron<\/summary>.*sx-d-pl-items sx-d-pl-items-igual.*>=<.*>Igual</,
   )
   assert.match(c, /Completaste 1 actividad de esta parte/)
   assert.match(marcado, /Completaste 3 actividades de esta parte/)
   // D baja: mismo color, con el aviso neutro solo ahí.
   assert.equal(cuenta(marcado, /Ahora lo ves distinto\./g), 1)
   const d = marcado.slice(marcado.indexOf('<h3>Decisión propia'), marcado.indexOf('<h3>Confianza'))
-  assert.match(d, /Fuerte<\/span><svg[^]*?sx-d-pl-chip sx-d-pl-chip-strong">En camino.*Ahora lo ves distinto/)
-  assert.doesNotMatch(marcado, /Al final<|\bpuntaje\b|porcentaje|diferencia|%/)
+  // Ajuste color-partida-llegada: la partida en contorno neutro y la llegada con el tono de su zona.
+  assert.match(
+    d,
+    /sx-d-pl-chip sx-d-pl-chip-outline">Fuerte<\/span><svg[^]*?<span class="sx-d-pl-chip">En camino.*Ahora lo ves distinto/,
+  )
+  assert.doesNotMatch(marcado, /Al final<|\bpuntaje\b|porcentaje|diferencia|%|chip-strong/)
+  // Las respuestas que cambiaron: verde si subieron y ámbar si bajaron (la dirección del servidor).
+  const comparacion = jsonServidor('ruta/ruta-comparacion-partida-llegada')
+  const cambiaron = comparacion.dimensiones.flatMap((x) => x.items).filter((i) => i.cambio)
+  for (const [direccion, clase] of [['SUBIO', 'exito'], ['BAJO', 'aviso']]) {
+    const n = cambiaron.filter((i) => i.direccion === direccion).length
+    assert.ok(n > 0, direccion)
+    assert.equal(cuenta(marcado, new RegExp(`role="cell"><span class="sx-d-pl-chip sx-d-pl-chip-${clase}">`, 'g')), n)
+  }
+  assert.match(
+    marcado,
+    /class="sx-d-pl-legend"><span class="sx-d-pl-chip sx-d-pl-chip-exito">Mejoró<\/span><span class="sx-d-pl-chip sx-d-pl-chip-aviso">Bajó<\/span><span>Las zonas usan el mismo color:<\/span>/,
+  )
 })
 
 test('ninguna dimensión sube: sin «0 avanzaron», con el texto de zonas mantenidas en el panel y la tarjeta', () => {

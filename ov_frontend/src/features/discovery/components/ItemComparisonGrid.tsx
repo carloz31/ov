@@ -2,7 +2,10 @@ import type { ItemPartidaLlegada } from '../lib/partidaLlegada'
 import '../styles/partida-llegada.css'
 
 // Ajuste de F03: rejilla única de ítems (enunciado | Al inicio | flecha | Al cierre). «cambio»: partida → llegada
-// resaltada; «igual»: partida = «Igual»; «partida»: la respuesta y, atenuado, «Al final».
+// resaltada; «igual»: partida = «Igual»; «partida»: la respuesta y, atenuado, «Al final». Ajuste
+// color-partida-llegada: en «partida», una respuesta baja va en ámbar; en «cambio», la de cierre va en verde si subió
+// y en ámbar si bajó (aunque siga baja: para el estudiante cuenta que avanzó).
+const TONO_DIRECCION = { SUBIO: ' sx-d-pl-chip-exito', BAJO: ' sx-d-pl-chip-aviso' } as const
 export function ItemComparisonGrid({
   modo,
   items,
@@ -27,14 +30,18 @@ export function ItemComparisonGrid({
           <div key={item.item} className="sx-d-pl-item" role="row">
             <span role="cell">{item.enunciado}</span>
             <span role="cell">
-              <span className="sx-d-pl-chip">{item.partida}</span>
+              <span className={`sx-d-pl-chip${modo === 'partida' && item.baja ? ' sx-d-pl-chip-aviso' : ''}`}>
+                {item.partida}
+              </span>
             </span>
             <span className="sx-d-pl-sign" aria-hidden="true">
               {modo === 'igual' ? '=' : '→'}
             </span>
             <span role="cell">
               {modo === 'cambio' ? (
-                <span className="sx-d-pl-chip sx-d-pl-chip-strong">{item.llegada}</span>
+                <span className={`sx-d-pl-chip${item.direccion ? TONO_DIRECCION[item.direccion] : ''}`}>
+                  {item.llegada}
+                </span>
               ) : modo === 'igual' ? (
                 <span className="sx-d-pl-chip sx-d-pl-chip-outline">Igual</span>
               ) : (

@@ -1,6 +1,10 @@
 // Ajuste de F03: modelo de la tarjeta y la vista explicada de partida y llegada, en sus dos estados (solo
 // partida; partida + llegada). Las zonas llegan como código y aquí se ordenan; nunca se leen puntajes.
-import { APLICACION_LLEGADA, APLICACION_PARTIDA, zonaEnPalabras } from '@/lib/servidor/adaptadoresInstrumentos'
+import {
+  APLICACION_LLEGADA,
+  APLICACION_PARTIDA,
+  zonaEnPalabras,
+} from '@/lib/servidor/adaptadoresInstrumentos'
 import type { ItemPublico, RespuestaPublica, ZonaDimension } from '@/types/servidor'
 import type { LibroServidor } from './helenaPagesApi'
 
@@ -8,7 +12,15 @@ import type { LibroServidor } from './helenaPagesApi'
 export const ZONAS: ZonaDimension[] = ['POR_TRABAJAR', 'EN_CAMINO', 'FUERTE']
 export const posicionZona = (zona: ZonaDimension) => ZONAS.indexOf(zona)
 
-export type ItemPartidaLlegada = { item: string; enunciado: string; partida: string; llegada?: string }
+// Ajuste color-partida-llegada: `baja` (solo partida) y `direccion` (con llegada) vienen marcados del servidor.
+export type ItemPartidaLlegada = {
+  item: string
+  enunciado: string
+  partida: string
+  llegada?: string
+  baja?: boolean
+  direccion?: 'SUBIO' | 'BAJO' | null
+}
 export type DimensionPartidaLlegada = {
   codigo: string
   nombre: string
@@ -43,16 +55,30 @@ export function listaNombres(nombres: string[]) {
   return nombres.length < 2 ? (nombres[0] ?? '') : `${nombres.slice(0, -1).join(', ')} y ${nombres.at(-1)}`
 }
 
+// Ajuste color-partida-llegada: el tono de una zona, el mismo de la orientadora (Por trabajar ámbar, En camino neutro,
+// Fuerte verde), como variante del chip; el color nunca va solo: el chip lleva su texto.
+export const TONO_ZONA_CHIP: Record<ZonaDimension, string> = {
+  POR_TRABAJAR: 'sx-d-pl-chip-aviso',
+  EN_CAMINO: '',
+  FUERTE: 'sx-d-pl-chip-exito',
+}
+export const claseChipZona = (zona: ZonaDimension) => `sx-d-pl-chip ${TONO_ZONA_CHIP[zona]}`.trim()
+
 export function conteoZonaEnPalabras({ zona, cantidad }: { zona: ZonaDimension; cantidad: number }) {
   return `${cantidad} ${zonaEnPalabras(zona).toLowerCase()}`
 }
 
 // Ítems de partida agrupados por la dimensión de `/items`, en el orden del backend, con la etiqueta elegida.
 function itemsPartida(items: ItemPublico[], respuestas: RespuestaPublica[], dimension: string) {
-  const etiquetas = new Map(respuestas.map((r) => [r.item, r.opcion.etiqueta]))
+  const porItem = new Map(respuestas.map((r) => [r.item, r]))
   return items
-    .filter((i) => i.dimension === dimension && etiquetas.has(i.codigo))
-    .map((i) => ({ item: i.codigo, enunciado: i.enunciado, partida: etiquetas.get(i.codigo) ?? '' }))
+    .filter((i) => i.dimension === dimension && porItem.has(i.codigo))
+    .map((i) => ({
+      item: i.codigo,
+      enunciado: i.enunciado,
+      partida: porItem.get(i.codigo)?.opcion.etiqueta ?? '',
+      baja: !!porItem.get(i.codigo)?.baja,
+    }))
 }
 
 export function modeloPartidaLlegada(
@@ -64,7 +90,13 @@ export function modeloPartidaLlegada(
   const comparacion = libro.resultados[APLICACION_LLEGADA.aplicacion] ? libro.comparacion : null
   const dimensiones: DimensionPartidaLlegada[] = comparacion
     ? comparacion.dimensiones.map((d) => {
-        const items = d.items.map(({ item, enunciado, partida, llegada }) => ({ item, enunciado, partida, llegada }))
+        const items = d.items.map(({ item, enunciado, partida, llegada, direccion }) => ({
+          item,
+          enunciado,
+          partida,
+          llegada,
+          direccion: direccion ?? null,
+        }))
         return {
           codigo: d.codigo,
           nombre: d.nombre,

@@ -219,7 +219,11 @@ test('con la llegada lista aparece el segundo sello; con las dos reveladas, part
   assert.match(marcado, /Página I · descifrada<\/p>/)
   assert.match(marcado, /Tu partida → tu llegada/)
   assert.match(marcado, /<strong>Claridad<\/strong><span class="sx-d-pl-zones"><span class="sx-d-pl-kept">Se mantuvo<\/span><span class="sx-d-pl-chip">En camino<\/span><\/span>/)
-  assert.match(marcado, /Conocimiento de mí.*Por trabajar<\/span><svg[^]*?<span class="sx-d-pl-chip sx-d-pl-chip-strong">Fuerte/)
+  // Ajuste color-partida-llegada: la tarjeta comparte `ZoneChips`; partida en contorno y llegada con su tono.
+  assert.match(
+    marcado,
+    /Conocimiento de mí.*sx-d-pl-chip sx-d-pl-chip-outline">Por trabajar<\/span><svg[^]*?<span class="sx-d-pl-chip sx-d-pl-chip-exito">Fuerte/,
+  )
   assert.match(marcado, /Avanzaste de zona en 2 de 5 partes\. Son zonas, no notas: muestran dónde estás hoy\./)
   assert.match(marcado, /Qué cambió en cada respuesta.*Lo que trabajaste en cada parte del camino/)
   assert.doesNotMatch(marcado, /Ver comparación|Tu punto de llegada<\/strong>|Revela tu punto de llegada/)
