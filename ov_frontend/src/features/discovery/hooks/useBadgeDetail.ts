@@ -43,7 +43,7 @@ export function useBadgeDetail(badge?: PassportBadge) {
     let vigente = true
     setRemotas(null)
     void consultarProgreso('INSIGNIA', codigo).then((r) => {
-      if (vigente) setRemotas(r.tipo === 'ok' ? condicionesObjetivo(r.datos, respaldo) : null)
+      if (vigente) setRemotas(r.tipo === 'ok' ? condicionesObjetivo(r.datos, respaldo, true) : null)
     })
     return () => {
       vigente = false

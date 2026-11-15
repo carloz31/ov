@@ -8,7 +8,7 @@ import type {
   ResumenCatalogo,
 } from '@/services/api/catalogo'
 import type { ErrorServidor, FamiliaFicha, FamiliaPublica, GrupoPublico, UbicacionPublica } from '@/types/servidor'
-import { accionConRefresco } from './refresco'
+import { accionConRefresco, conDesbloqueos } from './refresco'
 import { consultarCuenta, consultarCuentaSesion, sesionServidor } from './sesion'
 
 export type {
@@ -304,7 +304,8 @@ export function pedirInesperada(clase: 'carreras' | 'ocupaciones', excluir: stri
 }
 
 // Abrir un detalle registra la vista; sus desbloqueos (t-explorar, insignias) llegan con el refresco. Auditoría
-// plataforma (F2a): una vista sin desbloqueos no cambia el camino, el avance ni las secciones, y no refresca.
+// plataforma (F2a): una vista sin desbloqueos no cambia el camino, el avance ni las secciones, y no refresca; desde
+// el ajuste logros, tampoco una que solo trae insignias (vence solo `logros`).
 export function verEnCatalogo(clase: ClaseCatalogo, codigo: string) {
   return accionConRefresco(
     (cuenta) =>
@@ -315,6 +316,6 @@ export function verEnCatalogo(clase: ClaseCatalogo, codigo: string) {
           : apiAcciones.verInstitucion(cuenta, codigo),
     undefined,
     false,
-    (datos) => datos.nuevos_desbloqueos.length > 0,
+    conDesbloqueos,
   )
 }

@@ -59,9 +59,19 @@ test('diario, cartas e investigaciones sin desbloqueos no vuelven a pedir el cam
   assert.equal((await conversaciones.guardarCarta('DATO DE PRUEBA')).tipo, 'ok')
   assert.equal((await investigaciones.guardarLoQuePienso('524', 'a', 'b', 'c')).tipo, 'ok')
   assert.equal(f.camino(), 0)
+  // Ajuste logros (§5.2): si todo lo desbloqueado son insignias, no se pide el camino y solo se vence `logros`.
+  f.almacen.publicar({ logros: { datos: { insignias: [], niveles: [], vitrina: [] }, estado: 'listo', error: null } })
   f.responder(accion([desbloqueo('INSIGNIA', 't-insignia')]))
   await diario.escribirEntrada({ texto: 'DATO DE PRUEBA' })
+  assert.equal(f.camino(), 0)
+  assert.equal(f.almacen.obtenerEstadoServidor().logros.estado, 'vencido')
+  f.responder(accion([desbloqueo('FICHA', 't-ficha')]))
+  await diario.escribirEntrada({ texto: 'DATO DE PRUEBA' })
   assert.equal(f.camino(), 2)
+  // Una insignia junto con otro desbloqueo refresca como siempre.
+  f.responder(accion([desbloqueo('INSIGNIA', 't-insignia'), desbloqueo('NIVEL', 'N2')]))
+  await diario.escribirEntrada({ texto: 'DATO DE PRUEBA' })
+  assert.equal(f.camino(), 4)
 })
 
 test('un desbloqueo de pregunta o de conversación no hace pedir dos veces su sección', async () => {
@@ -90,7 +100,7 @@ test('cada acción confirmada sube la revisión que vuelve a pedir el requisito 
   const inicial = leer()
   await diario.escribirEntrada({ texto: 'DATO DE PRUEBA' })
   assert.equal(leer(), inicial + 1)
-  f.responder(accion([desbloqueo('INSIGNIA', 't-insignia')]))
+  f.responder(accion([desbloqueo('FICHA', 't-ficha')]))
   await diario.escribirEntrada({ texto: 'DATO DE PRUEBA' })
   assert.equal(leer(), inicial + 2)
   // El requisito de la Ciudad depende de esa revisión: una acción sin desbloqueos lo vuelve a pedir.

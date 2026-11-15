@@ -359,3 +359,38 @@ test('entrada bloqueada a Ciudad consulta al abrir y reintenta con el conteo rem
   view.unmount()
   assert.equal(app.requests.filter((r) => r.method === 'POST').length, 0)
 })
+
+// Ajuste logros: en una insignia, la única condición de una regla con evaluador muestra el avance del evaluador.
+test('condiciones de insignia: el avance del evaluador reemplaza al de su condición; sin avance, como antes', () => {
+  const { a } = preparar()
+  // DATO DE PRUEBA: «Ninguna sombra en pie» con 5 de 8 batallas; su condición ya se cumplió con el primer evento.
+  const progreso = {
+    objetivo: { tipo: 'INSIGNIA', codigo: 'ins-sin-sombras' },
+    disponible: false,
+    reglas: [
+      {
+        regla: 'R-ins-sin-sombras',
+        mensaje_bloqueo: 'Gana todas las batallas.',
+        cumplida: false,
+        condiciones: [
+          { tipo_evento: 'SUPERA_BATALLA', referencia: null, tipo_conteo: 'EVENTOS', actual: 5, requerido: 1, cumplida: true, texto: 'Batallas ganadas' },
+        ],
+        evaluador_especial: { nombre: 'todas_las_batallas', cumplido: false, actual: 5, requerido: 8 },
+      },
+    ],
+  }
+  assert.deepEqual(copia(a.condicionesObjetivo(progreso, null, true).bloques), [
+    [{ texto: 'Batallas ganadas', cumplida: false, actual: 5, requerido: 8 }],
+  ])
+  // El tope de siempre: el avance no pasa de lo requerido.
+  progreso.reglas[0].evaluador_especial = { nombre: 'todas_las_batallas', cumplido: true, actual: 9, requerido: 8 }
+  assert.deepEqual(copia(a.condicionesObjetivo(progreso, null, true).bloques[0][0]), {
+    texto: 'Batallas ganadas', cumplida: true, actual: 8, requerido: 8,
+  })
+  // Sin `conAvance` (niveles) o sin avance del evaluador, la condición se ve como hoy.
+  assert.deepEqual(copia(a.condicionesObjetivo(progreso).bloques[0][0]), { texto: 'Batallas ganadas', cumplida: true })
+  progreso.reglas[0].evaluador_especial = { nombre: 'instituciones_tipos_distintos', cumplido: false }
+  assert.deepEqual(copia(a.condicionesObjetivo(progreso, null, true).bloques[0][0]), {
+    texto: 'Batallas ganadas', cumplida: true,
+  })
+})

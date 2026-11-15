@@ -46,7 +46,9 @@ export const useRevisionAcciones = () => useSyncExternalStore(suscribirAcciones,
 // Auditoría plataforma (F2b): el progreso de una actividad solo cambia al completarla, responder sus ítems, reiniciar
 // un instrumento, en batallas, casos y registros. Las demás acciones (diario, cartas, planes, investigaciones, vistas
 // del catálogo) solo cambian el camino, el avance o las secciones con un desbloqueo, que viene en su respuesta.
-export const conDesbloqueos = (datos: RespuestaAccion) => datos.nuevos_desbloqueos.length > 0
+// Ajuste logros: una insignia no cambia el camino; si todo lo desbloqueado son insignias, solo se vence `logros`.
+export const conDesbloqueos = (datos: RespuestaAccion) =>
+  datos.nuevos_desbloqueos.some((d) => d.tipo_objetivo !== 'INSIGNIA')
 // Una sección que el refresco ya venció por un desbloqueo (y ya pidió si está montada) no se vence otra vez.
 export function vencerSiNoRefrescada(nombre: NombreSeccion, datos: RespuestaAccion | undefined) {
   if (datos && seccionesPorDesbloqueos(datos.nuevos_desbloqueos).includes(nombre)) return
@@ -158,6 +160,11 @@ export async function accionConRefresco<T extends RespuestaAccion>(
   revelarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
   incorporarNotificaciones(respuesta.datos.nuevas_notificaciones, conCierre)
   if (refrescarSi && !refrescarSi(respuesta.datos)) {
+    // Ajuste logros: sin refrescar el camino, las insignias nuevas solo vencen el pasaporte (y lo piden si se ve).
+    if (respuesta.datos.nuevos_desbloqueos.length > 0) {
+      vencerSeccion('logros')
+      await Promise.all(cargarVencidasMontadas())
+    }
     avisarAccion()
     return respuesta
   }

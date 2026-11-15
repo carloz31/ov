@@ -184,3 +184,21 @@ test('ver un detalle sin desbloqueos no vuelve a pedir el camino; con desbloqueo
   await store.verEnCatalogo('carreras', 'psychology')
   assert.equal(lecturasCamino(), 2)
 })
+
+// Ajuste logros: si todo lo desbloqueado son insignias, solo se vence `logros`; el camino no se vuelve a pedir.
+test('ver un detalle que solo trae insignias no pide el camino y vence el pasaporte', async () => {
+  const { app, almacen, store } = catalogo()
+  const base = jsonServidor('ruta/ruta-ver-carrera')
+  const insignia = { ...base.nuevos_desbloqueos[0], regla: 'R-ins-carreras', tipo_objetivo: 'INSIGNIA',
+    objetivo: { codigo: 'ins-carreras', nombre: 'Diez caminos a la vista' } }
+  app.fetch((r) => {
+    if (r.url.includes('/acciones/ver-carrera')) return { body: { ...base, nuevos_desbloqueos: [insignia] } }
+    if (r.url.includes('/notificaciones')) return { body: { total: 0, no_vistas: 0, items: [] } }
+    return { body: [] }
+  })
+  almacen.publicar({ logros: { datos: { insignias: [], niveles: [], vitrina: [] }, estado: 'listo', error: null } })
+  const resultado = await store.verEnCatalogo('carreras', 'civil-engineering')
+  assert.equal(resultado.tipo, 'ok')
+  assert.equal(app.requests.filter((r) => /\/(actividades|avance)$/.test(r.url)).length, 0)
+  assert.equal(almacen.obtenerEstadoServidor().logros.estado, 'vencido')
+})

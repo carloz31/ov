@@ -82,7 +82,8 @@ export type ProgresoCondicion = {
   cumplida: boolean
   texto: string | null
 }
-export type ResultadoEvaluador = { nombre: string; cumplido: boolean }
+// Ajuste logros: `actual` y `requerido` solo llegan cuando el evaluador da su avance («5 de 8»).
+export type ResultadoEvaluador = { nombre: string; cumplido: boolean; actual?: number; requerido?: number }
 export type ObjetivoLegible = { codigo: string; nombre: string }
 export type DesbloqueoNuevo = {
   regla: string
