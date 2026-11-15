@@ -70,7 +70,7 @@ export function ReaccionesModeradas({
                         key={reporte.codigo}
                         variant="outline"
                         className="min-h-11"
-                        disabled={m.ocupado === `descartar-${reporte.codigo}`}
+                        disabled={m.ocupado === `descartar-${reporte.codigo}` || m.oculta}
                         onClick={() => m.descartar(reporte.codigo)}
                       >
                         {m.ocupado === `descartar-${reporte.codigo}` && (
@@ -83,7 +83,7 @@ export function ReaccionesModeradas({
                       variant="outline"
                       className="min-h-11"
                       data-tono="peligro"
-                      disabled={!!m.ocupado}
+                      disabled={!!m.ocupado || m.oculta}
                       onClick={() => m.pedirEliminarComentario(r)}
                     >
                       Eliminar comentario
@@ -97,7 +97,7 @@ export function ReaccionesModeradas({
                     <Button
                       variant="outline"
                       className="min-h-11"
-                      disabled={!!m.ocupado}
+                      disabled={!!m.ocupado || m.oculta}
                       onClick={() => m.editar(r)}
                     >
                       Editar
@@ -107,7 +107,7 @@ export function ReaccionesModeradas({
                     variant="outline"
                     className="min-h-11"
                     data-tono="peligro"
-                    disabled={!!m.ocupado}
+                    disabled={!!m.ocupado || m.oculta}
                     onClick={() => m.pedirEliminarComentario(r)}
                   >
                     Eliminar
@@ -132,7 +132,7 @@ export function ReaccionesModeradas({
             </span>
             <Textarea
               value={m.comentario}
-              disabled={m.ocupado === 'comentar'}
+              disabled={m.ocupado === 'comentar' || m.oculta}
               placeholder="Lo verán los autores y el salón, con la etiqueta «Orientadora»."
               onChange={(e) => m.setComentario(e.target.value)}
             />
@@ -146,7 +146,7 @@ export function ReaccionesModeradas({
             <Button
               type="submit"
               className="min-h-11"
-              disabled={!m.comentario.trim() || m.ocupado === 'comentar'}
+              disabled={!m.comentario.trim() || m.ocupado === 'comentar' || m.oculta}
             >
               {m.ocupado === 'comentar' && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
               {m.editando ? 'Guardar comentario' : 'Publicar comentario'}

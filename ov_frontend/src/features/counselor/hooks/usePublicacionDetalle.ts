@@ -1,31 +1,33 @@
 import { useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 import { appPaths } from '@/routes/paths'
 import { cargarDetalleEntrevista, useDetalleEntrevista } from '@/store/servidor/entrevistas'
 import {
   comentarEntrevista,
   descartarReporte,
   destacarEntrevista,
-  eliminarEntrevista,
   eliminarReaccion,
+  mostrarEntrevista,
+  ocultarEntrevista,
 } from '@/store/servidor/investigaciones'
 import { mensajeErrorServidor } from '@/store/servidor/sesion'
 import type { ReaccionModerada, RespuestaAccion, RespuestaServidor } from '@/types/servidor'
 import { mostrarAvisoPublicacion } from '../store/avisoPublicaciones'
 
 // F09 (api, boceto 12b · HU-064): el detalle de una publicación para la orientadora. Destacar es reversible;
-// eliminar (entrevista o comentario) pide confirmación; descartar un reporte lo cierra sin tocar el contenido.
+// eliminar un comentario pide confirmación; descartar un reporte lo cierra sin tocar el contenido. Ajuste
+// panel-entrevistas-configuracion: ocultar (con confirmación) y volver a mostrar reemplazan a eliminar la entrevista;
+// mientras está oculta solo se puede leer y volver a mostrar.
 export function usePublicacionDetalle() {
   const { interviewId: codigo = '' } = useParams()
   const [params] = useSearchParams()
-  const navegar = useNavigate()
   const detalle = useDetalleEntrevista('publicacion', codigo)
   const datos = detalle?.datos ?? null
   const [ocupado, setOcupado] = useState<string | null>(null)
   const [comentario, setComentario] = useState('')
   const [editando, setEditando] = useState<ReaccionModerada | null>(null)
   const [eliminandoComentario, setEliminandoComentario] = useState<ReaccionModerada | null>(null)
-  const [eliminandoEntrevista, setEliminandoEntrevista] = useState(false)
+  const [ocultandoEntrevista, setOcultandoEntrevista] = useState(false)
   const salon = params.get('salon')
   const volver = `${appPaths.counselor.publications}${salon ? `?salon=${salon}` : ''}`
 
@@ -43,6 +45,7 @@ export function usePublicacionDetalle() {
     return respuesta.tipo === 'ok'
   }
   const destacada = datos?.estado === 'DESTACADA' || datos?.estado === 'LEYENDA'
+  const oculta = datos?.estado === 'OCULTA'
   return {
     codigo,
     volver,
@@ -51,6 +54,7 @@ export function usePublicacionDetalle() {
     reintentar: () => void cargarDetalleEntrevista('publicacion', codigo),
     datos,
     destacada,
+    oculta,
     // Solo actúa sobre las de sus salones; una Leyenda de otro salón es de lectura.
     puedeActuar: !!datos?.de_sus_salones,
     ocupado,
@@ -61,14 +65,27 @@ export function usePublicacionDetalle() {
         destacada ? 'Destacado quitado' : 'Entrevista destacada',
         destacada ? undefined : 'Sus autores lo verán en su camino a Leyenda.',
       ),
-    eliminandoEntrevista,
-    setEliminandoEntrevista,
-    eliminarEntrevista: async () => {
-      if (await correr('eliminar-entrevista', () => eliminarEntrevista(codigo), 'Entrevista eliminada')) {
-        setEliminandoEntrevista(false)
-        void navegar(volver)
-      }
+    ocultandoEntrevista,
+    setOcultandoEntrevista,
+    // Se queda en el detalle: la orientadora la sigue viendo y puede volver a mostrarla.
+    ocultarEntrevista: async () => {
+      if (
+        await correr(
+          'ocultar-entrevista',
+          () => ocultarEntrevista(codigo),
+          'Entrevista oculta',
+          'Los estudiantes ya no la ven.',
+        )
+      )
+        setOcultandoEntrevista(false)
     },
+    mostrar: () =>
+      void correr(
+        'mostrar-entrevista',
+        () => mostrarEntrevista(codigo),
+        'Entrevista visible otra vez',
+        'Vuelve sin destacar, con sus favoritos y reacciones.',
+      ),
     eliminandoComentario,
     pedirEliminarComentario: (r: ReaccionModerada | null) => setEliminandoComentario(r),
     eliminarComentario: async () => {

@@ -142,7 +142,9 @@ export const destacarEntrevista = (entrevista: string, destacada: boolean) =>
   accionEntrevistas((cuenta) => apiInvestigaciones.destacarEntrevista(cuenta, entrevista, destacada))
 export const comentarEntrevista = (entrevista: string, texto: string, reaccion?: string | null) =>
   accionEntrevistas((cuenta) => apiInvestigaciones.comentarEntrevista(cuenta, entrevista, texto, reaccion))
-export const eliminarEntrevista = (entrevista: string) =>
-  accionEntrevistas((cuenta) => apiInvestigaciones.eliminarEntrevista(cuenta, entrevista))
+export const ocultarEntrevista = (entrevista: string) =>
+  accionEntrevistas((cuenta) => apiInvestigaciones.ocultarEntrevista(cuenta, entrevista))
+export const mostrarEntrevista = (entrevista: string) =>
+  accionEntrevistas((cuenta) => apiInvestigaciones.mostrarEntrevista(cuenta, entrevista))
 export const descartarReporte = (reporte: string) =>
   accionEntrevistas((cuenta) => apiInvestigaciones.descartarReporte(cuenta, reporte))

@@ -118,7 +118,7 @@ def test_tabla_y_detalle_de_la_orientadora(cliente):
     reaccionar(cliente, codigo, cuenta='ori-carmen', esperado=404)
 
 
-def test_eliminar_resuelve_reportes_y_oculta_para_todos(cliente, sesion):
+def test_ocultar_resuelve_reportes_y_la_saca_para_los_estudiantes(cliente, sesion):
     codigo = de_ana_con_luis(cliente)
     reaccionar(cliente, codigo)
     reaccion = detalle(cliente, codigo)['lista_reacciones'][0]['codigo']
@@ -127,12 +127,13 @@ def test_eliminar_resuelve_reportes_y_oculta_para_todos(cliente, sesion):
     orientadora(cliente, 'eliminar-reaccion', {'reaccion': reaccion})
     assert detalle(cliente, codigo)['lista_reacciones'] == []
     assert publicaciones(cliente, con_reportes=True)['items'][0]['comentarios_reportados'] == 0
-    orientadora(cliente, 'eliminar-entrevista', {'entrevista': codigo})
+    # Ajuste panel-entrevistas-configuracion: se oculta (no se elimina); la orientadora la sigue viendo.
+    orientadora(cliente, 'ocultar-entrevista', {'entrevista': codigo})
     assert {r.estado for r in sesion.scalars(select(modelos.Reporte))} == {'RESUELTO'}
-    assert publicaciones(cliente)['total'] == 0
+    assert [f['estado'] for f in publicaciones(cliente)['items']] == ['OCULTA']
     detalle(cliente, codigo, esperado=404)
     assert investigaciones(cliente)['conteos'] == {'salon': 0, 'leyendas': 0, 'mias': 0}
-    orientadora(cliente, 'destacar-entrevista', {'entrevista': codigo, 'destacada': True}, 404)
+    orientadora(cliente, 'destacar-entrevista', {'entrevista': codigo, 'destacada': True}, 409)
 
 
 def test_leyenda_con_destacado_y_favoritos(cliente, aplicacion):

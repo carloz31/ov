@@ -20,6 +20,7 @@ const ESTADOS: [EstadoPublicacion | 'todos', string][] = [
   ['SIN_DESTACAR', 'Sin destacar'],
   ['DESTACADA', 'Destacada'],
   ['LEYENDA', 'Leyenda'],
+  ['OCULTA', 'Ocultas'],
 ]
 const ANCHOS = ['w-[17%]', 'w-[10%]', 'w-[15%]', 'w-[12%]', 'w-[10%]', 'w-[9%]', 'w-[15%]', 'w-[12%]']
 const COLUMNAS = [
@@ -48,10 +49,9 @@ function Fila({
       <TableCell className="px-2.5 py-3 whitespace-normal break-words">
         {fila.autores.map((a) => a.nombre).join(', ')}
       </TableCell>
-      <TableCell className="px-2.5 py-3 whitespace-normal">
-        {salones.join(', ')}
-      </TableCell>
-      <TableCell className="px-2.5 py-3 whitespace-normal break-words"><strong>{fila.familia.nombre}</strong>
+      <TableCell className="px-2.5 py-3 whitespace-normal">{salones.join(', ')}</TableCell>
+      <TableCell className="px-2.5 py-3 whitespace-normal break-words">
+        <strong>{fila.familia.nombre}</strong>
         <br />
         {fila.dedicacion}
       </TableCell>
@@ -111,7 +111,11 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
         </label>
         <Select value={m.salon || 'todos'} onValueChange={(v) => m.elegirSalon(v === 'todos' ? '' : v)}>
           <SelectTrigger aria-label="Filtrar por salón" className="min-h-11 w-full bg-card sm:w-52">
-            <SelectValue>{m.salon ? (m.salones.find((s) => s.codigo === m.salon)?.nombre ?? m.salon) : 'Todos los salones'}</SelectValue>
+            <SelectValue>
+              {m.salon
+                ? (m.salones.find((s) => s.codigo === m.salon)?.nombre ?? m.salon)
+                : 'Todos los salones'}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos los salones</SelectItem>

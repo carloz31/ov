@@ -166,8 +166,8 @@ def test_regla_5_quitar_favoritos_no_la_quita(cliente):
     assert ficha['leyenda'] and ficha['favoritos'] == 0
 
 
-@pytest.mark.parametrize('como', ['quitar_destacado', 'retirar', 'eliminar'])
-def test_regla_5_se_pierde_al_quitar_destacado_retirar_o_eliminar(cliente, como):
+@pytest.mark.parametrize('como', ['quitar_destacado', 'retirar', 'ocultar'])
+def test_regla_5_se_pierde_al_quitar_destacado_retirar_u_ocultar(cliente, como):
     codigo = leyenda_completa(cliente, 'favoritos_primero')
     abrir_fans(cliente, (OTRO_SALON,))
     assert entrevistas(cliente, OTRO_SALON, vista='LEYENDAS')['total'] == 1
@@ -177,7 +177,7 @@ def test_regla_5_se_pierde_al_quitar_destacado_retirar_o_eliminar(cliente, como)
     elif como == 'retirar':
         accion(cliente, 'retirar-entrevista', {'entrevista': codigo}, cuenta='est-luis')
     else:
-        accion(cliente, 'eliminar-entrevista', {'entrevista': codigo}, cuenta='ori-carmen')
+        accion(cliente, 'ocultar-entrevista', {'entrevista': codigo}, cuenta='ori-carmen')
     assert entrevistas(cliente, OTRO_SALON, vista='LEYENDAS')['total'] == 0
     detalle(cliente, codigo, OTRO_SALON, esperado=404)
     # Regla 7: el sello ya obtenido se conserva.

@@ -312,7 +312,7 @@ class EntrevistaDetalle(TarjetaEntrevista):
 
 # --- Orientadora --------------------------------------------------------------------------------
 
-EstadoPublicacion = Literal['SIN_DESTACAR', 'DESTACADA', 'LEYENDA']
+EstadoPublicacion = Literal['SIN_DESTACAR', 'DESTACADA', 'LEYENDA', 'OCULTA']
 
 
 class AutorPublicacion(BaseModel):

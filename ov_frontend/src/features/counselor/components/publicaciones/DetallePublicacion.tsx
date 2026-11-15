@@ -17,6 +17,7 @@ function Confirmar({
   ocupado,
   onConfirmar,
   onCerrar,
+  accion = 'Eliminar',
 }: {
   abierto: boolean
   titulo: string
@@ -24,6 +25,7 @@ function Confirmar({
   ocupado: boolean
   onConfirmar: () => void
   onCerrar: () => void
+  accion?: string
 }) {
   return (
     <Dialog open={abierto} onOpenChange={(open) => !open && !ocupado && onCerrar()}>
@@ -37,7 +39,7 @@ function Confirmar({
             Cancelar
           </Button>
           <Button variant="destructive" className="min-h-11" disabled={ocupado} onClick={onConfirmar}>
-            {ocupado && <Loader2 className="size-4 animate-spin" aria-hidden="true" />} Eliminar
+            {ocupado && <Loader2 className="size-4 animate-spin" aria-hidden="true" />} {accion}
           </Button>
         </div>
       </DialogContent>
@@ -102,7 +104,7 @@ export function DetallePublicacion({
                 <Button
                   className="min-h-11"
                   variant={m.destacada ? 'default' : 'outline'}
-                  disabled={m.ocupado === 'destacar'}
+                  disabled={m.ocupado === 'destacar' || m.oculta}
                   onClick={m.destacar}
                 >
                   {m.ocupado === 'destacar' ? (
@@ -112,17 +114,35 @@ export function DetallePublicacion({
                   )}
                   {m.destacada ? 'Quitar destacado' : 'Destacar'}
                 </Button>
-                <Button
-                  variant="outline"
-                  className="min-h-11"
-                  data-tono="peligro"
-                  onClick={() => m.setEliminandoEntrevista(true)}
-                >
-                  Eliminar entrevista
-                </Button>
+                {m.oculta ? (
+                  <Button
+                    className="min-h-11"
+                    disabled={m.ocupado === 'mostrar-entrevista'}
+                    onClick={m.mostrar}
+                  >
+                    {m.ocupado === 'mostrar-entrevista' && (
+                      <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+                    )}
+                    Volver a mostrar
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="min-h-11"
+                    data-tono="peligro"
+                    onClick={() => m.setOcultandoEntrevista(true)}
+                  >
+                    Ocultar entrevista
+                  </Button>
+                )}
               </div>
             )}
           </header>
+          {m.oculta && (
+            <p role="status" className="rounded-xl border bg-muted p-4 font-semibold">
+              Oculta: los estudiantes no la ven
+            </p>
+          )}
           {d.reportes.length > 0 && m.puedeActuar && (
             <div
               className="flex flex-wrap items-center gap-3 rounded-xl border border-danger-soft bg-danger-soft/40 p-4"
@@ -151,18 +171,19 @@ export function DetallePublicacion({
             <ReaccionesModeradas m={m} nombreSalon={nombreSalon} nombresTipos={nombresTipos} />
           </div>
           <p className="text-sm text-muted-foreground">
-            Destacar es reversible. Eliminar (entrevista o comentario) pide confirmación; los autores no ven
-            quién reportó.
+            Destacar y ocultar se pueden revertir. Eliminar un comentario pide confirmación; los autores no
+            ven quién reportó.
           </p>
         </>
       )}
       <Confirmar
-        abierto={m.eliminandoEntrevista}
-        titulo="¿Eliminar esta entrevista?"
-        descripcion="Dejará de verse para todos, también para sus autores. Si era Leyenda, deja de serlo."
-        ocupado={m.ocupado === 'eliminar-entrevista'}
-        onConfirmar={() => void m.eliminarEntrevista()}
-        onCerrar={() => m.setEliminandoEntrevista(false)}
+        abierto={m.ocultandoEntrevista}
+        titulo="¿Ocultar esta entrevista?"
+        descripcion="Dejará de verse para los estudiantes y perderá su destacado y su Leyenda. Podrá volver a mostrarla cuando quiera."
+        ocupado={m.ocupado === 'ocultar-entrevista'}
+        accion="Ocultar"
+        onConfirmar={() => void m.ocultarEntrevista()}
+        onCerrar={() => m.setOcultandoEntrevista(false)}
       />
       <Confirmar
         abierto={!!m.eliminandoComentario}

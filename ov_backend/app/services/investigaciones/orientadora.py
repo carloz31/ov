@@ -29,7 +29,7 @@ from app.services.investigaciones.consultas import (
 )
 
 
-ESTADOS = ('SIN_DESTACAR', 'DESTACADA', 'LEYENDA')
+ESTADOS = ('SIN_DESTACAR', 'DESTACADA', 'LEYENDA', 'OCULTA')
 
 
 # --- Acciones -----------------------------------------------------------------------------------
@@ -71,13 +71,28 @@ def comentar_entrevista(sesion: Session, entrada: ComentarEntrada) -> RespuestaA
 
 
 @usar_contexto
-def eliminar_entrevista(sesion: Session, entrada: EntrevistaEntrada) -> RespuestaAccion:
-    """La oculta para todos (deja de ser Leyenda) y resuelve los reportes de ella y de sus reacciones."""
+def ocultar_entrevista(sesion: Session, entrada: EntrevistaEntrada) -> RespuestaAccion:
+    """Ajuste panel-entrevistas-configuracion: deja de verse para los estudiantes, también para sus autores; pierde
+    el destacado y la Leyenda (el sello ya ganado no, porque es un desbloqueo) y resuelve los reportes de ella y de
+    sus reacciones. No avisa a nadie."""
     cuenta, salones = exigir_orientadora(sesion, entrada.cuenta)
     entrevista = entrevista_de_sus_salones(sesion, salones, entrada.entrevista)
-    entrevista.estado, entrevista.leyenda_en = EstadoEntrevista.ELIMINADA, None
+    entrevista.estado = EstadoEntrevista.OCULTA
+    entrevista.destacada_en = entrevista.destacada_por = entrevista.leyenda_en = None
     reacciones = sesion.scalars(select(Reaccion.id).where(Reaccion.entrevista_id == entrevista.id)).all()
     resolver_reportes(sesion, entrevista_id=entrevista.id, reacciones=reacciones)
+    sesion.flush()
+    return responder_con_eventos(sesion, cuenta, [], fecha_accion(entrada))
+
+
+@usar_contexto
+def mostrar_entrevista(sesion: Session, entrada: EntrevistaEntrada) -> RespuestaAccion:
+    """Vuelve a PUBLICADA, sin destacar, con sus favoritos y reacciones. Si no estaba oculta, 409."""
+    cuenta, salones = exigir_orientadora(sesion, entrada.cuenta)
+    entrevista = entrevista_de_sus_salones(sesion, salones, entrada.entrevista, oculta=True)
+    if entrevista.estado != EstadoEntrevista.OCULTA:
+        raise ErrorAccion('La entrevista no está oculta')
+    entrevista.estado = EstadoEntrevista.PUBLICADA
     sesion.flush()
     return responder_con_eventos(sesion, cuenta, [], fecha_accion(entrada))
 
@@ -102,6 +117,8 @@ def descartar_reporte(sesion: Session, entrada: ReporteEntrada) -> RespuestaAcci
 # --- Consultas ----------------------------------------------------------------------------------
 
 def _estado(entrevista: Entrevista) -> str:
+    if entrevista.estado == EstadoEntrevista.OCULTA:
+        return 'OCULTA'
     if entrevista.leyenda_en is not None:
         return 'LEYENDA'
     return 'SIN_DESTACAR' if entrevista.destacada_en is None else 'DESTACADA'
@@ -130,8 +147,9 @@ def _autores_con_salon(sesion: Session, ids) -> dict[int, list[AutorPublicacion]
 @usar_contexto
 def listar_publicaciones(sesion: Session, codigo_cuenta: str, salon: str | None, estado: str | None,
                          con_reportes: bool, buscar: str | None, limite: int, desde: int) -> PaginaPublicaciones:
-    """Las publicadas de sus salones, de la más reciente a la más antigua, y al final las Leyendas de otros salones de
-    sus colegios (sin filtro de salón). `con_reportes`: con reportes pendientes en la entrevista o en sus reacciones."""
+    """Las publicadas y ocultas de sus salones, de la más reciente a la más antigua, y al final las Leyendas de otros
+    salones de sus colegios (sin filtro de salón; una Leyenda nunca está oculta). SIN_DESTACAR, DESTACADA y LEYENDA no
+    traen ocultas. `con_reportes`: con reportes pendientes en la entrevista o en sus reacciones."""
     _, salones = exigir_orientadora(sesion, codigo_cuenta)
     if estado is not None and estado not in ESTADOS:
         raise ErrorAccion('Estado desconocido', estado_http=422)
@@ -143,7 +161,9 @@ def listar_publicaciones(sesion: Session, codigo_cuenta: str, salon: str | None,
         if salon_id not in salones:
             raise ErrorAccion('Salón no encontrado', estado_http=404)
         alcance = de_autor_en_salones([salon_id])
-    condiciones = [Entrevista.estado == EstadoEntrevista.PUBLICADA, alcance]
+    visibles = (EstadoEntrevista.PUBLICADA, EstadoEntrevista.OCULTA) if estado is None else (
+        (EstadoEntrevista.OCULTA,) if estado == 'OCULTA' else (EstadoEntrevista.PUBLICADA,))
+    condiciones = [Entrevista.estado.in_(visibles), alcance]
     if estado == 'SIN_DESTACAR':
         condiciones.append(Entrevista.destacada_en.is_(None))
     elif estado == 'DESTACADA':
@@ -189,8 +209,10 @@ def detalle_publicacion(sesion: Session, codigo_cuenta: str, codigo: str) -> Pub
     salones)."""
     cuenta, salones = exigir_orientadora(sesion, codigo_cuenta)
     entrevista = sesion.scalar(select(Entrevista).where(
-        Entrevista.codigo == codigo, Entrevista.estado == EstadoEntrevista.PUBLICADA,
-        de_autor_en_salones(salones) | leyenda_de_su_colegio(salones)))
+        Entrevista.codigo == codigo,
+        ((Entrevista.estado == EstadoEntrevista.PUBLICADA)
+         & (de_autor_en_salones(salones) | leyenda_de_su_colegio(salones)))
+        | ((Entrevista.estado == EstadoEntrevista.OCULTA) & de_autor_en_salones(salones))))
     if entrevista is None:
         raise ErrorAccion('Entrevista no encontrada', estado_http=404)
     propia_de_salon = sesion.scalar(select(exists().where(

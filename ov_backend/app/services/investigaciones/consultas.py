@@ -54,12 +54,17 @@ def salones_de_orientadora(sesion: Session, cuenta: Cuenta) -> list[int]:
         OrientadoraSalon.orientadora_id == cuenta.id).order_by(OrientadoraSalon.salon_id)))
 
 
-def entrevista_de_sus_salones(sesion: Session, salones: list[int], codigo: str) -> Entrevista:
-    """Publicada y de algún autor de los salones de la orientadora; si no, 404 (no actúa sobre otros salones)."""
+def entrevista_de_sus_salones(sesion: Session, salones: list[int], codigo: str, *, oculta: bool = False) -> Entrevista:
+    """Publicada (u oculta) y de algún autor de los salones de la orientadora; si no, 404 (no actúa sobre otros
+    salones). Ajuste panel-entrevistas-configuracion: una oculta solo se puede volver a mostrar (`oculta=True`); para
+    todo lo demás responde 409."""
     entrevista = sesion.scalar(select(Entrevista).where(
-        Entrevista.codigo == codigo, Entrevista.estado == EstadoEntrevista.PUBLICADA, de_autor_en_salones(salones)))
+        Entrevista.codigo == codigo, Entrevista.estado.in_((EstadoEntrevista.PUBLICADA, EstadoEntrevista.OCULTA)),
+        de_autor_en_salones(salones)))
     if entrevista is None:
         raise ErrorAccion('Entrevista no encontrada', estado_http=404)
+    if entrevista.estado == EstadoEntrevista.OCULTA and not oculta:
+        raise ErrorAccion('La entrevista está oculta: vuelva a mostrarla primero')
     return entrevista
 
 

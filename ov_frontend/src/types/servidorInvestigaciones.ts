@@ -111,7 +111,7 @@ export type FichaEntrevistaEntrada = {
   resumen: string
 }
 // --- Orientadora ---
-export type EstadoPublicacion = 'SIN_DESTACAR' | 'DESTACADA' | 'LEYENDA'
+export type EstadoPublicacion = 'SIN_DESTACAR' | 'DESTACADA' | 'LEYENDA' | 'OCULTA'
 // `salon`: el salón del autor; `lo_que_pensaba`, solo en el detalle.
 export type AutorPublicacion = {
   codigo: string

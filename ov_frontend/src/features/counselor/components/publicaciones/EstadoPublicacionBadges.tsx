@@ -5,6 +5,7 @@ const TEXTO: Record<EstadoPublicacion, string> = {
   SIN_DESTACAR: 'Sin destacar',
   DESTACADA: 'Destacada',
   LEYENDA: 'Leyenda',
+  OCULTA: 'Oculta',
 }
 
 // F09 (bocetos 12 y 12b): el estado de una publicación y, en rojo, sus reportes pendientes.
@@ -19,7 +20,17 @@ export function EstadoPublicacionBadges({
 }) {
   return (
     <div className="flex flex-wrap justify-center gap-2">
-      <Badge variant={estado === 'LEYENDA' ? 'warning' : estado === 'DESTACADA' ? 'secondary' : 'outline'}>
+      <Badge
+        variant={
+          estado === 'LEYENDA'
+            ? 'warning'
+            : estado === 'DESTACADA'
+              ? 'secondary'
+              : estado === 'OCULTA'
+                ? 'neutral'
+                : 'outline'
+        }
+      >
         {TEXTO[estado]}
       </Badge>
       {reportes > 0 && (

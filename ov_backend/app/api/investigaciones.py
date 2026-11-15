@@ -136,9 +136,14 @@ def comentar_entrevista(entrada: ComentarEntrada, sesion: SesionBD):
     return ejecutar_accion(sesion, lambda: orientadora_investigaciones.comentar_entrevista(sesion, entrada))
 
 
-@router.post("/acciones/eliminar-entrevista", response_model=RespuestaAccion, response_model_exclude_unset=True)
-def eliminar_entrevista(entrada: EntrevistaEntrada, sesion: SesionBD):
-    return ejecutar_accion(sesion, lambda: orientadora_investigaciones.eliminar_entrevista(sesion, entrada))
+@router.post("/acciones/ocultar-entrevista", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def ocultar_entrevista(entrada: EntrevistaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: orientadora_investigaciones.ocultar_entrevista(sesion, entrada))
+
+
+@router.post("/acciones/mostrar-entrevista", response_model=RespuestaAccion, response_model_exclude_unset=True)
+def mostrar_entrevista(entrada: EntrevistaEntrada, sesion: SesionBD):
+    return ejecutar_accion(sesion, lambda: orientadora_investigaciones.mostrar_entrevista(sesion, entrada))
 
 
 @router.post("/acciones/descartar-reporte", response_model=RespuestaAccion, response_model_exclude_unset=True)

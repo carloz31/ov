@@ -166,7 +166,9 @@ export function comentarEntrevista(
   })
 }
 
-export const eliminarEntrevista = sobreEntrevista('eliminar-entrevista')
+// Ajuste panel-entrevistas-configuracion: ocultar y volver a mostrar reemplazan a eliminar.
+export const ocultarEntrevista = sobreEntrevista('ocultar-entrevista')
+export const mostrarEntrevista = sobreEntrevista('mostrar-entrevista')
 
 export function descartarReporte(
   cuenta: string,

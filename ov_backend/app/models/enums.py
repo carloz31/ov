@@ -318,7 +318,7 @@ class EstadoSugerenciaGuion(StrEnum):
 class EstadoEntrevista(StrEnum):
     PUBLICADA = "PUBLICADA"
     RETIRADA = "RETIRADA"
-    ELIMINADA = "ELIMINADA"
+    OCULTA = "OCULTA"
 
 
 class MotivoReporte(StrEnum):

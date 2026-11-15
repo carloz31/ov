@@ -166,5 +166,5 @@ export function sellosVitrina(codigos: string[], logros: LogrosCuenta | null) {
 // Una entrevista retirada o eliminada responde 404 a todos (también a sus autores): el texto para decirlo.
 export const noDisponible = (error: ErrorServidor | null) =>
   error?.tipo === 'http' && error.estado === 404
-    ? 'Esta entrevista ya no está disponible: se retiró o se eliminó.'
+    ? 'Esta entrevista ya no está disponible.'
     : null
