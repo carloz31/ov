@@ -50,3 +50,45 @@ def test_postgresql_por_http(monkeypatch, escenario):
                     conexion.execute(DropSchema(esquema, cascade=True))
         finally:
             administrador.dispose()
+
+
+@pytest.mark.skipif(not os.environ.get('TEST_POSTGRES_URL'), reason='Falta TEST_POSTGRES_URL')
+def test_postgresql_carga_contenido_con_los_estudiantes_de_ejemplo(monkeypatch):
+    """Ajuste desbloqueos: `datos.cargar contenido` siembra los ejemplos también sobre PostgreSQL y con
+    ENTORNO=produccion (la siembra va en su propio proceso con ENTORNO=desarrollo)."""
+    from sqlalchemy import func, select
+    from sqlalchemy.orm import Session
+
+    from app import models as m
+    from datos import cargar as carga
+    url_original = make_url(os.environ['TEST_POSTGRES_URL'])
+    esquema = f'ov_prueba_{uuid4().hex}'
+    administrador = crear_motor_bd(url_original)
+    creado = False
+    try:
+        with administrador.begin() as conexion:
+            conexion.execute(CreateSchema(esquema))
+        creado = True
+        opciones = url_original.query.get('options', '')
+        url = url_original.update_query_dict({'options': f'{opciones} -csearch_path={esquema}'.strip()})
+        url_texto = url.render_as_string(hide_password=False)
+        monkeypatch.setenv('DATABASE_URL', url_texto)
+        monkeypatch.setenv('ENTORNO', 'produccion')
+        monkeypatch.setenv('JWT_SECRETO', 'DATO DE PRUEBA: secreto de produccion de mas de 32 caracteres')
+        monkeypatch.setenv('ANTHROPIC_API_KEY', '')
+        command.upgrade(Config(str(Path(__file__).resolve().parents[3] / 'alembic.ini')), 'head')
+        assert carga.main(['contenido']) == 0
+        motor = crear_motor_bd(url_texto)
+        try:
+            with Session(motor) as sesion:
+                assert sesion.scalar(select(func.count()).select_from(m.Cuenta).where(
+                    m.Cuenta.codigo.like('est-panel-%'))) == 8
+        finally:
+            motor.dispose()
+    finally:
+        try:
+            if creado:
+                with administrador.begin() as conexion:
+                    conexion.execute(DropSchema(esquema, cascade=True))
+        finally:
+            administrador.dispose()

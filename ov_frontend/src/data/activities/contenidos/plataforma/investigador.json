@@ -9,7 +9,7 @@
   "orden": 20,
   "obligatoria": false,
   "requisitos": [
-    "b3-10"
+    "b1-7"
   ],
   "ubicacion": "Ciudad, centro de investigación",
   "duracionEstimadaMin": 8,

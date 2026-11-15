@@ -36,3 +36,8 @@ dev = [
     "pytest>=9.1.1",
     "pytest-xdist>=3.8.0",
 ]
+# Ajuste desbloqueos: la siembra de estudiantes de ejemplo (que corre `datos.cargar contenido`, también en la EC2)
+# usa TestClient, que necesita httpx; la EC2 sincroniza sin el grupo dev.
+ejemplos = [
+    "httpx>=0.28.1",
+]

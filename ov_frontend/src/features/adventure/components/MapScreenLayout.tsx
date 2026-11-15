@@ -186,7 +186,7 @@ export function MapScreenLayout({
             (() => (zone === 'missions' ? selectPoint('city') : navigate(appPaths.student.missions)))
           }
         />
-        <MapControls onHelp={() => openGuide(pasosAyuda)} aviso={avisoAyuda} />
+        <MapControls onHelp={() => (avisoAyuda ? openGuide([avisoAyuda], 'ayuda') : openGuide(pasosAyuda))} />
         <ZoomControls
           scale={scale}
           minimumScale={minimumScale}

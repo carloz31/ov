@@ -11,8 +11,9 @@ import json
 from sqlalchemy import select
 
 from app import models as m
+from scripts import prerrequisitos_contenido
 from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
-from soporte_contenido import REQUERIDAS, avanzar, completar, revelar_para_b4
+from soporte_contenido import REQUERIDAS, accion, avanzar, completar, revelar_para_b4
 from soporte_planes import crear, guardar, por_que_lista
 from soporte_ruta import FECHA, pedir, responder, responder_item, revelar, terminar
 
@@ -127,7 +128,10 @@ def test_camino_con_reglas_de_planes(cliente_contenido):
             assert estados(cliente)['b4-5'] == 'BLOQUEADA'
             guardar(cliente, PERIODISMO, 'POR_QUE', por_que_lista())
             assert estados(cliente)['b4-5'] == 'DISPONIBLE'
+        # Ajuste desbloqueos (adaptación): la carta, el caso y el guion que piden b1-4, b1-7 y b3-2.
+        prerrequisitos_contenido.antes_de(codigo, lambda nombre, datos: accion(cliente, nombre, datos))
         completar(cliente, codigo)
+        prerrequisitos_contenido.despues_de(codigo, lambda actividad: completar(cliente, actividad))
         if codigo == 'b4-5':
             guardar(cliente, PSICOLOGIA, 'PASOS', {'pasos': [{'tipo': 'conversar', 'texto': 'Hablar con una psicóloga.'}]})
     assert estados(cliente)['b5-5'] == 'COMPLETADA'

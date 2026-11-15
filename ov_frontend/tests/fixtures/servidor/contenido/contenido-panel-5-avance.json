@@ -1,5 +1,5 @@
 {
-  "casos_superados": 0,
+  "casos_superados": 1,
   "dias_ultima_entrada": 2,
   "entradas_diario": 6,
   "familia": {
@@ -12,7 +12,7 @@
     "ruta_hechas": 0,
     "ruta_total": 8
   },
-  "opcionales_ciudad": 6,
+  "opcionales_ciudad": 7,
   "senales": [
     {
       "banda": "ALTA",

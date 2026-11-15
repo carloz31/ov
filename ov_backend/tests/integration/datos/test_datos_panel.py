@@ -59,14 +59,3 @@ def test_una_fila_de_tema_mal_armada_falla_al_cargar(sesion_contenido, codigo, c
     sesion_contenido.flush()
     with pytest.raises(ValueError, match=mensaje):
         validar_alertas(sesion_contenido)
-
-
-@pytest.mark.parametrize('argumentos', [['ruta', '--con-ejemplos']])
-def test_con_ejemplos_solo_con_contenido(argumentos, monkeypatch, capsys):
-    """`--con-ejemplos` siembra los estudiantes de ejemplo del panel; con otro conjunto se niega sin tocar la base."""
-    from datos.cargar import main
-    monkeypatch.setenv('ENTORNO', 'desarrollo')
-    with pytest.raises(SystemExit) as salida:
-        main(argumentos)
-    assert salida.value.code == 1
-    assert '--con-ejemplos solo va con `contenido`' in capsys.readouterr().err

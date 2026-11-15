@@ -10,7 +10,8 @@ Se niega a correr sin `--desarrollo` o si la configuración dice `ENTORNO=produc
 
     uv run python scripts/sembrar_panel_ejemplo.py --desarrollo
 
-O, de una vez, al cargar el conjunto: `uv run python -m datos.cargar contenido --vaciar --con-ejemplos`.
+O, de una vez, al cargar el conjunto (por defecto; `--sin-ejemplos` lo omite): `uv run python -m datos.cargar contenido --vaciar`.
+`datos.cargar` corre este script con ENTORNO=desarrollo y sin clave del LLM solo para este proceso, también en la EC2.
 
 Cada estudiante y apoderado de ejemplo puede ingresar con las credenciales de `CREDENCIALES` (DATO DE PRUEBA, correos
 de example.com, dominio reservado). No van en `datos/usuarios_prueba.txt`, que es solo de `ruta`.
@@ -36,6 +37,7 @@ from app.config import cargar_configuracion  # noqa: E402
 from app.models import OrigenSesion  # noqa: E402
 from app.services.acceso import emitir_token  # noqa: E402
 from datos import contenido  # noqa: E402
+from prerrequisitos_contenido import antes_de, despues_de  # noqa: E402
 
 SALON, ORIENTADORA = '5A', 'ori-carmen'
 # DATO DE PRUEBA: (código, nombre, caso de §12)
@@ -49,14 +51,17 @@ ESTUDIANTES = (
     ('est-panel-7', 'Ana Lucía Álvarez Rojas', 'Terminó el camino'),
     ('est-panel-8', 'Fabio Flores Vega', 'Avanzado y sin avisos'),
 )
-# DATO DE PRUEBA: apoderados de los casos 5 a 8 (código, nombre, estudiante, parentesco).
+# DATO DE PRUEBA: apoderados de los casos 3 a 8 (código, nombre, estudiante, parentesco). Ajuste desbloqueos: b1-4 pide
+# la carta del estudiante, que exige un vínculo, así que los casos que pasan b1-4 (3 a 8) tienen apoderado.
 # DATO DE PRUEBA: (cuenta, correo, contraseña) para ingresar como cada estudiante y apoderado de ejemplo.
 CREDENCIALES = (
     *((f'est-panel-{n}', f'panel{n}.estudiante@example.com', f'Panel{n}-2026!') for n in range(1, 9)),
-    *((f'apo-panel-{n}', f'panel{n}.apoderado@example.com', f'ApoPanel{n}-2026!') for n in (5, 6, 7, 8)),
+    *((f'apo-panel-{n}', f'panel{n}.apoderado@example.com', f'ApoPanel{n}-2026!') for n in (3, 4, 5, 6, 7, 8)),
 )
 
-APODERADOS = (('apo-panel-5', 'José Paredes', 'est-panel-5', 'padre'),
+APODERADOS = (('apo-panel-3', 'Gloria Vega', 'est-panel-3', 'madre'),
+              ('apo-panel-4', 'Raúl Mendoza', 'est-panel-4', 'padre'),
+              ('apo-panel-5', 'José Paredes', 'est-panel-5', 'padre'),
               ('apo-panel-6', 'Marta Ruiz', 'est-panel-6', 'madre'),
               ('apo-panel-7', 'Rocío Rojas', 'est-panel-7', 'madre'),
               ('apo-panel-8', 'Luis Flores', 'est-panel-8', 'padre'))
@@ -198,7 +203,11 @@ class Sembrador:
             if actividad == 'b3-10' and not self.tiene_resultado(codigo, 'APL-RIASEC'):
                 self.intereses(codigo)
             opcion = partida if actividad == 'b0-3' else llegada if actividad == 'b5-2' else None
+            # Ajuste desbloqueos: la carta, el caso y el guion que piden b1-4, b1-7 y b3-2 (sin LLM), y la misión de
+            # Anselmo tras b1-7.
+            antes_de(actividad, lambda nombre, datos: self.pedir('POST', f'/acciones/{nombre}', {'cuenta': codigo, **datos}))
             self.completar(codigo, actividad, opcion)
+            despues_de(actividad, lambda otra: self.completar(codigo, otra))
             if actividad in ('b0-3', 'b5-2'):
                 self.pedir('POST', '/acciones/revelar-resultado', {
                     'cuenta': codigo, 'instrumento': 'TEST-PARTIDA-LLEGADA',

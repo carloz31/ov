@@ -16,7 +16,7 @@ uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 La aplicación no crea tablas ni carga datos al arrancar: la migración y la carga se hacen una vez. Después basta con Uvicorn. Documentación interactiva: `http://127.0.0.1:8000/docs`.
 
 - `DATABASE_URL` elige la base (por defecto `sqlite:///ov.db` en la raíz). Para PostgreSQL: `uv sync --extra postgres` y la URL antes de migrar y cargar.
-- Conjuntos de datos: `contenido` (el contenido real, el que se despliega) y `ruta` (banco de pruebas de mecánicas: `uv run python -m datos.cargar ruta`); `--vaciar` reemplaza los datos de la base.
+- Conjuntos de datos: `contenido` (el contenido real, el que se despliega) y `ruta` (banco de pruebas de mecánicas: `uv run python -m datos.cargar ruta`); `--vaciar` reemplaza los datos de la base. Con `contenido` se siembran también los estudiantes de ejemplo del panel de la orientadora (`--sin-ejemplos` los omite).
 - `POST /desarrollo/reiniciar` (solo con `ENTORNO=desarrollo`) borra el estado de las cuentas y conserva el catálogo.
 - El LLM (Claude Haiku) de los registros, el guion y los pasos del plan usa `ANTHROPIC_API_KEY` de `.env`; sin clave, se usan los respaldos. Nunca publiques la clave.
 

@@ -365,6 +365,16 @@
   top: 6px;
   right: 6px;
 }
+/* Ajuste desbloqueos: sección abierta en la que aún no se entra; en el lugar del candado, sin animación. */
+.sx-root .sx-quick-links .sx-quick-new {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--sx-gold);
+}
 .sx-root .sx-panel-count {
   margin-left: auto;
   padding: 2px 8px;

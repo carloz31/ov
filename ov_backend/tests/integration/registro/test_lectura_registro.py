@@ -5,10 +5,12 @@ Con el cliente de prueba, sin LLM. Los textos son DATO DE PRUEBA.
 
 import pytest
 from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
-from soporte_contenido import REQUERIDAS, avanzar
+from soporte_contenido import REQUERIDAS, accion, avanzar
 from soporte_llm import salida
 from soporte_ruta import (FECHA, eleccion_minima, item_de, leer_registro, pedir, responder_item, responder_registro,
                           seguir)
+
+from scripts import prerrequisitos_contenido
 
 TEXTO = 'DATO DE PRUEBA: una respuesta con su ejemplo.'
 PROHIBIDOS = {'tipo', 'motivo', 'sensible', 'tipo_final', 'primera_tipo', 'conjunto_tipo', 'abierto', 'intento',
@@ -22,6 +24,8 @@ def llm(aplicacion_contenido):
 
 def hasta(cliente, actividad):
     avanzar(cliente, REQUERIDAS[0], REQUERIDAS[REQUERIDAS.index(actividad) - 1])
+    # Ajuste desbloqueos (adaptación): lo que pide la propia actividad fuera del camino (b1-7: un caso superado).
+    prerrequisitos_contenido.antes_de(actividad, lambda nombre, datos: accion(cliente, nombre, datos))
 
 
 def claves(valor):

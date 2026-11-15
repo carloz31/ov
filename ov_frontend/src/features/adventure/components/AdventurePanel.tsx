@@ -1,5 +1,6 @@
 import { useTravelerLevel } from '../hooks/useTravelerLevel'
 import { useSeccionesAcceso, type AccesoSeccion } from '../hooks/useSeccionesAcceso'
+import { useAccesosNuevos } from '../hooks/useAccesosNuevos'
 import { Link } from 'react-router'
 import { Backpack, BookOpen, ChevronRight, HeartHandshake, LibraryBig, Search, Signpost } from 'lucide-react'
 import type { AdventureState } from '@/types/adventure'
@@ -12,6 +13,9 @@ import { SiguientePasoServidor } from './SiguientePasoServidor'
 import { SenalHoy } from './SenalHoy'
 import { useSenalServidor } from '@/features/adventure/hooks/useSenalServidor'
 import { getTodayCheckIn, useCheckInDay } from '../lib/checkIn'
+
+// Recursos no tiene sección: siempre abierto.
+const ABIERTO: AccesoSeccion = { bloqueada: false }
 
 const textoOculto = (acceso: AccesoSeccion) =>
   acceso.bloqueada && <small className="sr-only">{acceso.mensaje}</small>
@@ -48,6 +52,7 @@ export function AdventurePanel({
   const signal = senal.activo ? senal.hoy : getTodayCheckIn(adventure),
     escala = senal.activo ? senal.escala : 10
   const seccion = useSeccionesAcceso(adventure)
+  const nuevo = useAccesosNuevos()
   // Ajuste del panel (F05): en local, el siguiente paso es la recomendada y cuenta las disponibles del mapa.
   const paso: SiguientePaso | null =
     siguiente !== undefined
@@ -90,34 +95,54 @@ export function AdventurePanel({
       <section className="sx-panel-section">
         <h2>Accesos rápidos</h2>
         <nav className="sx-quick-links" aria-label="Accesos rápidos">
-          <AccesoRapido to={appPaths.student.decisions} acceso={seccion('PLANES')} onGuide={onGuide}>
+          <AccesoRapido
+            to={appPaths.student.decisions}
+            acceso={seccion('PLANES')}
+            nuevo={nuevo('profile-decisions', seccion('PLANES'))}
+            onGuide={onGuide}
+          >
             <Signpost size={18} />
             <span>
               Mis planes
               {textoOculto(seccion('PLANES'))}
             </span>
           </AccesoRapido>
-          <AccesoRapido to={appPaths.student.journal} acceso={seccion('DIARIO')} onGuide={onGuide}>
+          <AccesoRapido
+            to={appPaths.student.journal}
+            acceso={seccion('DIARIO')}
+            nuevo={nuevo('journal', seccion('DIARIO'))}
+            onGuide={onGuide}
+          >
             <BookOpen size={18} />
             <span>
               Mi diario
               {textoOculto(seccion('DIARIO'))}
             </span>
           </AccesoRapido>
-          <AccesoRapido to={appPaths.student.conversations} acceso={seccion('FAMILIA')} onGuide={onGuide}>
+          <AccesoRapido
+            to={appPaths.student.conversations}
+            acceso={seccion('FAMILIA')}
+            nuevo={nuevo('conversations', seccion('FAMILIA'))}
+            onGuide={onGuide}
+          >
             <HeartHandshake size={18} />
             <span>
               En familia
               {textoOculto(seccion('FAMILIA'))}
             </span>
           </AccesoRapido>
-          <Link to={appPaths.student.resources}>
+          <AccesoRapido
+            to={appPaths.student.resources}
+            acceso={ABIERTO}
+            nuevo={nuevo('resources', ABIERTO, true)}
+          >
             <Backpack size={18} />
             <span>Recursos</span>
-          </Link>
+          </AccesoRapido>
           <AccesoRapido
             to={appPaths.student.investigations}
             acceso={seccion('INVESTIGACIONES')}
+            nuevo={nuevo('investigations', seccion('INVESTIGACIONES'))}
             onGuide={onGuide}
           >
             <Search size={18} />
@@ -129,6 +154,7 @@ export function AdventurePanel({
           <AccesoRapido
             to={appPaths.student.catalog.professions}
             acceso={seccion('CATALOGO')}
+            nuevo={nuevo('catalog-professions', seccion('CATALOGO'))}
             onGuide={onGuide}
           >
             <LibraryBig size={18} />

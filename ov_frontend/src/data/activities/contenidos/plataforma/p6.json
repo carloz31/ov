@@ -365,15 +365,15 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Cuando termine su ruta se le abre algo más: una serie de temas para conversar con su hijo o hija. No se los vamos a adelantar todos. Solo dos pistas: en uno, él o ella le pregunta por algo de su trabajo que quizá nunca le contó; en otro, le dice cómo quiere que usted lo acompañe. Los demás los va a descubrir al entrar."
+          "texto": "En Conversaciones ya tiene una serie de temas para conversar con su hijo o hija. No se los vamos a adelantar todos. Solo dos pistas: en uno, él o ella le pregunta por algo de su trabajo que quizá nunca le contó; en otro, le dice cómo quiere que usted lo acompañe. Los demás los va a descubrir al entrar."
         },
         {
           "tipo": "pasos",
           "titulo": "Cómo funcionan",
           "pasos": [
             {
-              "titulo": "Se abren al terminar su ruta",
-              "texto": "Las encuentra en Conversaciones. Su hijo o hija va abriendo los temas con su avance; usted puede adelantar sus respuestas."
+              "titulo": "Ya las tiene abiertas",
+              "texto": "Las encuentra en Conversaciones, después de guardar su carta. Su hijo o hija va abriendo los temas con su avance; usted puede adelantar sus respuestas."
             },
             {
               "titulo": "Cada uno responde por separado",

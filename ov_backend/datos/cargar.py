@@ -2,6 +2,7 @@
 
 import argparse
 import re
+import sys
 
 from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import SQLAlchemyError
@@ -76,14 +77,11 @@ def main(argumentos=None) -> int:
     analizador = argparse.ArgumentParser(description=__doc__)
     analizador.add_argument('conjunto', choices=CONJUNTOS)
     analizador.add_argument('--vaciar', action='store_true')
-    analizador.add_argument('--con-ejemplos', action='store_true', help=(
-        'Solo con `contenido` y ENTORNO=desarrollo: después de cargar, siembra los estudiantes de ejemplo del panel '
-        '(scripts/sembrar_panel_ejemplo.py).'))
+    analizador.add_argument('--sin-ejemplos', action='store_true', help=(
+        'Solo con `contenido`: carga sin sembrar los estudiantes de ejemplo del panel (scripts/sembrar_panel_ejemplo.py). '
+        'Úsalo antes de una prueba con usuarios: son cuentas inventadas con credenciales en el repositorio.'))
     opciones = analizador.parse_args(argumentos)
     configuracion = cargar_configuracion()
-    if opciones.con_ejemplos and (opciones.conjunto != 'contenido' or configuracion.entorno != 'desarrollo'):
-        analizador.exit(1, 'No se pudieron cargar los datos: --con-ejemplos solo va con `contenido` y '
-                           'ENTORNO=desarrollo.\n')
     try:
         conteos = preparar_base(configuracion.url_bd, opciones.conjunto, vaciar=opciones.vaciar)
     except (OSError, ValueError, RuntimeError) as error:
@@ -92,20 +90,40 @@ def main(argumentos=None) -> int:
         analizador.exit(1, 'No se pudieron cargar los datos: no se pudo acceder a la base de datos.\n')
     for tabla, cantidad in conteos.items():
         print(f'{tabla}: {cantidad}')
-    if opciones.con_ejemplos:
-        return _sembrar_ejemplos(configuracion.url_bd)
-    return 0
+    if opciones.conjunto != 'contenido' or opciones.sin_ejemplos:
+        return 0
+    # Ajuste desbloqueos: con `contenido`, los estudiantes de ejemplo se siembran por defecto, en cualquier entorno.
+    codigo = _sembrar_ejemplos(configuracion.url_bd)
+    if codigo == 0:
+        return 0
+    # Un fallo de la siembra no deja la base a medias: vuelve a quedar `contenido`, sin ejemplos.
+    print(f'ERROR: no se pudieron sembrar los estudiantes de ejemplo (código {codigo}). La base queda con '
+          '`contenido`, sin ejemplos.', file=sys.stderr)
+    try:
+        preparar_base(configuracion.url_bd, 'contenido', vaciar=True)
+    except (OSError, ValueError, RuntimeError, SQLAlchemyError) as error:
+        print(f'ERROR: tampoco se pudo volver a cargar `contenido`: {error}', file=sys.stderr)
+    return CODIGO_SIEMBRA_FALLIDA
+
+
+# `actualizar.sh` reinicia el backend igual con este código y lo informa después.
+CODIGO_SIEMBRA_FALLIDA = 3
 
 
 def _sembrar_ejemplos(url: str) -> int:
-    """Corre el script de ejemplos como otro proceso (`datos` no importa `scripts`), sobre la misma base."""
+    """Corre la siembra como otro proceso (`datos` no importa `scripts`), sobre la misma base. Ese proceso, y solo él,
+    va con ENTORNO=desarrollo (la siembra fija la fecha de cada acción) y sin clave del LLM (usa el cliente de prueba):
+    el backend desplegado sigue en su entorno y no acepta la fecha del cliente."""
     import os
     import subprocess
-    import sys
     from pathlib import Path
     script = Path(__file__).resolve().parents[1] / 'scripts' / 'sembrar_panel_ejemplo.py'
-    entorno = {**os.environ, 'DATABASE_URL': url, 'ENTORNO': 'desarrollo'}
-    return subprocess.run([sys.executable, str(script), '--desarrollo'], env=entorno, check=False).returncode
+    entorno = {**os.environ, 'DATABASE_URL': url, 'ENTORNO': 'desarrollo', 'ANTHROPIC_API_KEY': ''}
+    try:
+        return subprocess.run([sys.executable, str(script), '--desarrollo'], env=entorno, check=False).returncode
+    except OSError as error:
+        print(f'ERROR: no se pudo iniciar la siembra: {error}', file=sys.stderr)
+        return 1
 
 
 if __name__ == '__main__':

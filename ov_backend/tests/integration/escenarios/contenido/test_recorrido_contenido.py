@@ -2,16 +2,19 @@
 punta, con las peticiones del front (cliente de prueba del LLM)."""
 
 from soporte_catalogo_ruta import PSICOLOGIA
-from soporte_contenido import CAMINO, REQUERIDAS, avanzar, completar, preparar_planes, revelar_para_b4
+from soporte_contenido import CAMINO, REQUERIDAS, accion, avanzar, completar, preparar_planes, revelar_para_b4
 from soporte_planes import guardar
 from soporte_ruta import FECHA, eventos, pedir
 
 from datos import contenido
+from scripts import prerrequisitos_contenido
 
 
 ULTIMAS = {'b0-6': 'B1', 'b1-7': 'B2', 'b2-5': 'B3', 'b3-10': 'B4', 'b4-5': 'B5'}
 TITULOS = {c: t for c, _, t, *_ in contenido.ACTIVIDADES}
 VOCES_DE_ACTIVIDAD = {'b3-1': 'tb3-1', 'b3-8': 'tb3-8', 'b3-10': 'tb3-10'}
+# Ajuste desbloqueos (adaptación autorizada): estas misiones piden además algo de otra sección.
+PIDEN_OTRA_SECCION = {'b1-4', 'b1-7', 'b3-2'}
 
 
 def voz_de(cliente, codigo):
@@ -79,6 +82,11 @@ def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
             assert actividades['b5-1'] == 'BLOQUEADA'
             guardar(cliente, PSICOLOGIA, 'PASOS', {'pasos': [{'tipo': 'conversar', 'texto': 'Hablar con una psicóloga.'}]})
             continue
+        if siguiente in PIDEN_OTRA_SECCION:
+            assert actividades[siguiente] == 'BLOQUEADA', siguiente
+            prerrequisitos_contenido.antes_de(siguiente, lambda nombre, datos: accion(cliente, nombre, datos))
+            actividades = estados(cliente)[1]
+        prerrequisitos_contenido.despues_de(actual, lambda codigo: completar(cliente, codigo))
         if siguiente:
             assert actividades[siguiente] == 'DISPONIBLE', siguiente
     # Ajuste recorte-volcan (adaptación autorizada): b2-1 y b2-2 salen de las requeridas (38 → 36).
@@ -91,14 +99,19 @@ def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
 def test_ruta_del_apoderado(cliente_contenido):
     cliente = cliente_contenido
     rutas = [f'p{n}' for n in range(1, 9)]
+    seccion = lambda: {s['codigo']: s['estado'] for s in pedir(cliente, 'GET', '/cuentas/apo-rosa/secciones')}[
+        'CONVERSACIONES']
+    diploma = lambda: pedir(cliente, 'GET', '/cuentas/apo-rosa/familia')['diploma']['obtenido']
     for actual, siguiente in zip(rutas, (*rutas[1:], None)):
         _, actividades = estados(cliente, 'apo-rosa')
         assert actividades[actual] == 'DISPONIBLE', actual
         if siguiente:
             assert actividades[siguiente] == 'BLOQUEADA', siguiente
-        completar(cliente, actual, cuenta='apo-rosa')
-    secciones = {s['codigo']: s['estado'] for s in pedir(cliente, 'GET', '/cuentas/apo-rosa/secciones')}
-    assert secciones['CONVERSACIONES'] == 'DISPONIBLE'
+        respuesta = completar(cliente, actual, cuenta='apo-rosa')
+        # Ajuste desbloqueos: Conversaciones se abre con p4 (con p3, no); el diploma sigue pidiendo p8.
+        assert seccion() == ('BLOQUEADA' if actual in ('p1', 'p2', 'p3') else 'DISPONIBLE'), actual
+        assert ('R-SEC-CONVERSACIONES' in {d['regla'] for d in respuesta['nuevos_desbloqueos']}) == (actual == 'p4')
+        assert diploma() == (actual == 'p8'), actual
     fichas = {f['codigo']: f for f in pedir(cliente, 'GET', '/cuentas/apo-rosa/fichas')}
     assert sorted(c for c, f in fichas.items() if f['obtenida_en']) == [f'FP0{n}' for n in range(1, 9)]
     assert all(fichas[f'FP0{n}']['actividad']['codigo'] == f'p{n}' for n in range(1, 9))
@@ -233,3 +246,65 @@ def test_el_puerto_se_cierra_sin_las_opcionales(cliente_contenido):
     assert bloques['B4'] == 'DISPONIBLE'
     assert 'B3' in {e['referencia'] for e in eventos(cliente) if e['tipo'] == 'COMPLETA_BLOQUE'}
     assert all(actividades[c] != 'COMPLETADA' for c in ('b3-6', 'b3-7', 'b3-9'))
+
+
+# Ajuste desbloqueos: b1-4 pide la carta; b1-7, un caso superado; b3-2, el guion listo; investigador se abre con b1-7.
+
+
+def reglas_de(respuesta):
+    return {d['regla'] for d in respuesta['nuevos_desbloqueos']}
+
+
+def caso(cliente, puntaje):
+    return accion(cliente, 'resolver-caso', {'actividad': 'c1', 'puntaje': puntaje})
+
+
+def test_b1_4_espera_la_carta(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b1-3')
+    assert estados(cliente)[1]['b1-4'] == 'BLOQUEADA'
+    respuesta = escribir_carta(cliente, 'est-ana', 'Carta de Ana')
+    assert {'R-b1-4', 'R-conv-1', 'R-conv-2'} <= reglas_de(respuesta)
+    assert estados(cliente)[1]['b1-4'] == 'DISPONIBLE'
+
+
+def test_b1_7_espera_un_caso_superado(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b1-6')
+    assert estados(cliente)[1]['b1-7'] == 'BLOQUEADA'
+    assert 'R-b1-7' not in reglas_de(caso(cliente, 4))  # c1 se supera con 5
+    assert estados(cliente)[1]['b1-7'] == 'BLOQUEADA'
+    assert 'R-b1-7' in reglas_de(caso(cliente, 8))
+    assert estados(cliente)[1]['b1-7'] == 'DISPONIBLE'
+
+
+def test_un_caso_superado_antes_abre_b1_7_al_completar_b1_6(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b1-5')
+    caso(cliente, 8)
+    assert 'R-b1-7' in reglas_de(completar(cliente, 'b1-6'))
+
+
+def test_investigador_se_abre_con_b1_7_y_abre_investigaciones(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b1-6')
+    caso(cliente, 8)
+    assert estados(cliente)[1]['investigador'] == 'BLOQUEADA'
+    assert 'R-investigador' in reglas_de(completar(cliente, 'b1-7'))
+    assert 'R-SEC-INVESTIGACIONES' in reglas_de(completar(cliente, 'investigador'))
+
+
+def test_b3_2_espera_el_guion_listo(cliente_contenido):
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b3-1')
+    pendiente = lambda: estados(cliente)[1]['b3-2']
+    assert pendiente() == 'BLOQUEADA'
+    pienso = {'familia': prerrequisitos_contenido.FAMILIA_GUION, **prerrequisitos_contenido.PIENSO}
+    assert 'R-b3-2' not in reglas_de(accion(cliente, 'guardar-lo-que-pienso', pienso))
+    preguntas = [{'origen': 'PROPIA', 'texto': pienso['duda']}]
+    sin_terminar = accion(cliente, 'guardar-guion', {'preguntas': preguntas, 'descartadas': [], 'terminar': False})
+    assert 'R-b3-2' not in reglas_de(sin_terminar) and pendiente() == 'BLOQUEADA'
+    terminado = accion(cliente, 'guardar-guion', {'preguntas': preguntas, 'descartadas': [], 'terminar': True})
+    assert 'R-b3-2' in reglas_de(terminado) and pendiente() == 'DISPONIBLE'
+    accion(cliente, 'cancelar-investigacion', {})
+    assert pendiente() == 'DISPONIBLE'
