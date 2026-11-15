@@ -9,3 +9,9 @@ CLAUDE.local.md
 *.pem
 github-ec2
 github-ec2.pub
+# Cuentas de una prueba (scripts/crear_cuentas.py): el CSV real y las contraseñas generadas no se versionan.
+ov_backend/cuentas-prueba*.csv
+*.resultado.csv
+
+# Comparación local de imágenes (auditoría plataforma); no se versiona.
+comparacion-imagenes/

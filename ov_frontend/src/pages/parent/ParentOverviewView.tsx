@@ -19,7 +19,7 @@ function ParentOverviewView() {
     <main ref={mainRef} className="parent-overview min-w-0 space-y-4 p-4 sm:p-6 lg:p-8">
       <header className="space-y-2">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-          Tu recorrido en familia
+          Su recorrido en familia
         </p>
         <h1 className="text-3xl font-bold">Hola, {parentProfile.firstName}</h1>
         <p className="text-muted-foreground">{parentMotivation('greeting')}</p>

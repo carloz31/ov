@@ -7,6 +7,7 @@ from sqlalchemy import distinct, func, literal, select, union_all
 
 from app.core.definiciones import obtener_definiciones
 from app.core.parametros import TOPE_ENTRADAS_AMISTAD_DIA
+from app.core.planes import cargar_hijas, cargar_tarjetas
 from app.models import Desbloqueo, EventoUso, Favorito, ProgresoActividad, TipoConteo
 
 
@@ -25,6 +26,8 @@ class ContextoConsultas:
         self.especiales = {}
         self.favoritos = {}
         self.topes = {}
+        self.planes = {}
+        self.planes_con_hijas = set()
 
     def cargar_conteos(self, cuentas):
         faltantes = set(cuentas) - self.conteos.keys()
@@ -68,6 +71,16 @@ class ContextoConsultas:
         self.cargar_desbloqueos([cuenta_id])
         return self.desbloqueos[cuenta_id]
 
+    def cargar_progresos(self, cuentas):
+        """Los progresos de varias cuentas en una consulta (auditoría plataforma, D-B3: los hijos del apoderado)."""
+        faltantes = set(cuentas) - self.progresos.keys()
+        if not faltantes:
+            return
+        for cuenta_id in faltantes:
+            self.progresos[cuenta_id] = {}
+        for progreso in self.sesion.scalars(select(ProgresoActividad).where(ProgresoActividad.cuenta_id.in_(faltantes))):
+            self.progresos[progreso.cuenta_id][progreso.actividad_id] = progreso
+
     def progresos_de(self, cuenta_id):
         if cuenta_id not in self.progresos:
             self.progresos[cuenta_id] = {progreso.actividad_id: progreso for progreso in self.sesion.scalars(
@@ -94,7 +107,21 @@ class ContextoConsultas:
             self.topes[clave] = sum(min(cantidad, TOPE_ENTRADAS_AMISTAD_DIA) for cantidad in por_dia)
         return self.topes[clave]
 
+    def planes_de(self, cuenta_id, hijas=False):
+        """Ajuste logros: los planes activos de la cuenta durante la petición, en dos niveles: las tarjetas (1
+        consulta) y, solo si se piden, sus filas hijas (8 consultas). `invalidar_eventos` los borra."""
+        datos = self.planes.get(cuenta_id)
+        if datos is None:
+            datos = self.planes[cuenta_id] = cargar_tarjetas(self.sesion, cuenta_id)
+            self.planes_con_hijas.discard(cuenta_id)
+        if hijas and cuenta_id not in self.planes_con_hijas:
+            cargar_hijas(self.sesion, datos)
+            self.planes_con_hijas.add(cuenta_id)
+        return datos
+
     def invalidar_eventos(self, cuenta_id):
+        self.planes.pop(cuenta_id, None)
+        self.planes_con_hijas.discard(cuenta_id)
         self.conteos.pop(cuenta_id, None)
         self.topes = {clave: valor for clave, valor in self.topes.items() if clave[0] != cuenta_id}
         self.especiales.pop(cuenta_id, None)

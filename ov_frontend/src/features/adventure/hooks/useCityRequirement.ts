@@ -1,8 +1,9 @@
 import { progresoBloque } from '@/lib/servidor/contenidos'
 import { useEffect, useState } from 'react'
 import { modoApi } from '@/config/env'
-import { useEstadoServidor, mensajeErrorServidor } from '@/store/servidor/sesion'
+import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { consultarProgreso } from '@/store/servidor/consultas'
+import { useRevisionAcciones } from '@/store/servidor/refresco'
 import { textoRequisito } from '@/lib/servidor/adaptadores'
 
 import { fieldMissions } from '@/data/content/adventure'
@@ -10,6 +11,9 @@ import type { AdventureState } from '@/types/adventure'
 
 export function useCityRequirement(adventure: AdventureState) {
   const servidor = useEstadoServidor()
+  // Auditoría plataforma (F2b): el conteo «actual de requerido» cambia con los eventos de cada acción, refresque o no
+  // el camino; se vuelve a pedir con la revisión de acciones, no con cada recarga de actividades.
+  const revisionAcciones = useRevisionAcciones()
   const [requisito, setRequisito] = useState('Consultando el requisito en el servidor…')
   const [error, setError] = useState(false)
   const [intento, setIntento] = useState(0)
@@ -22,13 +26,13 @@ export function useCityRequirement(adventure: AdventureState) {
       if (!vigente) return
       setError(r.tipo !== 'ok')
       setRequisito(
-        r.tipo === 'ok' ? textoRequisito(r.datos, servidor.actividades.datos) : mensajeErrorServidor(r),
+        r.tipo === 'ok' ? textoRequisito(r.datos, obtenerEstadoServidor().actividades.datos) : mensajeErrorServidor(r),
       )
     })
     return () => {
       vigente = false
     }
-  }, [servidor.actividades.datos, intento])
+  }, [revisionAcciones, intento])
   return {
     requisito,
     error,

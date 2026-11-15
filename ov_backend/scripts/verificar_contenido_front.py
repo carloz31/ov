@@ -36,7 +36,7 @@ from sqlalchemy.orm import Session  # noqa: E402
 from app import models as m  # noqa: E402
 from app.database import crear_motor_bd  # noqa: E402
 from app.models.base import sin_tildes  # noqa: E402
-from datos import contenido as datos_contenido, ruta as datos_ruta  # noqa: E402
+from datos import contenido as datos_contenido, fijos, ruta as datos_ruta  # noqa: E402
 from datos.cargar import preparar_base  # noqa: E402
 
 MODULOS = {'contenido': datos_contenido, 'ruta': datos_ruta}
@@ -259,6 +259,25 @@ def _verificar_codigos_de_voces(front: Path) -> list[str]:
     return errores
 
 
+_MEDIDOR_FRONT = re.compile(r"codigo: '([a-z]+)',\s*nombre: '([^']+)'")
+_ESCALA_FRONT = re.compile(r"ESCALA_MEDIDOR = \[([^\]]*)\]")
+
+
+def _verificar_medidores(front: Path) -> list[str]:
+    """Ajuste pendientes-orientadora: los nombres y niveles de medidor que citan los temas (`fijos.MEDIDORES_PLAN`,
+    `fijos.NIVELES_MEDIDOR`) son los que ve el estudiante (`MEDIDORES` y `ESCALA_MEDIDOR` de `adaptadoresPlanes.ts`)."""
+    fuente = (front / 'src/lib/servidor/adaptadoresPlanes.ts').read_text(encoding='utf-8')
+    errores = []
+    medidores = dict(_MEDIDOR_FRONT.findall(fuente))
+    if medidores != fijos.MEDIDORES_PLAN:
+        errores.append(f'MEDIDORES del front ({medidores}) no coincide con fijos.MEDIDORES_PLAN')
+    escala = _ESCALA_FRONT.search(fuente)
+    niveles = tuple(re.findall(r"'([^']+)'", escala.group(1))) if escala else ()
+    if niveles != fijos.NIVELES_MEDIDOR:
+        errores.append(f'ESCALA_MEDIDOR del front ({niveles}) no coincide con fijos.NIVELES_MEDIDOR')
+    return errores
+
+
 def verificar(front: Path) -> tuple[list[str], list[str]]:
     errores, avisos = [], []
     with TemporaryDirectory() as carpeta:
@@ -272,6 +291,7 @@ def verificar(front: Path) -> tuple[list[str], list[str]]:
                     if conjunto == 'contenido':
                         errores += _verificar_actividades(front, sesion, actividades)
                         errores += _verificar_codigos_de_voces(front)
+                        errores += _verificar_medidores(front)
                     de_casos, avisos_casos = _verificar_casos(front, conjunto, sesion, actividades)
                     errores += de_casos
                     avisos += [a for a in avisos_casos if a not in avisos]

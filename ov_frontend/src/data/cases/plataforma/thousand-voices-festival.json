@@ -7,7 +7,7 @@
       "Varios cortometrajes incluyen testimonios en quechua y castellano. Los organizadores quieren conservar las voces originales y facilitar que el público comprenda las historias. A un día del evento, además, circulan publicaciones falsas sobre cobros y cancelaciones.",
       "Tu misión es reunir a quienes puedan coordinar el festival, adaptar su presentación artística, resolver necesidades técnicas y comunicar la información oficial. Las agrupaciones ya conocen sus actuaciones: el desafío es hacer posible el espectáculo."
     ],
-    "imagen": "thousand-voices-festival-intro.png",
+    "imagen": "thousand-voices-festival-intro.webp",
     "alerta": "El festival tiene más desafíos que tiempo disponible"
   },
   "presupuesto": 10,
@@ -79,7 +79,7 @@
         "textoMovil": "Las agrupaciones y organizadores tienen distintas necesidades para el escenario. Escucha sus testimonios antes de reunir el equipo."
       },
       "fondo": {
-        "imagen": "thousand-voices-festival-phase-1.png",
+        "imagen": "thousand-voices-festival-phase-1.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [
@@ -132,31 +132,31 @@
         {
           "id": "festival-schedule",
           "titulo": "Doce grupos, cuatro horas",
-          "detalle": "Ordenar horarios, intervalos de cambio, necesidades de las agrupaciones y recursos disponibles.",
-          "resultado": "Se prepara un programa factible con tiempos de transición.",
+          "detalle": "Armar el programa del festival: en qué orden y a qué hora sale cada grupo, cuánto tiempo hay para cambiar entre uno y otro, y qué necesita cada uno.",
+          "resultado": "Queda listo un programa que sí se puede cumplir, con tiempo para los cambios entre grupos.",
           "necesidades": [
             {
               "onet": "13-1121.00",
-              "aporte": "Coordina el evento, el programa, los recursos y los intervalos necesarios para que las actuaciones no se superpongan.",
-              "siFalta": "Los cambios entre grupos generaron retrasos y algunas actuaciones quedaron recortadas."
+              "aporte": "Coordina el evento completo: el programa, los recursos y los tiempos entre actuaciones para que no se crucen.",
+              "siFalta": "Los cambios entre grupos causaron retrasos y algunas actuaciones se recortaron."
             }
           ]
         },
         {
           "id": "scenic-and-visual-design",
           "titulo": "Un escenario que debe transformarse",
-          "detalle": "Diseñar decorados prácticos para las obras y un concepto visual común para pantallas y materiales del festival.",
-          "resultado": "La escenografía de cada actuación y la identidad visual general reciben respuestas diferentes.",
+          "detalle": "Diseñar decorados que se puedan cambiar rápido entre una obra y otra, y darle un mismo estilo visual a los carteles, las pantallas y los demás materiales del festival.",
+          "resultado": "Los decorados de cada obra y la imagen del festival son dos trabajos distintos, y cada uno tiene su solución.",
           "necesidades": [
             {
               "onet": "27-1027.00",
-              "aporte": "Planifica elementos de escenografía adaptables a escenas diferentes y a cambios rápidos de montaje.",
-              "siFalta": "Los decorados siguieron siendo difíciles de reemplazar y algunas escenas perdieron elementos importantes."
+              "aporte": "Diseña decorados que sirven para escenas distintas y que se montan y desmontan rápido.",
+              "siFalta": "Los decorados siguieron siendo difíciles de cambiar y algunas escenas se quedaron sin elementos importantes."
             },
             {
               "onet": "27-1011.00",
-              "aporte": "Define la dirección visual de materiales, proyecciones y presentaciones para dar coherencia estética al evento.",
-              "siFalta": "Los materiales visuales permanecieron desarticulados y confundieron al público sobre la identidad del festival."
+              "aporte": "Define el estilo visual de los carteles, las proyecciones y las presentaciones para que todo el festival se vea como una unidad.",
+              "siFalta": "Los materiales siguieron viéndose distintos entre sí y el público no reconocía qué era parte del festival."
             }
           ]
         }
@@ -171,7 +171,7 @@
         "textoMovil": "Artistas y docentes informan dificultades de audio y de comprensión. Escucha sus testimonios antes de asignar profesionales."
       },
       "fondo": {
-        "imagen": "thousand-voices-festival-phase-2.png",
+        "imagen": "thousand-voices-festival-phase-2.webp",
         "posicion": "54% 53%"
       },
       "mensajes": [
@@ -224,36 +224,36 @@
         {
           "id": "audio-setup-and-mix",
           "titulo": "La música tapa las palabras",
-          "detalle": "Revisar las conexiones y dispositivos con fallas y, por separado, preparar la mezcla de niveles de voces, música y efectos.",
-          "resultado": "La instalación operativa y la calidad de la mezcla se verifican como necesidades diferentes.",
+          "detalle": "Revisar y arreglar los equipos y las conexiones que fallan y, aparte, mezclar el sonido: equilibrar el volumen de las voces, la música y los efectos para que todo se escuche bien.",
+          "resultado": "Que los equipos funcionen es una cosa y que el sonido esté bien mezclado es otra: se revisan por separado.",
           "necesidades": [
             {
               "onet": "27-4011.00",
-              "aporte": "Instala, prueba y mantiene equipos audiovisuales, corrigiendo fallas de conexión y funcionamiento.",
-              "siFalta": "Persistieron cortes de micrófonos y fallas de los equipos durante algunas actuaciones."
+              "aporte": "Instala, prueba y mantiene los equipos de audio y video, y arregla las fallas de conexión y de funcionamiento.",
+              "siFalta": "Los micrófonos siguieron cortándose y los equipos fallaron en algunas actuaciones."
             },
             {
               "onet": "27-4014.00",
-              "aporte": "Opera y mezcla el sonido para equilibrar voces, música y efectos durante las presentaciones.",
-              "siFalta": "Los micrófonos funcionaban, pero la mezcla hacía difícil comprender los diálogos y escuchar la música equilibradamente."
+              "aporte": "Controla y mezcla el sonido para equilibrar voces, música y efectos durante las presentaciones.",
+              "siFalta": "Los micrófonos funcionaban, pero el sonido estaba mal mezclado: costaba entender los diálogos y la música no se oía equilibrada."
             }
           ]
         },
         {
           "id": "translation-and-subtitles",
           "titulo": "Historias que no todos comprenden",
-          "detalle": "Traducir el contenido hablado entre idiomas y sincronizar subtítulos o textos con las imágenes ya filmadas.",
-          "resultado": "Los cortometrajes pueden exhibirse con sus voces originales y apoyos de lectura sincronizados.",
+          "detalle": "Traducir lo que se dice en los cortometrajes a otro idioma, y colocar los subtítulos en el video ya grabado para que aparezcan justo cuando se habla.",
+          "resultado": "Los cortometrajes se pueden mostrar con sus voces originales y con subtítulos que aparecen a tiempo.",
           "necesidades": [
             {
               "onet": "27-3091.00",
-              "aporte": "Realiza traducción e interpretación entre idiomas, ayudando a conservar el sentido del testimonio original.",
-              "siFalta": "Parte del público no obtuvo una versión traducida de los testimonios y no pudo seguir su contenido."
+              "aporte": "Traduce de un idioma a otro, cuidando que no se pierda el sentido de lo que dijo la persona.",
+              "siFalta": "Parte del público se quedó sin traducción de los testimonios y no pudo seguirlos."
             },
             {
               "onet": "27-4032.00",
-              "aporte": "Edita las piezas audiovisuales e integra y sincroniza los textos con las imágenes y los momentos del diálogo.",
-              "siFalta": "Las traducciones quedaron separadas o desfasadas respecto de las escenas y resultaron difíciles de seguir."
+              "aporte": "Edita los videos y coloca los textos para que coincidan con las imágenes y con el momento en que se habla.",
+              "siFalta": "Las traducciones quedaron aparte o a destiempo respecto de las escenas, y fue difícil seguirlas."
             }
           ]
         }
@@ -268,7 +268,7 @@
         "textoMovil": "El público y los organizadores encontraron información contradictoria. Escucha sus testimonios antes de actuar."
       },
       "fondo": {
-        "imagen": "thousand-voices-festival-phase-3.png",
+        "imagen": "thousand-voices-festival-phase-3.webp",
         "posicion": "52% 50%"
       },
       "mensajes": [
@@ -310,13 +310,13 @@
         {
           "id": "official-information",
           "titulo": "¿En qué información confiar?",
-          "detalle": "Preparar y coordinar mensajes públicos confiables sobre acceso, horarios y agrupaciones, utilizando canales y medios pertinentes.",
-          "resultado": "La información del evento se ordena y difunde de manera coherente antes de la inauguración.",
+          "detalle": "Preparar y coordinar mensajes oficiales y claros sobre la entrada, los horarios y los grupos, y difundirlos por los medios adecuados para frenar los rumores.",
+          "resultado": "Antes de la inauguración, la información del festival queda ordenada y se difunde con un solo mensaje.",
           "necesidades": [
             {
               "onet": "27-3031.00",
-              "aporte": "Coordina la comunicación pública y prepara materiales para aclarar rumores y difundir información confirmada.",
-              "siFalta": "Las versiones contradictorias continuaron circulando y parte del público dejó de confiar en la convocatoria."
+              "aporte": "Coordina lo que el festival comunica al público y prepara materiales para aclarar los rumores y difundir la información confirmada.",
+              "siFalta": "Las versiones contradictorias siguieron circulando y parte del público dejó de confiar en el festival."
             }
           ]
         }

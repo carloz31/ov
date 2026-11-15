@@ -139,7 +139,7 @@ test('casoDesdeJson adapta cada caso de plataforma/ con el total de necesidades 
       ),
     )
     assert.deepEqual([jugable.titulo, jugable.tematica, jugable.presupuesto], ['Título', json.tematica, json.presupuesto])
-    assert.equal(fondoFase(jugable.phases[0]), `url(${json.fases[0].fondo.imagen}), url(exploration-case-background.png)`)
+    assert.equal(fondoFase(jugable.phases[0]), `url(${json.fases[0].fondo.imagen}), url(exploration-case-background.webp)`)
   }
   assert.equal(casoPorId('forest-fire'), undefined)
   assert.equal(casoPorId('toString'), undefined)

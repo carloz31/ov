@@ -291,6 +291,8 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Cada alerta aparece con su condición y desaparece al resolverse.
   - Nunca ve el contenido del diario.
 - **Comprueba:** sección 13 (capas 2 y 3; alertas separadas de los temas para conversar).
+- **Cubierto por el ajuste panel-salon:** las alertas (tablas `grupo_alerta` y `alerta`, evaluadores en `app/services/panel/alertas.py`; `docs/sistema/panel.md`) en lugar de `TipoAlerta`, y su vista en el Inicio de la orientadora. Siguen pendientes de B14 la lista y el perfil del estudiante, los registros y la configuración del salón.
+- **Cubierto por el ajuste panel-estudiantes:** B14/F10 (HU-081 a 088 y HU-108: lista de estudiantes, perfil con sus cinco pestañas, registros en lectura y notas de la orientadora), salvo la configuración del salón (destacados, cuestionarios requisito y visibilidad al apoderado), que sigue pendiente.
 
 **B15 · Informe de viaje y temas para conversar**
 - **Pruebas:**
@@ -304,6 +306,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 **B16 · Orientadora: vista del salón**
 - **Pruebas:** agregados del salón, cambio entre partida y llegada, seguridad promedio y alertas más frecuentes.
 - **Comprueba:** sección 13 (capa 1).
+- **Cubierto por el ajuste panel-salon** (backend y, en F11, el front del panel): pestañas Seguimiento e Intereses del salón y sus listas completas. Queda fuera el cambio entre partida y llegada con resultados agregados.
 
 **B17 · Acceso** (Implementado)
 - **Pruebas:**
@@ -351,7 +354,7 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F08 | Familia: estudiante y apoderado (M) · **Implementado** | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
 | F09 | Investigaciones y entrevistas · **Implementado** | 057–065, 100, 101 | B13 | B13 | Investigaciones, Leyendas, publicaciones de la orientadora |
 | F10 | Orientadora: seguimiento y configuración | 081–089 | B14 | B17 salones | Mis estudiantes, perfil, prioritarios, alertas |
-| F11 | Informe de viaje, temas y vista del salón | 034, 090–093, 102–105, 107 | B15, B16 | — | Informe; panel del salón |
+| F11 | Informe de viaje, temas y vista del salón | 034, 090–093, 102–105, 107 | B15, B16 | — | Informe; panel del salón (el panel ya lo conectó el ajuste panel-salon) |
 
 **Orden (decidido):** F00 → F01 → F02 → F03 → F04 → F05 → F06 → F07a → F07b → F08; después B13 → F09 → B14 → F10 → B15 → B16 → F11.
 Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambian esas tablas, conviene que ocurra antes de construir el panel de la orientadora encima.
@@ -467,6 +470,7 @@ La alerta «sin favoritos» se evalúa solo después de completar la actividad q
 - **Extras de catálogo y planes:** 042 y 049.
 - **Perfil social:** 076 y 077, con `InsigniaExhibida`.
 - **108:** decisión de alcance.
+- **Rendimiento pendiente:** que el ingreso espere su turno de Argon2 sin ocupar un hilo (un endpoint asíncrono con un semáforo de asyncio por orden de llegada, que recién entonces verifique en el pool de hilos); hoy lo mitiga `HILOS_POR_WORKER`. Y que los casos de la Central se compartan entre vistas como las batallas.
 - **Mecánicas sin lote:** señales anónimas del salón (sin HU ni modelo), «requiere atención», MA6 con `OCUPACIONES_DE_TIPO` y el contexto de los sellos de 4.5.
 - **Carga del contenido real de la ruta:**
   - actividades, reglas, ítems y criterios;

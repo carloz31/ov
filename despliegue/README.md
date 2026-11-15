@@ -24,7 +24,7 @@ Archivos de esta carpeta:
 | `ec2/instalar.sh` | Preparación única de la instancia. |
 | `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, migraciones y reinicio. Con `--recargar`, borra la base y carga `contenido`. |
 | `ec2/ov-backend.service` | Servicio systemd (uvicorn, 2 workers). |
-| `ec2/nginx-ov.conf` | Proxy inverso de nginx hacia uvicorn. |
+| `ec2/nginx-ov.conf` | Proxy inverso de nginx hacia uvicorn, con gzip para el JSON. En una instancia ya instalada, el gzip se aplica a mano (paso 8.3). |
 | `ec2/env.produccion.example` | Plantilla del `.env` de producción. |
 
 Elige una sola región para todo (aquí, Ohio: `us-east-2`).
@@ -95,7 +95,7 @@ sudo systemctl start ov-backend
 curl -s -o /dev/null -w "%{http_code}\n" https://3-91-20-15.sslip.io/docs   # 200
 ```
 
-`datos.cargar contenido` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, cambia esas contraseñas o crea cuentas propias.
+`datos.cargar contenido` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, crea las cuentas propias con `scripts/crear_cuentas.py` (paso 8.4) y desactiva esas.
 
 ## 6. Amplify (front)
 
@@ -164,6 +164,103 @@ Actions > **Pruebas y despliegue** > **Run workflow** > rama `deploy` > marca **
 A mano, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar`.
 
 Úsalo solo mientras no haya datos reales de estudiantes ni apoderados.
+
+## 8. Una sesión con muchos estudiantes
+
+Para una sesión con un salón entero (más de 20 estudiantes a la vez y sus apoderados). Los comandos son para la EC2, por SSH; ninguno toca la base salvo los de los pasos 8.4 y 8.6.
+
+### 8.1 Instancia, memoria y swap
+
+```bash
+TOKEN=$(curl -s -X PUT http://169.254.169.254/latest/api/token -H 'X-aws-ec2-metadata-token-ttl-seconds: 60')
+curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-type; echo
+nproc
+free -h
+swapon --show
+```
+
+- **Con `t3.micro` (1 GB):** súbela a `t3.small` o `t3.medium` esos días (EC2 > Instancia > Detener > Cambiar tipo de instancia > Iniciar). La IP elástica se conserva.
+- **Sin swap** (`swapon --show` vacío), crea 2 GB. Con swap, un pico de memoria se vuelve lento en lugar de matar un worker. Argon2 usa 64 MiB por ingreso y el backend verifica uno a la vez por worker, unos 128 MB en total.
+
+```bash
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf
+sudo sysctl -p /etc/sysctl.d/99-swappiness.conf
+```
+
+### 8.2 Instantáneas de RDS
+
+RDS > Bases de datos > la base > Acciones > Tomar instantánea: antes de desplegar, después de crear las cuentas (8.4) y al terminar cada sesión.
+
+### 8.3 gzip en nginx (a mano)
+
+`instalar.sh` copia `nginx-ov.conf` solo en la instalación y certbot le agrega el bloque `listen 443`; `actualizar.sh` no lo vuelve a copiar. Por eso, en una instancia ya instalada:
+
+```bash
+sudo cp /etc/nginx/sites-available/ov /etc/nginx/sites-available/ov.respaldo
+sudo nano /etc/nginx/sites-available/ov
+```
+
+Dentro de **cada** bloque `server { … }` (el de 443 y el de 80), debajo de `client_max_body_size 5m;`, pega las seis líneas `gzip…` de `ec2/nginx-ov.conf`. No las pongas en `/etc/nginx/conf.d/`: el `nginx.conf` de Ubuntu ya trae `gzip on;` en el bloque `http` y nginx rechazaría el duplicado. Luego:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Si `nginx -t` falla, vuelve atrás con `sudo cp /etc/nginx/sites-available/ov.respaldo /etc/nginx/sites-available/ov`. Para comprobarlo, con un token de una cuenta de prueba:
+
+```bash
+curl -s -o /dev/null -D - -H 'Accept-Encoding: gzip' -H "Authorization: Bearer $TOKEN"   https://DOMINIO/cuentas/CODIGO_CUENTA/actividades | grep -iE 'content-encoding|content-length'
+```
+
+Debe aparecer `Content-Encoding: gzip`; una cuenta nueva baja de unos 55 KB a unos 10 KB.
+
+### 8.4 Cuentas de la sesión
+
+Con un CSV fuera del repo (por ejemplo, `/home/ov/cuentas-prueba.csv`; el formato está en `ov_backend/scripts/crear_cuentas.py` y en `scripts/cuentas_ejemplo.csv`), primero simulando:
+
+```bash
+cd /opt/ov/ov_backend
+sudo -u ov /home/ov/.local/bin/uv run --no-sync python scripts/crear_cuentas.py /home/ov/cuentas-prueba.csv --simular
+sudo -u ov /home/ov/.local/bin/uv run --no-sync python scripts/crear_cuentas.py /home/ov/cuentas-prueba.csv
+```
+
+Las contraseñas generadas quedan en `<csv>.resultado.csv`; el script nunca las imprime. Un estudiante cuyo apoderado no está en el CSV ve en Familia «Tu apoderado aún no se ha registrado en la plataforma.»: si quieres que tenga Familia aunque su apoderado no participe, crea igual la cuenta del apoderado.
+
+### 8.5 Orden de ingreso
+
+Los estudiantes ingresan conforme llegan a la sesión, sin esperar a que esté todo el salón para entrar juntos; los apoderados, unos minutos después. 50 ingresos a la vez pasan sin errores, pero tardan hasta 10 s cada uno con 2 núcleos; repartidos, menos de medio segundo. Si un ingreso pasa de 8 s, la pantalla pide esperar sin recargar.
+
+### 8.6 Cuentas de `usuarios_prueba.txt`
+
+Se pueden desactivar después del recorrido de comprobación sin afectar a las de la sesión (están en los salones 5A y 5B). Con psql y la `DATABASE_URL` del `.env`:
+
+```sql
+UPDATE cuenta SET activa = false WHERE codigo IN ('est-ana','est-luis','est-beto','est-mia','est-teo','est-sol','apo-rosa','ori-carmen');
+```
+
+Se revierte con `activa = true`, y una recarga de contenidos las vuelve a crear activas. En el recorrido de comprobación no publiques entrevistas: las Leyendas se arman con todo el colegio y se verían en el salón nuevo.
+
+### 8.7 Durante la sesión
+
+```bash
+watch -n 2 'free -m; echo; ps -o pid,rss,pcpu,cmd -C uvicorn --sort=-rss | head -5'
+```
+
+```bash
+sudo journalctl -kf | grep -iE --line-buffered 'out of memory|oom|killed process'
+```
+
+Señales de alarma: sin memoria disponible y la swap creciendo, un `Killed process … uvicorn` o un 502 en el navegador (nginx sin worker). Si aparecen, que el siguiente grupo ingrese de a pocos. Una `t3` se queda sin créditos de CPU con carga sostenida: revisa `CPUCreditBalance` en CloudWatch antes y después. Al terminar:
+
+```bash
+sudo journalctl -k --since '-4 hours' | grep -iE 'oom|killed process'
+sudo journalctl -u ov-backend --since '-4 hours' | grep -iE 'error|exception|worker|timeout' | tail -50
+```
 
 ## Diagnóstico
 

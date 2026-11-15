@@ -94,7 +94,15 @@ Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-
 
 **Partida y llegada (COMPARACION):**
 - Cada aplicación (ENTRADA = partida, SALIDA = llegada) se revela por separado y guarda sus dimensiones, sin perfil plano. El reinicio responde 409.
-- **Zona** de una dimensión: el promedio de sus ítems (puntaje ÷ número de ítems, con los inversos aplicados). Es FUERTE si es ≥ `UMBRAL_ZONA_FUERTE` (3,5), EN_CAMINO si es ≥ `UMBRAL_ZONA_EN_CAMINO` (2,5) y POR_TRABAJAR en otro caso.
+- **Zona** de una dimensión: el promedio de sus ítems (puntaje ÷ número de ítems, con los inversos aplicados). La comparación es inclusiva (`app/core/parametros.py`):
+
+  | Zona | Promedio | En palabras |
+  |---|---|---|
+  | FUERTE | ≥ `UMBRAL_ZONA_FUERTE` (3,25) | en promedio, más que «Bastante de acuerdo» |
+  | EN_CAMINO | ≥ `UMBRAL_ZONA_EN_CAMINO` (2,25) y < 3,25 | entre «Poco» y «Bastante de acuerdo» |
+  | POR_TRABAJAR | < 2,25 | en promedio, «Poco de acuerdo» o menos |
+
+  La zona no se guarda: se calcula al leer, desde la suma guardada de la dimensión, así que un cambio de umbral aplica a todos los resultados sin recalcularlos ni migrar nada. Los textos del estudiante (`ZoneGuide`, la síntesis) no nombran números ni umbrales.
 - El estudiante recibe solo zonas y textos, nunca puntajes. El detalle numérico es de la orientadora y llega con su vista de resultados (B14).
 - La partida es obligatoria y la marca de prioritario no aplica a este tipo (`motor.md`).
 
@@ -111,11 +119,11 @@ Volver a hacer el test cuando el resultado no distingue ningún tipo (HU-095). R
 |---|---|
 | `/instrumentos` | Instrumentos con `lectura`, dimensiones (con sus cuatro piezas), escalas, aplicaciones y actividades. |
 | `/actividades/{a}/items` | Ítems de la actividad en orden, con las opciones de su escala. No exige cuenta ni disponibilidad. |
-| `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. |
+| `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. Ajuste color-partida-llegada: en una actividad de un instrumento COMPARACION, cada respuesta trae `baja` (`calculo.es_respuesta_baja` con `PANEL_OPCIONES_BAJAS`, la misma marca que ve la orientadora; una consulta más, 4 en vez de 3); en los demás, `baja` es nula y no se lee el parámetro. |
 | `/cuentas/{c}/instrumentos` | Por instrumento y aplicación: NO_INICIADO, EN_PROGRESO o COMPLETADO (todas sus actividades completadas, se haya revelado o no); actividades e ítems respondidos sobre el total; `hay_resultado_vigente` (revelado). COMPLETADO sin resultado vigente es «listo para revelar». |
 | `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): `mensaje`, `lectura` y `guia_abierta` del instrumento para el estudiante, dimensiones (con `descripcion`, `ejemplos`, `fortalezas`, `desarrollo`, `puntaje`, `puntaje_maximo` y `puntaje_visual`; en COMPARACION, con `zona` y `tematica` y los números en `null`), y según el tipo, `codigo_interes`, `perfil_poco_marcado`, `ocupaciones`, `por_area` y `familias`, o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
 | `/cuentas/{c}/instrumentos/{i}/historial` | Todos los resultados, incluidos los anulados, del más reciente al más antiguo. |
-| `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, lectura, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool; un cambio hacia una opción menor no se distingue). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
+| `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, lectura, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool) y, desde el ajuste color-partida-llegada, `direccion` (`SUBIO`, `BAJO` o nula si no cambió; por valor, con los inversos invertidos, `calculo.direccion_respuesta`, sin consultas nuevas). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
 
 Las consultas con cuenta responden 404 a un apoderado. El resultado se arma con lo guardado, sin recalcular. El apoderado lee los resultados de su hijo por `GET /cuentas/{c}/familia/resultados`, con `mensaje` y `lectura` de apoderado (`{nombre}` = nombre de pila del hijo) y nunca Partida y llegada, aunque el salón la marque visible (la exclusión vive en `services/familia.py`).
 

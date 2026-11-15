@@ -18,8 +18,8 @@ const punto = {
 }
 
 for (const [zona, imagen] of [
-  ['Camino', '/images/adventure/journey-map.png'],
-  ['Ciudad', '/images/adventure/city-map.png'],
+  ['Camino', '/images/adventure/journey-map.webp'],
+  ['Ciudad', '/images/adventure/city-map.webp'],
 ]) {
   test(`${zona}: el lienzo arranca oculto, con la imagen pidiéndose, hasta que la imagen carga`, () => {
     const { MapCanvas } = fixtureServidor().load('src/features/adventure/components/MapCanvas.tsx')

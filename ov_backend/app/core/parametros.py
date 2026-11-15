@@ -23,9 +23,10 @@ RELLENO_SEGUNDA_OCUPACION = 0.5
 ZONAS_PREPARACION_AMPLIA = (4, 5)
 ZONAS_PREPARACION_INTERMEDIA = (2, 3)
 
-# B07: zona de una dimensión de partida o llegada según su promedio (inclusivo). Provisional.
-UMBRAL_ZONA_FUERTE = 3.5
-UMBRAL_ZONA_EN_CAMINO = 2.5
+# B07: zona de una dimensión de partida o llegada según su promedio (inclusivo), con los inversos invertidos.
+# Con 3,5 y 2,5, «Bastante de acuerdo» en todo no llegaba a Fuerte y las dimensiones de tres ítems eran más exigentes.
+UMBRAL_ZONA_FUERTE = 3.25
+UMBRAL_ZONA_EN_CAMINO = 2.25
 
 # §5.6: longitud del código de interés y corte para detectar empates.
 LONGITUD_CODIGO_INTERES = 3
@@ -104,14 +105,24 @@ PESO_BASE_DIMENSION = 0.5
 
 N_SIN_REPETIR_DIARIA = 11
 
-# Amistad con el asistente: escrituras que cuentan por día y puntos para alcanzar cada nivel (provisionales).
+# Amistad con el asistente: escrituras que cuentan por día y puntos para alcanzar cada nivel. Desde el ajuste
+# coherencia-lumi, un nivel por carta: la historia de Lumi (cinco recuerdos) se abre en dos días.
 TOPE_ENTRADAS_AMISTAD_DIA = 3
-UMBRALES_AMISTAD = (1, 5, 12, 25, 45)
+UMBRALES_AMISTAD = (1, 2, 3, 4, 5)
 
 # B17 · Acceso.
 DURACION_TOKEN_HORAS = 24
 MAXIMO_INTENTOS_INGRESO = 5
 MINUTOS_BLOQUEO_INGRESO = 15
+# Auditoría plataforma (D-B1): verificaciones Argon2 simultáneas por proceso. Cada una usa 64 MiB (`memory_cost` por
+# defecto). Con 1 por worker, 50 ingresos a la vez tardaron lo mismo que con 2 y usaron unos 60 MiB menos por proceso.
+VERIFICACIONES_CONTRASENA_SIMULTANEAS = 1
+# Auditoría plataforma (ráfaga de ingresos): hilos de AnyIO por worker para las rutas síncronas (40 por defecto). Los
+# ingresos que esperan turno ocupan un hilo; con 40, el cierre de las sesiones esperaba hilo reteniendo su conexión y el
+# pool se agotaba. Con 120, 50 ingresos a la vez pasaron sin errores (pico de 51 hilos).
+HILOS_POR_WORKER = 120
+# Mínimo de caracteres de una contraseña que se fija al crear una cuenta (`scripts/crear_cuentas.py`).
+MINIMO_CARACTERES_CONTRASENA = 8
 
 
 def transformar_opcion_onet(orden):

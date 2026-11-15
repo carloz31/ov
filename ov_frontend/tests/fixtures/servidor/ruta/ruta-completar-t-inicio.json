@@ -60,7 +60,7 @@
       ],
       "objetivo": {
         "codigo": "POR_QUE",
-        "nombre": "Por qué"
+        "nombre": "Por qué la elijo"
       },
       "regla": "R-PLAN-POR_QUE",
       "tipo_objetivo": "SECCION_PLAN"

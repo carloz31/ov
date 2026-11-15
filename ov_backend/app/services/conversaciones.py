@@ -49,6 +49,9 @@ def _vinculo(sesion: Session, cuenta: Cuenta, estudiante: str | None = None) -> 
         return vinculo
     vinculo = sesion.scalar(consulta.order_by(VinculoFamiliar.codigo).limit(1))
     if vinculo is None:
+        # Auditoría plataforma: al estudiante se le dice por qué no puede escribir (lo pidió el usuario).
+        if cuenta.rol == Rol.ESTUDIANTE:
+            raise ErrorAccion("Tu apoderado aún no se ha registrado en la plataforma.")
         raise ErrorAccion("La cuenta no pertenece a un vínculo familiar")
     return vinculo
 

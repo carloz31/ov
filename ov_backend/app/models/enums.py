@@ -335,3 +335,11 @@ class TipoNotificacion(StrEnum):
     ENTREVISTA_DESTACADA = "ENTREVISTA_DESTACADA"
     ENTREVISTA_LEYENDA = "ENTREVISTA_LEYENDA"
     REACCION_ENTREVISTA = "REACCION_ENTREVISTA"
+
+
+class DestinoPerfil(StrEnum):
+    """Ajuste panel-estudiantes: pestaña del perfil del estudiante a la que lleva un aviso o tema."""
+    TESTS = "TESTS"
+    PLANES = "PLANES"
+    RESPUESTAS = "RESPUESTAS"
+    AVANCE = "AVANCE"

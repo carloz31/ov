@@ -7,6 +7,7 @@
       "items": [
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Sé qué quiero hacer cuando termine el colegio.",
           "item": "AUTO-01",
           "llegada": "Bastante de acuerdo",
@@ -14,6 +15,7 @@
         },
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Puedo explicar con mis palabras qué camino me atrae.",
           "item": "AUTO-02",
           "llegada": "Bastante de acuerdo",
@@ -21,6 +23,7 @@
         },
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Tengo una o dos opciones que me interesan más que las demás.",
           "item": "AUTO-03",
           "llegada": "Bastante de acuerdo",
@@ -28,6 +31,7 @@
         },
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Me siento perdido cuando pienso en lo que viene después del colegio.",
           "item": "AUTO-04",
           "llegada": "Bastante de acuerdo",
@@ -46,6 +50,7 @@
       "items": [
         {
           "cambio": true,
+          "direccion": "SUBIO",
           "enunciado": "Conozco las actividades que más disfruto.",
           "item": "AUTO-05",
           "llegada": "Muy de acuerdo",
@@ -53,6 +58,7 @@
         },
         {
           "cambio": true,
+          "direccion": "SUBIO",
           "enunciado": "Sé en qué soy bueno.",
           "item": "AUTO-06",
           "llegada": "Muy de acuerdo",
@@ -60,6 +66,7 @@
         },
         {
           "cambio": true,
+          "direccion": "SUBIO",
           "enunciado": "Sé qué es importante para mí en un trabajo.",
           "item": "AUTO-07",
           "llegada": "Muy de acuerdo",
@@ -67,6 +74,7 @@
         },
         {
           "cambio": true,
+          "direccion": "SUBIO",
           "enunciado": "Reconozco qué cosas no me gustaría hacer.",
           "item": "AUTO-08",
           "llegada": "Muy de acuerdo",
@@ -85,6 +93,7 @@
       "items": [
         {
           "cambio": true,
+          "direccion": "SUBIO",
           "enunciado": "Conozco varias carreras o caminos que podría seguir.",
           "item": "AUTO-09",
           "llegada": "Bastante de acuerdo",
@@ -92,6 +101,7 @@
         },
         {
           "cambio": true,
+          "direccion": "SUBIO",
           "enunciado": "Sé qué se estudia en las carreras que me interesan.",
           "item": "AUTO-10",
           "llegada": "Bastante de acuerdo",
@@ -99,6 +109,7 @@
         },
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Sé dónde puedo estudiar lo que me interesa.",
           "item": "AUTO-11",
           "llegada": "Poco de acuerdo",
@@ -106,6 +117,7 @@
         },
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Conozco cuánto cuesta y cuánto dura lo que me interesa estudiar.",
           "item": "AUTO-12",
           "llegada": "Poco de acuerdo",
@@ -124,6 +136,7 @@
       "items": [
         {
           "cambio": true,
+          "direccion": "BAJO",
           "enunciado": "La decisión sobre mi futuro la tomo yo.",
           "item": "AUTO-13",
           "llegada": "Bastante de acuerdo",
@@ -131,6 +144,7 @@
         },
         {
           "cambio": true,
+          "direccion": "BAJO",
           "enunciado": "Puedo conversar con mi familia sobre lo que quiero.",
           "item": "AUTO-14",
           "llegada": "Bastante de acuerdo",
@@ -138,6 +152,7 @@
         },
         {
           "cambio": true,
+          "direccion": "BAJO",
           "enunciado": "Elijo pensando en lo que quiero y no solo en lo que otros esperan.",
           "item": "AUTO-15",
           "llegada": "Bastante de acuerdo",
@@ -145,6 +160,7 @@
         },
         {
           "cambio": true,
+          "direccion": "BAJO",
           "enunciado": "Busco información por mi cuenta antes de decidir.",
           "item": "AUTO-16",
           "llegada": "Bastante de acuerdo",
@@ -163,6 +179,7 @@
       "items": [
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Me siento capaz de tomar una buena decisión.",
           "item": "AUTO-17",
           "llegada": "Poco de acuerdo",
@@ -170,6 +187,7 @@
         },
         {
           "cambio": false,
+          "direccion": null,
           "enunciado": "Si algo no sale como espero, sé que puedo buscar otro camino.",
           "item": "AUTO-18",
           "llegada": "Poco de acuerdo",
@@ -177,6 +195,7 @@
         },
         {
           "cambio": true,
+          "direccion": "BAJO",
           "enunciado": "Confío en que podré lograr lo que me proponga.",
           "item": "AUTO-19",
           "llegada": "Nada de acuerdo",

@@ -4,85 +4,99 @@
   "tipo": "encuentro",
   "audiencia": "apoderado",
   "titulo": "Mis expectativas y temores",
-  "subtitulo": "Reconocer lo propio antes de transmitirlo",
+  "subtitulo": "Lo que usted espera, lo que teme y de dónde viene",
   "bloque": 1,
   "orden": 2,
   "obligatoria": true,
   "requisitos": [
     "p1"
   ],
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 12,
   "personajeIds": [
     "orientacion"
   ],
-  "objetivoAprendizaje": "Al terminar, el apoderado reconoce sus expectativas y temores sobre el futuro de su hijo o hija, identifica de dónde vienen y cómo se transmiten.",
+  "objetivoAprendizaje": "Al terminar, el apoderado reconoce qué espera y qué teme para su hijo o hija, identifica de dónde viene, distingue una expectativa que acompaña de una que encierra y sabe decir un temor como preocupación propia.",
   "nodos": [
     {
       "id": "p2-01",
       "tipo": "diapositiva",
-      "titulo": "Todos los padres esperan algo y temen algo",
+      "etiqueta": "Para empezar",
+      "titulo": "Esta vez empezamos por usted",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "El problema no es tenerlos: es no saber que los tenemos y pasárselos a los hijos sin darnos cuenta. Esta actividad es un espejo, no un examen."
+          "texto": "Todos los padres esperan algo para sus hijos y temen algo. No es un defecto: es parte de quererlos. Lo que conviene es saber qué espera uno y qué teme, porque los hijos lo perciben aunque nunca se diga."
         },
         {
-          "tipo": "pasos",
-          "pasos": [
-            {
-              "titulo": "Escriba, en un papel, tres expectativas y tres temores",
-              "texto": "Sobre el futuro de su hijo o hija. Seis minutos, sin corregir. Es el ejercicio del taller del Ministerio de Educación para familias."
-            },
-            {
-              "titulo": "Guárdelo",
-              "texto": "Lo va a necesitar más adelante, en las conversaciones guiadas."
-            }
-          ],
-          "titulo": "Un ejercicio de seis minutos"
+          "tipo": "parrafo",
+          "texto": "Las dos preguntas que siguen son para usted. No tienen respuesta correcta, no se guardan y no las ve nadie."
         }
-      ],
-      "etiqueta": "Para empezar"
+      ]
     },
     {
       "id": "p2-02",
       "tipo": "eleccion",
       "registrar": false,
-      "enunciado": "De lo que escribió, ¿qué pesa más: las expectativas o los temores?",
-      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "enunciado": "Imagine a su hijo o hija dentro de diez años. ¿Qué es lo primero que le gustaría ver?",
+      "nota": "Elija la que más se le acerque.",
       "opciones": [
         {
           "id": "p2-02a",
-          "texto": "Las expectativas: tengo claro lo que me gustaría para él o ella.",
+          "texto": "Que tenga un título.",
           "reaccion": [
             {
               "id": "p2-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Es frecuente. La pregunta que sigue es de quién son esas expectativas: ¿suyas, de su hijo, de la familia?"
+              "texto": "Para muchas familias el título es la prueba de que el esfuerzo valió. Vale preguntarse: ¿qué espero que le dé ese título? A veces la respuesta es estabilidad y a veces respeto, y hay más de un camino hacia las dos."
             }
           ]
         },
         {
           "id": "p2-02b",
-          "texto": "Los temores: me preocupa más lo que puede salir mal.",
+          "texto": "Que tenga un trabajo estable y no pase apuros.",
           "reaccion": [
             {
               "id": "p2-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "También es frecuente, sobre todo el temor económico. Veamos de dónde vienen y cómo se transmiten."
+              "texto": "Es de las más frecuentes, y casi siempre viene de haber conocido los apuros de cerca. Vale preguntarse si su hijo o hija sabe que eso es lo que usted más quiere, o si lo que le ha llegado son comentarios sobre carreras que «no dan»."
             }
           ]
         },
         {
           "id": "p2-02c",
-          "texto": "Las dos cosas por igual.",
+          "texto": "Que trabaje en algo que le guste.",
           "reaccion": [
             {
               "id": "p2-02cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Normal. Lo útil es mirar cada línea y preguntarse de dónde salió."
+              "texto": "Vale preguntarse si se lo ha dicho con esas palabras. No todos los hijos saben que eso es lo que sus padres esperan de ellos."
+            }
+          ]
+        },
+        {
+          "id": "p2-02d",
+          "texto": "Que siga cerca de la familia.",
+          "reaccion": [
+            {
+              "id": "p2-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Pocas veces se dice en voz alta, y pesa: hay hijos que descartan estudiar en otra ciudad sin haberlo conversado. Vale preguntarse si en su casa ese tema se ha hablado."
+            }
+          ]
+        },
+        {
+          "id": "p2-02e",
+          "texto": "Que llegue más lejos de lo que yo llegué.",
+          "reaccion": [
+            {
+              "id": "p2-02er",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Vale preguntarse qué significa «más lejos» para usted: más estudios, más ingresos, más tranquilidad. Y si para su hijo o hija significa lo mismo."
             }
           ]
         }
@@ -90,63 +104,122 @@
     },
     {
       "id": "p2-03",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Ahora lo contrario. ¿Qué es lo que más le preocupa que pase?",
+      "nota": "Elija la que más se le acerque.",
+      "opciones": [
+        {
+          "id": "p2-03a",
+          "texto": "Que estudie algo y después no encuentre trabajo.",
+          "reaccion": [
+            {
+              "id": "p2-03ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es un temor con base: tener título no asegura empleo. Por eso mismo conviene mirarlo con datos de esa carrera en particular, y no con lo que se dice en general."
+            }
+          ]
+        },
+        {
+          "id": "p2-03b",
+          "texto": "Que empiece una carrera y la deje a medias.",
+          "reaccion": [
+            {
+              "id": "p2-03br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Detrás suelen estar el dinero y el tiempo que la familia va a poner. Decirlo así, «me preocupa lo que nos va a costar», es más claro que «tienes que estar seguro»."
+            }
+          ]
+        },
+        {
+          "id": "p2-03c",
+          "texto": "Que elija por los amigos o por moda, sin pensarlo bien.",
+          "reaccion": [
+            {
+              "id": "p2-03cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Puede pasar, y se nota preguntando «¿qué te atrae de eso?». Si la respuesta es corta, lo que toca es ayudarle a averiguar más antes de opinar."
+            }
+          ]
+        },
+        {
+          "id": "p2-03d",
+          "texto": "Que le pase lo mismo que me pasó a mí.",
+          "reaccion": [
+            {
+              "id": "p2-03dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es de los temores que más pesan, porque viene de algo vivido. Vale separar dos cosas: lo que a usted le pasó y lo que hoy tiene su hijo o hija que usted no tuvo."
+            }
+          ]
+        },
+        {
+          "id": "p2-03e",
+          "texto": "Que no nos alcance para pagarle los estudios.",
+          "reaccion": [
+            {
+              "id": "p2-03er",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es una preocupación concreta, y por eso se puede poner en números: cuánto cuesta de verdad, qué opciones públicas hay, qué becas existen. Dicha a tiempo, le sirve a su hijo o hija para planear; callada, suele aparecer tarde y como un «no»."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p2-04",
       "tipo": "diapositiva",
-      "titulo": "Tres preguntas para cada línea",
+      "etiqueta": "La idea",
+      "titulo": "De dónde viene lo que uno espera y teme",
       "bloques": [
         {
-          "tipo": "lista",
-          "items": [
-            "¿De dónde viene esto? ¿De lo que yo viví, de lo que no pude hacer, de lo que escucho, de lo que veo en la familia?",
-            "¿Mi hijo o hija comparte esta expectativa o este temor? ¿Se lo he preguntado?",
-            "¿Cómo se lo he transmitido? ¿Con palabras, con silencios, con el gesto cuando menciona algo que no me gusta?"
-          ]
+          "tipo": "parrafo",
+          "texto": "Lo que usted acaba de marcar no nace de la nada. Casi siempre viene de uno de estos cuatro lugares. Fíjese si reconoce el suyo."
         },
         {
           "tipo": "tabla",
           "columnas": [
-            "Fuente",
-            "Suena como",
-            "Riesgo"
+            "De dónde viene",
+            "Cómo suena",
+            "Qué conviene revisar"
           ],
           "filas": [
             [
               "Lo que usted no pudo hacer",
               "«Yo quería estudiar y no pude; él sí va a poder»",
-              "Que la carrera sea el sueño de usted, no el de él"
+              "Si el sueño es de su hijo o hija, o es el suyo"
             ],
             [
-              "El miedo económico",
+              "Lo que a usted le costó",
               "«Que estudie algo que dé plata, que no pase lo que pasamos»",
-              "Descartar opciones viables por un prejuicio sobre el ingreso"
+              "Si el temor se apoya en datos de hoy o en lo que vivió entonces"
             ],
             [
-              "Lo que se valora alrededor",
+              "Lo que a usted le funcionó",
+              "«A mí me fue bien con esto; a ti también te va a ir bien»",
+              "Si lo que a usted le gusta también va con él o ella"
+            ],
+            [
+              "Lo que se dice alrededor",
               "«En esta familia todos son…», «eso no es carrera»",
-              "Reducir las opciones a las conocidas en casa"
+              "Si es algo que usted averiguó o algo que escuchó"
             ]
-          ],
-          "titulo": "Las tres fuentes más comunes"
+          ]
         },
         {
           "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Ninguna de las tres es mala en sí. Lo que cambia las cosas es decirlo como preocupación propia («me da miedo que no te alcance») y no como veredicto («esa carrera no sirve»)."
-        }
-      ],
-      "etiqueta": "Concepto"
-    },
-    {
-      "id": "p2-04",
-      "tipo": "diapositiva",
-      "titulo": "Cómo se transmite una angustia",
-      "bloques": [
-        {
-          "tipo": "parrafo",
-          "texto": "Los adolescentes leen a sus padres mejor de lo que los padres creen. Captan la cara, el tono, el tema que se cambia. Cuando perciben angustia, muchos hacen una de dos cosas: callan lo que piensan para no preocupar, o eligen lo que calma a la familia aunque no les interese. Las dos cuestan caro después."
+          "variante": "dato",
+          "texto": "En un experimento con 73 padres, a una parte se le pidió recordar sueños propios que no pudo cumplir. Después de hacerlo, esos padres deseaban con más fuerza que su hijo los cumpliera. Pasó sobre todo en quienes veían al hijo como una parte de sí mismos."
         },
         {
           "tipo": "fuente",
-          "texto": "MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, hoja «Mis expectativas y temores acerca del futuro de mi hijo/a»."
+          "texto": "Brummelman y otros (2013), My child redeems my broken dreams, PLoS ONE.",
+          "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065360"
         }
       ]
     },
@@ -157,37 +230,43 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una madre escribió: «Temo que estudie Arte y se muera de hambre, como mi hermano». ¿De qué fuente viene ese temor y cómo convendría decirlo?",
+      "transicion": "Ahora le presentamos a tres padres, cada uno con una frase. El primero.",
+      "enunciado": "Jorge maneja un taxi desde los diecinueve. Dice: «Yo quería ser ingeniero y tuve que ponerme a trabajar. Mi hija sí va a ser ingeniera, para eso me rompo el lomo». A ella le va bien en matemática y nunca ha dicho que no. ¿Qué convendría que Jorge se pregunte?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Del miedo económico, con la experiencia del hermano; convendría decirlo como preocupación propia y buscar juntos los datos de ingresos reales de esa carrera.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. El temor es legítimo; dicho como veredicto cierra; dicho como preocupación y con datos, abre."
+          "texto": "Si su hija tiene de verdad la capacidad para una carrera tan exigente.",
+          "correcta": false,
+          "retroalimentacion": "La capacidad importa, pero aquí no está en duda: le va bien. Lo que falta saber es otra cosa."
         },
         {
           "id": "b",
-          "texto": "De lo que se valora alrededor; convendría prohibir Arte.",
-          "correcta": false,
-          "retroalimentacion": "Prohibir es el veredicto. Y la fuente aquí es el miedo económico, con un caso familiar detrás."
+          "texto": "Si ingeniería es lo que ella quiere, o lo que él quiso y no pudo.",
+          "correcta": true,
+          "retroalimentacion": "Esa es la pregunta. Puede que coincidan, y sería una buena noticia. Pero «nunca ha dicho que no» no es lo mismo que haber dicho que sí."
         },
         {
           "id": "c",
-          "texto": "De nada: es un hecho que del arte no se vive.",
+          "texto": "Si está siendo lo bastante claro con ella sobre lo que espera.",
           "correcta": false,
-          "retroalimentacion": "Es un caso, el del hermano, de otra época. Hay datos públicos de ingresos por carrera para contrastarlo."
+          "retroalimentacion": "Jorge ya es muy claro. Lo que no sabe todavía es qué piensa ella."
+        },
+        {
+          "id": "d",
+          "texto": "Si el esfuerzo que hace le da derecho a pedirle esa carrera.",
+          "correcta": false,
+          "retroalimentacion": "Su esfuerzo merece reconocimiento, y ella seguramente lo sabe. Justamente por eso puede costarle decirle que quiere otra cosa."
         }
       ],
-      "explicacion": "Un temor con nombre y fuente se puede conversar; uno convertido en veredicto se transmite como angustia. Y un caso familiar no es un dato del mercado.",
+      "explicacion": "Querer que un hijo llegue más lejos que uno es de lo más valioso que hay. Se vuelve un peso cuando el destino ya viene elegido. Jorge puede conservar la expectativa («quiero que estudies y que te vaya mejor que a mí») y soltar la carrera. Lo mismo puede hacer usted.",
       "pistas": [
         {
           "id": "p2-05p1",
           "tipo": "dialogo",
           "hablanteId": "orientacion",
-          "texto": "Hay un nombre en la frase: «mi hermano». Esa es la pista de la fuente."
+          "texto": "Fíjese en de quién era el sueño de ser ingeniero al comienzo de la frase."
         }
-      ],
-      "transicion": "Ya conoce las tres fuentes. Un caso."
+      ]
     },
     {
       "id": "p2-06",
@@ -196,66 +275,214 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Su hijo menciona en la cena que le gustaría ser profesor. Usted no dice nada, pero cambia de tema. ¿Qué pasó?",
+      "transicion": "La segunda es Carmen.",
+      "enunciado": "Carmen es enfermera hace veinticinco años y le ha ido bien. Dice: «Mi hijo debería estudiar algo de salud. Siempre hay trabajo y yo le puedo ayudar a entrar». Él dibuja todo el día y habla de animación. ¿De dónde viene la expectativa de Carmen?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Nada: no opinar es respetar.",
-          "correcta": false,
-          "retroalimentacion": "Callar no es neutral. El cambio de tema también habla, y él lo leyó."
+          "texto": "De lo que a ella le funcionó: quiere para él un camino que conoce y que salió bien.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Y tiene valor: conoce ese mundo y puede abrirle puertas. El límite es que lo que le funcionó a ella dependió también de que le gustaba."
         },
         {
           "id": "b",
-          "texto": "Transmitió un temor o una expectativa sin palabras; él probablemente registró que esa opción no le gusta a usted.",
-          "correcta": true,
-          "retroalimentacion": "Sí. Los silencios y los gestos transmiten tanto como las frases. Conviene volver al tema y preguntar abierto."
+          "texto": "De lo que no pudo hacer: quiere que él cumpla un sueño que ella dejó pendiente.",
+          "correcta": false,
+          "retroalimentacion": "Carmen sí hizo lo que quería y le fue bien. Su expectativa no viene de una falta, sino de un camino conocido."
         },
         {
           "id": "c",
-          "texto": "Lo protegió de una mala idea.",
+          "texto": "De lo que se dice alrededor: repite una idea que escuchó sobre las carreras de salud.",
           "correcta": false,
-          "retroalimentacion": "No sabe todavía si es mala: no preguntó. Y él ya aprendió a no contárselo."
+          "retroalimentacion": "No repite algo de oídas: lo vivió veinticinco años. Por eso mismo le cuesta imaginar otro camino."
+        },
+        {
+          "id": "d",
+          "texto": "De lo que a ella le costó: teme que su hijo pase las necesidades que ella pasó.",
+          "correcta": false,
+          "retroalimentacion": "Puede haber algo de eso, pero la frase no habla de apuros: habla de un camino que a ella le salió bien."
         }
       ],
-      "explicacion": "Los adolescentes leen la cara, el tono y el tema que se cambia. Lo que usted no dice también se transmite; volver al tema con una pregunta abierta repara el silencio.",
+      "explicacion": "Ofrecer lo que uno conoce es una forma de cuidar. Sirve como una opción más sobre la mesa, con todo lo que Carmen sabe de ella. Deja de servir cuando es la única que se puede nombrar en casa.",
       "pistas": [
         {
           "id": "p2-06p1",
           "tipo": "dialogo",
           "hablanteId": "orientacion",
-          "texto": "Relea la tarjeta sobre cómo se transmite una angustia: ¿solo con palabras?"
+          "texto": "Vuelva a la frase de Carmen: ¿habla de algo que le faltó o de algo que le resultó?"
         }
       ]
     },
     {
       "id": "p2-07",
       "tipo": "diapositiva",
+      "etiqueta": "Para distinguir",
+      "titulo": "Esperar mucho no es presionar",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "No le vamos a pedir que deje de esperar. Un estudio que siguió a familias peruanas de la ciudad y del campo encontró que la mayoría de padres y de hijos esperaba llegar a la educación superior, y que lograrlo dependía sobre todo del apoyo de la familia. La diferencia está en qué se espera."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Expectativa que acompaña",
+            "Expectativa que encierra"
+          ],
+          "filas": [
+            [
+              "«Quiero que estudies y que te vaya mejor que a mí»",
+              "«Tienes que ser ingeniera»"
+            ],
+            [
+              "«Espero que termines lo que empieces»",
+              "«En esta casa nadie deja una carrera»"
+            ],
+            [
+              "«Quiero que puedas vivir de tu trabajo»",
+              "«Eso no da plata, ni lo pienses»"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La primera columna habla de su hijo o hija y deja abierto el camino. La segunda ya trae el camino elegido."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "GRADE y Niños del Milenio (2014), «Yo sé que va a ir más allá, va a continuar estudiando»: expectativas educativas de estudiantes, padres y docentes en zonas urbanas y rurales del Perú.",
+          "url": "https://repositorio.grade.org.pe/handle/20.500.12820/267"
+        }
+      ]
+    },
+    {
+      "id": "p2-08",
+      "tipo": "diapositiva",
+      "etiqueta": "En la práctica",
+      "titulo": "El mismo temor, dicho de dos maneras",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Tampoco le pedimos que deje de temer: un temor no se quita por decidirlo. Lo que sí puede elegir es cómo decirlo. Dicho como veredicto, cierra la conversación. Dicho como preocupación propia, la abre."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Como veredicto",
+            "Como preocupación propia"
+          ],
+          "filas": [
+            [
+              "«Esa carrera no sirve»",
+              "«Me preocupa que te cueste encontrar trabajo. ¿Vemos cómo les va a los que egresan?»"
+            ],
+            [
+              "«No vas a poder con eso»",
+              "«Me da miedo que se te haga muy pesado. ¿Qué cursos lleva?»"
+            ],
+            [
+              "«Eso está muy lejos, ni hablar»",
+              "«Me cuesta pensar que te vayas. Cuéntame por qué allá»"
+            ]
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Cuando un hijo percibe la angustia de sus padres sin que nadie la nombre, suele hacer una de dos cosas: callar lo que piensa para no preocupar, o elegir lo que tranquiliza a la familia aunque no le interese. Nombrar el temor le quita ese peso."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, hoja «Mis expectativas y temores acerca del futuro de mi hijo/a». La tabla es una recomendación del equipo de orientación."
+        }
+      ]
+    },
+    {
+      "id": "p2-09",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Y la tercera, Lucía.",
+      "enunciado": "Lucía tiene un hermano que estudió Arte y pasó años sin trabajo fijo. Su hija le acaba de decir que quiere estudiar Diseño. ¿Con cuál de estas frases Lucía dice su temor como preocupación propia?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«El diseño es bonito como pasatiempo. Estudia algo que te dé de comer y dibuja los domingos.»",
+          "correcta": false,
+          "retroalimentacion": "Es un veredicto con buena intención: ya decidió que de eso no se vive."
+        },
+        {
+          "id": "b",
+          "texto": "«Yo no te voy a decir nada, hija. Solo acuérdate de cómo le fue a tu tío con el arte.»",
+          "correcta": false,
+          "retroalimentacion": "Dice que no opina, pero el tío hace de veredicto. La hija recibe el temor sin poder conversarlo."
+        },
+        {
+          "id": "c",
+          "texto": "«Me da miedo que te pase lo que a tu tío. ¿Vemos de qué trabaja hoy alguien que estudió eso?»",
+          "correcta": true,
+          "retroalimentacion": "Sí. Nombra el temor como suyo, dice de dónde viene y propone contrastarlo con datos de hoy."
+        },
+        {
+          "id": "d",
+          "texto": "«Si a ti te gusta, seguro te va a ir bien. No pienses en lo que le pasó a tu tío.»",
+          "correcta": false,
+          "retroalimentacion": "Suena a apoyo, pero esconde un temor que sigue ahí. La hija lo va a notar igual, sin que nadie lo haya dicho."
+        }
+      ],
+      "explicacion": "El caso del tío es real, y también es un solo caso, de otra época y de otra carrera. Un temor con nombre y con origen se puede conversar y contrastar; uno escondido o convertido en regla, no. Si en su historia hay un caso así, nómbrelo: ayuda a que su hijo o hija entienda de dónde viene su preocupación.",
+      "pistas": [
+        {
+          "id": "p2-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Busque la frase en la que Lucía habla de lo que ella siente y deja una pregunta abierta."
+        }
+      ]
+    },
+    {
+      "id": "p2-10",
+      "tipo": "diapositiva",
+      "etiqueta": "Para llevarse",
       "titulo": "Para llevarse",
       "bloques": [
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Sus temores son válidos. Pero son suyos: su hijo o hija no tiene por qué cargarlos."
+          "texto": "Sus temores son válidos. Dichos como suyos, acompañan; dichos como veredicto, pesan."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Le dejamos un ejercicio para hacer con calma, cuando tenga un rato a solas."
         },
         {
           "tipo": "pasos",
+          "titulo": "Esta semana, con papel y lápiz",
           "pasos": [
             {
-              "titulo": "Guarde el papel",
-              "texto": "Una de las conversaciones guiadas con su hijo o hija trata justamente de lo que cada uno espera del futuro."
+              "titulo": "Escriba tres cosas que espera y tres que teme",
+              "texto": "Sobre el futuro de su hijo o hija. Unos seis minutos, sin corregir."
             },
             {
-              "titulo": "Esta semana",
-              "texto": "Elija una línea de su papel y dígala en casa como preocupación propia, no como veredicto."
+              "titulo": "Al lado de cada una, anote de dónde viene",
+              "texto": "Lo que no pudo hacer, lo que le costó, lo que le funcionó o lo que se dice alrededor."
+            },
+            {
+              "titulo": "Elija una y dígala en casa",
+              "texto": "Como deseo o como preocupación suya, no como regla. Y pregunte: «¿tú cómo lo ves?»."
             }
           ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar recibe la ficha «Lo que usted espera y lo que teme». Queda en Mis actividades, con el ejercicio completo y más ejemplos de cómo decir un temor."
         }
-      ],
-      "etiqueta": "Resumen",
-      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+      ]
     }
   ],
   "recompensa": {
-    "mensajeFin": "Sus temores son válidos. Pero son suyos."
+    "mensajeFin": "Sus temores son válidos. Dichos como suyos, acompañan."
   }
 }

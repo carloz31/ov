@@ -150,7 +150,7 @@ test('handmade file replaces only the slots, never the identity reflection', () 
   state.submissions = [
     submission(upload, {
       tipo: 'archivo',
-      archivos: [{ id: '1', nombre: 'mapa.png', mime: 'image/png', tamanoBytes: 200, url: 'indexeddb:1' }],
+      archivos: [{ id: '1', nombre: 'mapa.webp', mime: 'image/png', tamanoBytes: 200, url: 'indexeddb:1' }],
     }),
   ]
   assert.equal(logic.isActivityComplete(map, state), false)

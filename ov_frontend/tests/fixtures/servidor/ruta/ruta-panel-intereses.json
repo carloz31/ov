@@ -1,0 +1,105 @@
+{
+  "areas": {
+    "filas": [
+      {
+        "carreras": [
+          {
+            "cantidad": 2,
+            "nombre": "Psicología"
+          }
+        ],
+        "codigo": "313",
+        "en_planes": 2,
+        "nombre": "Psicología",
+        "plan_a": 2,
+        "solo_favoritos": 0,
+        "total": 2
+      },
+      {
+        "carreras": [
+          {
+            "cantidad": 1,
+            "nombre": "Ciencias de la Comunicación"
+          }
+        ],
+        "codigo": "321",
+        "en_planes": 1,
+        "nombre": "Ciencias de la Comunicación",
+        "plan_a": 0,
+        "solo_favoritos": 0,
+        "total": 1
+      },
+      {
+        "carreras": [],
+        "codigo": "531",
+        "en_planes": 0,
+        "nombre": "Ingeniería Civil",
+        "plan_a": 0,
+        "solo_favoritos": 1,
+        "total": 1
+      }
+    ],
+    "total": 3
+  },
+  "complicaciones": {
+    "filas": [
+      {
+        "cantidad": 1,
+        "texto": "Económicas"
+      }
+    ],
+    "otra": 0
+  },
+  "con_favoritos": 2,
+  "con_planes": 2,
+  "formacion": {
+    "con_plan_a": 2,
+    "filas": [
+      {
+        "cantidad": 2,
+        "desglose": [
+          {
+            "cantidad": 1,
+            "gestion": "PUBLICA",
+            "tipo": "UNIVERSIDAD"
+          },
+          {
+            "cantidad": 1,
+            "gestion": null,
+            "tipo": null
+          }
+        ],
+        "tipo": "UNIVERSIDAD"
+      }
+    ]
+  },
+  "frente_test": {
+    "base": 1,
+    "codigos": [
+      {
+        "cantidad": 1,
+        "letra": "I",
+        "nombre": "Investigativa"
+      }
+    ],
+    "coinciden": 0,
+    "no_coinciden": 1,
+    "resultados_listos": 1
+  },
+  "instituciones": {
+    "filas": [
+      {
+        "codigo": "inst-63",
+        "en_planes": 1,
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "plan_a": 1,
+        "solo_favoritos": 0,
+        "tipo": "UNIVERSIDAD",
+        "total": 1
+      }
+    ],
+    "plan_a_sin_institucion": 1,
+    "total": 1
+  }
+}

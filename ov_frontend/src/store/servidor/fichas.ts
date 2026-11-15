@@ -30,12 +30,21 @@ function guardar(llave: string, detalle: DetalleFicha) {
   detalles.set(llave, detalle)
   oyentes.forEach((oyente) => oyente())
 }
+// Auditoría plataforma (F11): solo se conservan los detalles de la sesión actual; lo de una sesión anterior (y su
+// respuesta tardía) se descarta.
+let sesionDetalles = -1
 export function cargarFicha(codigo: string) {
+  const sesion = sesionServidor()
+  if (sesion !== sesionDetalles) {
+    detalles.clear()
+    sesionDetalles = sesion
+  }
   const llave = clave(codigo)
   const actual = detalles.get(llave)
   if (actual && actual.estado !== 'error') return
   guardar(llave, { estado: 'cargando', datos: null, error: null })
   void consultarCuenta((cuenta) => obtenerFicha(cuenta, codigo)).then((respuesta) =>
+    sesion === sesionDetalles &&
     guardar(
       llave,
       respuesta.tipo === 'ok'

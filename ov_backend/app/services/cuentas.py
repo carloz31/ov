@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
+from app.services.comun import cuenta_del_token
 from app.models import (
     Cuenta, Desbloqueo, EventoUso, Insignia, Nivel, ReglaDesbloqueo, TipoEventoUso, TipoObjetivo,
 )
@@ -136,4 +137,5 @@ def listar_desbloqueos(sesion: Session, cuenta: Cuenta) -> list[DesbloqueoLegibl
 
 
 def obtener_cuenta(sesion: Session, cuenta: str) -> Cuenta | None:
-    return sesion.scalar(select(Cuenta).where(Cuenta.codigo == cuenta))
+    # Auditoría plataforma (D-B4): la del token, ya leída por el guardia, sin otra consulta.
+    return cuenta_del_token(sesion, cuenta) or sesion.scalar(select(Cuenta).where(Cuenta.codigo == cuenta))

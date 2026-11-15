@@ -2,6 +2,22 @@
 
 Datos que el backend entrega (o que una vista necesita) y que la interfaz todavía no muestra. Los resuelve el usuario.
 
+## 2026-11-14 · Ajuste panel-estudiantes · Nombres de las secciones en el plan completo de la orientadora
+
+- **Dato:** el `nombre` de cada `seccion_tarjeta` («Por qué la elijo», «Qué tanto la conozco», «Cómo lo haría realidad», «Mis próximos pasos»), escrito con la voz del estudiante.
+- **Dónde se mostraría:** los títulos de las cuatro tarjetas del plan completo en la pestaña Planes del perfil del estudiante.
+- **Opciones:** títulos del front para la orientadora, como el boceto 10 («Por qué la elige», «Qué tanto la conoce», «Su realidad», «Sus pasos»); un nombre para la orientadora en `seccion_tarjeta`; dejar los de la base.
+- **Si no se muestra:** la orientadora lee los nombres con la voz del estudiante.
+- **Estado:** pendiente. Hoy se muestran los de la base, como pide la spec (§2, §8.2).
+
+## 2026-11-14 · Ajuste panel-estudiantes · Descripción del cuestionario en el resultado completo de la orientadora
+
+- **Dato que falta:** la `descripcion` del instrumento, que no viene en `GET …/panel/estudiantes/{e}/tests/{aplicacion}/resultado` (`ResultadoPublico`).
+- **Dónde se mostraría:** «Qué mide este cuestionario» de `QuestionnaireDetailContent`, al abrir «Ver resultado» de otro cuestionario (habilidades, inteligencias).
+- **Opciones:** agregar la descripción a la respuesta de `tests` (`OtroCuestionario`) y pasarla al abrir el resultado; agregarla a la respuesta del resultado; ocultar ese bloque cuando llega vacío.
+- **Si no se muestra:** el bloque «Qué mide este cuestionario» queda con el párrafo vacío.
+- **Estado:** pendiente.
+
 ## 2026-11-07 · Ajuste vista del ítem de registro · Respuestas en la pantalla de fin
 
 - **Dato:** lo que el estudiante eligió y escribió en cada ítem del registro que acaba de entregar (ya está en el registro del servidor).
@@ -16,7 +32,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** en la vista de la orientadora (lotes de orientadora), junto a las respuestas de registro de cada estudiante de su salón.
 - **Opciones:** una etiqueta «Requiere atención» en la fila del estudiante y en la respuesta; un filtro o una bandeja de respuestas marcadas; un aviso en el inicio de la orientadora con el conteo.
 - **Si no se muestra:** la marca queda guardada y solo se ve en la base; el protocolo del piloto define quién revisa y en cuánto tiempo.
-- **Estado:** pendiente (lotes de orientadora).
+- **Estado:** resuelto en el ajuste panel-estudiantes: etiqueta «Requiere atención» en la pestaña Respuestas del perfil (con «Para leer primero»), conteo en «Sus respuestas» del Resumen y aviso «Escribió algo que conviene leer» en el Inicio y la lista.
 
 ## 2026-11-04 · Ajuste carga-casos · Textos de la Central que citan el nombre de la fase
 
@@ -36,10 +52,10 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-11-04 · Ajuste carga-casos · Imágenes de los seis casos
 
-- **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.png` y `<caso>-phase-1..3.png` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).
+- **Dato:** los JSON de `src/data/cases/plataforma/` nombran 24 imágenes (`<caso>-intro.webp` y `<caso>-phase-1..3.webp` de `hidden-plaza`, `scholarship-mystery`, `harvest-race`, `thousand-voices-festival`, `impossible-teams-tournament` y `silent-lagoon`) que no existen en `public/` (`scripts/verificar_contenido_front.py` las lista como aviso).
 - **Dónde se mostraría:** la imagen de la intro del caso (`ExplorationCaseIntroView`) y el fondo de cada fase de la Central.
 - **Opciones:** subir las imágenes con esos nombres a `public/images/`; cambiar los nombres de los JSON por imágenes que existan; dejar el respaldo.
-- **Si no se muestra:** la intro y las fases usan `exploration-case-background.png`.
+- **Si no se muestra:** la intro y las fases usan `exploration-case-background.webp`.
 - **Estado:** pendiente de las imágenes; no bloquea la carga.
 
 ## 2026-11-04 · Ajuste carga-casos · Voz T05 que anuncia `b3-10`
@@ -52,7 +68,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 
 ## 2026-11-04 · Ajuste carga-actividades · Imágenes de los personajes
 
-- **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.png`, y esa carpeta no existe en `public/`.
+- **Dato:** `avatarUrl` y `expresiones` de los 23 personajes de `catalogo.json` (los 19 del contenido real, Helena incluida, más Lumi, Mara, Aurelio y la orientación) apuntan a `/img/personajes/*.webp`, y esa carpeta no existe en `public/`.
 - **Dónde se mostraría:** el avatar de cada hablante en el reproductor (`journey/Character.tsx`).
 - **Opciones:** subir las imágenes con esos nombres; cambiar las rutas a las que existan; dejar el retrato SVG genérico.
 - **Si no se muestra:** cada hablante cae al retrato SVG de `CharacterPortrait` (ya pasaba antes del ajuste).
@@ -72,7 +88,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** la vista de cuestionario del estudiante en el portal de la orientadora (`pages/counselor/QuestionnaireDetailView.tsx`, hoy solo de demostración), con `ResultadoInteresesPortal`.
 - **Opciones:** una ruta de resultados del estudiante con la política `es_de_su_salon` y la vista del boceto 02 (B14, «Orientadora: seguimiento y configuración»); adelantarla en un ajuste; dejarla en demostración.
 - **Si no se muestra:** la orientadora no ve los resultados reales; sus textos quedan cargados sin uso.
-- **Estado:** pendiente para B14 (decisión del usuario en el ajuste).
+- **Estado:** resuelto en el ajuste panel-estudiantes: «Ver resultado completo» de la pestaña Tests del perfil reutiliza `ResultadoInteresesPortal` (o `QuestionnaireDetailContent`) con los textos de la orientadora; la tarjeta «Para la tutoría» no se pidió.
 
 ## 2026-10-29 · B13 · Investigaciones y entrevistas
 
@@ -148,7 +164,7 @@ Datos que el backend entrega (o que una vista necesita) y que la interfaz todav�
 - **Dónde se mostraría:** el cierre de actividad o un aviso en Mis planes (HU-049); el perfil del estudiante en el portal de la orientadora (F10).
 - **Opciones:** HU-049 como aviso en el cierre de actividad con enlace a Mis planes, o como franja en Mis planes; las tarjetas y el aviso de misma familia en la vista de la orientadora cuando llegue B14.
 - **Si no se muestra:** el estudiante no recibe el recordatorio de revisar sus planes, y la orientadora no ve qué planes son de la misma familia.
-- **Estado:** pendiente de su lote (backend sin implementar para HU-049; B14 para la orientadora). «Es a propósito» se descartó en el ajuste coherencia-bloque0.
+- **Estado:** la vista de la orientadora quedó resuelta en el ajuste panel-estudiantes (pestaña Planes del perfil: de un vistazo y plan completo, sin el aviso de misma familia, que la spec no pidió). HU-049 sigue pendiente. «Es a propósito» se descartó en el ajuste coherencia-bloque0.
 
 ## 2026-10-28 · Ajuste F07a v4.2 · Compartir o imprimir el plan
 

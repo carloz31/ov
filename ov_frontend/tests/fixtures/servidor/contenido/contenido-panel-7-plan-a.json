@@ -1,0 +1,88 @@
+{
+  "actualizada_en": "2026-10-07T10:00:00",
+  "carrera": "Ingeniería de Petroleo y Gas Natural",
+  "conoce": {
+    "dudas": [],
+    "dudas_visibles": 4,
+    "preguntas": [
+      {
+        "codigo": "DIA_NORMAL",
+        "respuesta": null,
+        "texto": "cómo es un día normal"
+      },
+      {
+        "codigo": "DONDE_TRABAJAR",
+        "respuesta": null,
+        "texto": "dónde podría trabajar"
+      },
+      {
+        "codigo": "CURSOS",
+        "respuesta": null,
+        "texto": "qué cursos lleva"
+      },
+      {
+        "codigo": "INGRESO",
+        "respuesta": null,
+        "texto": "cómo se ingresa"
+      },
+      {
+        "codigo": "CONOCE_ALGUIEN",
+        "respuesta": null,
+        "texto": "si conoce a alguien que la estudie o ejerza"
+      }
+    ]
+  },
+  "en_areas": false,
+  "medidores": {
+    "capacidad": null,
+    "entusiasmo": 1,
+    "recursos": null
+  },
+  "pasos": [],
+  "planes": [
+    1,
+    2,
+    3
+  ],
+  "por_que": {
+    "idea_origen": "FAMILIA",
+    "motivos": [
+      "Estabilidad"
+    ],
+    "relato": "DATO DE PRUEBA: en mi casa dicen que tiene trabajo seguro."
+  },
+  "prioridad": 1,
+  "realidad": {
+    "camino": null,
+    "ciclos": null,
+    "complicaciones": [],
+    "costo_carrera": null,
+    "costo_primer_anio": null,
+    "financiamiento": [],
+    "institucion": null,
+    "rubros": []
+  },
+  "secciones": [
+    {
+      "codigo": "POR_QUE",
+      "estado": "LISTA",
+      "nombre": "Por qué la elijo"
+    },
+    {
+      "codigo": "CONOCIMIENTO",
+      "estado": "POR_EMPEZAR",
+      "nombre": "Qué tanto la conozco"
+    },
+    {
+      "codigo": "REALIDAD",
+      "estado": "POR_EMPEZAR",
+      "nombre": "Cómo lo haría realidad"
+    },
+    {
+      "codigo": "PASOS",
+      "estado": "POR_EMPEZAR",
+      "nombre": "Mis próximos pasos"
+    }
+  ],
+  "tipo": "UNIVERSIDAD"
+}

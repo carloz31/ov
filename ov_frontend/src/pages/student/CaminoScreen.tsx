@@ -13,7 +13,7 @@ import { RegistroServidorPlayer } from '@/features/activities/components/Registr
 import { EncuentroServidorPlayer } from '@/features/activities/components/EncuentroServidorPlayer'
 import { useJourney } from '@/store/journeyStore'
 import { useAdventure } from '@/store/adventureStore'
-import { getCaminoPoints } from '@/features/adventure/lib/caminoPoints'
+import { getCaminoPoints, getCaminoPointsMapa } from '@/features/adventure/lib/caminoPoints'
 import { MapScreenLayout } from '@/features/adventure/components/MapScreenLayout'
 import { FichasBatalla } from '@/features/activities/components/FichasBatalla'
 import '@/styles/student/journey.css'
@@ -56,7 +56,7 @@ export function CaminoScreen() {
           key={activity.id}
           codigo={activity.id}
           revision={params.get('revision') === '1'}
-          imageUrl="/images/background/bosque.png"
+          imageUrl="/images/background/bosque.webp"
           onClose={() => setParams({})}
         />
       </div>
@@ -67,7 +67,7 @@ export function CaminoScreen() {
         <EncuentroServidorPlayer
           key={activity.id}
           codigo={activity.id}
-          imageUrl="/images/background/bosque.png"
+          imageUrl="/images/background/bosque.webp"
           edit={params.get('revision') === '1'}
           onClose={() => setParams({})}
         />
@@ -79,7 +79,7 @@ export function CaminoScreen() {
         <RegistroServidorPlayer
           key={activity.id}
           codigo={activity.id}
-          imageUrl="/images/background/bosque.png"
+          imageUrl="/images/background/bosque.webp"
           onClose={() => setParams({})}
         />
       </div>
@@ -90,7 +90,7 @@ export function CaminoScreen() {
         <StudentActivityPlayer
           key={activity.id}
           activity={activity}
-          imageUrl="/images/background/bosque.png"
+          imageUrl="/images/background/bosque.webp"
           edit={params.get('revision') === '1'}
           onClose={() => setParams({})}
         />
@@ -112,7 +112,7 @@ export function CaminoScreen() {
       )}
       renderAdditional={(props) => <AdditionalReveal {...props} />}
       zone="missions"
-      points={points}
+      points={getCaminoPointsMapa(adventure, journey)}
       adventure={adventure}
       journey={journey}
     />

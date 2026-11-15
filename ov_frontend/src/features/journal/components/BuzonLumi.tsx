@@ -56,7 +56,7 @@ export function BuzonLumi({
           ))}
         </ul>
       ) : (
-        <p className="sx-j-empty">Lumi te dejará una carta al terminar tu próxima actividad.</p>
+        <p className="sx-j-empty">Lumi deja cartas al terminar algunas misiones. La próxima aparecerá aquí.</p>
       )}
     </section>
   )

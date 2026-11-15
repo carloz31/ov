@@ -172,31 +172,31 @@ def _actualizar(sesion, respuesta_id, valores):
 
 
 @usar_contexto
-def _escribir(sesion, entrada, item_codigo, valores, paso):
+def _escribir(sesion, entrada, item_codigo, valores, paso, contextos=None):
     cuenta, actividad, items = validar_registro(sesion, entrada.actividad, entrada.cuenta)
     if valores is not None:
         _actualizar(sesion, *valores)
     eventos = eventos_adecuado(sesion, cuenta, actividad, items)
     campos = responder_con_eventos(sesion, cuenta, eventos, fecha_accion(entrada)).campos()
-    return PasoRegistro(item=item_codigo, **paso(sesion), registro=registro_cuenta(sesion, cuenta, actividad, items),
-                        **campos)
+    registro = registro_cuenta(sesion, cuenta, actividad, items, contextos=contextos)
+    return PasoRegistro(item=item_codigo, **paso(sesion), registro=registro, **campos)
 
 
-def _cerrar(fabrica, entrada, item_codigo, valores, paso):
+def _cerrar(fabrica, entrada, item_codigo, valores, paso, contextos=None):
     """Segunda transacción: escribe la evaluación en el intento (por su id), aplica §6 si la actividad ya está
-    completada y devuelve el paso con el registro actualizado."""
+    completada y devuelve el paso con el registro actualizado. `contextos`: los ya resueltos en el guardado (R1)."""
     with fabrica.begin() as sesion:
-        return _escribir(sesion, entrada, item_codigo, valores, paso)
+        return _escribir(sesion, entrada, item_codigo, valores, paso, contextos)
 
 
-def _evaluar_primera(fabrica, entrada, item, pendiente, cliente):
+def _evaluar_primera(fabrica, entrada, item, pendiente, cliente, contextos=None):
     evaluacion = evaluar_primera(pendiente.entrada, cliente)
     _registrar_fallo(item, evaluacion, 'primera')
     final = estado_final(evaluacion, pendiente.texto_primera)
     valores = dict(primera_tipo=evaluacion.tipo, primera_motivo=evaluacion.motivo, repregunta=evaluacion.repregunta,
                    version_prompt=VERSION_PROMPT_LLM, **_columnas_finales(final))
     return _cerrar(fabrica, entrada, item.codigo, (pendiente.respuesta_id, valores),
-                   lambda sesion: _paso(sesion, evaluacion, con_repregunta=True))
+                   lambda sesion: _paso(sesion, evaluacion, con_repregunta=True), contextos)
 
 
 def _evaluar_seguimiento(fabrica, entrada, item, pendiente, cliente):
@@ -237,19 +237,22 @@ def _guardar_respuesta(sesion, entrada):
         fecha_accion(entrada))
     _cerrar_repreguntas(sesion, progreso.id, salvo_item_id=item.id)
     if sin_llm:
-        return item, None
+        return item, None, contexto_item
     respuesta = sesion.get(RespuestaRegistro, respuesta_id)
-    return item, Pendiente(respuesta_id, texto, entrada=_entrada(item, respuesta))
+    return item, Pendiente(respuesta_id, texto, entrada=_entrada(item, respuesta)), contexto_item
 
 
 def responder(fabrica, entrada, cliente) -> PasoRegistro:
     """Guarda la elección y el texto del ítem (un intento nuevo: si ya había uno, es una edición), lo evalúa y
     devuelve el paso siguiente."""
     with fabrica.begin() as sesion:
-        item, pendiente = _guardar_respuesta(sesion, entrada)
+        item, pendiente, contexto_item = _guardar_respuesta(sesion, entrada)
+    # Auditoría plataforma (R1): el contexto del ítem guardado no depende de su propia respuesta; la respuesta lo reusa
+    # en lugar de resolverlo otra vez (los demás ítems se resuelven como siempre).
+    contextos = {item.codigo: contexto_item}
     if pendiente is None:
-        return _cerrar(fabrica, entrada, item.codigo, None, lambda _: dict(paso=SIGUIENTE))
-    return _evaluar_primera(fabrica, entrada, item, pendiente, cliente)
+        return _cerrar(fabrica, entrada, item.codigo, None, lambda _: dict(paso=SIGUIENTE), contextos)
+    return _evaluar_primera(fabrica, entrada, item, pendiente, cliente, contextos)
 
 
 # --- Responder el seguimiento (§3) -----------------------------------------------------------

@@ -11,6 +11,7 @@ import { modoApi } from '@/config/env'
 import { mensajeErrorServidor, obtenerEstadoServidor, useEstadoServidor } from '@/store/servidor/sesion'
 import { cargarInstrumentos, reiniciarInstrumento, revelarResultado } from '@/store/servidor/instrumentos'
 import { consultarProgreso } from '@/store/servidor/consultas'
+import { useRevisionAcciones } from '@/store/servidor/refresco'
 import { ciudadDisponible, textoRequisito } from '@/lib/servidor/adaptadores'
 import { APLICACION_RIASEC } from '@/lib/servidor/adaptadoresInstrumentos'
 
@@ -69,28 +70,41 @@ export function useHelenaPages() {
   const [intento, setIntento] = useState(0)
   const [revelando, setRevelando] = useState(false)
   const [errorAccion, setErrorAccion] = useState('')
+  // Auditoría plataforma (F4): el libro cambia al revelar o reiniciar (esas acciones lo vuelven a leer) y cuando cambia
+  // el estado de un cuestionario; no con cada recarga del camino.
+  const claveLibro = (servidor.actividades.datos ?? [])
+    .flatMap((b) => b.actividades.filter((a) => a.tipo === 'CUESTIONARIO').map((a) => `${a.codigo}:${a.estado}`))
+    .join('|')
+  const ciudadAbierta = modoApi && ciudadDisponible(servidor.actividades.datos)
+  const revisionAcciones = useRevisionAcciones()
   useEffect(() => {
     if (!modoApi) return
     let vigente = true
-    void (async () => {
-      const respuesta = await cargarInstrumentos(intento > 0)
-      if (!vigente) return
-      if (respuesta.tipo !== 'ok') {
-        setErrorConsulta(mensajeErrorServidor(respuesta))
-        return
-      }
-      setErrorConsulta('')
-      // Con la Ciudad cerrada, intereses espera lo que pide la Ciudad.
-      if (ciudadDisponible(servidor.actividades.datos)) return setRequisitoCiudad('')
-      const progreso = await consultarProgreso('BLOQUE', 'CIUDAD')
-      if (!vigente) return
-      if (progreso.tipo === 'ok') setRequisitoCiudad(textoRequisito(progreso.datos, servidor.actividades.datos))
-      else setErrorConsulta(mensajeErrorServidor(progreso))
-    })()
+    void cargarInstrumentos(intento > 0).then((respuesta) => {
+      if (vigente) setErrorConsulta(respuesta.tipo === 'ok' ? '' : mensajeErrorServidor(respuesta))
+    })
     return () => {
       vigente = false
     }
-  }, [servidor.actividades.datos, intento, cuenta])
+  }, [claveLibro, intento, cuenta])
+  // Con la Ciudad cerrada, intereses espera lo que pide la Ciudad: su conteo cambia con cada acción (F2b).
+  useEffect(() => {
+    if (!modoApi) return
+    if (ciudadAbierta) {
+      setRequisitoCiudad('')
+      return
+    }
+    let vigente = true
+    void consultarProgreso('BLOQUE', 'CIUDAD').then((progreso) => {
+      if (!vigente) return
+      if (progreso.tipo === 'ok')
+        setRequisitoCiudad(textoRequisito(progreso.datos, obtenerEstadoServidor().actividades.datos))
+      else setErrorConsulta(mensajeErrorServidor(progreso))
+    })
+    return () => {
+      vigente = false
+    }
+  }, [ciudadAbierta, revisionAcciones, intento, cuenta])
   const [opening, setOpening] = useState<InstrumentPageId>()
   // Ajuste de F03: la página recién revelada hace entrar su contenido escalonado tras el sello.
   const [entrando, setEntrando] = useState<InstrumentPageId>()

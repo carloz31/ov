@@ -55,8 +55,8 @@
     "mensajeFin": "De ese día que imaginaste, ya sabes qué parte existe hoy, o qué probar primero."
   },
   "mapa": {
-    "x": 0,
-    "y": 0,
+    "x": 896,
+    "y": 586,
     "icono": "registro",
     "origen": "b1-7",
     "adicional": true

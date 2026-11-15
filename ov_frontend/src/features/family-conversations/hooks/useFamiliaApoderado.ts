@@ -35,6 +35,7 @@ export function useFamiliaApoderado() {
   const nombre = hijos.find((h) => h.codigo === hijo)?.nombre ?? ''
   const avisos = useAvisoFamilia()
   const [ideasAbiertas, setIdeasAbiertas] = useState(false)
+  const [ayudaAbierta, setAyudaAbierta] = useState(false)
   const bloqueada = seccion.estado === 'error' && seccion.error?.tipo === 'bloqueado'
   const modelo: ModeloFamilia = {
     rol: 'apoderado',
@@ -47,7 +48,7 @@ export function useFamiliaApoderado() {
     guardarCarta: async (texto) => resultado(await guardarCartaApoderado(texto)),
     responder: async (codigo, texto) => resultado(await responderConversacionApoderado(codigo, texto)),
     rutas,
-    abrirAyuda: null,
+    abrirAyuda: () => setAyudaAbierta(true),
     abrirIdeas: () => setIdeasAbiertas(true),
     ...avisos,
   }
@@ -59,5 +60,7 @@ export function useFamiliaApoderado() {
     elegirHijo,
     ideasAbiertas,
     cerrarIdeas: () => setIdeasAbiertas(false),
+    ayudaAbierta,
+    cerrarAyuda: () => setAyudaAbierta(false),
   }
 }

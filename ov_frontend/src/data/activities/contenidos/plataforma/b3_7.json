@@ -6,8 +6,8 @@
   "subtitulo": "Desmontar el stand del Faro Dorado",
   "escenario": "playa",
   "bloque": 3,
-  "orden": 7,
-  "obligatoria": true,
+  "orden": 9,
+  "obligatoria": false,
   "requisitos": [
     "b3-6"
   ],
@@ -20,8 +20,9 @@
   "nodos": [],
   "desafio": "desafio-feriante",
   "mapa": {
-    "x": 370,
-    "y": 500,
-    "icono": "test"
+    "x": 380,
+    "y": 590,
+    "icono": "test",
+    "origen": "b3-6"
   }
 }

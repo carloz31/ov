@@ -1,0 +1,49 @@
+{
+  "id": "lumi-3",
+  "codigo": "lumi-3",
+  "tipo": "encuentro",
+  "titulo": "Un poco de todo",
+  "bloque": 8,
+  "orden": 3,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "lumi-3-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Mis primeros años en la isla probé de todo. Ayudé con los mapas del nevado, anduve con la brigada del volcán, cargué cajas en el puerto."
+    },
+    {
+      "id": "lumi-3-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Y cada vez que algo empezaba a gustarme, me iba. Si me quedaba mucho tiempo en un sitio, sentía que otra vez me estaban poniendo en un lugar."
+    },
+    {
+      "id": "lumi-3-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Yo decía que estaba explorando. Al principio era cierto."
+    },
+    {
+      "id": "lumi-3-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Después ya no buscaba nada. Solo me movía para que nada me atrapara."
+    },
+    {
+      "id": "lumi-3-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Moverse mucho no es lo mismo que avanzar. Yo daba vueltas en círculo, y me tomó tiempo notarlo."
+    }
+  ]
+}

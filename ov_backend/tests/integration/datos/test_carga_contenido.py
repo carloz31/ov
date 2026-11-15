@@ -38,7 +38,9 @@ def test_actividades_bloques_y_propiedades(base):
     assert 'favoritos' not in actividades['b3-2'].descripcion
     assert all(a.contenido == a.codigo.replace('-', '_') for a in actividades.values())
     camino = {'B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'FAMILIA'}
-    opcionales = {'b3-a', 'b3-b', 'ma7-b', *(f'ma{n}' for n in range(1, 10) if n not in (6, 9))}
+    # Ajuste recorte-volcan (adaptación autorizada): b2-1 y b2-2 pasan a opcionales.
+    # Ajuste recorte-puerto (adaptación autorizada): b3-6, b3-7 y b3-9 también.
+    opcionales = {'b2-1', 'b2-2', 'b3-6', 'b3-7', 'b3-9', 'b3-a', 'b3-b', 'ma7-b', *(f'ma{n}' for n in range(1, 10) if n not in (6, 9))}
     for codigo, actividad in actividades.items():
         bloque = bloques[actividad.bloque_id].codigo
         esperada = bloque in camino and codigo not in opcionales

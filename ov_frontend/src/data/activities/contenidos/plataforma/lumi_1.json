@@ -1,0 +1,55 @@
+{
+  "id": "lumi-1",
+  "codigo": "lumi-1",
+  "tipo": "encuentro",
+  "titulo": "De dónde vengo",
+  "bloque": 8,
+  "orden": 1,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "lumi-1-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Te prometí contarte mi historia. Empiezo por lo que todos me preguntan: qué soy."
+    },
+    {
+      "id": "lumi-1-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "Soy una estrella. De las pequeñas, ya sé."
+    },
+    {
+      "id": "lumi-1-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Antes vivía allá arriba, con miles de estrellas más. Mientras somos jóvenes nos dejan movernos: vas de un lado a otro, miras barcos, islas, pueblos con sus luces. Yo no paraba."
+    },
+    {
+      "id": "lumi-1-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Pero cuando una estrella termina de crecer, las mayores le dicen dónde va a brillar el resto de su vida. Eso no se discute: se agradece y ya."
+    },
+    {
+      "id": "lumi-1-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "A mí me tocó el lugar más importante: la estrella fija, la que miran los marineros para no perderse. Todos me felicitaron. Yo sonreí y dije gracias."
+    },
+    {
+      "id": "lumi-1-06",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Esa noche casi no brillé. Nadie se dio cuenta. O nadie quiso darse cuenta."
+    }
+  ]
+}

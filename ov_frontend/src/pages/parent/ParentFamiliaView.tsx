@@ -7,9 +7,12 @@ import { useFamiliaApoderado } from '@/features/family-conversations/hooks/useFa
 import { useParentPortalContext } from '@/features/parent/context/parentPortalContext'
 import { pantallaSeccion } from '@/lib/servidor/adaptadoresConversaciones'
 import { appPaths } from '@/routes/paths'
+import { GuideDialogue } from '@/components/common/GuideDialogue'
+import { parentGuides } from '@/data/content/guideTexts'
 
 // F08 (A1, A2, A4): Conversaciones del apoderado en api. Cerrada (409), el bloqueo con su avance; sin carta en el
-// vínculo activo, la carta pendiente; con ella, la lista. El selector de hijo va en la cabecera.
+// vínculo activo, la carta pendiente; con ella, la lista. El selector de hijo va en la cabecera. Ajuste
+// lumi-mensajes: con la sección abierta, la guía para familias; cerrada, solo la pantalla de bloqueo.
 export function ParentFamiliaView() {
   const f = useFamiliaApoderado()
   const portal = useParentPortalContext()
@@ -33,6 +36,7 @@ export function ParentFamiliaView() {
       ) : (
         <ListaConversaciones m={f.m} selector={selector} />
       )}
+      <GuideDialogue audience="parent" text={parentGuides.conversations} />
     </MarcoFamiliaApoderado>
   )
 }

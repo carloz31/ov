@@ -26,11 +26,16 @@ export function ParentQuestion({
   onBack: () => void
   backDisabled: boolean
 }) {
-  const { feedbackTitle, answerOptions, selected, setSelected, retrying, feedback, wrongIds, check, retry } =
-    useParentQuestion({ activity, node, review, practiceAttempts, onPracticeAnswer })
+  const { feedbackTitle, selected, setSelected, feedback, wrongIds, attempted, check } = useParentQuestion({
+    activity,
+    node,
+    review,
+    practiceAttempts,
+    onPracticeAnswer,
+  })
   return (
     <div className="mt-6 space-y-5">
-      <fieldset ref={answerOptions} tabIndex={-1} className="space-y-3 outline-none">
+      <fieldset tabIndex={-1} className="space-y-3 outline-none">
         <legend className="sr-only">
           {node.formato === 'opcion_multiple'
             ? 'Marque todas las respuestas que correspondan'
@@ -49,7 +54,7 @@ export function ParentQuestion({
                 name={node.id}
                 type={node.formato === 'opcion_multiple' ? 'checkbox' : 'radio'}
                 checked={chosen}
-                disabled={(!!feedback && !retrying) || wrong}
+                disabled={!!feedback?.canContinue || wrong}
                 onChange={() =>
                   setSelected(
                     node.formato === 'opcion_multiple'
@@ -116,13 +121,9 @@ export function ParentQuestion({
           <Button onClick={onContinue}>
             Continuar <ArrowRight aria-hidden />
           </Button>
-        ) : feedback && !retrying ? (
-          <Button onClick={retry}>
-            Volver a intentarlo <ArrowRight aria-hidden />
-          </Button>
         ) : (
           <Button disabled={!selected.length} onClick={check}>
-            Comprobar respuesta
+            {attempted ? 'Comprobar de nuevo' : 'Comprobar respuesta'}
           </Button>
         )}
       </div>

@@ -85,7 +85,7 @@ test('la tarjeta del hijo muestra la clave y el enlace a la explicada con el dip
     new RegExp(`href="/parent/children/${conDiploma.estudiantes[0].codigo}/questionnaires/TEST-RIASEC"`),
   )
   assert.match(marcado, /Estos resultados son exploratorios/)
-  assert.doesNotMatch(marcado, /Verás su resultado|puntaje|correlaci/)
+  assert.doesNotMatch(marcado, /Verá su resultado|puntaje|correlaci/)
   const sinDiploma = familia(false)
   const bloqueado = html(ParentChildServerSummary, {
     familia: sinDiploma,
@@ -94,7 +94,7 @@ test('la tarjeta del hijo muestra la clave y el enlace a la explicada con el dip
     resultados: { habilitado: false, resultados: null, error: '', reintentar() {} },
   })
   assert.match(bloqueado, /Completado · /)
-  assert.match(bloqueado, /Verás su resultado cuando completes tus actividades/)
+  assert.match(bloqueado, /Verá su resultado cuando complete sus actividades/)
   assert.doesNotMatch(bloqueado, /questionnaires|Lo que más destaca|exploratorios/)
 })
 
@@ -139,4 +139,28 @@ test('el apoderado ve su texto, el código, la tabla de ocupaciones afines y las
   assert.match(marcado, /href="\/parent\/explorar\/careers\?area=\d{2}&amp;familia=\d{3}"/)
   assert.match(marcado, /Para conversar en casa/)
   assert.doesNotMatch(marcado, /Guardar|Hacer mi plan|Recomendada por tu test|favorit[ao]s? (?!ni)/)
+})
+
+// Auditoría plataforma (F6): el catálogo de instrumentos no cambia en la sesión; se pide una vez, aunque Inicio
+// revalide los resultados del hijo en cada visita. Un error no se guarda.
+test('los resultados del hijo se revalidan, pero el catálogo de instrumentos se pide una vez por sesión', async () => {
+  const app = fixtureServidor({ cuenta: 'apo-rosa' })
+  let fallarCatalogo = true
+  app.fetch((req) => {
+    if (req.url === '/api/acciones/ingresar') return { body: { eventos_registrados: [], nuevos_desbloqueos: [] } }
+    if (req.url.endsWith('/apo-rosa/actividades')) return { body: jsonServidor('ruta/ruta-apoderado-actividades-final') }
+    if (req.url.endsWith('/apo-rosa/familia')) return { body: familia(true) }
+    if (req.url.endsWith('/familia/resultados')) return { body: RESULTADOS }
+    if (req.url === '/api/instrumentos')
+      return fallarCatalogo ? { status: 503, body: 'DATO DE PRUEBA: sin conexión' } : { body: CATALOGO }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  const store = app.load('src/store/servidor/apoderado.ts')
+  assert.equal((await store.ingresarApoderado()).tipo, 'ok')
+  assert.notEqual((await store.consultarResultadosHijo()).tipo, 'ok')
+  fallarCatalogo = false
+  for (let n = 0; n < 3; n++) assert.equal((await store.consultarResultadosHijo()).tipo, 'ok')
+  const contar = (url) => app.requests.filter((r) => r.url === url).length
+  assert.equal(contar('/api/instrumentos'), 2)
+  assert.equal(contar('/api/cuentas/apo-rosa/familia/resultados'), 4)
 })

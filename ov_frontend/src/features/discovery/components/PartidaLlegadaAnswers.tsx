@@ -1,12 +1,25 @@
 import { Parchment } from '@/components/student/Parchment'
-import { bajo, type DimensionPartidaLlegada, type ModeloPartidaLlegada } from '../lib/partidaLlegada'
+import {
+  ZONAS,
+  bajo,
+  claseChipZona,
+  type DimensionPartidaLlegada,
+  type ModeloPartidaLlegada,
+} from '../lib/partidaLlegada'
+import { zonaEnPalabras } from '@/lib/servidor/adaptadoresInstrumentos'
 import { ItemComparisonGrid } from './ItemComparisonGrid'
 import { ZoneChips } from './ZoneChips'
 
 type EstadoItems = { cargando: boolean; error: string; reintentar: () => void }
 
 // Ajuste de F03: «Paso 1 · Tus respuestas», una tarjeta por dimensión con su rejilla de ítems.
-export function PartidaLlegadaAnswers({ modelo, items }: { modelo: ModeloPartidaLlegada; items: EstadoItems }) {
+export function PartidaLlegadaAnswers({
+  modelo,
+  items,
+}: {
+  modelo: ModeloPartidaLlegada
+  items: EstadoItems
+}) {
   return (
     <Parchment className="sx-d-result-panel sx-d-pl-answers" aria-labelledby="tus-respuestas">
       <div className="sx-d-result-section-intro">
@@ -19,6 +32,7 @@ export function PartidaLlegadaAnswers({ modelo, items }: { modelo: ModeloPartida
             ? 'En cada parte verás primero las respuestas que cambiaron. Las que se mantuvieron quedan plegadas al final.'
             : 'Tus respuestas, parte por parte. Al final del camino podrás compararlas con las de tu llegada.'}
         </p>
+        <Leyenda completo={modelo.completo} />
       </div>
       {items.error && (
         <div className="sx-d-warning" role="alert">
@@ -43,26 +57,55 @@ export function PartidaLlegadaAnswers({ modelo, items }: { modelo: ModeloPartida
                 <ZoneChips partida={d.zonaPartida} llegada={d.zonaLlegada} />
                 {modelo.completo && (
                   <p>
-                    Completaste {d.actividades} {d.actividades === 1 ? 'actividad' : 'actividades'} de esta parte
+                    Completaste {d.actividades} {d.actividades === 1 ? 'actividad' : 'actividades'} de esta
+                    parte
                   </p>
                 )}
               </div>
             </div>
             {bajo(d) && (
               <p className="sx-d-pl-notice">
-                <strong>Ahora lo ves distinto.</strong> Al conocerte más, a veces notas lo que aún te falta descubrir.
-                No es un retroceso: es una pista para seguir explorando.
+                <strong>Ahora lo ves distinto.</strong> Al conocerte más, a veces notas lo que aún te falta
+                descubrir. No es un retroceso: es una pista para seguir explorando.
               </p>
             )}
             {modelo.completo ? (
               <ItemsComparados dimension={d} />
             ) : (
-              !items.cargando && !items.error && <ItemComparisonGrid modo="partida" items={d.items} cabecera />
+              !items.cargando &&
+              !items.error && <ItemComparisonGrid modo="partida" items={d.items} cabecera />
             )}
           </article>
         ))}
       </div>
     </Parchment>
+  )
+}
+
+// Ajuste color-partida-llegada: los chips de zona y, según el estado, qué significan las respuestas resaltadas.
+function Leyenda({ completo }: { completo: boolean }) {
+  const zonas = ZONAS.map((z) => (
+    <span key={z} className={claseChipZona(z)}>
+      {zonaEnPalabras(z)}
+    </span>
+  ))
+  return (
+    <p className="sx-d-pl-legend">
+      {completo ? (
+        <>
+          <span className="sx-d-pl-chip sx-d-pl-chip-exito">Mejoró</span>
+          <span className="sx-d-pl-chip sx-d-pl-chip-aviso">Bajó</span>
+          <span>Las zonas usan el mismo color:</span>
+          {zonas}
+        </>
+      ) : (
+        <>
+          <span>Zonas:</span>
+          {zonas}
+          <span>Las respuestas resaltadas son las que más puedes trabajar en el camino.</span>
+        </>
+      )}
+    </p>
   )
 }
 

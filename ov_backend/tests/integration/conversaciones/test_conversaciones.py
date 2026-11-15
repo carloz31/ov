@@ -1,6 +1,9 @@
 """B12 y F08: conversaciones familiares y cartas (HU-066, 068–071). DATO DE PRUEBA."""
 
+from sqlalchemy import select
 from soporte_ruta import FECHA, avanzar, completar, pedir, reglas
+
+from app import models as modelos
 
 
 CARTA_ESTUDIANTE = 'DATO DE PRUEBA: gracias por acompañarme.'
@@ -236,3 +239,14 @@ def test_las_cartas_se_entregan_al_completar_todas_las_conversaciones(cliente):
     for cuenta in ('est-ana', 'apo-rosa'):
         assert carta(cliente, cuenta, 'DATO DE PRUEBA: otra.', 409)['detail']['mensaje'] == (
             'La carta ya se entregó y no se puede cambiar')
+
+
+def test_un_estudiante_sin_vinculo_sabe_que_su_apoderado_no_se_registro(cliente, aplicacion):
+    preparar(cliente)
+    with aplicacion.state.fabrica_sesiones.begin() as sesion:
+        for vinculo in sesion.scalars(select(modelos.VinculoFamiliar)):
+            vinculo.es_activo = False
+    error = consultar(cliente, 'est-ana', esperado=409)
+    assert error['detail']['mensaje'] == 'Tu apoderado aún no se ha registrado en la plataforma.'
+    # El apoderado sin hijos conserva su mensaje.
+    assert consultar(cliente, 'apo-rosa', esperado=409)['detail']['mensaje'] == 'La cuenta no pertenece a un vínculo familiar'

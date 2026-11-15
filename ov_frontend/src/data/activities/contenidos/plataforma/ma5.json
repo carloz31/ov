@@ -233,8 +233,8 @@
     "mensajeFin": "Una lista de profesiones del futuro es una pista. Se abre antes de usarla."
   },
   "mapa": {
-    "x": 820,
-    "y": 240,
+    "x": 614,
+    "y": 596,
     "icono": "informativa",
     "origen": "h3",
     "adicional": true

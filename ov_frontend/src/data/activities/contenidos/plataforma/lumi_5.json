@@ -1,0 +1,48 @@
+{
+  "id": "lumi-5",
+  "codigo": "lumi-5",
+  "tipo": "encuentro",
+  "titulo": "Lo que elijo yo",
+  "bloque": 8,
+  "orden": 5,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "lumi-5-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Hay algo que tardé años en ver. Lo que me tocaba allá arriba era guiar. ¿Y qué hice en la isla todo este tiempo? Guiar."
+    },
+    {
+      "id": "lumi-5-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Lo que no quería no era guiar. Era que me lo dieran sin preguntarme, y no poder moverme nunca más."
+    },
+    {
+      "id": "lumi-5-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "Mi frase dice «Nadie me preguntó». Es verdad. Pero yo tampoco me lo pregunté. Solo me escapé de lo que ellas decidieron."
+    },
+    {
+      "id": "lumi-5-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Ahora sí me lo pregunto. Y la respuesta es que me gusta acompañar a quien llega, a mi manera: caminando al lado, no desde arriba."
+    },
+    {
+      "id": "lumi-5-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "animado",
+      "texto": "No sé si será para siempre. Pero esta vez lo elegí yo. Y contándotelo en estas cartas, por fin me escuché."
+    }
+  ]
+}

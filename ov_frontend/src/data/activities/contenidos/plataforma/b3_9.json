@@ -6,8 +6,8 @@
   "subtitulo": "La pila de presupuestos de Clotilde",
   "escenario": "playa",
   "bloque": 3,
-  "orden": 9,
-  "obligatoria": true,
+  "orden": 10,
+  "obligatoria": false,
   "requisitos": [
     "b3-8"
   ],
@@ -22,6 +22,7 @@
   "mapa": {
     "x": 370,
     "y": 400,
-    "icono": "test"
+    "icono": "test",
+    "origen": "b3-8"
   }
 }

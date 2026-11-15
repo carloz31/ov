@@ -242,3 +242,20 @@ test('apoderado: Conversaciones cerrada (409) se vuelve a pedir al montarla, par
   assert.equal(seccion.estado, 'listo')
   assert.equal(conv.pantallaSeccion(seccion.datos), 'carta_pendiente')
 })
+
+// Auditoría plataforma (F6): dos montajes a la vez comparten la petición de fichas; montar otra vez la revalida.
+test('apoderado: dos cargas de fichas a la vez hacen un solo GET y una carga posterior revalida', async () => {
+  const { app } = await almacenApoderado()
+  app.fetch((req) => {
+    if (req.url.endsWith('/cuentas/apo-rosa/fichas'))
+      return { body: jsonServidor('ruta/ruta-apoderado-fichas-final') }
+    throw Error(`Solicitud no configurada: ${req.url}`)
+  })
+  const fichas = app.load('src/store/servidor/apoderadoFichas.ts')
+  const lecturas = () => app.requests.filter((r) => r.url.endsWith('/cuentas/apo-rosa/fichas')).length
+  await Promise.all([fichas.cargarFichasApoderado(), fichas.cargarFichasApoderado()])
+  assert.equal(lecturas(), 1)
+  assert.equal(fichas.obtenerFichasApoderado().lista.estado, 'listo')
+  await fichas.cargarFichasApoderado()
+  assert.equal(lecturas(), 2)
+})

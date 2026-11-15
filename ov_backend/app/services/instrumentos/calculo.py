@@ -127,6 +127,44 @@ def calcular_puntaje_item(puntaje: float, minimo: float, maximo: float, inverso:
     return maximo + minimo - puntaje if inverso else puntaje
 
 
+# --- Respuestas de partida y llegada (ajuste color-partida-llegada) ---------------------------------------
+# Las únicas definiciones de «respuesta baja», de la dirección de un cambio y de su clasificación para la orientadora.
+# Las usan el panel y las lecturas del estudiante; trabajan con el valor del ítem (`calcular_puntaje_item`, inversos ya
+# aplicados) y nunca salen como puntaje.
+
+DireccionRespuesta = Literal["SUBIO", "BAJO"]
+CambioAfirmacion = Literal["BAJO", "SIGUE_BAJA", "MEJORO", "IGUAL"]
+
+
+def es_respuesta_baja(valor: float, puntajes_escala: Sequence[float], opciones_bajas: int) -> bool:
+    """El valor (inverso ya aplicado) está entre las `opciones_bajas` opciones inferiores de su escala."""
+    puntajes = sorted(puntajes_escala)
+    return valor <= puntajes[min(opciones_bajas, len(puntajes)) - 1]
+
+
+def direccion_respuesta(valor_partida: float, valor_llegada: float) -> DireccionRespuesta | None:
+    """Por valor: SUBIO, BAJO o nulo si no cambió."""
+    if valor_llegada > valor_partida:
+        return "SUBIO"
+    if valor_llegada < valor_partida:
+        return "BAJO"
+    return None
+
+
+def cambio_afirmacion(valor_partida: float | None, valor_llegada: float | None,
+                      llegada_baja: bool) -> CambioAfirmacion | None:
+    """Para la orientadora, un solo cambio por afirmación: BAJO (bajó), SIGUE_BAJA (no bajó y la llegada es baja: subir
+    sin salir de las bajas sigue siendo tema), MEJORO (subió y la llegada no es baja) o IGUAL; nulo si falta una."""
+    if valor_partida is None or valor_llegada is None:
+        return None
+    direccion = direccion_respuesta(valor_partida, valor_llegada)
+    if direccion == "BAJO":
+        return "BAJO"
+    if llegada_baja:
+        return "SIGUE_BAJA"
+    return "MEJORO" if direccion == "SUBIO" else "IGUAL"
+
+
 def calcular_zona(puntaje: float, cantidad_items: int) -> ZonaCalculada:
     """Zona de una dimensión de partida o llegada según el promedio de sus ítems (inversos ya aplicados)."""
     if not isfinite(puntaje) or isinstance(cantidad_items, bool) or not isinstance(cantidad_items, int) or cantidad_items < 1:

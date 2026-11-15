@@ -23,7 +23,7 @@ export function JournalHome({
             Solo tú puedes leer este espacio
           </p>
           <h1>Mi diario</h1>
-          <p>Cuéntale a tu compañera de viaje lo que vas descubriendo de ti.</p>
+          <p>Cuéntale a Lumi lo que vas descubriendo de ti.</p>
         </div>
       </header>
       <div className="sx-j-top">

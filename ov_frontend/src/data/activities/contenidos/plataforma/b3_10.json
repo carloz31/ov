@@ -6,10 +6,10 @@
   "subtitulo": "Alejandra llega al puerto",
   "escenario": "playa",
   "bloque": 3,
-  "orden": 10,
+  "orden": 7,
   "obligatoria": true,
   "requisitos": [
-    "b3-9"
+    "b3-8"
   ],
   "ubicacion": "Puerto, el malecón al atardecer",
   "duracionEstimadaMin": 10,

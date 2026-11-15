@@ -48,9 +48,9 @@ def test_los_casos_se_abren_con_la_ciudad(cliente_contenido):
     # La regla de cada caso pide lo mismo que la del bloque; mientras la ciudad está cerrada, el motor responde con
     # el mensaje del bloque.
     bloqueo = resolver(cliente, 6, [], esperado=409)
-    assert bloqueo['detail']['mensaje'] == 'Calibra el artefacto con Iván para recorrer la ciudad.'
+    assert bloqueo['detail']['mensaje'] == 'Completa la misión «Las voces y la mía», en el camino.'
     assert {r[2]: r[3] for r in contenido.REGLAS if r[1] == 'ACTIVIDAD' and r[2] in CASOS} == {
-        c: 'Calibra el artefacto con Iván para entrar a la Central de casos.' for c in CASOS}
+        c: 'Completa la misión «Las voces y la mía», en el camino.' for c in CASOS}
     completar(cliente, 'b1-3')
     assert {c['estado'] for c in casos(cliente).values()} == {'DISPONIBLE'}
 
@@ -62,7 +62,8 @@ def test_superar_c1_abre_sus_dos_voces_y_solo_esas(cliente_contenido):
     assert fallido['nuevos_desbloqueos'] == [] and fallido['ocupaciones_nuevas'] == []
     assert pedir(cliente, 'GET', '/cuentas/est-ana/coleccion') == []
     superado = resolver(cliente, 5, [ARQUEOLOGO, CONSERVADOR])
-    assert {d['regla'] for d in superado['nuevos_desbloqueos']} == {'R-tc1-1', 'R-tc1-2'}
+    # Ajuste logros: el primer caso también da la insignia «Caso cerrado»; las voces son solo esas dos.
+    assert {d['regla'] for d in superado['nuevos_desbloqueos'] if d['tipo_objetivo'] != 'INSIGNIA'} == {'R-tc1-1', 'R-tc1-2'}
     assert [(o['ocupacion'], o['caso']) for o in pedir(cliente, 'GET', '/cuentas/est-ana/coleccion')] == [
         (ARQUEOLOGO, 'c1'), (CONSERVADOR, 'c1')]
     estados = {t['codigo']: t['estado'] for t in pedir(cliente, 'GET', '/cuentas/est-ana/testimonios')}

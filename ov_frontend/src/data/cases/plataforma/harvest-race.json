@@ -7,7 +7,7 @@
       "Los agricultores discuten: vender a cualquier precio, esperar una oferta mejor o transformar parte de la fruta en productos que duren más tiempo. Pero ninguna opción es gratuita ni sirve para todo el volumen de la cosecha.",
       "Tu misión es formar equipos que ayuden a priorizar qué cosechar y vender, explorar una alternativa segura de transformación y organizar un canal comercial viable. No se promete salvar absolutamente toda la cosecha; se busca reducir pérdidas y aprender a decidir con información."
     ],
-    "imagen": "harvest-race-intro.png",
+    "imagen": "harvest-race-intro.webp",
     "alerta": "La cosecha de mangos está en riesgo"
   },
   "presupuesto": 10,
@@ -79,7 +79,7 @@
         "textoMovil": "Agricultores, compradores y transportistas tienen información importante. Escucha sus testimonios antes de organizar el trabajo."
       },
       "fondo": {
-        "imagen": "harvest-race-phase-1.png",
+        "imagen": "harvest-race-phase-1.webp",
         "posicion": "54% 52%"
       },
       "mensajes": [
@@ -132,31 +132,31 @@
         {
           "id": "harvest-priorities",
           "titulo": "¿Qué salvamos primero?",
-          "detalle": "Distinguir qué frutos requieren una atención prioritaria según su estado y ordenar las operaciones y equipos de cosecha.",
-          "resultado": "La prioridad técnica y la organización de las operaciones se complementan para atender la fruta más urgente.",
+          "detalle": "Saber qué mangos hay que recoger primero según qué tan maduros están, y organizar a las cuadrillas para que trabajen coordinadas.",
+          "resultado": "Saber qué fruta es urgente y tener a las cuadrillas organizadas van de la mano: así se atiende primero lo que no puede esperar.",
           "necesidades": [
             {
               "onet": "19-1013.00",
-              "aporte": "Evalúa el cultivo, la maduración y las condiciones de los frutos para orientar prioridades técnicas de cosecha.",
-              "siFalta": "Se recogieron frutos sin evaluar suficientemente su estado, mientras otros más urgentes perdieron calidad."
+              "aporte": "Revisa el cultivo y qué tan madura y sana está la fruta para indicar qué conviene cosechar primero.",
+              "siFalta": "Se recogió fruta sin revisar bien su estado, mientras otra más urgente perdió calidad."
             },
             {
               "onet": "11-9013.00",
-              "aporte": "Planifica y coordina la operación agrícola, los trabajadores y los recursos para ejecutar las prioridades acordadas.",
-              "siFalta": "Las cuadrillas siguieron descoordinadas y se desaprovecharon tiempo y capacidad de trabajo."
+              "aporte": "Planifica y coordina el trabajo del campo, con sus trabajadores y recursos, para cumplir las prioridades acordadas.",
+              "siFalta": "Las cuadrillas siguieron descoordinadas y se desperdició tiempo y mano de obra."
             }
           ]
         },
         {
           "id": "fresh-fruit-deliveries",
           "titulo": "La fruta que sí puede salir",
-          "detalle": "Planificar el ciclo de distribución de la fruta que se venderá fresca, considerando pedidos, inventarios, destinos, vehículos y tiempos de entrega.",
-          "resultado": "Los agricultores obtienen una estrategia conjunta de distribución más ordenada.",
+          "detalle": "Planificar cómo llevar a tiempo la fruta fresca a cada comprador: qué pedidos hay, cuánta fruta hay disponible, a dónde va, en qué vehículos y cuándo debe llegar.",
+          "resultado": "Los agricultores ahora tienen un plan común y más ordenado para repartir la fruta.",
           "necesidades": [
             {
               "onet": "13-1081.00",
-              "aporte": "Coordina los flujos logísticos y las entregas para aprovechar mejor los recursos y cumplir los pedidos dentro del tiempo disponible.",
-              "siFalta": "Se desaprovechó capacidad de transporte y algunas entregas llegaron cuando parte de la fruta ya había perdido calidad."
+              "aporte": "Coordina todo el recorrido de la fruta, desde lo que hay disponible hasta la entrega, para aprovechar los vehículos y cumplir los pedidos a tiempo.",
+              "siFalta": "Se desperdició espacio en los vehículos y algunas entregas llegaron cuando parte de la fruta ya había perdido calidad."
             }
           ]
         }
@@ -171,7 +171,7 @@
         "textoMovil": "Quienes preparan productos de mango tienen dudas sobre la fabricación y sus costos. Escucha sus testimonios antes de asignar especialistas."
       },
       "fondo": {
-        "imagen": "harvest-race-phase-2.png",
+        "imagen": "harvest-race-phase-2.webp",
         "posicion": "50% 54%"
       },
       "mensajes": [
@@ -224,31 +224,31 @@
         {
           "id": "safe-food-processing",
           "titulo": "No basta con cocinar mangos",
-          "detalle": "Definir un proceso de transformación apropiado para fruta apta y comprobar la calidad y estabilidad de los productos de prueba antes de producir comercialmente.",
-          "resultado": "El procesamiento se plantea como piloto sujeto a verificaciones técnicas y sanitarias previas a su venta.",
+          "detalle": "Definir cómo convertir la fruta en un producto que dure, como mermelada o pulpa, cuando se fabrica en gran cantidad, y comprobar con pruebas que las muestras salen bien y se conservan antes de venderlas.",
+          "resultado": "La transformación empieza como una prueba pequeña, y nada sale a la venta sin comprobar antes que el producto es seguro y de buena calidad.",
           "necesidades": [
             {
               "onet": "19-1012.00",
-              "aporte": "Aplica conocimientos sobre procesamiento y deterioro de alimentos para estudiar un proceso de transformación apropiado y sus condiciones.",
-              "siFalta": "Se inició la transformación sin evaluar suficientemente su proceso y las condiciones de conservación del producto."
+              "aporte": "Usa lo que sabe sobre cómo se procesan y se malogran los alimentos para definir el proceso adecuado y las condiciones en que debe hacerse.",
+              "siFalta": "Se empezó a producir sin estudiar bien el proceso ni cómo debía conservarse el producto."
             },
             {
               "onet": "19-4099.01",
-              "aporte": "Realiza controles de calidad y pruebas de estabilidad sobre materias primas y productos de prueba.",
-              "siFalta": "No se detectaron a tiempo diferencias de calidad o estabilidad entre muestras y lotes de prueba."
+              "aporte": "Hace controles y pruebas a la fruta y a las muestras para comprobar su calidad y que se conservan bien con los días.",
+              "siFalta": "No se detectaron a tiempo las diferencias de calidad o de conservación entre las muestras."
             }
           ]
         },
         {
           "id": "processing-costs",
           "titulo": "¿Cuánto costará realmente?",
-          "detalle": "Estimar costo total, costo por unidad y un precio mínimo de referencia para comparar alternativas de procesamiento; la demanda comercial se estudiará después.",
-          "resultado": "Las estimaciones permiten decidir qué escala de prueba tiene sentido; todavía no garantizan ventas ni rentabilidad.",
+          "detalle": "Calcular cuánto costaría producir en total y por cada envase, y cuál sería el precio mínimo de venta, para comparar las opciones de máquinas. Averiguar quién compraría se verá después.",
+          "resultado": "Con los cálculos ya se puede decidir de qué tamaño conviene hacer la prueba. Todavía no aseguran que se venda ni que se gane dinero.",
           "necesidades": [
             {
               "onet": "13-1051.00",
-              "aporte": "Prepara estimaciones de costos de producción e insumos para comparar opciones y apoyar decisiones de precios.",
-              "siFalta": "Se eligió una alternativa sin entender su costo por unidad y se corrió el riesgo de gastar más de lo que podía recuperarse."
+              "aporte": "Calcula cuánto cuestan los insumos y la producción para comparar opciones y ayudar a fijar precios.",
+              "siFalta": "Se eligió una opción sin saber cuánto costaba cada unidad, con el riesgo de gastar más de lo que se podía recuperar."
             }
           ]
         }
@@ -263,7 +263,7 @@
         "textoMovil": "Los posibles vendedores y la cooperativa quieren contarte sus dudas. Escúchalos antes de preparar el equipo comercial."
       },
       "fondo": {
-        "imagen": "harvest-race-phase-3.png",
+        "imagen": "harvest-race-phase-3.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [
@@ -305,18 +305,18 @@
         {
           "id": "market-and-orders",
           "titulo": "Un buen producto que nadie conoce",
-          "detalle": "Identificar potenciales compradores y sus preferencias, y gestionar de manera ordenada la venta minorista por internet y los pedidos disponibles.",
-          "resultado": "La comunidad puede iniciar un canal pequeño y ordenado de comercialización, sin asumir que venderá toda la cosecha original.",
+          "detalle": "Averiguar quiénes comprarían el producto y cómo lo prefieren, y ordenar la venta por internet para saber quién pidió qué y cuánto queda disponible.",
+          "resultado": "La comunidad puede empezar a vender de forma pequeña y ordenada, sin esperar colocar toda la cosecha.",
           "necesidades": [
             {
               "onet": "11-2021.00",
-              "aporte": "Analiza demanda, clientes potenciales y estrategia comercial para decidir a quién ofrecer el producto y cómo presentarlo.",
-              "siFalta": "La comunidad produjo presentaciones sin información suficiente sobre quién podría comprarlas."
+              "aporte": "Estudia qué quieren los posibles clientes y cuánto se podría vender para decidir a quién ofrecer el producto y cómo presentarlo.",
+              "siFalta": "La comunidad fabricó presentaciones sin saber bien quién podría comprarlas."
             },
             {
               "onet": "13-1199.06",
-              "aporte": "Organiza actividades de comercio electrónico, pedidos y existencias para vender por internet de forma operativa.",
-              "siFalta": "Los pedidos llegaron de forma dispersa y hubo confusiones sobre cantidades y disponibilidad."
+              "aporte": "Organiza la venta por internet: registra los pedidos y controla cuánto producto queda disponible.",
+              "siFalta": "Los pedidos llegaron desordenados y hubo confusiones sobre cantidades y sobre lo que quedaba disponible."
             }
           ]
         }

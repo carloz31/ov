@@ -878,3 +878,43 @@ test('una finalización local que el servidor no conoce vuelve a empezar la acti
     ['completada', '$fin'],
   )
 })
+
+// Ajuste coherencia-apoderado: el contenido de p1 a p8 cambió y un nodo guardado puede no existir ya.
+test('un nodo guardado que ya no existe reinicia la actividad del apoderado y descarta sus intentos', () => {
+  const app = fixture('', undefined, { portal: true })
+  const logic = app.load('src/features/parent/lib/missionLogic.ts')
+  const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
+  const activity = { ...contenidoPorClave('p1'), requisitos: [] }
+  const vacio = app.load('src/lib/activities/logic.ts').initialJourney()
+  const permitir = { disponible: true, servidor: true }
+  let state = logic.startParentActivity(activity, vacio, 'apo-rosa', permitir)
+  const pregunta = activity.nodos.find((n) => n.tipo === 'pregunta')
+  state.progress[activity.id].nodoActualId = pregunta.id
+  const errada = pregunta.opciones.find((o) => !o.correcta).id
+  state = logic.answerParentQuestion(activity, pregunta, [errada], state, 'apo-rosa', permitir)
+  assert.equal(state.attempts.filter((a) => a.actividadId === activity.id).length, 1)
+  state.progress[activity.id].nodoActualId = 'p1-12'
+  assert.equal(logic.progresoObsoleto(activity, state.progress[activity.id]), true)
+  const reiniciada = logic.startParentActivity(activity, state, 'apo-rosa', permitir)
+  assert.equal(reiniciada.progress[activity.id].nodoActualId, activity.nodos[0].id)
+  assert.equal(reiniciada.attempts.filter((a) => a.actividadId === activity.id).length, 0)
+  assert.equal(logic.progresoObsoleto(activity, reiniciada.progress[activity.id]), false)
+  assert.equal(logic.startParentActivity(activity, reiniciada, 'apo-rosa', permitir), reiniciada)
+})
+
+// Ajuste coherencia-apoderado: el título cita la opción una sola vez y sin repetir el punto.
+test('el título de la retroalimentación cita la respuesta sin punto doble ni comillas dobles', () => {
+  const app = fixture('', undefined, { portal: true })
+  const logic = app.load('src/features/parent/lib/missionLogic.ts')
+  const { contenidoPorClave } = app.load('src/data/activities/contenidos.ts')
+  const pregunta = (clave, id) => contenidoPorClave(clave).nodos.find((n) => n.id === id)
+  const p105 = pregunta('p1', 'p1-05')
+  assert.equal(
+    logic.evaluateParentQuestion(p105, ['a'], 1).title,
+    'Casi. La respuesta más adecuada es «Que señala áreas donde vale la pena explorar, pero no le asigna una carrera a nadie».',
+  )
+  assert.equal(
+    logic.evaluateParentQuestion(pregunta('p8', 'p8-05'), ['c'], 0).title,
+    '¡Bien! La respuesta es «A veces me da miedo que no te alcance. Es miedo mío».',
+  )
+})

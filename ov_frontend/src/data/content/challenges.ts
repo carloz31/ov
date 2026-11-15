@@ -193,7 +193,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Aurelio pregona desde la otra orilla y cada frase que aceptes sin dato rompe una tabla del puente. ' +
       'Clasifica cada pregón como mito o como afirmación con sustento y elige el argumento que lo desarma. ' +
       'Si el puente aguanta, Aurelio se queda sin eco.',
-    ilustracion: '/images/student/pregonero.png',
+    ilustracion: '/images/student/pregonero.webp',
     bloque: 1,
     orden: 5,
     obligatoria: true,
@@ -228,7 +228,7 @@ export const desafiosPlataforma: Challenge[] = [
       'Doña Cifra lee los números del mercado como si fueran un horóscopo: un promedio es un destino, una demanda es un trabajo seguro ' +
       'y solo una ruta vale. Cada vez que corrijas una lectura suya o mandes a un viajero al embarcadero correcto, pierde un cliente. ' +
       'Si se queda sin clientes, cierra el puesto.',
-    ilustracion: '/images/student/cifra.png',
+    ilustracion: '/images/student/cifra.webp',
     bloque: 3, orden: 5, obligatoria: true,
     ubicacion: 'Puerto, plaza del mercado',
     duracionEstimadaMin: 8,
@@ -240,7 +240,7 @@ export const desafiosPlataforma: Challenge[] = [
       { tipo: 'ficha', id: 'F13', titulo: 'Salarios, demanda e informalidad' },
     ],
     banco: [],
-    recompensa: { titulo: 'El puesto cerró', lugar: 'la feria del malecón', href: '/student/map',
+    recompensa: { titulo: 'El puesto cerró', lugar: 'la caseta de Clotilde', href: '/student/map',
       mensajeFin: 'Un salario promedio es un dato de otras personas. Sirve para ubicarte, no para saber cuánto vas a ganar tú.' },
   },
   {
@@ -254,8 +254,8 @@ export const desafiosPlataforma: Challenge[] = [
       'Don Próspero, el feriante, cuelga un anuncio tras otro: acreditación internacional, ingreso directo, bolsa de trabajo garantizada. ' +
       'Cada anuncio que desmontes (qué verificar, qué promesa es dudosa, qué modalidad de admisión aplica) le quita un banderín. ' +
       'Sin banderines, el stand se cierra.',
-    ilustracion: '/images/student/feriante.png',
-    bloque: 3, orden: 7, obligatoria: true,
+    ilustracion: '/images/student/feriante.webp',
+    bloque: 3, orden: 7, obligatoria: false,
     ubicacion: 'Puerto, feria del malecón',
     duracionEstimadaMin: 8,
     personajeIds: ['feriante', 'companero'],
@@ -266,7 +266,7 @@ export const desafiosPlataforma: Challenge[] = [
       { tipo: 'ficha', id: 'F15', titulo: 'Cómo se ingresa' },
     ],
     banco: [],
-    recompensa: { titulo: 'El stand se cerró', lugar: 'la caseta de Clotilde', href: '/student/map',
+    recompensa: { titulo: 'El stand se cerró', lugar: 'el puerto', href: '/student/map',
       mensajeFin: 'Postular es un proceso con reglas publicadas. Si no encuentras las reglas, no confíes en la promesa.' },
   },
   {
@@ -280,8 +280,8 @@ export const desafiosPlataforma: Challenge[] = [
       'Clotilde guarda una pila de presupuestos de jóvenes que firmaron sin mirar. Todos tienen un hueco: un rubro que falta, un año ' +
       'que no se contó, un crédito calculado con el sueldo equivocado o una beca que nadie pidió. Cada hueco que encuentres es un ' +
       'contrato que no se firma. Sin contratos, Clotilde cierra la caseta.',
-    ilustracion: '/images/student/prestamista.png',
-    bloque: 3, orden: 9, obligatoria: true,
+    ilustracion: '/images/student/prestamista.webp',
+    bloque: 3, orden: 9, obligatoria: false,
     ubicacion: 'Puerto, caseta junto al muelle',
     duracionEstimadaMin: 8,
     personajeIds: ['prestamista', 'companero'],
@@ -289,7 +289,7 @@ export const desafiosPlataforma: Challenge[] = [
     vidasEnemigo: 5, vidasEstudiante: 3, opcionesPorPregunta: 4,
     requisitos: [{ tipo: 'ficha', id: 'F16', titulo: 'Cuánto cuesta y cómo pagarlo' }],
     banco: [],
-    recompensa: { titulo: 'La caseta cerró', lugar: 'el malecón al atardecer', href: '/student/map',
+    recompensa: { titulo: 'La caseta cerró', lugar: 'el puerto', href: '/student/map',
       mensajeFin: 'Antes de decidir dónde, calcula cuánto cuesta todo el camino y de dónde saldría cada sol.' },
   },
   {
@@ -302,7 +302,7 @@ export const desafiosPlataforma: Challenge[] = [
     presentacionEnemigo:
       'Doña Cifra volvió a abrir el puesto, esta vez solo con un pregón: que únicamente una ruta sirve. Un repaso corto: viajeros ' +
       'con situaciones distintas y el embarcadero que les calza. Opcional, para quien quiera asegurar lo aprendido.',
-    ilustracion: '/images/student/cifra.png',
+    ilustracion: '/images/student/cifra.webp',
     bloque: 3, orden: 12, obligatoria: false,
     ubicacion: 'Puerto, plaza del mercado',
     duracionEstimadaMin: 5,
@@ -353,7 +353,7 @@ export const desafiosPlataforma: Challenge[] = [
     presentacionEnemigo:
       'Aurelio volvió con un solo pregón, el que más aplausos le daba: «hay trabajos de hombres y trabajos de mujeres». Esta vez trae ' +
       'números a medias. Responde con los datos completos y el pregón se queda sin público. Corta y opcional.',
-    ilustracion: '/images/student/pregonero.png',
+    ilustracion: '/images/student/pregonero.webp',
     bloque: 1, orden: 39, obligatoria: false,
     ubicacion: 'Desierto, el oasis',
     duracionEstimadaMin: 5,
@@ -375,7 +375,7 @@ export const desafiosPlataforma: Challenge[] = [
     presentacionEnemigo:
       'Doña Cifra trae más números a la plaza y dice lo que significan, a su manera. Cada vez que la corrijas con lo que ya sabes ' +
       'leer, un promedio deja de engañar. Corta y opcional.',
-    ilustracion: '/images/student/cifra.png',
+    ilustracion: '/images/student/cifra.webp',
     bloque: 3, orden: 38, obligatoria: false,
     ubicacion: 'Puerto, plaza del mercado',
     duracionEstimadaMin: 5,

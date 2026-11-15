@@ -163,3 +163,19 @@ test('en api, el modal pide el contenido al abrirse: primero su carga, luego la 
   assert.ok(cuerpo.props.resource.content.startsWith('Muchas decisiones'))
   assert.equal(app.requests.filter((r) => r.url.endsWith('/fichas/t-ficha')).length, 1)
 })
+
+// Ajuste coherencia-apoderado: FP05 trae viñetas sangradas bajo un ítem numerado.
+test('una lista numerada con viñetas sangradas se dibuja como una lista dentro del ítem', () => {
+  const app = fixtureServidor()
+  const { ResourceText } = app.load('src/components/student/ResourceText.tsx')
+  const arbol = app
+    .mount(ResourceText, { text: '1. **Uno.**\n   - Universidad: a\n   - Instituto: b\n2. **Dos.** Texto' })
+    .render()
+  const tipos = (tipo) => elementos(arbol, (e) => e.type === tipo)
+  assert.equal(tipos('ol').length, 1)
+  assert.equal(tipos('ul').length, 1)
+  assert.equal(tipos('p').length, 0)
+  assert.equal(texto(tipos('ul')), 'Universidad: aInstituto: b')
+  assert.equal(texto(tipos('strong')), 'Uno.Dos.')
+  assert.ok(!texto(arbol).includes('   -'))
+})

@@ -12,7 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app import models as m
-from app.core.parametros import ITEMS_PIEZAS
+from app.core.parametros import ITEMS_PIEZAS, UMBRALES_AMISTAD
 
 from datos import cargador, ruta, tarjetas_registros
 from datos.fijos import validar_distribucion_items
@@ -24,10 +24,6 @@ PROVISIONALES = (
     ('Cuentas, colegios, salones, vínculos y orientadoras', 'ruta.CUENTAS, COLEGIOS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),
     ('Configuración del salón', 'ruta.SALON_INSTRUMENTOS', 'B14'),
     ('Registro prioritario del salón', "('5A', 'b1-3')", 'B14'),
-
-    ('Recuerdos de Lumi t-lumi-1..5 y sus reglas por amistad', 'ruta.ACTIVIDADES, PROPIEDADES, REGLAS', 'contenido de Lumi'),
-    ('Insignias, grupos, textos, pistas y evaluadores de vistas', 'ruta.INSIGNIAS, GRUPOS_INSIGNIA, PAGINAS_INSIGNIAS, TEXTOS_INSIGNIAS, PISTAS_INSIGNIAS, REGLAS, EVALUADORES_REGLAS, TEXTOS_CONDICIONES', 'ajuste de logros'),
-    ('Niveles y citas de Lumi', 'ruta.NIVELES, CITAS_LUMI', 'ajuste de logros'),
 )
 
 COLEGIOS = ruta.COLEGIOS
@@ -52,9 +48,6 @@ BLOQUES = (
     ('FAMILIA', 1, 'Actividades para familias', 'PORTAL_FAMILIA', 'APODERADO'),
 )
 
-# PROVISIONAL: actividades que se toman de `ruta` (recuerdos de Lumi).
-_DE_RUTA = ruta.RECUERDOS_LUMI
-
 # (código, bloque, título, tipo, puntaje mínimo de un CASO, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
 ACTIVIDADES = (
@@ -71,11 +64,11 @@ ACTIVIDADES = (
     ('b1-5', 'B1', 'Batalla: el puente de los mitos', 'BATALLA', None, 8),
     ('b1-6', 'B1', 'El mito que traje de casa', 'REGISTRO', None, 8),
     ('b1-7', 'B1', 'Mi futuro', 'REGISTRO', None, 10),
-    ('b2-1', 'B2', 'Las habilidades sociales', 'INFORMATIVA', None, 12),
-    ('b2-2', 'B2', 'Muchas formas de ser inteligente', 'INFORMATIVA', None, 10),
-    ('b2-3', 'B2', 'Lo que valoro en un trabajo', 'REGISTRO', None, 8),
+    ('b2-3', 'B2', 'Lo que valoro en un trabajo', 'REGISTRO', None, 9),
     ('b2-4', 'B2', 'Lo que se me da bien y lo que me cuesta', 'REGISTRO', None, 8),
     ('b2-5', 'B2', 'Intereses y ambientes de trabajo', 'INFORMATIVA', None, 12),
+    ('b2-1', 'B2', 'Las habilidades sociales', 'INFORMATIVA', None, 12),
+    ('b2-2', 'B2', 'Muchas formas de ser inteligente', 'INFORMATIVA', None, 10),
     ('h-habilidades-1', 'CIUDAD', 'Mi comportamiento con los demás, 1 de 4', 'CUESTIONARIO', None, 4),
     ('h-habilidades-2', 'CIUDAD', 'Mi comportamiento con los demás, 2 de 4', 'CUESTIONARIO', None, 4),
     ('h-habilidades-3', 'CIUDAD', 'Mi comportamiento con los demás, 3 de 4', 'CUESTIONARIO', None, 4),
@@ -99,11 +92,11 @@ ACTIVIDADES = (
     ('b3-3', 'B3', 'El mercado laboral', 'INFORMATIVA', None, 12),
     ('b3-4', 'B3', 'Lo que necesito saber', 'REGISTRO', None, 8),
     ('b3-5', 'B3', 'Batalla: el mercado y las rutas', 'BATALLA', None, 8),
+    ('b3-8', 'B3', 'Cuánto cuesta estudiar', 'INFORMATIVA', None, 12),
+    ('b3-10', 'B3', 'Caminos que no van en línea recta', 'INFORMATIVA', None, 10),
     ('b3-6', 'B3', 'Elegir una institución', 'INFORMATIVA', None, 12),
     ('b3-7', 'B3', 'Batalla de las instituciones', 'BATALLA', None, 8),
-    ('b3-8', 'B3', 'Cuánto cuesta estudiar', 'INFORMATIVA', None, 12),
     ('b3-9', 'B3', 'Batalla de los costos', 'BATALLA', None, 8),
-    ('b3-10', 'B3', 'Caminos que no van en línea recta', 'INFORMATIVA', None, 10),
     ('b3-a', 'B3', 'Lo que aprendí de una trayectoria', 'REGISTRO', None, 4),
     ('b3-b', 'B3', 'Batalla de las rutas (repaso)', 'BATALLA', None, 5),
     ('b4-1', 'B4', 'Mi perfil frente a mi Plan A', 'REGISTRO', None, 12),
@@ -127,14 +120,14 @@ ACTIVIDADES = (
     ('ma7', 'B3', 'Más allá del promedio', 'INFORMATIVA', None, 6),
     ('ma7-b', 'B3', 'Batalla: más allá del promedio', 'BATALLA', None, 5),
     ('ma8', 'B4', 'El abogado del diablo', 'REGISTRO', None, 4),
-    ('p1', 'FAMILIA', 'Acompañar no es decidir', 'INFORMATIVA', None, 8),
-    ('p2', 'FAMILIA', 'Mis expectativas y temores', 'INFORMATIVA', None, 8),
-    ('p3', 'FAMILIA', 'Acompañar o presionar', 'INFORMATIVA', None, 8),
-    ('p4', 'FAMILIA', 'El sueño del chef', 'INFORMATIVA', None, 8),
-    ('p5', 'FAMILIA', 'El panorama de hoy', 'INFORMATIVA', None, 10),
-    ('p6', 'FAMILIA', 'Cómo conversar con mi hijo', 'INFORMATIVA', None, 8),
-    ('p7', 'FAMILIA', 'Cuando mi hijo duda o cambia de opinión', 'INFORMATIVA', None, 8),
-    ('p8', 'FAMILIA', 'Mi carta para mi hijo', 'INFORMATIVA', None, 8),
+    ('p1', 'FAMILIA', 'Acompañar no es decidir', 'INFORMATIVA', None, 12),
+    ('p2', 'FAMILIA', 'Mis expectativas y temores', 'INFORMATIVA', None, 12),
+    ('p3', 'FAMILIA', 'Acompañar o presionar', 'INFORMATIVA', None, 12),
+    ('p4', 'FAMILIA', 'Lo que no se dice en casa', 'INFORMATIVA', None, 12),
+    ('p5', 'FAMILIA', 'El panorama de hoy', 'INFORMATIVA', None, 14),
+    ('p6', 'FAMILIA', 'Cómo conversar con mi hijo o hija', 'INFORMATIVA', None, 12),
+    ('p7', 'FAMILIA', 'Cuando mi hijo o hija duda o cambia de opinión', 'INFORMATIVA', None, 12),
+    ('p8', 'FAMILIA', 'Mi carta para mi hijo o hija', 'INFORMATIVA', None, 10),
     # Ajuste carga-casos: los seis casos de la Central, al final de la ciudad. Cada uno juega el JSON de
     # ov_frontend/src/data/cases/plataforma/ que nombra su contenido (`caso`). El mínimo para superarlo es el
     # máximo (CONFIGURACION_CASOS) menos 3.
@@ -144,12 +137,26 @@ ACTIVIDADES = (
     ('c4', 'CIUDAD', 'El festival de las mil voces', 'CASO', 5, 15),
     ('c5', 'CIUDAD', 'El torneo de los equipos imposibles', 'CASO', 5, 15),
     ('c6', 'CIUDAD', 'La laguna que amaneció en silencio', 'CASO', 7, 18),
-    *(a for a in ruta.ACTIVIDADES if a[0] in _DE_RUTA),
+    # Ajuste coherencia-lumi: la historia de Lumi, un recuerdo por nivel de amistad.
+    ('lumi-1', 'LUMI', 'De dónde vengo', 'INFORMATIVA', None, 3),
+    ('lumi-2', 'LUMI', 'Lo que escribí en el tronco', 'INFORMATIVA', None, 3),
+    ('lumi-3', 'LUMI', 'Un poco de todo', 'INFORMATIVA', None, 3),
+    ('lumi-4', 'LUMI', 'Hasta la mitad', 'INFORMATIVA', None, 3),
+    ('lumi-5', 'LUMI', 'Lo que elijo yo', 'INFORMATIVA', None, 3),
 )
+RECUERDOS_LUMI = tuple(codigo for codigo, bloque, *_ in ACTIVIDADES if bloque == 'LUMI')
 
 # Lo que cambia los valores por defecto (requerida, visibilidad SIEMPRE). Una opcional nunca es requisito de una
 # requerida; las de AL_DESBLOQUEAR aparecen en el mapa al desbloquearse.
 PROPIEDADES = {
+    # Ajuste recorte-volcan: las dos informativas que presentan tests opcionales salen de la ruta requerida.
+    'b2-1': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    'b2-2': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    # Ajuste recorte-puerto, para la prueba con usuarios (en la versión final vuelven a ser requeridas): la
+    # institución y las batallas del Feriante y de Clotilde salen de la ruta requerida del puerto.
+    'b3-6': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    'b3-7': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    'b3-9': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b3-a': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b3-b': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'ma1': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
@@ -189,7 +196,7 @@ PROPIEDADES = {
     'c4': {'requerida': False},
     'c5': {'requerida': False},
     'c6': {'requerida': False},
-    **{c: ruta.PROPIEDADES[c] for c in ruta.RECUERDOS_LUMI},
+    **{codigo: {'requerida': False} for codigo in RECUERDOS_LUMI},
 }
 
 # Texto de presentación de cada actividad (`descripcion`).
@@ -209,7 +216,7 @@ DESCRIPCIONES = {
     'b1-7': 'Un día a tus 23 años, lo que estarás haciendo dentro de un año y lo que podría frenarte.',
     'b2-1': 'Rosa, jefa de la brigada del volcán, busca brigadista: liderazgo, iniciativa, trabajo en equipo. Descubre qué son las habilidades sociales.',
     'b2-2': 'Ayuda a Rosa a repartir las tareas de la semana entre seis brigadistas que son inteligentes de formas distintas.',
-    'b2-3': 'Rosa se quedó en el volcán y su hermano se fue a la mina. Elige las tres cosas que más valoras en un trabajo y cuenta por qué la primera.',
+    'b2-3': 'Llegas al bosque del volcán y conoces a Rosa, jefa de la brigada. Ella se quedó en el volcán y su hermano se fue a la mina: ordena lo que valoras tú.',
     'b2-4': 'Nico reapareció en el taller de la brigada: le sale bien algo que no buscaba. Cuenta en qué te va mejor, qué te cuesta y si te gusta eso que mejor te sale.',
     'b2-5': 'La ronda de los seis refugios del volcán: seis ambientes de trabajo y el código de tres letras.',
     'h-habilidades-1': 'Dora, la tabernera, guarda las veinticuatro frases sobre cómo te portas con la gente. Primera visita: seis frases.',
@@ -263,13 +270,13 @@ DESCRIPCIONES = {
     'ma7': 'Doña Cifra trae un solo promedio. Léelo por partes: de dónde es, de qué edad y de quiénes.',
     'ma7-b': 'Doña Cifra dice lo que significan sus números. Corrígela con lo que ya sabes leer.',
     'ma8': 'Lumi recuerda a Vera, que le respondió al Eco con lo que averiguó. Elige una objeción a tu Plan A que hayas escuchado, y cuenta qué le respondes.',
-    'p1': 'El rol de la familia según el programa de orientación: acompañar, informar y respetar. La decisión es de su hijo o hija.',
-    'p2': 'Un ejercicio de seis minutos para reconocer qué espera y qué teme del futuro de su hijo o hija, y de dónde vienen esas ideas.',
-    'p3': 'Situaciones de presión que no parece presión, y la actitud que sí ayuda.',
-    'p4': 'La historia de Gastón Acurio y el papel de su familia: por qué los hijos esconden lo que quieren y cómo notarlo.',
-    'p5': 'Lo que cambió desde que usted eligió: rutas, mercado, licenciamiento, costos y becas, con datos de hoy.',
-    'p6': 'Preguntas que abren y preguntas que cierran, y cómo funcionan las conversaciones guiadas.',
-    'p7': 'Por qué dudar o cambiar de opinión es parte del proceso, y cómo acompañar cuatro situaciones frecuentes.',
+    'p1': 'Qué lugar ocupa la familia cuando un hijo o hija elige qué hacer después del colegio, y qué puede aportar usted aunque no sepa de carreras.',
+    'p2': 'Qué espera y qué teme usted del futuro de su hijo o hija, de dónde viene y cómo decirlo sin que pese.',
+    'p3': 'Qué convierte el interés en presión, por qué hacerse a un lado tampoco ayuda y otra forma de decir las frases más comunes.',
+    'p4': 'Por qué los hijos callan lo que quieren, cómo sus reacciones abren o cierran esa puerta y qué hacer cuando se lo cuenten.',
+    'p5': 'Cuánto se gana, qué asegura un título, cómo comprobar una institución, cuánto cuesta y qué caminos hay cuando el dinero es el límite.',
+    'p6': 'Una conversación para practicar: qué preguntar, cuándo opinar, qué hacer con un "no sé" y cómo funcionan las conversaciones guiadas.',
+    'p7': 'Qué hay detrás de un cambio de opinión, cómo ubicar una duda y cómo acompañar un "quiero esperar" o un "no ingresé".',
     'p8': 'Cómo escribir una carta que sirva, y qué sigue al terminar su ruta.',
     'c1': 'Un proyecto de plaza se detiene al descubrir restos antiguos bajo el terreno.',
     'c2': 'Un programa de becas presenta solicitudes perdidas, puntajes difíciles de explicar y documentos expuestos.',
@@ -362,14 +369,14 @@ FICHAS = (
     ('F22', 'Cómo aprovechar una feria', 'Cómo planear tu visita a una feria vocacional: qué preparar antes, qué preguntar y a quién, y qué hacer con lo que averiguaste.', 'Mis opciones', 'Una feria vocacional junta en un solo lugar a muchas instituciones que quieren que estudies con ellas. Ir no alcanza: sirve si vas con un plan. Sin plan, se sale con una bolsa de folletos y las mismas dudas.\n\n### Antes de ir\n\n1. **Elige tus paradas.** Revisa tus favoritos y anota qué instituciones los dictan. Si la feria publica la lista de participantes o un plano, marca esos puestos. Lo demás es paseo.\n2. **Escribe tres preguntas.** Que sean de las que la página web no responde. Si puedes, ármalas con alguien de tu casa o con un compañero: se les ocurrirán cosas que a ti no.\n3. **Lleva lapicero y libreta.** De lo que no se apunta, al día siguiente queda poco.\n4. **Calcula el tiempo.** Con veinte puestos y una mañana no alcanza para todos. Con cuatro o cinco paradas, sí alcanza para conversar.\n\n### En la feria\n\n- **Ve primero a tus paradas.** Después, si queda tiempo, pasea.\n- **Pregunta lo que escribiste.** Quien atiende tiene un discurso listo; tus preguntas lo sacan de ahí.\n- **Busca a un estudiante de la carrera.** Muchas instituciones llevan estudiantes a su puesto. Para saber cómo es estudiar ahí, nadie responde mejor.\n- **Apunta al salir de cada puesto.** Dos líneas bastan: qué te dijeron y qué quedó sin responder.\n- **Deja un rato para un puesto que no estaba en tu lista.** A veces aparece una opción que no habías mirado.\n- **Si hay charlas u orientación gratuita, aprovéchalas.** Varias ferias las incluyen.\n\n### Preguntas que valen\n\n| Pregunta | Para qué sirve |\n| --- | --- |\n| ¿Qué curso es el que más cuesta en primer año? | Para saber cómo es estudiar la carrera, no solo qué se estudia |\n| ¿Dónde hacen prácticas los estudiantes de esta carrera? | Pide nombres de lugares, no «tenemos convenios» |\n| ¿Cuánto se paga en total por ciclo, con matrícula y otros pagos? | Las ferias suelen decir la pensión «desde»; pide el total |\n| ¿Qué becas o escalas de pensión hay, y con qué requisitos? | Si la beca exige un promedio, pregunta cuántos la mantienen |\n| ¿Cuándo es la admisión y qué modalidades tiene? | Fechas, costo de inscripción y qué se evalúa |\n| A un estudiante: ¿cómo es una semana normal?, ¿qué te sorprendió al empezar? | Lo que no sale en ningún folleto |\n\n### Esa misma noche\n\nAntes de que se mezcle todo: por cada institución que te interesó, anota qué averiguaste y qué te falta saber. Lo que falta lo buscas después en su página web, o se lo preguntas a alguien que estudie ahí.\n\nUna buena impresión no es una respuesta. Un puesto bonito o un promotor simpático no dicen nada de la carrera.\n\n### Lo que te digan, compruébalo\n\nSi en un puesto te hablan de licencia, de acreditación o de «empleo asegurado», no lo tomes como dato hasta comprobarlo fuera de la institución. Cómo hacerlo está en la ficha «Licenciamiento y acreditación».\n\n### Si no hay feria donde vives\n\n- Haz lo mismo con la página web de cada institución: tus paradas, tus tres preguntas y tus apuntes.\n- Algunas ferias son virtuales, y hay colegios que se conectan a ellas desde el aula.\n- El Pronabec organiza la feria Ruta 18 en varias regiones, gratuita y sin inscripción previa, con información de la Beca 18 y de las instituciones donde se puede usar.\n- Pregunta en tu colegio: muchas ferias se organizan para cuarto y quinto de secundaria.\n\n> A una feria se va con preguntas. Lo que cuenta es lo que anotas al salir.\n\n**Para tu viaje.** Tus paradas salen de «Mis favoritos», en el catálogo. Cada institución del catálogo tiene el enlace a su «Página web». Y lo que te quede por averiguar puede ir a «Mis dudas», en tu plan, dentro de «Qué tanto la conozco».\n\n**Fuentes:** MINEDU (2013), cartilla, actividad 11 (feria vocacional). [NACAC, College Fair Tip Sheet](https://macac.wildapricot.org/resources/Documents/SOTR%20Toolkit/P5/Early%20High%20School%20SBS5%20Activity%20-%20Campus%20Visits%20and%20College%20Fairs.pdf). [College Board (2012), College Counseling Sourcebook, «How to get the most out of a college fair»](https://secure-media.collegeboard.org/digitalServices/pdf/membership/counselor-workshops/conduct.pdf). [Pronabec, feria Ruta 18](https://www.pronabec.gob.pe/feria-ruta-18/).', 'ESTUDIANTE'),
     ('F23', 'Carreras del futuro y emprender', 'Qué ocupaciones crecen, cómo leer una lista de «carreras del futuro» y qué mirar antes de poner un negocio.', 'Mis opciones', 'Cada año aparece una lista nueva de «profesiones del futuro». Sirven para mirar hacia dónde se mueve el trabajo, no para elegir por moda. Y poner un negocio, en el Perú, es algo que mucha gente ya hace: conviene saber cómo.\n\n### Hacia dónde se mueve el trabajo\n\nEl Foro Económico Mundial pregunta cada dos años a empresas grandes qué esperan del trabajo. Para su informe de 2025 respondieron más de mil, de 55 países. Estiman que, hacia 2030, cerca de 4 de cada 10 habilidades que hoy pide un trabajo habrán cambiado (39 %).\n\nEl informe mide el crecimiento de dos maneras, y salen listas distintas:\n\n| Cómo se mide | Qué ocupaciones salen |\n| --- | --- |\n| Las que crecen más rápido, en porcentaje | Especialistas en datos y en inteligencia artificial, desarrolladores de software, ingenieros ambientales y de energías renovables |\n| Las que suman más puestos, en cantidad | Trabajadores del campo, de reparto, de construcción y de ventas; enfermería, cuidado de personas, docentes de secundaria y de educación superior |\n\nUna ocupación puede crecer muy rápido y seguir siendo pequeña. Otra crece despacio y da muchos más puestos.\n\n### De dónde se llega\n\nEstos son ejemplos de carreras que forman para lo que crece. No es una lista cerrada: a casi todas estas ocupaciones se llega por más de un camino.\n\n| Lo que crece | Ocupaciones | Carreras desde las que se llega |\n| --- | --- | --- |\n| Datos e inteligencia artificial | Especialistas en datos y en inteligencia artificial, desarrolladores | Ciencias de la computación, ingeniería de sistemas, estadística, matemática |\n| Seguridad digital | Especialistas en ciberseguridad y en redes | Ingeniería de sistemas, redes y telecomunicaciones |\n| Energía y ambiente | Ingenieros ambientales y de energías renovables | Ingeniería ambiental, de energía, civil |\n| Salud y cuidado | Enfermería, cuidado de personas, trabajo social | Ciencias de la salud, trabajo social |\n| Educación | Docentes de secundaria y de educación superior | Educación, o una carrera de base más formación docente |\n| Campo y alimentos | Trabajadores agrícolas y de la industria de alimentos | Agronomía, industrias alimentarias, carreras técnicas agropecuarias |\n\nMi Carrera, la plataforma del Ministerio de Trabajo, publica su propia lista de carreras del futuro para el Perú. Léela con las mismas preguntas que cualquier otra.\n\n### Cómo leer una lista de carreras del futuro\n\n1. **Del futuro de quién.** Una lista habla del mercado de quienes respondieron: aquí, empresas grandes de muchos países. Lo que se pide en tu región puede ser otra cosa, y cambia de un año a otro.\n2. **Crecer rápido no es dar muchos puestos.** Mira si la lista mide porcentaje o cantidad.\n3. **Crecer no es pagar bien ni dar empleo formal.** Una ocupación puede crecer y seguir siendo mal pagada o informal.\n4. **Muchas no son carreras sino especializaciones.** A «especialista en inteligencia artificial» se llega desde computación, estadística o ingeniería. No es una carrera con ese nombre.\n5. **Lo que más se pide no es una carrera.** Las empresas del informe ponen primero pensar con orden un problema; después, adaptarse a los cambios y trabajar con otros.\n\n### Poner un negocio en el Perú\n\nSegún el reporte GEM Perú 2025/2026:\n\n- El 12,8 % de los adultos está empezando un negocio o tiene uno de menos de tres años y medio.\n- El 5,3 % tiene un negocio que ya pasó los tres años y medio.\n- De quienes emprenden, 7 de cada 10 (71,6 %) dicen que empezaron porque no encontraban empleo.\n- 1 de cada 10 (9,9 %) espera dar trabajo a más de seis personas en cinco años.\n\nEmpezar porque no hay empleo es lo más común, y no tiene nada de malo: muchas familias viven de un negocio así. Lo que ayuda es prepararlo.\n\n### Antes de abrir\n\n1. **¿Qué sé hacer que alguien necesita?** Puede venir de una carrera, de un oficio o de años de práctica.\n2. **¿Quién me lo pagaría, y cuánto?** Pregúntaselo a quienes serían tus clientes, no a tus amigos.\n3. **¿Con qué empiezo y cuánto aguanto sin ganar?** Los primeros meses casi nunca dan ingresos estables.\n4. **¿Conozco a alguien que ya lo hizo?** Su experiencia ahorra errores.\n\nEstudiar y poner un negocio no se excluyen. Una formación te da algo que ofrecer, y trabajar un tiempo en el rubro te muestra cómo funciona por dentro.\n\n> Una lista de carreras del futuro es una pista. Ábrela antes de usarla.\n\n**Para tu viaje.** En el catálogo de ocupaciones, cada ocupación tiene «Cómo se llega aquí»: la familia de carreras que forma para ella y, en «También puedes llegar desde», otras familias. Es una guía, no una lista definitiva: a muchas ocupaciones se llega también por otros caminos.\n\n**Fuentes:** [Foro Económico Mundial (2025), The Future of Jobs Report 2025](https://www.weforum.org/publications/the-future-of-jobs-report-2025/digest/). [Mi Carrera (MTPE)](https://micarrera.trabajo.gob.pe/). GEM Perú 2025/2026, en [Andina (2026)](https://andina.pe/agencia/noticia-financiamiento-y-politicas-publicas-siguen-siendo-las-mayores-barreras-para-emprender-1080299.aspx) y [Gestión (2026)](https://gestion.pe/economia/emprendedores-pendientes-en-peru-8-de-cada-10-ven-oportunidades-pero-solo-2-las-toman-noticia/).', 'ESTUDIANTE'),
     ('F24', 'El pergamino', 'Lo que encontraste sobre el atril, en la sala de la luz del faro.', 'Decidir mi futuro', '> Quien llega hasta mí ya trae lo que vino a buscar.', 'ESTUDIANTE'),
-    ('FP01', 'Acompañar no es decidir', 'El rol de la familia en la elección: acompañar, informar y respetar; la decisión es de su hijo o hija.', 'Acompañar a mi hijo', 'Su hijo o hija va a tomar una de las decisiones más grandes de su vida, y usted va a estar al lado. La pregunta no es si influye, porque influye de todas maneras, sino cómo.\n\n### Lo que dice la evidencia\n\nLos estudios sobre familia y elección de carrera coinciden en algo: el apoyo de los padres, entendido como interés, conversación y respaldo, se asocia con jóvenes más seguros de sí mismos y con decisiones más maduras. Una revisión amplia de la investigación (Whiston y Keller, 2004) lo encontró en distintos países y edades. Un estudio reciente con 652 estudiantes de secundaria (Söner y Gültekin, 2024) muestra el mecanismo: cuando los hijos sienten apoyo, crece su confianza en sus propias capacidades, y con esa confianza sus planes se acercan más a lo que la familia espera, sin necesidad de imponerlos.\n\nEs decir: el camino más corto para que su hijo o hija tome en cuenta lo que usted piensa es que sienta que usted lo escucha.\n\n### Tres verbos\n\nEl programa de orientación vocacional del Ministerio de Educación resume el rol de la familia en tres acciones:\n\n| Verbo | Qué significa en la práctica |\n| --- | --- |\n| Acompañar | Estar disponible, preguntar, escuchar sin juzgar las dudas; no desaparecer ni ocupar todo el espacio |\n| Informar | Compartir lo que usted sabe del trabajo y de la vida, y ayudar a conseguir información que no tienen |\n| Respetar | Aceptar que la decisión final es de su hijo o hija, aunque no sea la que usted habría tomado |\n\n### Lo que ayuda y lo que no\n\n- Ayuda: preguntar «¿qué has pensado?» antes de decir lo que usted piensa.\n- Ayuda: contar su propia historia, incluidas las dudas y los cambios de rumbo.\n- Ayuda: acompañar a buscar datos (costos, instituciones, en qué consiste la carrera) en lugar de opinar de memoria.\n- No ayuda: decidir por él o ella «porque usted sabe lo que le conviene».\n- No ayuda: condicionar el cariño o el apoyo a una carrera en particular.\n- No ayuda: comparar con primos, vecinos o con lo que usted hizo a su edad.\n\n> Puede darles su amor, pero no sus pensamientos: ellos tienen los suyos. (Khalil Gibrán, *El profeta*)\n\n**Para su ruta.** Las actividades que siguen le proponen revisar sus propias expectativas, practicar cómo conversar y, al final, escribir una carta para su hijo o hija. Todo lo que usted lea aquí queda guardado en «Mis actividades».\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, taller con madres y padres. Whiston y Keller (2004), The influences of the family of origin on career development, The Counseling Psychologist. [Söner y Gültekin (2024), International Journal for Educational and Vocational Guidance](https://link.springer.com/article/10.1007/s10775-024-09658-7).', 'APODERADO'),
-    ('FP02', 'Lo que usted espera y lo que teme', 'Reconocer sus expectativas y temores sobre el futuro de su hijo o hija, y de dónde vienen, antes de transmitirlos.', 'Acompañar a mi hijo', 'Todos los padres esperan algo y temen algo para sus hijos. El problema no es tenerlos: es no saber que los tenemos y pasárselos sin darnos cuenta.\n\n### Un ejercicio de seis minutos\n\nEl taller del Ministerio de Educación para familias propone escribir, en seis minutos, tres expectativas y tres temores sobre el futuro de su hijo o hija. Hágalo en un papel, sin corregir. Luego mire cada línea y pregúntese:\n\n1. ¿De dónde viene esto? ¿De lo que yo viví, de lo que no pude hacer, de lo que escucho, de lo que veo en la familia?\n2. ¿Mi hijo o hija comparte esta expectativa o este temor? ¿Se lo he preguntado?\n3. ¿Cómo se lo he transmitido? ¿Con palabras, con silencios, con el gesto cuando menciona algo que no me gusta?\n\n### Las tres fuentes más comunes\n\n| Fuente | Suena como | Riesgo |\n| --- | --- | --- |\n| Lo que usted no pudo hacer | «Yo quería estudiar y no pude; él sí va a poder» | Que la carrera sea el sueño de usted, no el de él |\n| El miedo económico | «Que estudie algo que dé plata, que no pase lo que pasamos» | Descartar opciones viables por un prejuicio sobre el ingreso |\n| Lo que se valora alrededor | «En esta familia todos son…», «eso no es carrera» | Reducir las opciones a las conocidas en casa |\n\nNinguna de las tres es mala en sí. Querer que su hijo tenga seguridad económica es razonable. Lo que cambia las cosas es decirlo como preocupación propia («me da miedo que no te alcance») y no como veredicto («esa carrera no sirve»).\n\n### Cómo se transmite una angustia\n\nLos adolescentes leen a sus padres mejor de lo que los padres creen. Captan la cara, el tono, el tema que se cambia. Cuando perciben angustia, muchos hacen una de dos cosas: callan lo que piensan para no preocupar, o eligen lo que calma a la familia aunque no les interese. Las dos cuestan caro después.\n\n> Sus temores son válidos. Pero son suyos: su hijo o hija no tiene por qué cargarlos.\n\n**Para su ruta.** Guarde el papel. Más adelante, una de las conversaciones guiadas con su hijo o hija trata justamente de lo que cada uno espera del futuro.\n\n**Fuentes:** MINEDU (2013), cartilla, actividad 3, hoja «Mis expectativas y temores acerca del futuro de mi hijo/a» y preguntas para grupos.', 'APODERADO'),
-    ('FP03', 'Apoyar sin presionar', 'Las formas de presión que no parecen presión, y qué actitud sí ayuda a decidir.', 'Acompañar a mi hijo', "Casi ningún padre cree que presiona. La presión que daña rara vez es un grito: suele ser una frase repetida con cariño.\n\n### Tres tipos de comportamiento, tres resultados\n\nUna investigación con adolescentes (Dietrich y Kracke, 2009) distingue tres formas en que los padres se involucran en la decisión de carrera:\n\n| Comportamiento | Qué hacen los padres | Qué pasa con los hijos |\n| --- | --- | --- |\n| Apoyo | Se interesan, conversan, ayudan a buscar información, alientan a explorar | Exploran más y deciden con más seguridad |\n| Interferencia | Opinan sin que se lo pidan, insisten en una opción, critican las otras | Más indecisión y menos exploración |\n| Falta de involucramiento | No preguntan, no opinan, dejan todo «para que decida solo» | Tanta indecisión como con la interferencia |\n\nLa conclusión es útil: no se trata de intervenir menos, sino de intervenir de otra manera. Desentenderse tampoco ayuda.\n\n### Presión que no parece presión\n\n- Proyectar lo propio: «Yo siempre quise ser médico; tú tienes la oportunidad».\n- «Yo sé lo que te conviene»: la experiencia de usted es real, pero es de otro momento y de otra persona.\n- Fijarse en una sola aptitud: porque canta bien o desarma aparatos desde niño, «ya se sabe» lo que va a estudiar, y se cierran las demás puertas.\n- La comparación: «Mira a tu prima, ella sí sabe lo que quiere».\n- El apoyo condicionado: «Si estudias eso, cuenta conmigo; si no, arréglatelas».\n- La pregunta de todos los días: «¿Ya sabes qué vas a estudiar?» repetida cada semana se convierte en reclamo.\n\n### Lo que sí ayuda\n\n1. Preguntar abierto: «¿Qué te llama la atención de eso?» en lugar de «¿Estás seguro?».\n2. Separar la preocupación del juicio: «Me preocupa el costo» es distinto de «Esa carrera no da».\n3. Aceptar que explore opciones que a usted no le gustan. Explorar no es decidir.\n4. Ofrecer ayuda concreta: acompañar a una feria, buscar a alguien que ejerza esa ocupación, revisar costos juntos.\n5. Recordar que la indecisión a esta edad es normal. No es falta de carácter ni de responsabilidad.\n\n> Presionar acelera una respuesta; apoyar mejora la decisión.\n\n**Fuentes:** MINEDU (2013), cartilla, parte 2 («Actividades con padres y madres de familia») y actividad 3. Dietrich y Kracke (2009), Career-specific parental behaviors in adolescents' development, Journal of Vocational Behavior.", 'APODERADO'),
-    ('FP04', 'Cuando la familia descubre tarde', 'La historia de Gastón Acurio, el papel de su familia y las señales de que un hijo esconde lo que quiere.', 'Acompañar a mi hijo', 'Gastón Acurio estudió Derecho en Lima y luego en Madrid, con buenas notas. Lo que leía con amor no eran tratados jurídicos sino libros de cocina. Su padre, un ingeniero y político, lo supo recién en un almuerzo en España, cuando el hijo le confesó que soñaba con ser cocinero.\n\n### Tres papeles en una misma familia\n\n| Persona | Qué hizo | Qué efecto tuvo |\n| --- | --- | --- |\n| La madre | Notó desde niño la afición y la alentó, en silencio | Mantuvo viva la vocación, pero a escondidas |\n| El padre | No supo nada durante años; creía al hijo encaminado a la abogacía | Perdió la oportunidad de acompañar, y la sorpresa fue grande |\n| El hijo | Fingió hasta que no pudo más | Años en una carrera que no era la suya |\n\nEl padre, cuenta la historia, terminó inclinándose ante la vocación del hijo y nunca se arrepintió. Pero vale la pena mirar el costo: una vocación escondida por miedo a la reacción de la familia.\n\n### Por qué los hijos esconden\n\n- Porque intuyen que la respuesta será «eso no es carrera», «eso es un hobby», «eso es cosa de mujeres» o «de hombres».\n- Porque no quieren decepcionar, sobre todo cuando sienten que la familia ya invirtió ilusión en otra opción.\n- Porque la familia nunca preguntó y ellos nunca encontraron el momento.\n\nEn el Perú de los años ochenta la cocina «podía ser una afición, pero no una profesión». Hoy es una de las carreras más visibles del país. Lo que hoy parece una ocurrencia puede ser, en diez años, un oficio con mercado.\n\n### Señales de que su hijo o hija guarda algo\n\n- Cambia de tema cuando se habla del futuro, o responde siempre lo mismo.\n- Habla con entusiasmo de una actividad «de pasatiempo» y con desgano de «lo que va a estudiar».\n- Alguien más de la familia o del colegio sabe cosas que usted no.\n\nSi reconoce alguna, no la enfrente con un interrogatorio. Abra la puerta: «Si algún día quisieras hacer algo distinto a lo que hemos conversado, me gustaría saberlo».\n\n> Lo que su hijo no le cuenta no desaparece: solo se decide sin usted.\n\n**Una película para ver en familia.** El programa sugiere ver juntos *La sociedad de los poetas muertos* y conversar después: ¿qué esperaba cada padre de su hijo en la película?, ¿qué habrían hecho ustedes?\n\n**Fuentes:** MINEDU (2013), cartilla, actividad 12 y Anexo 12.2, «El sueño del chef» (texto de Mario Vargas Llosa, 2009).', 'APODERADO'),
-    ('FP05', 'Lo que cambió desde que usted eligió', 'Rutas, mercado, calidad de las instituciones, costos y becas: lo que hoy es distinto de cuando usted terminó el colegio.', 'Acompañar a mi hijo', 'Muchas ideas que se transmiten en casa sobre carreras son de hace veinte o treinta años. Algunas siguen valiendo; otras ya no. Esta ficha repasa cinco cosas que cambiaron.\n\n### Las rutas ya no son dos\n\nAdemás de la universidad y el instituto, hoy la educación técnica permite continuar en la universidad convalidando estudios, hay carreras en horario nocturno y a distancia, y las escuelas de las Fuerzas Armadas y la Policía pagan una asignación durante la formación. Solo tres de cada diez jóvenes pasan a la educación superior (Inei 2023, Minedu 2024), así que combinar estudio y trabajo o empezar por una ruta corta es una decisión frecuente y razonable.\n\n### El mercado tiene datos públicos\n\nEl Estado publica cuánto ganan los egresados de cada familia de carreras, en planilla, en Mi Carrera (MTPE). Dos cosas que sorprenden a muchas familias:\n\n| Lo que se creía | Lo que muestran los datos |\n| --- | --- |\n| Solo la universidad paga | Varias familias técnicas, como minería o ingeniería eléctrica, superan al promedio universitario al inicio |\n| Una carrera «segura» garantiza empleo | Menos de la mitad de los egresados trabaja en una ocupación vinculada a lo que estudió (Minedu y UNESCO, 2026) |\n| Con título hay trabajo formal | El 84,8 % de los ocupados de 14 a 24 años tiene empleo informal (INEI, abril 2025–marzo 2026); el título ayuda a entrar al empleo formal, pero no lo garantiza |\n\n### Hay instituciones que no están autorizadas\n\nDesde 2014, las universidades necesitan licencia de la Sunedu y los institutos, del Minedu. En el primer proceso, 46 universidades no la obtuvieron y sus estudiantes tuvieron que trasladarse. Antes de que su hijo o hija postule, verifique la licencia en gob.pe; toma cinco minutos.\n\n### Los costos van más allá de la pensión\n\nMatrícula por ciclo, materiales, transporte, alimentación y, si estudia en otra ciudad, vivienda. Una carrera privada de cinco años puede pasar los S/ 100 000; en una pública, el costo del primer año son los materiales, el transporte y los trámites. Pedir a su hijo o hija el total del primer año, y no solo la pensión, es la mejor conversación sobre dinero que pueden tener.\n\n### Hay becas del Estado\n\nBeca 18 ofrece para 2026 veinte mil becas integrales en diez modalidades; la ordinaria pide buen rendimiento en los dos últimos años de secundaria, condición de pobreza según el Sisfoh y menos de 22 años. Hay además becas de las propias instituciones y crédito educativo. El crédito es deuda: conviene calcular la cuota contra el ingreso real de los egresados jóvenes de esa carrera.\n\n> Su experiencia vale; los datos del mercado de hoy también. Juntos acompañan mejor que cualquiera de los dos solo.\n\n**Fuentes:** [Mi Carrera (MTPE)](https://micarrera.trabajo.gob.pe/). [Sunedu, consulta de licenciamiento](https://www.gob.pe/institucion/sunedu/tramites-y-servicios). [Pronabec, Beca 18 convocatoria 2026](https://www.gob.pe/institucion/pronabec/campa%C3%B1as/117075-beca-18-convocatoria-2026). [La República (2026), acceso a educación superior](https://larepublica.pe/opinion/2026/05/14/y-despues-de-la-secundaria-que-por-mision-educacion-hnews-266604). [INEI (2026), Comportamiento de los indicadores de mercado laboral a nivel nacional, abril 2025–marzo 2026, cuadros 1.20 y 1.21](https://www.inei.gob.pe/media/MenuRecursivo/boletines/empleo-nacional-i-trimestre-2026.pdf). Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú ([Andina](https://andina.pe/agencia/noticia-peru-tecnicos-superan-a-universitarios-trabajos-afines-a-sus-estudios-revela-unesco-1080082.aspx), [Radio Nacional](https://www.radionacional.gob.pe/noticias/nacional/profesionales-tecnicos-registran-mayor-insercion-laboral-en-ocupaciones-afines-a-su-formacion-segun-minedu-y-unesco)).', 'APODERADO'),
-    ('FP06', 'Cómo conversar con su hijo o hija', 'Escuchar antes de opinar, preguntas que abren y preguntas que cierran, y cómo funcionan las conversaciones guiadas.', 'Acompañar a mi hijo', 'La pregunta «¿ya sabes qué vas a estudiar?» es la más repetida en quinto de secundaria y la que menos información produce. Conversar sobre el futuro es una habilidad, y se puede practicar.\n\n### Escuchar primero\n\nLos adolescentes dejan de hablar de lo que les importa cuando cada vez que lo hacen reciben una opinión. El orden que funciona es: preguntar, escuchar hasta el final, pedir un ejemplo, y recién entonces decir lo que usted piensa, como opinión y no como veredicto.\n\n### Preguntas que abren y preguntas que cierran\n\n| Cierran | Abren |\n| --- | --- |\n| ¿Ya decidiste? | ¿Qué cosas te han llamado la atención últimamente? |\n| ¿Estás seguro? | ¿Qué te atrae de eso? ¿Qué te preocupa? |\n| ¿Y eso en qué vas a trabajar? | ¿Cómo sería un día normal en ese trabajo? ¿Qué te falta averiguar? |\n| ¿Por qué no mejor…? | ¿Qué otras opciones has mirado? ¿Qué te hizo descartarlas? |\n| Eso no da plata | ¿Has visto cuánto ganan al inicio? ¿Cómo lo pagaríamos? |\n\nLas de la derecha no son trucos: son preguntas cuya respuesta usted no conoce. Esa es la diferencia.\n\n### Cuatro reglas para una conversación que sirve\n\n1. Un tema por conversación, de quince o veinte minutos. Las conversaciones largas sobre «el futuro» agotan a los dos.\n2. Sin público. Ni delante de hermanos ni en una reunión familiar.\n3. Las dudas no se juzgan. «No sé» es una respuesta válida; se puede seguir con «¿qué te ayudaría a saberlo?».\n4. Termine con un acuerdo pequeño: averiguar un dato, visitar un lugar, hablar con alguien.\n\n### Las conversaciones guiadas\n\nLa plataforma le propone diez conversaciones con su hijo o hija, una por tema: lo que disfruta, lo que les gustaría mejorar a su alrededor, las ideas sobre las profesiones, el futuro que imaginan, lo que significa vivir bien, sus fortalezas, su trabajo, los cambios de rumbo, lo que hace posible un plan y cómo acompañarlo. Cada una tiene una pregunta para usted y una para su hijo o hija, que cada uno responde por su lado en la plataforma; luego ven la respuesta del otro y una guía para conversarla en casa. Se habilitan conforme su hijo o hija avanza en su camino, y usted las encuentra en Conversaciones.\n\n> Conversar no es convencer. Es enterarse de lo que su hijo o hija piensa, y que se entere de lo que usted siente.\n\n**Fuentes:** MINEDU (2013), cartilla, actividad 3 (taller 1) y actividad 12 (taller 2) con madres y padres de familia.', 'APODERADO'),
-    ('FP07', 'Si duda o cambia de opinión', 'Por qué dudar o cambiar es parte del proceso, qué emociones aparecen y cómo acompañar sin decidir por él o ella.', 'Acompañar a mi hijo', '«Ya no quiero estudiar eso» suena a retroceso. Casi siempre es lo contrario: la señal de que su hijo o hija está mirando en serio.\n\n### La indecisión es una fase\n\nEl programa del MINEDU lo plantea sin rodeos: la indecisión es una fase normal del proceso, incluso necesaria. Un estudio reciente con adolescentes (Mata-Correas y otros, 2025) distingue la indecisión propia de la edad, que se resuelve explorando, de la que se vuelve un problema porque la ansiedad o la presión la bloquean. La familia influye en cuál de las dos se instala.\n\n### Lo que se siente en casa\n\n| Lo que siente usted | Lo que suele sentir su hijo o hija |\n| --- | --- |\n| Preocupación por el tiempo y el dinero | Miedo a decepcionar |\n| Frustración («ya habíamos quedado en…») | Vergüenza por cambiar |\n| Inseguridad sobre si debió decir algo antes | Alivio al decirlo, y temor a la reacción |\n\nLas dos columnas son legítimas. El problema aparece cuando la primera se descarga sobre la segunda.\n\n### Cuatro situaciones, cuatro respuestas\n\n1. **«Ya no quiero la carrera que había elegido».** Antes de preguntar por qué, pregunte qué vio. Un cambio con información (habló con alguien, visitó, leyó) es un avance; uno sin información es una duda que hay que explorar, no reprimir.\n2. **«No sé qué quiero».** No llene el vacío con sugerencias. Pregunte qué ha descartado y por qué: casi siempre hay más claridad de la que parece.\n3. **«Quiero esperar un año».** Pregunte para qué. Un año con plan (trabajar, un curso corto, prepararse) es razonable; un año sin plan, no. Acuerden qué haría con ese tiempo.\n4. **«No ingresé».** No ingresar a la primera es común en las universidades públicas más demandadas. Lo que necesita es un plan para el siguiente intento, no un balance de lo que hizo mal.\n\n### Cuándo pedir ayuda\n\nSi la duda viene con semanas de mal dormir, aislamiento, llanto frecuente o abandono de lo que antes disfrutaba, ya no es un tema vocacional. Hable con la orientadora o la psicóloga del colegio; en el Perú, la ansiedad es el motivo más frecuente de atención en salud mental, y los adolescentes son uno de cada siete atendidos.\n\n> Un hijo que cambia de opinión frente a usted es un hijo que todavía le cuenta. Cuide eso.\n\n**Fuentes:** MINEDU (2013), cartilla, parte 2 (la indecisión como fase del proceso). [Mata-Correas, Hernández-Franco y Prieto-Ursúa (2025), Educación XX1](https://revistas.uned.es/index.php/educacionXX1/article/view/42209). [El Peruano (2022), atenciones de salud mental del Minsa](https://www.elperuano.pe/noticia/192010-minsa-pone-la-lupa-en-la-ansiedad).', 'APODERADO'),
-    ('FP08', 'Su carta y lo que sigue', 'Cómo escribir una carta que sirva, qué pasa después con las conversaciones, y qué puede ver de los resultados de su hijo o hija.', 'Acompañar a mi hijo', 'El taller del MINEDU para familias termina con un regalo: cada madre o padre escribe una acción concreta de apoyo al proyecto de vida de su hijo o hija. En la plataforma, ese regalo es una carta.\n\n### Una carta que sirve\n\nNo es un discurso ni una lista de consejos. Tres partes bastan:\n\n1. **Lo que ve en él o ella.** Una cualidad concreta, con un ejemplo que usted recuerde. No «eres inteligente» sino «cuando armaste el negocio de la kermés, nadie te lo pidió».\n2. **Lo que usted siente con este proceso.** Si tiene miedo, dígalo como suyo. Los hijos agradecen la honestidad más que la tranquilidad fingida.\n3. **Una acción concreta de apoyo.** Algo que usted hará: acompañar a la feria, sentarse a ver el presupuesto, buscar a alguien que trabaje en lo que le interesa, respetar la decisión aunque no sea la suya.\n\nEvite tres cosas: comparar con otros, condicionar el apoyo a una carrera, y usar la carta para decir qué debería estudiar.\n\n### Qué pasa después\n\n- Al guardar la carta se habilitan las conversaciones guiadas, que van apareciendo conforme su hijo o hija avanza.\n- Con su ruta completa, usted recibe el diploma «Conozco mi rol» y puede ver los resultados de los cuestionarios de su hijo o hija que la orientadora haya marcado como visibles, con una explicación de cómo leerlos.\n\n### Cómo tomar esos resultados\n\nUn resultado de intereses sugiere áreas para explorar; no dice qué carrera «le toca». Si una carrera que su hijo o hija quiere no aparece entre las afines, eso no la descarta: es un tema para conversar, no un argumento. Lo que vaya más allá de la explicación de la plataforma, consúltelo con la orientadora.\n\n> Su carta no decide nada. Dice que usted está. Eso es lo que su hijo o hija necesita leer.\n\n**Para su ruta.** La carta se escribe en Conversaciones, para el hijo o hija que elija, y puede editarla después. Al completar esta actividad, su ruta queda terminada.\n\n**Fuentes:** MINEDU (2013), cartilla, actividad 3 (cierre: el regalo) y parte 2 («Actividades con padres y madres de familia»).', 'APODERADO'),
+    ('FP01', 'Acompañar no es decidir', 'El lugar de la familia en la elección, lo que está en sus manos y las dudas más frecuentes de los padres.', 'Acompañar a mi hijo', "Su hijo o hija va a tomar una de las decisiones más grandes de su vida, y usted va a estar al lado. Esta ficha reúne lo que conviene tener a la mano: qué lugar ocupa la familia, qué puede aportar usted y qué hacer con las dudas que casi todos los padres tienen.\n\n### Usted influye de todas maneras\n\nNo existe la opción de no influir. Lo que usted dice, el gesto que pone y lo que calla le indican a su hijo o hija qué puede contarle y qué no. La investigación sobre familia y elección de carrera muestra tres formas de estar presente:\n\n| Lo que hace la familia | Lo que suele pasar con el hijo o la hija |\n| --- | --- |\n| Decide por él o ella | Le cuesta más decidir por su cuenta |\n| Se hace a un lado «para que decida solo» | También le cuesta más decidir |\n| Acompaña: se interesa, conversa, ayuda a averiguar | Explora más y se siente más capaz de decidir |\n\nEs decir: no se trata de intervenir menos, sino de intervenir de otra manera.\n\n### Lo que su hijo o hija recorre este año\n\nNadie lo decide por su hijo o hija: ni un cuestionario, ni el colegio, ni la plataforma. Lo que la plataforma hace es acompañarle por tres momentos.\n\n| Momento | Qué hace | Qué puede notar usted |\n| --- | --- | --- |\n| Conocerse | Repasa su historia y responde cuestionarios sobre sus intereses, sus habilidades sociales y sus inteligencias | Preguntas sobre su niñez o sobre el trabajo de usted |\n| Explorar | Revisa carreras, ocupaciones e instituciones | Opciones que aparecen y desaparecen de una semana a otra |\n| Decidir | Arma un plan principal y alternativas | Preguntas sobre dinero y sobre qué opina usted |\n\nQue cambie de idea mientras explora es lo esperable en esa etapa, no una señal de falta de seriedad.\n\n### Tres verbos\n\n| Verbo | Es | No es |\n| --- | --- | --- |\n| Acompañar | Estar disponible, preguntar y escuchar las dudas sin juzgarlas | Desaparecer del tema u ocupar todo el espacio |\n| Informar | Compartir lo que usted sabe del trabajo y de la vida, y ayudar a conseguir lo que no saben | Llegar con la respuesta ya elegida |\n| Respetar | Aceptar que la decisión final es de su hijo o hija, aunque no sea la que usted habría tomado | Callar lo que le preocupa o decir que está de acuerdo cuando no lo está |\n\n### Lo que está en sus manos\n\nUn estudio con cerca de 300 escolares y sus padres encontró cinco conductas de los padres en los hijos con más confianza para decidir. Lo que más pesó fue el interés y el respaldo, por encima de las acciones específicas sobre carreras:\n\n1. Interesarse por lo que a su hijo o hija le importa, no solo por lo que va a estudiar.\n2. Decirle que espera mucho de él o ella. Esperar algo bueno no es presionar; presionar es exigir una carrera en particular.\n3. Dejar que tome sus propias decisiones, también las pequeñas.\n4. Decirle que siente orgullo por él o ella, con un ejemplo concreto.\n5. Ayudarle a entender los resultados de sus cuestionarios cuando se los muestre: preguntar «¿te reconoces en eso?».\n\nTres aportes más, que no dependen de haber estudiado:\n\n- Contar su propia historia de trabajo: cómo empezó, qué cambió en el camino y qué habría querido saber a esa edad.\n- Abrir su red: «¿a quién conocemos que trabaje en eso?».\n- Decir con claridad qué puede aportar la familia en dinero y en tiempo, y mirar los costos juntos antes de descartar o de prometer.\n\n### Dudas frecuentes de los padres\n\n**¿Puedo dar mi opinión?** Sí. Ayuda darla después de escuchar, una vez, con su razón y como opinión: «a mí me preocupa…» y no «eso no sirve». Lo que desgasta es repetirla hasta que parezca una orden.\n\n**¿Y si elige algo que creo que no le conviene?** Dígale qué le preocupa exactamente y propóngale averiguarlo juntos: qué se hace en ese trabajo, cuánto cuesta estudiarlo, cuánto se gana al empezar. A veces el dato le da la razón a usted y a veces a su hijo o hija. En los dos casos, la decisión queda mejor informada.\n\n**¿Y si no me cuenta nada?** No lo convierta en interrogatorio. Deje la puerta abierta con una frase y vuelva a intentarlo otro día: «cuando quieras contarme qué estás pensando, me interesa». Contarle algo suyo primero suele abrir más que preguntar.\n\n**¿Y si no sé nada de carreras?** No hace falta. Lo que más pesa es su interés y su confianza. La información se consigue entre los dos. Y al revés: haber estudiado una carrera no vuelve a nadie experto en el camino de su hijo o hija.\n\n**¿No es muy joven para decidir algo así?** Es joven, y por eso no decide a solas ni de una sola vez. Lo que elige ahora es un primer paso que se puede revisar. Acompañar es lo que hace que una decisión tomada a esa edad sea más pensada.\n\n**¿Y si la familia no puede pagar lo que quiere estudiar?** Dígalo pronto y con números. Qué quiere estudiar lo decide su hijo o hija; cuánto puede aportar la familia lo decide la familia. Con ese dato se buscan caminos: una institución pública, una beca, estudiar y trabajar, o empezar por una carrera técnica y continuar después.\n\n> La decisión es de su hijo o hija. Que no la tome a solas depende de usted.\n\n**Para su ruta.** Esta ficha queda en Mis actividades. Al completar su ruta podrá ver los resultados de los cuestionarios de su hijo o hija que la orientadora haya marcado como visibles.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, taller con madres y padres. Whiston y Keller (2004), The influences of the family of origin on career development, The Counseling Psychologist. Dietrich y Kracke (2009), Career-specific parental behaviors in adolescents' development, Journal of Vocational Behavior. Keller y Whiston (2008), The role of parental influences on young adolescents' career development, Journal of Career Assessment. [Söner y Gültekin (2024), International Journal for Educational and Vocational Guidance](https://link.springer.com/article/10.1007/s10775-024-09658-7). Los tres aportes finales y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.", 'APODERADO'),
+    ('FP02', 'Lo que usted espera y lo que teme', 'Reconocer sus expectativas y temores sobre el futuro de su hijo o hija, y de dónde vienen, antes de transmitirlos.', 'Acompañar a mi hijo', 'Todos los padres esperan algo para sus hijos y temen algo. No es un defecto: es parte de quererlos. Lo que conviene es saber qué espera uno y qué teme, porque los hijos lo perciben aunque nunca se diga.\n\n### El ejercicio, paso a paso\n\n1. En un papel, escriba tres cosas que espera y tres que teme sobre el futuro de su hijo o hija. Unos seis minutos, sin corregir.\n2. Al lado de cada línea, anote de dónde viene (la tabla de abajo ayuda).\n3. Pregúntese de cada una: ¿mi hijo o hija la comparte?, ¿se lo he preguntado?, ¿cómo se la he transmitido: con palabras, con silencios, con un gesto?\n4. Elija una y dígala en casa como deseo o como preocupación suya, y pregunte: «¿tú cómo lo ves?».\n\n### De dónde viene lo que uno espera y teme\n\n| De dónde viene | Cómo suena | Qué conviene revisar |\n| --- | --- | --- |\n| Lo que usted no pudo hacer | «Yo quería estudiar y no pude; él sí va a poder» | Si el sueño es de su hijo o hija, o es el suyo |\n| Lo que a usted le costó | «Que estudie algo que dé plata, que no pase lo que pasamos» | Si el temor se apoya en datos de hoy o en lo que vivió entonces |\n| Lo que a usted le funcionó | «A mí me fue bien con esto; a ti también te va a ir bien» | Si lo que a usted le gusta también va con él o ella |\n| Lo que se dice alrededor | «En esta familia todos son…», «eso no es carrera» | Si es algo que usted averiguó o algo que escuchó |\n\nNinguna de las cuatro es mala en sí. En un experimento con 73 padres, quienes recordaron sueños propios que no pudieron cumplir deseaban después con más fuerza que su hijo los cumpliera, sobre todo si lo veían como una parte de sí mismos. No es un defecto de carácter: es algo que le pasa a casi cualquiera, y por eso conviene mirarlo.\n\n### Esperar mucho no es presionar\n\nNo se trata de dejar de esperar. Un estudio que siguió a familias peruanas de la ciudad y del campo encontró que la mayoría de padres y de hijos esperaba llegar a la educación superior, y que lograrlo dependía sobre todo del apoyo de la familia. La diferencia está en qué se espera.\n\n| Expectativa que acompaña | Expectativa que encierra |\n| --- | --- |\n| «Quiero que estudies y que te vaya mejor que a mí» | «Tienes que ser ingeniera» |\n| «Espero que termines lo que empieces» | «En esta casa nadie deja una carrera» |\n| «Quiero que puedas vivir de tu trabajo» | «Eso no da plata, ni lo pienses» |\n| «Me gustaría que consideres lo que yo conozco» | «Vas a estudiar lo mismo que yo» |\n\nLa primera columna habla de su hijo o hija y deja abierto el camino. La segunda ya trae el camino elegido.\n\n### El mismo temor, dicho de dos maneras\n\n| Como veredicto | Como preocupación propia |\n| --- | --- |\n| «Esa carrera no sirve» | «Me preocupa que te cueste encontrar trabajo. ¿Vemos cómo les va a los que egresan?» |\n| «No vas a poder con eso» | «Me da miedo que se te haga muy pesado. ¿Qué cursos lleva?» |\n| «Eso está muy lejos, ni hablar» | «Me cuesta pensar que te vayas. Cuéntame por qué allá» |\n| «Eso es muy caro, olvídalo» | «No sé si nos alcanza. ¿Sacamos la cuenta de cuánto sería?» |\n| «Acuérdate de cómo le fue a tu tío» | «Me da miedo que te pase lo que a tu tío. ¿Vemos cómo es hoy?» |\n\nCuando un hijo percibe la angustia de sus padres sin que nadie la nombre, suele hacer una de dos cosas: callar lo que piensa para no preocupar, o elegir lo que tranquiliza a la familia aunque no le interese. Nombrar el temor le quita ese peso.\n\n### Dudas frecuentes de los padres\n\n**¿Está mal querer una carrera en particular para mi hijo o hija?** No. Puede decirla, con sus razones, como una opción más sobre la mesa. Lo que conviene evitar es que sea la única que se pueda nombrar en casa.\n\n**¿Y si mi temor resulta cierto?** Puede serlo. Por eso sirve contrastarlo con datos de hoy: cuánto se gana al empezar, cuánto cuesta, dónde se trabaja. Si los datos le dan la razón, su hijo o hija los habrá visto por su cuenta, y eso pesa más que una advertencia. Y si aun así quiere seguir, usted puede decirle que no le convence y acompañar igual: acompañar no es estar de acuerdo.\n\n**¿Le cuento lo que yo no pude hacer?** Sí, como historia suya. «Yo quise estudiar y no pude» acerca; «por eso tú tienes que…» carga.\n\n> Sus temores son válidos. Dichos como suyos, acompañan; dichos como veredicto, pesan.\n\n**Para su ruta.** Esta ficha queda en Mis actividades, para volver al ejercicio cuando quiera.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, hoja «Mis expectativas y temores acerca del futuro de mi hijo/a» y preguntas para grupos. [Brummelman y otros (2013), My child redeems my broken dreams, PLoS ONE](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065360). [GRADE y Niños del Milenio (2014), «Yo sé que va a ir más allá, va a continuar estudiando»](https://repositorio.grade.org.pe/handle/20.500.12820/267). Las tablas de frases y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.', 'APODERADO'),
+    ('FP03', 'Apoyar sin presionar', 'Las formas de presión que no parecen presión, y qué actitud sí ayuda a decidir.', 'Acompañar a mi hijo', "Casi ningún padre siente que presiona, y casi ninguno quiere hacerlo. La presión que pesa rara vez es un grito: suele ser una frase dicha con cariño, muchas veces. Esta ficha ayuda a verla y a decir lo mismo de otra forma.\n\n### Tres formas de estar presente\n\n| Forma | Cómo se ve | Con qué se asocia en los hijos |\n| --- | --- | --- |\n| Apoyo | Se interesa, conversa, anima a explorar, ayuda a conseguir información | Más exploración de opciones |\n| Interferencia | Insiste en una opción, opina sin que se lo pidan, descalifica las otras | Más dificultades para decidir |\n| Falta de involucramiento | No pregunta ni opina; deja el tema «para que decida solo» | Más dificultades para decidir |\n\nNo se trata de intervenir menos, sino de intervenir de otra manera. Hacerse a un lado tampoco ayuda. Y las tres pueden convivir en la misma casa: un padre puede apoyar mucho y, a la vez, insistir.\n\n### Qué convierte el interés en presión\n\nCasi siempre es una de estas tres cosas:\n\n- **Repetir.** La misma pregunta, cada semana o cada día.\n- **Comparar.** Con un primo, con una vecina, con lo que usted hacía a esa edad.\n- **Condicionar.** Atar el apoyo, el dinero o el cariño a una carrera.\n\n### Seis frases y otra forma de decirlas\n\n| Lo que se dice | Lo que busca | Otra forma de buscarlo |\n| --- | --- | --- |\n| «¿Ya sabes qué vas a estudiar?», cada semana | Que no se le pase el tiempo | «¿Qué has averiguado estos días? ¿Te ayudo con algo?» |\n| «Mira a tu primo, él ya sabe» | Animar | «¿Qué te falta saber para tenerlo más claro?» |\n| «Tú eres para los números, ya está claro» | Reconocer un talento | «Los números se te dan bien. ¿Qué te gustaría hacer con eso? ¿Y qué más te gusta?» |\n| «Si estudias eso, cuenta conmigo» | Cuidar el esfuerzo de la familia | «Cuenta conmigo. Veamos juntos cuánto puede aportar la familia» |\n| «Yo sé lo que te conviene» | Evitarle un error | «Yo lo veo así, por esto. ¿Tú cómo lo ves?» |\n| «Yo no me meto, tú decide» | Respetar | «Decides tú, y yo quiero enterarme de lo que vas pensando» |\n\n### Cómo darse cuenta\n\nSeñales de que su interés está llegando bien:\n\n- Le cuenta cosas del tema sin que usted pregunte.\n- Nombra opciones aunque sepa que a usted no le convencen.\n- Le pide ayuda para averiguar algo.\n\nSeñales de que puede estar llegando como presión. La más clara no es una discusión, sino un silencio:\n\n- Cambia de tema o sale de la habitación cuando se habla del futuro.\n- Responde siempre lo mismo: «todavía», «no sé», «ya veré».\n- Dice lo que usted quiere oír y no da detalles.\n- Usted se entera por otra persona de lo que le interesa.\n\n### Lo que no es presión\n\n- **Recordar una fecha real.** Las inscripciones, los exámenes y las becas tienen plazos. «La inscripción cierra pronto, ¿vemos qué necesitas?» es información.\n- **Decir cuánto puede aportar la familia.** Es un dato para planear. Se vuelve presión cuando el aporte depende de una carrera en particular.\n- **Dar su opinión.** Una vez, con su razón y después de escuchar.\n\n### Cuando la presión llega de afuera\n\nAbuelos, tíos y vecinos preguntan «¿y tú qué vas a estudiar?» en cada reunión, y a veces opinan sin que nadie se lo pida. Usted puede bajar ese peso con una frase, delante de su hijo o hija: «todavía lo está viendo, y va bien».\n\n### Dudas frecuentes de los padres\n\n**¿Y si no hace nada y se le pasa el tiempo?** Pregunte por pasos y no por la decisión. Acuerden uno pequeño con fecha, como averiguar cuánto cuesta una carrera o conversar con alguien que la ejerce, y ofrézcase a acompañarle en ese paso.\n\n**¿Y si creo que ya presioné?** Se puede decir. «Creo que te he estado insistiendo mucho. Quiero saber qué estás pensando tú» repara más que dejar de hablar del tema.\n\n**¿Dejar que decida solo no es respetarle?** Respetar es aceptar su decisión, no ausentarse mientras la toma. Puede decirle que decide él o ella y, a la vez, que usted quiere enterarse.\n\n**¿Y si casi no tengo tiempo?** Alcanza con poco: una pregunta a la semana y ganas de escuchar la respuesta. Pesa más que usted pregunte que cuánto sepa del tema.\n\n> Presionar apura una respuesta. Acompañar mejora la decisión.\n\n**Para su ruta.** Esta ficha queda en Mis actividades.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, parte 2 («Actividades con padres y madres de familia») y actividad 3. [Dietrich y Kracke (2009), Career-specific parental behaviors in adolescents' development, Journal of Vocational Behavior](https://doi.org/10.1016/j.jvb.2009.03.005). La tabla de frases, las señales y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.", 'APODERADO'),
+    ('FP04', 'Lo que no se dice en casa', 'Por qué los hijos callan lo que quieren, cómo notarlo y cómo dejar la puerta abierta.', 'Acompañar a mi hijo', 'Hay hijos que quieren algo y no lo dicen en casa. No porque desconfíen de sus padres, sino porque ya imaginan la respuesta. Esta ficha reúne lo que ayuda a que se lo cuenten a tiempo.\n\n### Usted sabe de su hijo o hija lo que le cuenta\n\nLo que los padres saben de sus hijos adolescentes viene sobre todo de lo que ellos deciden contar, más que de preguntar o de vigilar. Y lo que deciden contar depende mucho de cómo les fue la última vez.\n\n| Cuando cuenta algo y usted… | Lo que su hijo o hija aprende |\n| --- | --- |\n| Se interesa y pregunta más | «Vale la pena contarle» |\n| Lo minimiza: «eso es un pasatiempo» | «Mejor me lo guardo» |\n| Se alarma o da un sermón | «Mejor se lo digo cuando ya esté decidido» |\n| Lo usa después en una discusión | «No vuelvo a contarle» |\n\nEn un seguimiento a 982 adolescentes, cuando los padres reaccionaban mal a algo que el hijo contaba, él se sentía más controlado y menos cercano a ellos, y después contaba menos y ocultaba más. Cuando reaccionaban bien, se sentía más cercano y contaba más.\n\n### Por qué callan\n\n- Porque ya imaginan la respuesta: «eso no es carrera», «eso es un pasatiempo», «eso no es para ti».\n- Porque no quieren decepcionar, sobre todo si sienten que la familia ya puso su ilusión en otra cosa.\n- Porque todavía no lo tienen claro, y creen que solo se puede contar lo que ya está decidido.\n- Porque nunca hubo un momento: nadie preguntó y no supieron cómo empezar.\n\nCallar no es mentir ni desconfiar de usted. Casi siempre es cuidarse de una respuesta, o cuidarlo a usted de una preocupación.\n\n### Señales de que puede estar guardando algo\n\n- Cambia de tema cuando se habla del futuro, o responde siempre lo mismo.\n- Habla con entusiasmo de algo «de pasatiempo» y con desgano de «lo que va a estudiar».\n- Alguien más de la familia o del colegio sabe cosas que usted no.\n\nNo todo silencio es un secreto. A veces todavía no hay nada decidido, y «no sé» es la respuesta honesta.\n\n### Cómo dejar la puerta abierta\n\nFrases que abren:\n\n- «Si algún día quisieras algo distinto de lo que hemos hablado, me gustaría saberlo.»\n- «No tienes que tenerlo claro para contármelo.»\n- «Prometo escuchar primero y opinar después.»\n\nCuando por fin se lo cuente:\n\n1. **Agradezca que se lo diga.** Antes de cualquier otra cosa. Contarlo le costó.\n2. **Pregunte antes de opinar.** Qué le atrae, desde cuándo, qué ha averiguado.\n3. **No decidan nada ese día.** Dígale que quiere pensarlo y volver a conversar.\n\nLo que no ayuda es salir a buscar: revisar su celular o interrogar a sus amigos. Si usted lo descubre así, su hijo o hija aprende a esconder mejor, no a contar.\n\n### Dudas frecuentes de los padres\n\n**¿Y si lo que me cuenta no me gusta?** Interesarse no le obliga a estar de acuerdo. Puede decir lo que piensa, con sus razones, después de haber entendido qué quiere y por qué. Lo que conviene cuidar es que haberlo contado no le salga caro.\n\n**¿Está mal que yo prefiera un camino que me parece más seguro?** No. La seguridad es una razón tan válida como el gusto, y más cuando la familia no tiene mucho margen para un error. Dos cosas ayudan: revisar con datos de hoy si lo que parece seguro lo es, y decirlo como su preferencia, con sus razones, sin que sea lo único que se puede nombrar en casa.\n\n**¿Y si se lo contó a otra persona y no a mí?** Duele, y no es un rechazo. Muchas veces se ensaya primero con quien no se puede decepcionar: un tío, una profesora, un amigo. Agradezca a esa persona y no le reproche a su hijo o hija el orden.\n\n**¿No tengo derecho a saber?** Tiene derecho a interesarse y a preguntar. Lo que no se puede exigir es la confianza: esa se da cuando contar resulta seguro.\n\n**¿Y si ya me cuenta todo?** Cuídelo. La prueba llega el día en que le cuente algo que a usted no le guste: si ese día reacciona igual que siempre, va a seguir contándole.\n\n**¿Y si creo que ya cerré la puerta?** Se puede decir: «Creo que cuando me contabas cosas no siempre te escuché bien. Me gustaría saber qué estás pensando ahora». Lo que se cerró de a pocos se abre igual, de a pocos.\n\n### Una película para ver en familia\n\nLa sociedad de los poetas muertos. Después pueden conversar: ¿qué esperaba cada padre de su hijo en la película?, ¿qué habrían hecho ustedes?\n\n> Lo que su hijo o hija no le cuenta no desaparece: solo se decide sin usted.\n\n**Para su ruta.** Esta ficha queda en Mis actividades.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 12 y Anexo 12.2. Stattin y Kerr (2000), Parental monitoring: a reinterpretation, Child Development. [Tilton-Weaver y otros (2010), Open up or close down: how do parental reactions affect youth information management?, Journal of Adolescence](https://www.pubmed.gov/19716171/). Los dos estudios tratan de lo que los adolescentes cuentan de su vida diaria; aquí se aplica a lo que cuentan de su futuro. Las señales, las frases y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.', 'APODERADO'),
+    ('FP05', 'El panorama de hoy', 'Ingresos, empleo, licencias, costos y becas: las cifras de hoy y dónde mirar cada una.', 'Acompañar a mi hijo', 'Usted conoce el mundo del trabajo mejor que su hijo o hija. Lo que puede haber cambiado son los datos: qué se estudia, cuánto cuesta, cuánto se gana. Esta ficha reúne las cifras de hoy y dónde mirar cada una.\n\n### Universidad e instituto\n\n| Lo que muestran los datos | Qué quiere decir |\n| --- | --- |\n| En 18 de 22 familias de carreras, quien estudió en la universidad gana más al inicio | Como regla general, la universidad paga más |\n| La mitad de las familias universitarias paga menos de S/ 3 100 al inicio; la mitad de las de instituto, menos de S/ 2 600 | La diferencia existe, y es menor de lo que suele creerse |\n| La familia de instituto mejor pagada (minería, metalurgia y petróleo, S/ 6 804) supera a casi todas las universitarias | Depende de la familia de carreras, no solo del tipo de institución |\n| Un instituto dura 2 o 3 años; una universidad, 5 | Quien va al instituto empieza a ganar antes |\n\nUn camino no cierra el otro. Muchas universidades reconocen parte de lo estudiado en un instituto; cuánto reconocen lo decide cada universidad, y conviene preguntarlo antes de matricularse.\n\nLos ingresos son de egresados de 18 a 29 años con empleo en planilla. Son de la familia de carreras, no de una carrera exacta, y cambian por departamento.\n\n### Un título ayuda, y no asegura\n\n- De cada diez jóvenes de 14 a 24 años que trabajan, más de ocho tienen un empleo informal (84,8 %). Entre todas las edades, siete de cada diez (69,8 %).\n- Menos de la mitad de los egresados trabaja en algo vinculado a lo que estudió: el 44 % de los técnicos y el 38,4 % de los universitarios.\n- Los sueldos que se publican por carrera son de quienes consiguieron empleo en planilla. No todos lo consiguen, ni lo consiguen pronto.\n- Una carrera muy pedida por las empresas no es empleo seguro si también es la que más gente estudia.\n\nLo que hace más seguro un camino, más que el nombre de la carrera: dónde se estudia, si tiene prácticas, qué tanto se pide en su región y que su hijo o hija la termine.\n\n### Antes de pagar la primera cuota\n\n1. **Que pueda dar un título válido.**\n   - Universidad: búsquela en la lista de universidades licenciadas de la Sunedu, en gob.pe, y revise también la sede. Sin licencia, se descarta.\n   - Instituto: solo dos de cada diez tienen licencia. Si no está en la lista del Minedu, no lo descarte sin preguntar: pida la resolución con la que funciona y en qué va su licenciamiento. Si no pueden mostrarle ninguna resolución, eso sí es motivo para descartarlo.\n2. **Cuánto cuesta el primer año completo.** Matrícula por ciclo, pensión, materiales, pasajes, comida y, si es en otra ciudad, vivienda. La admisión también se paga.\n\nUna cuenta de ejemplo:\n\n|  | Privada | Pública |\n| --- | --- | --- |\n| Pensión | S/ 1 800 al mes | No hay |\n| Matrícula | S/ 600 por ciclo | Un pago bajo |\n| Materiales y pasajes | S/ 2 100 al año | S/ 2 100 al año |\n| Primer año | Cerca de S/ 21 300 | Cerca de S/ 2 100 |\n| Cinco años | Más de S/ 100 000 | Cerca de S/ 10 500 |\n\nSon montos de ejemplo. Los reales están en la página de cada institución.\n\n### Si el dinero es el límite\n\n| Camino | Qué conviene saber |\n| --- | --- |\n| Institución pública | No se paga pensión. Ingresar es más difícil, y se pagan igual la admisión, los materiales, los pasajes y la comida |\n| Beca 18 | Para jóvenes con buen rendimiento y pocos recursos. El número cambia mucho: 20 000 becas para 2026 y 6 000 para 2027 |\n| Becas de la institución | Por rendimiento, deporte o situación económica. Se piden en la propia institución, y muchas se pierden si baja el promedio |\n| Estudiar y trabajar | Toma más tiempo, evita deuda y deja experiencia |\n| Crédito educativo | Es una deuda. Antes de firmar, compare la cuota con lo que ganan al inicio los egresados de esa carrera |\n\nSobre Beca 18:\n\n- **Cuándo.** Se postula el año anterior, en quinto de secundaria o ya con el colegio terminado. Para estudiar en 2027, la inscripción cerró en octubre de 2026, con el examen de preselección en noviembre.\n- **Para quién.** La modalidad ordinaria pide hogar en situación de pobreza o pobreza extrema, menos de 22 años y tercio superior en los dos últimos grados de secundaria. Hay otras modalidades, con requisitos propios.\n- **Cómo.** La inscripción es gratuita y por internet, en la página del Pronabec. Nadie cobra por postular.\n\n### Dónde mirar cada dato\n\n- **Ingresos por carrera.** Pídale a su hijo o hija que le muestre, en el catálogo de la plataforma, «Cuánto ganan sus egresados» de la carrera que le interesa. También están en Mi Carrera, del Ministerio de Trabajo.\n- **Licencia de una universidad.** Lista de la Sunedu, en gob.pe.\n- **Licencia de un instituto.** Lista del Minedu, en gob.pe.\n- **Costos y admisión.** La página oficial de cada institución.\n- **Becas.** La página del Pronabec.\n\n### Dudas frecuentes de los padres\n\n**Entonces, ¿le digo que vaya a la universidad?** Puede decirle que es lo que usted prefiere, y por qué. Antes, miren juntos la familia de carreras que le interesa: en la mayoría paga más la universidad, y en algunas no.\n\n**¿Y si la carrera que quiere paga poco?** Es un dato para conversar, no un veto. Sirve preguntar qué ocupaciones tiene esa carrera, dónde se estudia mejor y qué otra carrera cercana le atrae. Un promedio es de otras personas: no dice cuánto va a ganar su hijo o hija.\n\n**¿Vale la pena endeudarse para que estudie?** Depende de la cuenta. Compare la cuota mensual con lo que ganan al inicio los egresados de esa carrera, y pregunte cuánto devolvería en total. Si la cuota se lleva buena parte de ese sueldo, conviene mirar antes los otros caminos.\n\n> Su experiencia vale, y los datos de hoy también. Juntos acompañan mejor que cualquiera de los dos por separado.\n\n**Para su ruta.** Esta ficha queda en Mis actividades. Varias cifras cambian cada año: confírmelas en la fuente antes de decidir.\n\n**Fuentes:** Catálogo de la plataforma, con datos de Ponte en Carrera y [Mi Carrera (MTPE)](https://micarrera.trabajo.gob.pe/). [INEI (2026), Comportamiento de los indicadores de mercado laboral a nivel nacional, abril 2025–marzo 2026](https://www.inei.gob.pe/media/MenuRecursivo/boletines/empleo-nacional-i-trimestre-2026.pdf). Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú. Ley N.° 30220 y Ley N.° 30512. [Sunedu, trámites y servicios](https://www.gob.pe/institucion/sunedu/tramites-y-servicios). [Pronabec, Beca 18](https://www.pronabec.gob.pe/beca-18/). La lista de lo que hace más seguro un camino y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.', 'APODERADO'),
+    ('FP06', 'Cómo conversar con su hijo o hija', 'Escuchar antes de opinar, preguntas que abren y preguntas que cierran, y cómo funcionan las conversaciones guiadas.', 'Acompañar a mi hijo', 'Conversar sobre el futuro con un hijo o una hija es una habilidad, y se aprende practicando. Esta ficha reúne el orden que ayuda, preguntas para empezar y qué hacer cuando la conversación se traba.\n\n### El orden que funciona\n\n1. **Pregunte algo que no sabe.** «¿Qué te llamó la atención de eso?»\n2. **Escuche hasta el final.** Sin completar la frase ni corregir a mitad de camino.\n3. **Devuelva lo que entendió.** «O sea que te gustó cómo organizaba todo». Si entendió mal, se lo va a decir.\n4. **Pida un ejemplo.** «¿Qué más hacía?», «¿cómo fue esa vez?».\n5. **Diga lo que usted piensa.** Como algo suyo y con una propuesta: «a mí me preocupa… ¿lo vemos juntos?».\n\nEl orden no le quita la palabra: la pone al final, que es donde más se escucha.\n\n### Preguntas que piden defenderse y preguntas que piden contar\n\n| Piden defenderse | Piden contar |\n| --- | --- |\n| ¿Ya decidiste? | ¿Qué cosas te han llamado la atención últimamente? |\n| ¿Estás seguro? | ¿Qué te atrae de eso? ¿Qué te preocupa? |\n| ¿Y eso en qué vas a trabajar? | ¿Cómo te imaginas un día normal en ese trabajo? |\n| ¿Por qué no mejor…? | ¿Qué otras opciones has mirado? ¿Qué te hizo dejarlas? |\n| Eso no da plata | ¿Has visto cuánto ganan al empezar? ¿Lo miramos juntos? |\n\nLas de la derecha no son un truco: son preguntas cuya respuesta usted de verdad no conoce.\n\n### Preguntas pequeñas, para cuando la respuesta es «no sé»\n\n- ¿Qué curso se te pasa más rápido?\n- ¿Qué video o qué serie viste hasta el final esta semana?\n- ¿Qué es lo último que aprendiste sin que nadie te lo pidiera?\n- ¿A quién conoces que tenga un trabajo que te parezca interesante?\n- Si tuvieras una tarde libre y sin celular, ¿qué harías?\n\n«No sé» es una respuesta honesta, y casi siempre es la respuesta a una pregunta demasiado grande.\n\n### Lo que rodea a una buena conversación\n\n- Un tema por vez, de quince o veinte minutos.\n- Sin público: ni delante de los hermanos ni en una reunión familiar.\n- No tiene que ser sentados frente a frente. Muchos hijos hablan más mientras hacen otra cosa a su lado: cocinar, caminar, ir en el carro.\n- Termine con algo pequeño: averiguar un dato, visitar un lugar, conversar con alguien que trabaje en eso.\n\n### Las conversaciones guiadas\n\nCuando termine su ruta se le abre una serie de temas para conversar con su hijo o hija. En uno, él o ella le pregunta por algo de su trabajo que quizá nunca le contó; en otro, le dice cómo quiere que usted lo acompañe. Los demás los descubre al entrar.\n\n1. Se abren al terminar su ruta, en Conversaciones. Su hijo o hija va abriendo los temas con su avance; usted puede adelantar sus respuestas.\n2. Cada uno responde por separado, en su pantalla.\n3. Con las dos respuestas, ve lo que respondió el otro y recibe una guía para conversarlo en casa.\n\nResponder en la plataforma no es conversar. La conversación pasa en casa; la plataforma solo le da por dónde empezar.\n\n### Dudas frecuentes de los padres\n\n**¿Y si la conversación termina en discusión?** Córtela a tiempo: «Mejor seguimos otro día». Y vuelva, otro día, con una pregunta y no con el tema donde se quedaron.\n\n**¿Y si yo hablo mucho y no me doy cuenta?** Pruebe una regla simple para una conversación: dos preguntas antes de cada opinión.\n\n**¿Y si no quiere hablar conmigo de esto?** No lo fuerce. Dígale que el tema le interesa y que está disponible, y busque un momento de costado, mientras hacen otra cosa. A veces ayuda empezar contando algo suyo.\n\n**¿Tengo que estar de acuerdo con lo que me cuente?** No. Puede decir lo que piensa. Lo que cambia el resultado es el orden: primero entender, después opinar.\n\n> Conversar no es convencer. Es enterarse de lo que su hijo o hija piensa, y que se entere de lo que usted siente.\n\n**Para su ruta.** Esta ficha queda en Mis actividades.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3 (taller 1) y actividad 12 (taller 2) con madres y padres de familia. Miller y Rollnick (2013), Motivational interviewing: helping people change, tercera edición (preguntas abiertas y devolver lo escuchado). El orden, las preguntas pequeñas y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.', 'APODERADO'),
+    ('FP07', 'Si duda o cambia de opinión', 'Por qué dudar o cambiar es parte del proceso, qué emociones aparecen y cómo acompañar sin decidir por él o ella.', 'Acompañar a mi hijo', '«Ya no quiero estudiar eso» suena a retroceso. Muchas veces es lo contrario: la señal de que su hijo o hija está mirando en serio. Esta ficha reúne lo que ayuda a acompañar una duda sin apurarla ni dejarla sola.\n\n### Las dos caras del mismo momento\n\n| Lo que puede sentir usted | Lo que suele sentir su hijo o hija |\n| --- | --- |\n| Preocupación por el tiempo y el dinero | Miedo a decepcionar |\n| Fastidio: «ya habíamos quedado en…» | Vergüenza por cambiar |\n| Duda sobre si debió decir algo antes | Alivio al decirlo, y temor a la reacción |\n\nLas dos columnas son legítimas. Lo que conviene cuidar es que la primera no caiga encima de la segunda.\n\nNo haber decidido todavía es lo normal a esta edad: es el momento en que se explora. Se resuelve con información y con tiempo.\n\n### Busque lo que no cambia\n\nCuando las opciones cambian seguido, mire qué tienen en común: qué haría su hijo o hija cada día en cada una. Enfermería, Psicología y Trabajo Social son tres carreras distintas y una misma búsqueda, la de trabajar de cerca con personas. Si encuentra eso que se mantiene, dígaselo: «me he dado cuenta de que en todo lo que te ha gustado hay…».\n\n### Antes de responder, ubique la duda\n\n| De dónde viene | Cómo suena | Qué ayuda desde casa |\n| --- | --- | --- |\n| Le falta información | «No sé qué se hace en eso», «no sé cuánto cuesta» | Averiguar juntos: un dato, una visita, una conversación con alguien que trabaje en eso |\n| Hay voces que chocan | «Me gusta, pero es caro», «me gusta, pero ustedes prefieren otra cosa» | Conversar qué pesa para cada uno y mirar los caminos que hay |\n| Todavía no quiere pensarlo | «Ya veré», «falta mucho» | Un paso pequeño con fecha, sin pedirle la decisión |\n\nUn cambio con información es un avance. Por eso, antes de «¿por qué?», sirve más preguntar «¿qué viste?».\n\n### Cuatro frases y por dónde empezar\n\n1. **«Ya no quiero lo que había elegido».** Pregunte qué vio. Si habló con alguien, visitó un lugar o averiguó algo, cambió con información. Si no, es una duda para explorar juntos.\n2. **«No sé qué quiero».** No llene el vacío con sugerencias. Pregunte qué ha descartado y por qué: suele haber más claridad de la que parece.\n3. **«Quiero esperar un año».** Pregunte qué haría con ese año y acuerden un plan con fechas: trabajar, prepararse, llevar un curso corto, averiguar mejor. Lo que conviene evitar es un año de espera.\n4. **«No ingresé».** Primero el golpe, después el plan. Ese día: «sé que duele; mañana vemos qué sigue». Al día siguiente: volver a postular con más preparación, entrar por otra modalidad o a otra institución, o empezar por un instituto y continuar después.\n\nNo ingresar al primer intento es frecuente en las universidades públicas más pedidas, y no dice nada sobre lo que su hijo o hija es capaz de hacer.\n\n### Cuando ya no es una duda\n\nConviene pedir ayuda si, durante varias semanas, nota alguna de estas señales:\n\n- Duerme mal o casi no come.\n- Se aísla, o llora con frecuencia.\n- Dejó lo que antes disfrutaba.\n- No logra concentrarse en nada.\n\nHable con la orientadora o con la psicóloga del colegio. Pedir ayuda no es exagerar: en el Perú, la ansiedad es el motivo más frecuente de atención en salud mental, y uno de cada siete atendidos es adolescente.\n\n### Dudas frecuentes de los padres\n\n**¿Y si cambia de opinión cada mes?** Mire si cada cambio trae algo nuevo: algo que vio, que averiguó, que le contaron. Si es así, está explorando. Si cambia sin motivo y evita el tema, puede que la pregunta le quede grande todavía: sirven los pasos pequeños.\n\n**¿Y si ya gastamos en la academia o en la inscripción?** Dígalo como lo que es, una preocupación suya por el dinero, y miren juntos qué se puede aprovechar: la preparación sirve para otras carreras, y un cambio a tiempo cuesta menos que uno a mitad de carrera.\n\n**¿Y si nunca duda?** No dudar no es un problema. Vale preguntarle qué averiguó para estar tan seguro: si hay datos detrás, está bien; si no, ayúdele a mirar un poco más antes de postular.\n\n**¿Le cuento que yo también cambié de rumbo?** Sí. Saber que a usted le pasó, y qué hizo, le quita peso a su propio cambio.\n\n> Un hijo que cambia de opinión frente a usted es un hijo que todavía le cuenta. Cuide eso.\n\n**Para su ruta.** Esta ficha queda en Mis actividades.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, parte 2 (la indecisión como fase del proceso). Gati, Krausz y Osipow (1996), A taxonomy of difficulties in career decision making. [Mata-Correas, Hernández-Franco y Prieto-Ursúa (2025), Educación XX1](https://revistas.uned.es/index.php/educacionXX1/article/view/42209). [El Peruano (2022), atenciones de salud mental del Minsa](https://www.elperuano.pe/noticia/192010-minsa-pone-la-lupa-en-la-ansiedad). «Busque lo que no cambia», la columna «Qué ayuda desde casa», las cuatro frases y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.', 'APODERADO'),
+    ('FP08', 'Su carta y lo que sigue', 'Cómo escribir una carta que sirva, qué pasa después con las conversaciones, y qué puede ver de los resultados de su hijo o hija.', 'Acompañar a mi hijo', 'Su ruta termina con una carta para su hijo o hija. No tiene que ser larga ni estar bien escrita: tiene que ser suya. Esta ficha reúne lo que ayuda a escribirla y lo que encuentra después.\n\n### Por qué una carta\n\nLo que se dice en la cocina se pierde entre un apuro y otro. Lo escrito se queda y se puede volver a leer. Y una carta permite decir lo que frente a frente no siempre sale.\n\n### Tres partes bastan\n\n1. **Lo que ve en él o ella.** Una cualidad, con un momento que usted recuerde. «Eres un buen chico» se le puede decir a cualquiera; «cuando tu abuela estuvo enferma, tú le cocinabas sin que nadie te lo pidiera» solo se lo puede decir usted.\n2. **Lo que usted siente con esta etapa.** Orgullo, miedo, ilusión, las tres cosas a la vez. Dígalo como suyo: «a veces me da miedo que no te alcance; es miedo mío».\n3. **Algo que usted hará.** En lugar de «te apoyo en todo», algo que se pueda cumplir: acompañarle a averiguar, sentarse a ver cuánto cuesta, presentarle a alguien que trabaje en lo que le interesa.\n\n### Qué dejar fuera y qué guardar para conversar\n\nDeje fuera dos cosas: compararlo con otros y poner su apoyo como condición.\n\nY guarde una para conversar: qué le gustaría a usted que estudie. Preferir un camino que le parece más seguro no tiene nada de malo, y vale decirlo. Solo que una carta no se puede contestar. Lo que es para discutir, como qué carrera, cuánto paga o cuánto cuesta, va mejor en una conversación, donde su hijo o hija puede responderle.\n\n### Las dos versiones de Rosa\n\nRosa cocina en un comedor y le escribió a su hijo Sebastián. Esto fue lo primero que le salió:\n\n> «Hijo: eres un buen chico y sé que vas a llegar lejos. Yo solo quiero lo mejor para ti. Estudia algo que te dé de comer, no como tu primo, que dejó la carrera a medias. Yo te voy a apoyar en todo.»\n\nY esto, después de pensarlo:\n\n> «Sebastián: cuando tu abuela estuvo enferma, tú le cocinabas sin que nadie te lo pidiera. Ahí vi cómo cuidas a la gente. A veces me da miedo que no te alcance para vivir. Es miedo mío, porque a mí me ha costado. El sábado te acompaño a averiguar donde tú quieras. Elijas lo que elijas, cuentas conmigo.»\n\nLas dos tienen casi el mismo largo y el mismo cariño. La segunda solo la pudo escribir Rosa.\n\n### Si no sabe por dónde empezar\n\nAl escribir la carta encontrará estas frases para arrancar. Son solo ideas: use sus palabras.\n\n- «Lo que admiro de cómo estás pensando tu futuro…»\n- «Me comprometo a acompañarte así…»\n- «Cuando yo tuve tu edad…»\n- «Pase lo que pase, quiero que recuerdes…»\n\n### Lo que sigue\n\n- **Su carta** se escribe en Conversaciones y puede volver a editarla.\n- **Los temas para conversar** se abren cuando guarde la carta.\n- **Con la ruta completa** recibe su Diploma de compromiso, y en Inicio puede ver los resultados de los cuestionarios de su hijo o hija que la orientadora haya decidido mostrar.\n\n### Cómo leer esos resultados\n\nUn resultado de intereses sugiere áreas para explorar; no dice qué carrera le toca. Si una carrera que su hijo o hija quiere no aparece entre las afines, eso no la descarta: es un tema para conversar. Lo que vaya más allá de la explicación de la plataforma, consúltelo con la orientadora.\n\n### Dudas frecuentes de los padres\n\n**No soy de escribir, y mi ortografía no es buena.** No importa. Cuatro o cinco líneas, escritas como usted habla, alcanzan. Su hijo o hija va a reconocer su manera de decir las cosas, y eso vale más que una carta correcta.\n\n**En casa no nos decimos esas cosas.** Pasa en muchas familias, y no quiere decir que falte cariño. Una carta es una forma de empezar cuando hablar cuesta.\n\n**¿Puedo decirle qué carrera prefiero?** Puede, pero no en la carta. Dígaselo en una conversación, con sus razones, y escuche las suyas.\n\n**¿Quién la lee, y cuándo?** Solo su hijo o hija; ni la orientadora ni el colegio la ven. No la lee el día en que usted la guarda: le llega más adelante.\n\n**¿Y si tengo más de un hijo o hija en la plataforma?** Cada uno tiene su carta. Escríbalas por separado: lo que vale de cada una es lo que no sirve para el otro.\n\n**¿Y si después se me ocurre algo mejor?** Vuelva a Conversaciones y edítela.\n\n> Su carta no decide nada. Dice que usted está.\n\n**Para su ruta.** Esta ficha queda en Mis actividades. Con esta actividad su ruta queda terminada.\n\n**Fuentes:** MINEDU (2013), Orientación vocacional: cartilla para tutores, actividades con padres y madres de familia (el compromiso de apoyo al cierre). Las tres partes, las dos versiones de Rosa y las respuestas a las dudas frecuentes son recomendaciones del equipo de orientación.', 'APODERADO'),
 )
 
 # (vidas del enemigo, destellos, preguntas por intento). Pool ≥ 2 × preguntas por intento; preguntas por
@@ -801,6 +808,33 @@ ITEMS_REGISTRO = (
 # Ajuste registros llm (lote 2): las tarjetas del LLM v7, una por ítem con LLM (y por opción con tarjeta propia).
 TARJETAS = tarjetas_registros.TARJETAS
 
+# Ajuste pendientes-orientadora: temas «Para conversar» que salen de una elección de registro. Misma forma que
+# `fijos.ALERTAS` (código, grupo, nombre, descripción, evaluador, parámetros) y que `fijos.TEXTOS_PERFIL_ALERTAS`;
+# su orden lo fija `fijos.ORDEN_PARA_CONVERSAR`. La carga valida ítems y opciones.
+ALERTAS = (
+    ('voces-chocan', 'para-conversar', 'Lo que se espera y lo que quiere chocan', None, 'eleccion_registro',
+     {'item': 'b1-3-contraste', 'opciones': ['CHOCAN'], 'datos': {'persona': 'b1-3-voz'},
+      'frases': {'voz': ' La voz que eligió: {persona}.'}}),
+    ('valores-fuera-del-plan', 'para-conversar', 'Sus valores no están entre los motivos de su Plan A', None,
+     'valores_fuera_del_plan', {'item': 'b2-3-valores'}),
+    ('plan-b-desanima', 'para-conversar', 'Su Plan B lo desanima', None, 'eleccion_registro',
+     {'item': 'b4-5-moneda', 'opciones': ['DESANIME'], 'omitir_si_cambio': ['plan_a', 'plan_b'],
+      'valores_requeridos': ['plan_b']}),
+    ('forma-de-decidir', 'para-conversar', 'Su forma de decidir', None, 'eleccion_registro',
+     {'item': 'b4-2-estilo', 'opciones': ['LO_QUE_ESPERAN', 'MIEDO']}),
+    ('proyecto-poco-seguro', 'para-conversar', 'Poca seguridad en su proyecto', None, 'eleccion_registro',
+     {'item': 'b5-1-seguridad', 'opciones': ['POCO'], 'omitir_si_cambio': ['plan_a']}),
+)
+TEXTOS_PERFIL_ALERTAS = {
+    'voces-chocan': (None, 'Marcó que lo que se espera en su entorno y lo que quiere hacer al terminar el colegio '
+                           'chocan.{voz}', 'RESPUESTAS'),
+    'valores-fuera-del-plan': (None, 'Lo que más valora en un trabajo ({valores}) no aparece entre los motivos de su '
+                                     'Plan A ({motivos}).', 'PLANES'),
+    'plan-b-desanima': (None, 'Al imaginar que le tocaba su Plan B ({plan_b}), marcó «{opcion}».', 'RESPUESTAS'),
+    'forma-de-decidir': (None, 'Sobre cómo decide las cosas importantes, marcó: «{opcion}».', 'RESPUESTAS'),
+    'proyecto-poco-seguro': (None, 'Frente a su proyecto, marcó «{opcion}».', 'RESPUESTAS'),
+}
+
 # (código, (tipo de dueño, dueño), tipo, fuente). Ajuste registros llm (lote 2): las que leen los ecos, los
 # marcadores y las opciones; el contenido de las piezas (§4) lo lee `contexto.py` directamente.
 REFERENCIAS = (
@@ -1130,111 +1164,269 @@ VARIANTES_DIARIO = {
     },
 }
 
-# Ajuste coherencia-bloque0: «La primera chispa» la entrega b0-1, no el bloque entero; sus textos se sobrescriben aquí
-# (como `R-t-ins-1`) para no tocar `ruta`, cuyas pruebas los leen.
-INSIGNIAS = tuple(
-    (*i[:3], 'Da el primer paso de tu viaje.', *i[4:]) if i[0] == 't-ins-1' else i for i in ruta.INSIGNIAS
+# Ajuste logros: las insignias del estudiante, en cuatro páginas del pasaporte. Ninguna premia velocidad, intentos ni
+# favoritos ni depende de una actividad opcional como requerida; ningún texto nombra códigos de actividad.
+# (código, nombre, descripción (historia), requisito, oculta).
+INSIGNIAS = (
+    # La luz que despeja caminos
+    ('ins-chispa', 'La primera chispa',
+     'Antes de buscar un destino decidiste mirar. Ese primer paso, el de aceptar que todavía no sabes, es el que abre '
+     'todos los demás.', 'Conoce a Lumi en el muelle.', False),
+    ('ins-primera-sombra', 'La primera sombra',
+     'Toda idea equivocada proyecta una sombra. La primera que disipes te enseñará que se vencen con información, no '
+     'con suerte.', 'Gana tu primera batalla.', False),
+    ('ins-destello', 'Destello intacto',
+     'Enfrentaste una idea equivocada sin perder ni un destello. Contrastar lo que crees con lo que sabes te deja '
+     'mirar con más claridad.', 'Gana una batalla sin perder destellos.', True),
+    ('ins-sin-sombras', 'Ninguna sombra en pie',
+     'Algunas sombras se esconden y solo aparecen cuando respondes con calma. Esta insignia es para quien las '
+     'encuentra todas.', 'Gana todas las batallas de la isla, también las que aparecen en el camino.', False),
+    ('ins-helena', 'Lo que Helena descifró',
+     'Helena guarda tres páginas en blanco con tu nombre. Cuando las descifres, dirán algo de ti que hoy solo '
+     'intuyes.',
+     'En el libro de Helena, rompe los sellos de «Lo que te atrae hacer», «Cómo te relacionas» y «Tus formas de ser '
+     'inteligente».', False),
+    ('ins-bitacora', 'Bitácora completa',
+     'Cada registro es una página de tu bitácora. Algunas solo aparecen cuando las anteriores dicen algo de verdad.',
+     'Completa todos los registros, también los que aparecen en el camino y en la ciudad.', False),
+    ('ins-faro', 'Más allá del faro',
+     'Cruza la isla de punta a punta. Lo que viene después ya no está en ningún mapa.',
+     'Abre el pergamino en la sala de la luz.', False),
+    ('ins-isla', 'La isla entera',
+     'No te quedaste en el camino marcado: entraste a cada rincón de la isla, también a los que había que ganarse.',
+     'Completa todas las misiones del camino y de la ciudad, incluidas las opcionales.', True),
+    # Huellas en la ciudad
+    ('ins-caso', 'Caso cerrado',
+     'En la Central, cada caso es un problema real que se resuelve con las personas correctas. El primero es el más '
+     'difícil de armar.', 'Resuelve tu primer caso en la Central.', False),
+    ('ins-expediente', 'Expediente completo',
+     'Seis lugares, seis problemas y muchos oficios distintos. Quien los resuelve todos conoce la ciudad mejor que '
+     'nadie.', 'Resuelve los seis casos de la Central.', False),
+    ('ins-carreras', 'Diez caminos a la vista',
+     'Te asomaste a diez carreras distintas. Mirar varias antes de elegir es la mejor forma de no quedarte con la '
+     'primera.', 'Mira el detalle de diez carreras distintas en el catálogo.', True),
+    ('ins-ocupaciones', 'Diez oficios, diez vidas',
+     'Conociste diez formas distintas de pasar un día de trabajo. Cada una es otra manera de imaginarte en el futuro.',
+     'Mira el detalle de diez ocupaciones distintas en el catálogo.', True),
+    ('ins-puertas', 'Todas las puertas',
+     'Conociste todas las formas de seguir estudiando. Saber qué puertas existen te deja elegir con más libertad.',
+     'Mira instituciones de todos los tipos.', True),
+    ('ins-voz', 'Voz de la ciudad',
+     'Conversaste con alguien que ejerce un oficio y lo compartiste con tu salón. Preguntar a quien ya recorrió el '
+     'camino lo vuelve más real.', 'Publica una entrevista.', False),
+    ('ins-leyenda', 'Leyenda',
+     'Tu entrevista quedó como Leyenda: la verán otros salones y otras promociones.',
+     'Logra que tu entrevista sea Leyenda.', False),
+    # El mapa que trazo
+    ('ins-plan-a', 'Un destino en el mapa',
+     'Un plan no es una promesa: es una opción real que puedes mirar, mover y cambiar. El primero es el que da nombre '
+     'al viaje.', 'Crea tu Plan A en «Mis planes».', False),
+    ('ins-plan-b', 'Otra ruta posible',
+     'Tener una segunda opción no es dudar de la primera: es tener por dónde seguir si el camino cambia.',
+     'Crea tu Plan B en «Mis planes».', False),
+    ('ins-plan-c', 'Tres rumbos',
+     'Con tres opciones sobre la mesa puedes compararlas de verdad y ver qué tienen en común.',
+     'Crea tu Plan C en «Mis planes».', False),
+    ('ins-plan-completo', 'Rumbo trazado',
+     'Por qué la eliges, qué sabes de ella, qué tan real es y cuáles son tus próximos pasos: cuando un plan tiene todo '
+     'eso, ya puedes conversarlo en casa.', 'Completa las cuatro secciones de uno de tus planes.', False),
+    ('ins-planes-completos', 'Ningún cabo suelto',
+     'Tus tres planes quedaron completos. Ya no son ideas sueltas: son tres rutas que puedes comparar y defender.',
+     'Completa las cuatro secciones de tus tres planes.', True),
+    # Lo que no se ve a simple vista
+    ('ins-senderos', 'Senderos que no estaban en el mapa',
+     'Te tomaste en serio tus respuestas, y la isla te mostró caminos que no estaban en el mapa.',
+     'Completa tres registros con respuestas desarrolladas.', True),
+    ('ins-lumi', 'Alguien preguntó',
+     'A Lumi nadie le preguntó adónde quería ir. Tú le escribiste, y te contó su historia completa.',
+     'Escucha los cinco recuerdos de Lumi en tu diario.', True),
+    ('ins-brujula', 'Brújula interna',
+     'La brújula de Iván señala la ciudad. Hay otra que solo tú sabes leer: cómo te sientes con tu decisión, día a '
+     'día.', 'Haz tu check-in en cinco días distintos.', False),
+    ('ins-conversacion', 'La otra mitad de la historia',
+     'Tu familia también tiene una versión de tu camino. Escucharla no decide por ti: te da la otra mitad.',
+     'Completa una conversación con tu familia en «En familia».', False),
+    ('ins-sobremesa', 'Sobremesa larga',
+     'Conversaron de lo que te gusta, de lo que temen y de lo que esperan. Pocas mesas aguantan tanta sobremesa.',
+     'Completa todas las conversaciones con tu familia.', True),
 )
+# {insignia: (frase destacada, cómo se consiguió en pasado)}.
 TEXTOS_INSIGNIAS = {
-    **ruta.TEXTOS_INSIGNIAS,
-    't-ins-1': (ruta.TEXTOS_INSIGNIAS['t-ins-1'][0], 'diste el primer paso de tu viaje.'),
+    'ins-chispa': ('Una nueva mirada viaja contigo.', 'conociste a Lumi en el muelle.'),
+    'ins-primera-sombra': ('La primera sombra siempre parece la más grande.', 'ganaste tu primera batalla.'),
+    'ins-destello': ('La información hace brillar tu camino.', 'ganaste una batalla sin perder destellos.'),
+    'ins-sin-sombras': ('Ninguna idea falsa te sigue el paso.', 'ganaste todas las batallas de la isla.'),
+    'ins-helena': ('Conocerte también se aprende.', 'rompiste los tres sellos del libro de Helena.'),
+    'ins-bitacora': ('Lo que escribes también te orienta.', 'completaste todos los registros de la isla.'),
+    'ins-faro': ('El viaje sigue, ahora sin mapa.', 'abriste el pergamino en la sala de la luz.'),
+    'ins-isla': ('Ningún rincón quedó a oscuras.', 'completaste todas las misiones de la isla.'),
+    'ins-caso': ('Cada oficio tiene su lugar en el equipo.', 'resolviste tu primer caso en la Central.'),
+    'ins-expediente': ('La ciudad ya no tiene secretos para ti.', 'resolviste los seis casos de la Central.'),
+    'ins-carreras': ('Elegir empieza por mirar.', 'miraste diez carreras distintas en el catálogo.'),
+    'ins-ocupaciones': ('Un oficio es una forma de vivir el día.', 'miraste diez ocupaciones distintas en el catálogo.'),
+    'ins-puertas': ('Conocer las puertas también es avanzar.', 'miraste instituciones de todos los tipos.'),
+    'ins-voz': ('Preguntar abre caminos.', 'publicaste una entrevista.'),
+    'ins-leyenda': ('Tu voz llega lejos.', 'tu entrevista llegó a Leyenda.'),
+    'ins-plan-a': ('Elegir un rumbo no cierra los demás.', 'creaste tu Plan A.'),
+    'ins-plan-b': ('Dos rutas, más libertad.', 'creaste tu Plan B.'),
+    'ins-plan-c': ('Comparar también es decidir.', 'creaste tu Plan C.'),
+    'ins-plan-completo': ('Un rumbo claro se puede contar.', 'completaste las cuatro secciones de un plan.'),
+    'ins-planes-completos': ('Tres rutas, ningún cabo suelto.', 'completaste las cuatro secciones de tus tres planes.'),
+    'ins-senderos': ('Pensar despacio abre atajos.', 'completaste tres registros con respuestas desarrolladas.'),
+    'ins-lumi': ('Escuchar también es un camino.', 'escuchaste los cinco recuerdos de Lumi.'),
+    'ins-brujula': ('Lo que sientes también orienta.', 'hiciste tu check-in en cinco días distintos.'),
+    'ins-conversacion': ('Dos miradas ven más lejos.', 'completaste una conversación con tu familia.'),
+    'ins-sobremesa': ('En casa también se encuentra el rumbo.', 'completaste todas las conversaciones con tu familia.'),
 }
-GRUPOS_INSIGNIA = ruta.GRUPOS_INSIGNIA
-PAGINAS_INSIGNIAS = ruta.PAGINAS_INSIGNIAS
-PISTAS_INSIGNIAS = ruta.PISTAS_INSIGNIAS
-NIVELES = ruta.NIVELES
-CITAS_LUMI = ruta.CITAS_LUMI
+# Páginas del pasaporte: (código, nombre, orden).
+GRUPOS_INSIGNIA = (('G-camino', 'La luz que despeja caminos', 1), ('G-ciudad', 'Huellas en la ciudad', 2),
+                   ('G-planes', 'El mapa que trazo', 3), ('G-oculto', 'Lo que no se ve a simple vista', 4))
+_PAGINAS = {
+    'G-camino': ('ins-chispa', 'ins-primera-sombra', 'ins-destello', 'ins-sin-sombras', 'ins-helena', 'ins-bitacora',
+                 'ins-faro', 'ins-isla'),
+    'G-ciudad': ('ins-caso', 'ins-expediente', 'ins-carreras', 'ins-ocupaciones', 'ins-puertas', 'ins-voz',
+                 'ins-leyenda'),
+    'G-planes': ('ins-plan-a', 'ins-plan-b', 'ins-plan-c', 'ins-plan-completo', 'ins-planes-completos'),
+    'G-oculto': ('ins-senderos', 'ins-lumi', 'ins-brujula', 'ins-conversacion', 'ins-sobremesa'),
+}
+# {insignia: (página, orden dentro de la página)}.
+PAGINAS_INSIGNIAS = {codigo: (pagina, orden) for pagina, codigos in _PAGINAS.items()
+                     for orden, codigo in enumerate(codigos, start=1)}
+# Pista de Lumi de cada oculta, visible mientras no se obtiene.
+PISTAS_INSIGNIAS = {
+    'ins-destello': 'No todo brillo sobrevive a una batalla. El que no se apaga ni una vez, deja huella.',
+    'ins-isla': 'Hay quienes cruzan la isla y quienes la recorren entera.',
+    'ins-carreras': 'Una carrera vista es una puerta entreabierta. ¿Cuántas te animas a abrir?',
+    'ins-ocupaciones': 'Detrás de cada carrera hay oficios muy distintos. Asómate a unos cuantos.',
+    'ins-puertas': 'Hay más de una puerta para estudiar. Asómate a todas antes de elegir una.',
+    'ins-planes-completos': 'Un plan completo es un buen comienzo. ¿Y si los tres lo estuvieran?',
+    'ins-senderos': 'Hay caminos que solo aparecen cuando alguien se toma su tiempo para responder.',
+    'ins-lumi': 'Lumi guarda una historia que nunca le contó a nadie. Quizá solo espera que alguien le escriba.',
+    'ins-sobremesa': 'Hay conversaciones que no caben en una sola noche.',
+}
+
+# Adenda de niveles: cada nivel es una fase del camino; el título dice en qué parte va, no cuánto vale.
+# (número, título, descripción).
+NIVELES = (
+    (1, 'Visitante del muelle', 'Acabas de llegar a la isla. Todavía no hay mapa: solo ganas de mirar.'),
+    (2, 'Caminante sin apuro', 'Ya tienes compañía, un punto de partida y permiso para dudar.'),
+    (3, 'Detective de pistas propias',
+     'Juntaste pistas sobre tu historia, lo que valoras y lo que se te da bien. Ahora sabes mejor qué buscas.'),
+    (4, 'Navegante de oficios',
+     'Recorriste el puerto y ya sabes cómo se ven por dentro los estudios y el trabajo.'),
+    (5, 'Timonel de rumbo propio',
+     'Ordenaste tus opciones, trazaste tus pasos y abriste el pergamino. Lo que sigue se decide fuera de la isla.'),
+)
+# Cita de Lumi de cada nivel, bajo su descripción en el pasaporte.
+CITAS_LUMI = {
+    1: 'Mirar con calma también es avanzar.',
+    2: 'Los títulos no dicen cuánto vales. Dicen en qué parte del camino vas.',
+    3: 'Conocerte no te encierra: te da por dónde empezar.',
+    4: 'Un mapa no te dice adónde ir; te muestra por dónde podrías.',
+    5: 'Yo también voy a buscar mi camino. Gracias por enseñarme cómo.',
+}
 
 # (código, tipo de objetivo, objetivo, mensaje de bloqueo, condiciones); cada condición: (evento, referencia,
 # conteo, mínimo). Principios en `docs/sistema/motor.md` («Reglas del contenido»).
+# Ajuste coherencia-lumi: lo que dice cada recuerdo de Lumi mientras está cerrado, en el orden de RECUERDOS_LUMI.
+MENSAJES_RECUERDOS_LUMI = (
+    'Escríbele tu primera carta a Lumi para que te cuente de dónde viene.',
+    'Escríbele 2 cartas a Lumi para que te cuente el siguiente recuerdo.',
+    'Escríbele 3 cartas a Lumi para que te cuente el siguiente recuerdo.',
+    'Escríbele 4 cartas a Lumi para que te cuente el siguiente recuerdo.',
+    'Escríbele 5 cartas a Lumi para que te cuente el último recuerdo.',
+)
+
 REGLAS = (
     # Camino: cada tramo se abre con la última requerida del anterior (COMPLETA_BLOQUE); dentro, cadena lineal. B0 y b0-1 están abiertos desde el inicio.
-    ('R-b0-2', 'ACTIVIDAD', 'b0-2', 'Primero conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
-    ('R-b0-3', 'ACTIVIDAD', 'b0-3', 'Sube por el bosque hasta la cabaña de Helena.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
-    ('R-b0-4', 'ACTIVIDAD', 'b0-4', 'Helena todavía no te ha recibido.', (('COMPLETA_ACTIVIDAD', 'b0-3', 'EVENTOS', 1),)),
-    ('R-b0-5', 'ACTIVIDAD', 'b0-5', 'Pasa primero por la piedra de los caminos.', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-b0-6', 'ACTIVIDAD', 'b0-6', 'Mara tiene algo que contarte antes.', (('COMPLETA_ACTIVIDAD', 'b0-5', 'EVENTOS', 1),)),
-    ('R-B1', 'BLOQUE', 'B1', 'Pasa por el campamento de Nico para subir al nevado.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
-    ('R-b1-2', 'ACTIVIDAD', 'b1-2', 'Cuéntale tu historia a Nadia antes de subir al mirador.', (('COMPLETA_ACTIVIDAD', 'b1-1', 'EVENTOS', 1),)),
-    ('R-b1-3', 'ACTIVIDAD', 'b1-3', 'Baja del nevado para llegar a la ciudad.', (('COMPLETA_ACTIVIDAD', 'b1-2', 'EVENTOS', 1),)),
-    ('R-b1-4', 'ACTIVIDAD', 'b1-4', 'Iván tiene que calibrar el artefacto primero.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-b1-5', 'ACTIVIDAD', 'b1-5', 'Escucha a Aurelio en el oasis antes de cruzar el puente.', (('COMPLETA_ACTIVIDAD', 'b1-4', 'EVENTOS', 1),)),
-    ('R-b1-6', 'ACTIVIDAD', 'b1-6', 'Cruza el puente de los mitos.', (('SUPERA_BATALLA', 'b1-5', 'EVENTOS', 1),)),
-    ('R-b1-7', 'ACTIVIDAD', 'b1-7', 'Cuenta de dónde te viene un mito antes de seguir.', (('COMPLETA_ACTIVIDAD', 'b1-6', 'EVENTOS', 1),)),
-    ('R-B2', 'BLOQUE', 'B2', 'Responde al guardián del desierto para entrar al bosque del volcán.', (('COMPLETA_BLOQUE', 'B1', 'EVENTOS', 1),)),
-    ('R-b2-2', 'ACTIVIDAD', 'b2-2', 'Rosa quiere verte pasar su prueba primero.', (('COMPLETA_ACTIVIDAD', 'b2-1', 'EVENTOS', 1),)),
-    ('R-b2-3', 'ACTIVIDAD', 'b2-3', 'Ayuda con el reparto de tareas antes.', (('COMPLETA_ACTIVIDAD', 'b2-2', 'EVENTOS', 1),)),
-    ('R-b2-4', 'ACTIVIDAD', 'b2-4', 'Ordena lo que valoras antes de pasar por el taller.', (('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1),)),
-    ('R-b2-5', 'ACTIVIDAD', 'b2-5', 'Nico te espera en el taller.', (('COMPLETA_ACTIVIDAD', 'b2-4', 'EVENTOS', 1),)),
-    ('R-B3', 'BLOQUE', 'B3', 'Haz la ronda de los seis refugios para bajar al puerto.', (('COMPLETA_BLOQUE', 'B2', 'EVENTOS', 1),)),
-    ('R-b3-2', 'ACTIVIDAD', 'b3-2', 'Ulises te espera en los embarcaderos.', (('COMPLETA_ACTIVIDAD', 'b3-1', 'EVENTOS', 1),)),
-    ('R-b3-3', 'ACTIVIDAD', 'b3-3', 'Pasa por la sala del atlas primero.', (('COMPLETA_ACTIVIDAD', 'b3-2', 'EVENTOS', 1),)),
-    ('R-b3-4', 'ACTIVIDAD', 'b3-4', 'Escucha a Doña Cifra en el mercado.', (('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1),)),
-    ('R-b3-5', 'ACTIVIDAD', 'b3-5', 'Anota qué necesitas saber de una carrera y a quién le preguntarías.', (('COMPLETA_ACTIVIDAD', 'b3-4', 'EVENTOS', 1),)),
-    ('R-b3-6', 'ACTIVIDAD', 'b3-6', 'Cierra el puesto de Doña Cifra.', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
-    ('R-b3-7', 'ACTIVIDAD', 'b3-7', 'Escucha al Feriante en el malecón.', (('COMPLETA_ACTIVIDAD', 'b3-6', 'EVENTOS', 1),)),
-    ('R-b3-8', 'ACTIVIDAD', 'b3-8', 'Desmonta el stand del Faro Dorado.', (('SUPERA_BATALLA', 'b3-7', 'EVENTOS', 1),)),
-    ('R-b3-9', 'ACTIVIDAD', 'b3-9', 'Pasa por la caseta de Clotilde.', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
-    ('R-b3-10', 'ACTIVIDAD', 'b3-10', 'Cierra la caseta de Clotilde.', (('SUPERA_BATALLA', 'b3-9', 'EVENTOS', 1),)),
-    ('R-B4', 'BLOQUE', 'B4', 'Escucha a Alejandra en el malecón y abre en el libro de Helena tu punto de partida y las páginas obligatorias.', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),
-    ('R-b4-1', 'ACTIVIDAD', 'b4-1', 'Abre tu Plan A y escribe por qué, antes de subir con Helena.', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
-    ('R-b4-2', 'ACTIVIDAD', 'b4-2', 'Primero mira tu perfil frente a tu Plan A con Helena.', (('COMPLETA_ACTIVIDAD', 'b4-1', 'EVENTOS', 1),)),
-    ('R-b4-3', 'ACTIVIDAD', 'b4-3', 'Mira cómo sueles decidir antes de poner las rutas sobre la mesa.', (('COMPLETA_ACTIVIDAD', 'b4-2', 'EVENTOS', 1),)),
-    ('R-b4-4', 'ACTIVIDAD', 'b4-4', 'Iván te espera en la mesa de mapas.', (('COMPLETA_ACTIVIDAD', 'b4-3', 'EVENTOS', 1),)),
+    ('R-b0-2', 'ACTIVIDAD', 'b0-2', 'Completa la misión «Bienvenida: la vocación se construye».', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
+    ('R-b0-3', 'ACTIVIDAD', 'b0-3', 'Completa la misión «Lo que siento al terminar el colegio y mi diario».', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
+    ('R-b0-4', 'ACTIVIDAD', 'b0-4', 'Completa la misión «Mi punto de partida».', (('COMPLETA_ACTIVIDAD', 'b0-3', 'EVENTOS', 1),)),
+    ('R-b0-5', 'ACTIVIDAD', 'b0-5', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
+    ('R-b0-6', 'ACTIVIDAD', 'b0-6', 'Completa la misión «Decidir con información: el caso de Alejandra».', (('COMPLETA_ACTIVIDAD', 'b0-5', 'EVENTOS', 1),)),
+    ('R-B1', 'BLOQUE', 'B1', 'Completa «Dudar también es avanzar», la última misión del tramo «Inicio».', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
+    ('R-b1-2', 'ACTIVIDAD', 'b1-2', 'Completa la misión «Mi historia personal».', (('COMPLETA_ACTIVIDAD', 'b1-1', 'EVENTOS', 1),)),
+    ('R-b1-3', 'ACTIVIDAD', 'b1-3', 'Completa la misión «Mirar hacia adelante».', (('COMPLETA_ACTIVIDAD', 'b1-2', 'EVENTOS', 1),)),
+    ('R-b1-4', 'ACTIVIDAD', 'b1-4', 'Completa la misión «Las voces y la mía».', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-b1-5', 'ACTIVIDAD', 'b1-5', 'Completa la misión «Mitos sobre el futuro profesional».', (('COMPLETA_ACTIVIDAD', 'b1-4', 'EVENTOS', 1),)),
+    ('R-b1-6', 'ACTIVIDAD', 'b1-6', 'Gana «Batalla: el puente de los mitos».', (('SUPERA_BATALLA', 'b1-5', 'EVENTOS', 1),)),
+    ('R-b1-7', 'ACTIVIDAD', 'b1-7', 'Completa la misión «El mito que traje de casa».', (('COMPLETA_ACTIVIDAD', 'b1-6', 'EVENTOS', 1),)),
+    ('R-B2', 'BLOQUE', 'B2', 'Completa «Mi futuro», la última misión del tramo «Mi historia y mis aspiraciones».', (('COMPLETA_BLOQUE', 'B1', 'EVENTOS', 1),)),
+    ('R-b2-1', 'ACTIVIDAD', 'b2-1', 'Se abre al completar «Lo que valoro en un trabajo», cuando ordenas lo que valoras con Rosa.', (('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1),)),
+    ('R-b2-2', 'ACTIVIDAD', 'b2-2', 'Se abre al completar «Lo que valoro en un trabajo», cuando ordenas lo que valoras con Rosa.', (('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1),)),
+    ('R-b2-4', 'ACTIVIDAD', 'b2-4', 'Completa la misión «Lo que valoro en un trabajo».', (('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1),)),
+    ('R-b2-5', 'ACTIVIDAD', 'b2-5', 'Completa la misión «Lo que se me da bien y lo que me cuesta».', (('COMPLETA_ACTIVIDAD', 'b2-4', 'EVENTOS', 1),)),
+    ('R-B3', 'BLOQUE', 'B3', 'Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».', (('COMPLETA_BLOQUE', 'B2', 'EVENTOS', 1),)),
+    ('R-b3-2', 'ACTIVIDAD', 'b3-2', 'Completa la misión «Caminos después del colegio».', (('COMPLETA_ACTIVIDAD', 'b3-1', 'EVENTOS', 1),)),
+    ('R-b3-3', 'ACTIVIDAD', 'b3-3', 'Completa la misión «Mis intereses en el catálogo».', (('COMPLETA_ACTIVIDAD', 'b3-2', 'EVENTOS', 1),)),
+    ('R-b3-4', 'ACTIVIDAD', 'b3-4', 'Completa la misión «El mercado laboral».', (('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1),)),
+    ('R-b3-5', 'ACTIVIDAD', 'b3-5', 'Completa la misión «Lo que necesito saber».', (('COMPLETA_ACTIVIDAD', 'b3-4', 'EVENTOS', 1),)),
+    ('R-b3-6', 'ACTIVIDAD', 'b3-6', 'Gana «Batalla: el mercado y las rutas».', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
+    ('R-b3-7', 'ACTIVIDAD', 'b3-7', 'Completa la misión «Elegir una institución».', (('COMPLETA_ACTIVIDAD', 'b3-6', 'EVENTOS', 1),)),
+    ('R-b3-8', 'ACTIVIDAD', 'b3-8', 'Gana «Batalla: el mercado y las rutas».', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
+    ('R-b3-9', 'ACTIVIDAD', 'b3-9', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
+    ('R-b3-10', 'ACTIVIDAD', 'b3-10', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
+    # El mensaje de R-B4 nombra las páginas de los cuestionarios prioritarios del salón (hoy solo intereses, SALON_INSTRUMENTOS); si cambian, cambia con ellos.
+    # R-B4 y R-b5-1 se ven cuando su tramo anterior ya está completo: primero dicen lo que falta y la misión, «si aún no lo hiciste».
+    ('R-B4', 'BLOQUE', 'B4', 'En el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad. Y, si aún no lo hiciste, completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional».', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),
+    ('R-b4-1', 'ACTIVIDAD', 'b4-1', 'En «Mis planes», crea tu Plan A y completa su sección «Por qué la elijo».', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
+    ('R-b4-2', 'ACTIVIDAD', 'b4-2', 'Completa la misión «Mi perfil frente a mi Plan A».', (('COMPLETA_ACTIVIDAD', 'b4-1', 'EVENTOS', 1),)),
+    ('R-b4-3', 'ACTIVIDAD', 'b4-3', 'Completa la misión «Cómo decido».', (('COMPLETA_ACTIVIDAD', 'b4-2', 'EVENTOS', 1),)),
+    ('R-b4-4', 'ACTIVIDAD', 'b4-4', 'Completa la misión «Tres rutas sobre la mesa».', (('COMPLETA_ACTIVIDAD', 'b4-3', 'EVENTOS', 1),)),
     # CREA_PLAN reevalúa la regla al crear el segundo plan (planes_creados no mira secciones).
-    ('R-b4-5', 'ACTIVIDAD', 'b4-5', 'Calla al Eco y cuenta por qué elegiste tus dos primeros planes.', (('SUPERA_BATALLA', 'b4-4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
-    ('R-B5', 'BLOQUE', 'B5', 'Pon a prueba tu orden con la moneda de Iván para seguir hacia el faro.', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1),)),
-    ('R-b5-1', 'ACTIVIDAD', 'b5-1', 'Anota al menos un paso en «Mis próximos pasos» de tu Plan A para mirar tu proyecto con la vigía.', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
-    ('R-b5-2', 'ACTIVIDAD', 'b5-2', 'Mira tu proyecto con la vigía del faro.', (('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1),)),
-    ('R-b5-3', 'ACTIVIDAD', 'b5-3', 'Responde tu punto de llegada.', (('COMPLETA_ACTIVIDAD', 'b5-2', 'EVENTOS', 1),)),
-    ('R-b5-4', 'ACTIVIDAD', 'b5-4', 'Mira el camino desde el balcón antes de subir.', (('COMPLETA_ACTIVIDAD', 'b5-3', 'EVENTOS', 1),)),
-    ('R-b5-5', 'ACTIVIDAD', 'b5-5', 'Sube a la sala de la luz.', (('COMPLETA_ACTIVIDAD', 'b5-4', 'EVENTOS', 1),)),
+    ('R-b4-5', 'ACTIVIDAD', 'b4-5', 'Gana «Batalla: decidir con criterio» y, en «Mis planes», completa «Por qué la elijo» en tu Plan A y en tu Plan B.', (('SUPERA_BATALLA', 'b4-4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
+    ('R-B5', 'BLOQUE', 'B5', 'Completa «Pongo a prueba mi orden», la última misión del tramo «Mis opciones».', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1),)),
+    ('R-b5-1', 'ACTIVIDAD', 'b5-1', 'En «Mis planes», anota al menos un paso en «Mis próximos pasos» de tu Plan A. Y, si aún no lo hiciste, completa la misión «Pongo a prueba mi orden».', (('COMPLETA_BLOQUE', 'B4', 'EVENTOS', 1), ('ACTUALIZA_PLAN', None, 'EVENTOS', 1))),
+    ('R-b5-2', 'ACTIVIDAD', 'b5-2', 'Completa la misión «Mi proyecto».', (('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1),)),
+    ('R-b5-3', 'ACTIVIDAD', 'b5-3', 'Completa la misión «Mi punto de llegada».', (('COMPLETA_ACTIVIDAD', 'b5-2', 'EVENTOS', 1),)),
+    ('R-b5-4', 'ACTIVIDAD', 'b5-4', 'Completa la misión «Mirar el camino».', (('COMPLETA_ACTIVIDAD', 'b5-3', 'EVENTOS', 1),)),
+    ('R-b5-5', 'ACTIVIDAD', 'b5-5', 'Completa la misión «La sala de la luz».', (('COMPLETA_ACTIVIDAD', 'b5-4', 'EVENTOS', 1),)),
     # Opcionales del camino y misiones adicionales.
-    ('R-b3-a', 'ACTIVIDAD', 'b3-a', 'Se abre al desbloquear tu primer testimonio en la Central.', (('SUPERA_CASO', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1))),
-    ('R-b3-b', 'ACTIVIDAD', 'b3-b', 'Se abre al cerrar el puesto de Doña Cifra.', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
-    ('R-ma1', 'ACTIVIDAD', 'ma1', 'Cuenta tu historia con ejemplos.', (('REGISTRO_ADECUADO', 'b1-1', 'EVENTOS', 1),)),
-    ('R-ma2', 'ACTIVIDAD', 'ma2', 'Cuenta cómo te llegó un mito.', (('REGISTRO_ADECUADO', 'b1-6', 'EVENTOS', 1),)),
-    ('R-ma3', 'ACTIVIDAD', 'ma3', 'Imagina tu futuro con el guardián.', (('REGISTRO_ADECUADO', 'b1-7', 'EVENTOS', 1),)),
-    ('R-ma7', 'ACTIVIDAD', 'ma7', 'Anota lo que necesitas saber antes de elegir.', (('REGISTRO_ADECUADO', 'b3-4', 'EVENTOS', 1),)),
-    ('R-ma7-b', 'ACTIVIDAD', 'ma7-b', 'Escucha a Doña Cifra sobre las brechas.', (('COMPLETA_ACTIVIDAD', 'ma7', 'EVENTOS', 1),)),
-    ('R-ma8', 'ACTIVIDAD', 'ma8', 'Pon a prueba tu orden.', (('REGISTRO_ADECUADO', 'b4-5', 'EVENTOS', 1),)),
+    ('R-b3-a', 'ACTIVIDAD', 'b3-a', 'Completa la misión «El mercado laboral» y resuelve un caso de la Central de casos, en la ciudad.', (('SUPERA_CASO', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1))),
+    ('R-b3-b', 'ACTIVIDAD', 'b3-b', 'Gana «Batalla: el mercado y las rutas».', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
+    ('R-ma1', 'ACTIVIDAD', 'ma1', 'Completa la misión «Mi historia personal» con respuestas desarrolladas.', (('REGISTRO_ADECUADO', 'b1-1', 'EVENTOS', 1),)),
+    ('R-ma2', 'ACTIVIDAD', 'ma2', 'Completa la misión «El mito que traje de casa» con respuestas desarrolladas.', (('REGISTRO_ADECUADO', 'b1-6', 'EVENTOS', 1),)),
+    ('R-ma3', 'ACTIVIDAD', 'ma3', 'Completa la misión «Mi futuro» con respuestas desarrolladas.', (('REGISTRO_ADECUADO', 'b1-7', 'EVENTOS', 1),)),
+    ('R-ma7', 'ACTIVIDAD', 'ma7', 'Completa la misión «Lo que necesito saber» con respuestas desarrolladas.', (('REGISTRO_ADECUADO', 'b3-4', 'EVENTOS', 1),)),
+    ('R-ma7-b', 'ACTIVIDAD', 'ma7-b', 'Completa la misión «Más allá del promedio».', (('COMPLETA_ACTIVIDAD', 'ma7', 'EVENTOS', 1),)),
+    ('R-ma8', 'ACTIVIDAD', 'ma8', 'Completa la misión «Pongo a prueba mi orden» con respuestas desarrolladas.', (('REGISTRO_ADECUADO', 'b4-5', 'EVENTOS', 1),)),
     # Ciudad: todo opcional; las misiones de Helena se encadenan parte por parte.
-    ('R-CIUDAD', 'BLOQUE', 'CIUDAD', 'Calibra el artefacto con Iván para recorrer la ciudad.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-h-habilidades-1', 'ACTIVIDAD', 'h-habilidades-1', 'Rosa te dirá quién conserva estas preguntas.', (('COMPLETA_ACTIVIDAD', 'b2-1', 'EVENTOS', 1),)),
-    ('R-h-habilidades-2', 'ACTIVIDAD', 'h-habilidades-2', 'Primero la visita anterior a Dora.', (('COMPLETA_ACTIVIDAD', 'h-habilidades-1', 'EVENTOS', 1),)),
-    ('R-h-habilidades-3', 'ACTIVIDAD', 'h-habilidades-3', 'Primero la visita anterior a Dora.', (('COMPLETA_ACTIVIDAD', 'h-habilidades-2', 'EVENTOS', 1),)),
-    ('R-h-habilidades-4', 'ACTIVIDAD', 'h-habilidades-4', 'Primero la visita anterior a Dora.', (('COMPLETA_ACTIVIDAD', 'h-habilidades-3', 'EVENTOS', 1),)),
-    ('R-h-inteligencias-1', 'ACTIVIDAD', 'h-inteligencias-1', 'Primero el reparto de tareas con Rosa.', (('COMPLETA_ACTIVIDAD', 'b2-2', 'EVENTOS', 1),)),
-    ('R-h-inteligencias-2', 'ACTIVIDAD', 'h-inteligencias-2', 'Primero la clase anterior del maestro Bruno.', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-1', 'EVENTOS', 1),)),
-    ('R-h-inteligencias-3', 'ACTIVIDAD', 'h-inteligencias-3', 'Primero la clase anterior del maestro Bruno.', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-2', 'EVENTOS', 1),)),
-    ('R-h-inteligencias-4', 'ACTIVIDAD', 'h-inteligencias-4', 'Primero la clase anterior del maestro Bruno.', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-3', 'EVENTOS', 1),)),
-    ('R-h-inteligencias-5', 'ACTIVIDAD', 'h-inteligencias-5', 'Primero la clase anterior del maestro Bruno.', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-4', 'EVENTOS', 1),)),
-    ('R-h-intereses-1', 'ACTIVIDAD', 'h-intereses-1', 'Primero la ronda de los seis refugios.', (('COMPLETA_ACTIVIDAD', 'b2-5', 'EVENTOS', 1),)),
-    ('R-h-intereses-2', 'ACTIVIDAD', 'h-intereses-2', 'Primero la visita anterior a Sol.', (('COMPLETA_ACTIVIDAD', 'h-intereses-1', 'EVENTOS', 1),)),
-    ('R-h-intereses-3', 'ACTIVIDAD', 'h-intereses-3', 'Primero la visita anterior a Sol.', (('COMPLETA_ACTIVIDAD', 'h-intereses-2', 'EVENTOS', 1),)),
-    ('R-h-intereses-4', 'ACTIVIDAD', 'h-intereses-4', 'Primero la visita anterior a Sol.', (('COMPLETA_ACTIVIDAD', 'h-intereses-3', 'EVENTOS', 1),)),
-    ('R-h-intereses-5', 'ACTIVIDAD', 'h-intereses-5', 'Primero la visita anterior a Sol.', (('COMPLETA_ACTIVIDAD', 'h-intereses-4', 'EVENTOS', 1),)),
-    ('R-h-intereses-6', 'ACTIVIDAD', 'h-intereses-6', 'Primero la visita anterior a Sol.', (('COMPLETA_ACTIVIDAD', 'h-intereses-5', 'EVENTOS', 1),)),
-    ('R-h1', 'ACTIVIDAD', 'h1', 'Rompe el sello de tu página de habilidades en el libro de Helena.', (('REVELA_RESULTADO', 'APL-HABILIDADES', 'EVENTOS', 1),)),
-    ('R-h2', 'ACTIVIDAD', 'h2', 'Rompe el sello de tu página de inteligencias.', (('REVELA_RESULTADO', 'APL-INTELIGENCIAS', 'EVENTOS', 1),)),
-    ('R-h3', 'ACTIVIDAD', 'h3', 'Rompe el sello de tu página de intereses.', (('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1),)),
-    ('R-ma4', 'ACTIVIDAD', 'ma4', 'Elige con Dora la habilidad que quieres practicar.', (('REGISTRO_ADECUADO', 'h1', 'EVENTOS', 1),)),
-    ('R-ma5', 'ACTIVIDAD', 'ma5', 'Mira con Sol las familias que salieron de tus intereses.', (('REGISTRO_ADECUADO', 'h3', 'EVENTOS', 1),)),
-    ('R-feria', 'ACTIVIDAD', 'feria', 'Se abre al pasar por la feria del malecón.', (('COMPLETA_ACTIVIDAD', 'b3-6', 'EVENTOS', 1),)),
-    ('R-investigador', 'ACTIVIDAD', 'investigador', 'Se abre al cerrar el puerto.', (('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1),)),
-    ('R-investigador-cierre', 'ACTIVIDAD', 'investigador-cierre', 'Publica una entrevista para que Anselmo vuelva.', (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
+    ('R-CIUDAD', 'BLOQUE', 'CIUDAD', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-h-habilidades-1', 'ACTIVIDAD', 'h-habilidades-1', 'Completa la misión «Las habilidades sociales», en el camino.', (('COMPLETA_ACTIVIDAD', 'b2-1', 'EVENTOS', 1),)),
+    ('R-h-habilidades-2', 'ACTIVIDAD', 'h-habilidades-2', 'Completa la misión «Mi comportamiento con los demás, 1 de 4».', (('COMPLETA_ACTIVIDAD', 'h-habilidades-1', 'EVENTOS', 1),)),
+    ('R-h-habilidades-3', 'ACTIVIDAD', 'h-habilidades-3', 'Completa la misión «Mi comportamiento con los demás, 2 de 4».', (('COMPLETA_ACTIVIDAD', 'h-habilidades-2', 'EVENTOS', 1),)),
+    ('R-h-habilidades-4', 'ACTIVIDAD', 'h-habilidades-4', 'Completa la misión «Mi comportamiento con los demás, 3 de 4».', (('COMPLETA_ACTIVIDAD', 'h-habilidades-3', 'EVENTOS', 1),)),
+    ('R-h-inteligencias-1', 'ACTIVIDAD', 'h-inteligencias-1', 'Completa la misión «Muchas formas de ser inteligente», en el camino.', (('COMPLETA_ACTIVIDAD', 'b2-2', 'EVENTOS', 1),)),
+    ('R-h-inteligencias-2', 'ACTIVIDAD', 'h-inteligencias-2', 'Completa la misión «Explorando mis inteligencias, 1 de 5».', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-1', 'EVENTOS', 1),)),
+    ('R-h-inteligencias-3', 'ACTIVIDAD', 'h-inteligencias-3', 'Completa la misión «Explorando mis inteligencias, 2 de 5».', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-2', 'EVENTOS', 1),)),
+    ('R-h-inteligencias-4', 'ACTIVIDAD', 'h-inteligencias-4', 'Completa la misión «Explorando mis inteligencias, 3 de 5».', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-3', 'EVENTOS', 1),)),
+    ('R-h-inteligencias-5', 'ACTIVIDAD', 'h-inteligencias-5', 'Completa la misión «Explorando mis inteligencias, 4 de 5».', (('COMPLETA_ACTIVIDAD', 'h-inteligencias-4', 'EVENTOS', 1),)),
+    ('R-h-intereses-1', 'ACTIVIDAD', 'h-intereses-1', 'Completa la misión «Intereses y ambientes de trabajo», en el camino.', (('COMPLETA_ACTIVIDAD', 'b2-5', 'EVENTOS', 1),)),
+    ('R-h-intereses-2', 'ACTIVIDAD', 'h-intereses-2', 'Completa la misión «Mis intereses, 1 de 6».', (('COMPLETA_ACTIVIDAD', 'h-intereses-1', 'EVENTOS', 1),)),
+    ('R-h-intereses-3', 'ACTIVIDAD', 'h-intereses-3', 'Completa la misión «Mis intereses, 2 de 6».', (('COMPLETA_ACTIVIDAD', 'h-intereses-2', 'EVENTOS', 1),)),
+    ('R-h-intereses-4', 'ACTIVIDAD', 'h-intereses-4', 'Completa la misión «Mis intereses, 3 de 6».', (('COMPLETA_ACTIVIDAD', 'h-intereses-3', 'EVENTOS', 1),)),
+    ('R-h-intereses-5', 'ACTIVIDAD', 'h-intereses-5', 'Completa la misión «Mis intereses, 4 de 6».', (('COMPLETA_ACTIVIDAD', 'h-intereses-4', 'EVENTOS', 1),)),
+    ('R-h-intereses-6', 'ACTIVIDAD', 'h-intereses-6', 'Completa la misión «Mis intereses, 5 de 6».', (('COMPLETA_ACTIVIDAD', 'h-intereses-5', 'EVENTOS', 1),)),
+    ('R-h1', 'ACTIVIDAD', 'h1', 'Completa las cuatro misiones «Mi comportamiento con los demás» y, en el libro de Helena (desde tu perfil), rompe el sello de la página «Cómo te relacionas».', (('REVELA_RESULTADO', 'APL-HABILIDADES', 'EVENTOS', 1),)),
+    ('R-h2', 'ACTIVIDAD', 'h2', 'Completa las cinco misiones «Explorando mis inteligencias» y, en el libro de Helena (desde tu perfil), rompe el sello de la página «Tus formas de ser inteligente».', (('REVELA_RESULTADO', 'APL-INTELIGENCIAS', 'EVENTOS', 1),)),
+    ('R-h3', 'ACTIVIDAD', 'h3', 'Completa las seis misiones «Mis intereses» y, en el libro de Helena (desde tu perfil), rompe el sello de la página «Lo que te atrae hacer».', (('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1),)),
+    ('R-ma4', 'ACTIVIDAD', 'ma4', 'Completa la misión «Una habilidad para practicar».', (('REGISTRO_ADECUADO', 'h1', 'EVENTOS', 1),)),
+    ('R-ma5', 'ACTIVIDAD', 'ma5', 'Completa la misión «La familia de carreras que me llama».', (('REGISTRO_ADECUADO', 'h3', 'EVENTOS', 1),)),
+    ('R-feria', 'ACTIVIDAD', 'feria', 'Completa la misión «Elegir una institución», en el camino.', (('COMPLETA_ACTIVIDAD', 'b3-6', 'EVENTOS', 1),)),
+    ('R-investigador', 'ACTIVIDAD', 'investigador', 'Completa la misión «Caminos que no van en línea recta», en el camino.', (('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1),)),
+    ('R-investigador-cierre', 'ACTIVIDAD', 'investigador-cierre', 'En «Investigaciones», publica tu primera entrevista.', (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
     # Secciones y secciones de la tarjeta de plan.
-    ('R-SEC-DIARIO', 'SECCION', 'DIARIO', 'Lumi te abre el diario en el bosque de las voces.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
-    ('R-SEC-LIBRO_HELENA', 'SECCION', 'LIBRO_HELENA', 'Responde las preguntas de Helena en Mi punto de partida para abrir su libro.', (('COMPLETA_ACTIVIDAD', 'b0-3', 'EVENTOS', 1),)),
-    ('R-SEC-CATALOGO', 'SECCION', 'CATALOGO', 'Lumi te muestra el catálogo en la piedra de los caminos.', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-SEC-PLANES', 'SECCION', 'PLANES', 'Lumi te explica los planes en la piedra de los caminos.', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-SEC-CHECK_IN', 'SECCION', 'CHECK_IN', 'Tu señal de hoy se abre en el campamento de Nico.', (('COMPLETA_ACTIVIDAD', 'b0-6', 'EVENTOS', 1),)),
-    ('R-SEC-FAMILIA', 'SECCION', 'FAMILIA', 'Tu sección de familia se abre al llegar a la ciudad.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-SEC-INVESTIGACIONES', 'SECCION', 'INVESTIGACIONES', 'Anselmo te explica cómo investigar.', (('COMPLETA_ACTIVIDAD', 'investigador', 'EVENTOS', 1),)),
-    ('R-PLAN-POR_QUE', 'SECCION_PLAN', 'POR_QUE', 'Lumi te explica los planes en la piedra de los caminos.', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-PLAN-CONOCIMIENTO', 'SECCION_PLAN', 'CONOCIMIENTO', 'Aprende a leer una ficha del catálogo en la sala del atlas.', (('COMPLETA_ACTIVIDAD', 'b3-2', 'EVENTOS', 1),)),
-    ('R-PLAN-REALIDAD', 'SECCION_PLAN', 'REALIDAD', 'Conoce lo que cuesta estudiar en la caseta de Clotilde.', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
-    ('R-PLAN-PASOS', 'SECCION_PLAN', 'PASOS', 'Pon a prueba tu orden para definir tus pasos.', (('COMPLETA_ACTIVIDAD', 'b4-5', 'EVENTOS', 1),)),
+    ('R-SEC-DIARIO', 'SECCION', 'DIARIO', 'Completa la misión «Lo que siento al terminar el colegio y mi diario».', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
+    ('R-SEC-LIBRO_HELENA', 'SECCION', 'LIBRO_HELENA', 'Completa la misión «Mi punto de partida».', (('COMPLETA_ACTIVIDAD', 'b0-3', 'EVENTOS', 1),)),
+    ('R-SEC-CATALOGO', 'SECCION', 'CATALOGO', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
+    ('R-SEC-PLANES', 'SECCION', 'PLANES', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
+    ('R-SEC-CHECK_IN', 'SECCION', 'CHECK_IN', 'Completa la misión «Dudar también es avanzar».', (('COMPLETA_ACTIVIDAD', 'b0-6', 'EVENTOS', 1),)),
+    ('R-SEC-FAMILIA', 'SECCION', 'FAMILIA', 'Completa la misión «Las voces y la mía».', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-SEC-INVESTIGACIONES', 'SECCION', 'INVESTIGACIONES', 'Completa la misión «Una entrevista para Anselmo», en la ciudad.', (('COMPLETA_ACTIVIDAD', 'investigador', 'EVENTOS', 1),)),
+    ('R-PLAN-POR_QUE', 'SECCION_PLAN', 'POR_QUE', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
+    ('R-PLAN-CONOCIMIENTO', 'SECCION_PLAN', 'CONOCIMIENTO', 'Completa la misión «Mis intereses en el catálogo».', (('COMPLETA_ACTIVIDAD', 'b3-2', 'EVENTOS', 1),)),
+    ('R-PLAN-REALIDAD', 'SECCION_PLAN', 'REALIDAD', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
+    ('R-PLAN-PASOS', 'SECCION_PLAN', 'PASOS', 'Completa la misión «Pongo a prueba mi orden».', (('COMPLETA_ACTIVIDAD', 'b4-5', 'EVENTOS', 1),)),
     # Fichas: una regla por ficha.
     ('R-F01', 'FICHA', 'F01', 'Conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
     ('R-F02', 'FICHA', 'F02', 'Escucha el caso de Alejandra en el molino.', (('COMPLETA_ACTIVIDAD', 'b0-5', 'EVENTOS', 1),)),
@@ -1242,7 +1434,7 @@ REGLAS = (
     ('R-F04', 'FICHA', 'F04', 'Cuéntale tu historia a Nadia en su taller.', (('COMPLETA_ACTIVIDAD', 'b1-1', 'EVENTOS', 1),)),
     ('R-F05', 'FICHA', 'F05', 'Escucha los pregones de Aurelio en el oasis.', (('COMPLETA_ACTIVIDAD', 'b1-4', 'EVENTOS', 1),)),
     ('R-F06', 'FICHA', 'F06', 'Responde al primer guardián del pergamino.', (('COMPLETA_ACTIVIDAD', 'b1-7', 'EVENTOS', 1),)),
-    ('R-F07', 'FICHA', 'F07', 'Pasa la prueba de la brigada.', (('COMPLETA_ACTIVIDAD', 'b2-1', 'EVENTOS', 1),)),
+    ('R-F07', 'FICHA', 'F07', 'Haz la ronda de los seis refugios.', (('COMPLETA_ACTIVIDAD', 'b2-5', 'EVENTOS', 1),)),
     ('R-F08', 'FICHA', 'F08', 'Pasa la prueba de la brigada.', (('COMPLETA_ACTIVIDAD', 'b2-1', 'EVENTOS', 1),)),
     ('R-F09', 'FICHA', 'F09', 'Ayuda a Rosa con el reparto de tareas.', (('COMPLETA_ACTIVIDAD', 'b2-2', 'EVENTOS', 1),)),
     ('R-F10', 'FICHA', 'F10', 'Haz la ronda de los seis refugios.', (('COMPLETA_ACTIVIDAD', 'b2-5', 'EVENTOS', 1),)),
@@ -1278,12 +1470,12 @@ REGLAS = (
     ('R-p8', 'ACTIVIDAD', 'p8', 'Complete la actividad anterior.', (('COMPLETA_ACTIVIDAD', 'p7', 'EVENTOS', 1),)),
     ('R-SEC-CONVERSACIONES', 'SECCION', 'CONVERSACIONES', 'Complete su ruta de actividades.', (('COMPLETA_BLOQUE', 'FAMILIA', 'EVENTOS', 1),)),
     # Ajuste carga-casos: los casos se abren con la ciudad y cada uno regala sus voces.
-    ('R-c1', 'ACTIVIDAD', 'c1', 'Calibra el artefacto con Iván para entrar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-c2', 'ACTIVIDAD', 'c2', 'Calibra el artefacto con Iván para entrar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-c3', 'ACTIVIDAD', 'c3', 'Calibra el artefacto con Iván para entrar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-c4', 'ACTIVIDAD', 'c4', 'Calibra el artefacto con Iván para entrar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-c5', 'ACTIVIDAD', 'c5', 'Calibra el artefacto con Iván para entrar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
-    ('R-c6', 'ACTIVIDAD', 'c6', 'Calibra el artefacto con Iván para entrar a la Central de casos.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c1', 'ACTIVIDAD', 'c1', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c2', 'ACTIVIDAD', 'c2', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c3', 'ACTIVIDAD', 'c3', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c4', 'ACTIVIDAD', 'c4', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c5', 'ACTIVIDAD', 'c5', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
+    ('R-c6', 'ACTIVIDAD', 'c6', 'Completa la misión «Las voces y la mía», en el camino.', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
     ('R-tc1-1', 'TESTIMONIO', 'tc1-1', 'Resuelve «La plaza que esconde otra historia» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c1', 'EVENTOS', 1),)),
     ('R-tc1-2', 'TESTIMONIO', 'tc1-2', 'Resuelve «La plaza que esconde otra historia» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c1', 'EVENTOS', 1),)),
     ('R-tc2-1', 'TESTIMONIO', 'tc2-1', 'Resuelve «Las becas que nadie puede explicar» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c2', 'EVENTOS', 1),)),
@@ -1295,20 +1487,20 @@ REGLAS = (
     ('R-tc5-2', 'TESTIMONIO', 'tc5-2', 'Resuelve «El torneo de los equipos imposibles» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c5', 'EVENTOS', 1),)),
     ('R-tc6-1', 'TESTIMONIO', 'tc6-1', 'Resuelve «La laguna que amaneció en silencio» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c6', 'EVENTOS', 1),)),
     ('R-tc6-2', 'TESTIMONIO', 'tc6-2', 'Resuelve «La laguna que amaneció en silencio» en la Central para conocer esta voz.', (('SUPERA_CASO', 'c6', 'EVENTOS', 1),)),
-    ('R-tb3-1', 'TESTIMONIO', 'tb3-1', 'Conoce los cinco embarcaderos con Ulises.', (('COMPLETA_ACTIVIDAD', 'b3-1', 'EVENTOS', 1),)),
-    ('R-tb3-8', 'TESTIMONIO', 'tb3-8', 'Pasa por la caseta de Clotilde.', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
-    ('R-tb3-10', 'TESTIMONIO', 'tb3-10', 'Escucha a Alejandra en el malecón.', (('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1),)),
+    ('R-tb3-1', 'TESTIMONIO', 'tb3-1', 'Completa la misión «Caminos después del colegio».', (('COMPLETA_ACTIVIDAD', 'b3-1', 'EVENTOS', 1),)),
+    ('R-tb3-8', 'TESTIMONIO', 'tb3-8', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
+    ('R-tb3-10', 'TESTIMONIO', 'tb3-10', 'Completa la misión «Caminos que no van en línea recta».', (('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1),)),
     # Ajuste conversaciones: cada una pide la carta y una requerida del camino (conv-1 y conv-2, la que abre Familia).
-    ('R-conv-1', 'CONVERSACION', 'conv-1', 'Escribe tu carta para abrir este tema.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
-    ('R-conv-2', 'CONVERSACION', 'conv-2', 'Escribe tu carta para abrir este tema.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
-    ('R-conv-3', 'CONVERSACION', 'conv-3', 'Se abre al contar de dónde te viene un mito, del otro lado del puente.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-6', 'EVENTOS', 1))),
-    ('R-conv-4', 'CONVERSACION', 'conv-4', 'Se abre al imaginar tu futuro con el guardián.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-7', 'EVENTOS', 1))),
-    ('R-conv-5', 'CONVERSACION', 'conv-5', 'Se abre al ordenar lo que valoras en un trabajo, con Rosa.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1))),
-    ('R-conv-6', 'CONVERSACION', 'conv-6', 'Se abre al separar, con Nico, lo que se te da bien de lo que te gusta.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b2-4', 'EVENTOS', 1))),
-    ('R-conv-7', 'CONVERSACION', 'conv-7', 'Se abre al escuchar a Doña Cifra en el mercado.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1))),
-    ('R-conv-8', 'CONVERSACION', 'conv-8', 'Se abre al escuchar a Alejandra en el malecón.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1))),
-    ('R-conv-9', 'CONVERSACION', 'conv-9', 'Se abre cuando Iván pone tus rutas sobre la mesa.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b4-3', 'EVENTOS', 1))),
-    ('R-conv-10', 'CONVERSACION', 'conv-10', 'Se abre al mirar tu proyecto con la vigía del faro.', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1))),
+    ('R-conv-1', 'CONVERSACION', 'conv-1', 'Escribe tu carta para tu familia en «En familia».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
+    ('R-conv-2', 'CONVERSACION', 'conv-2', 'Escribe tu carta para tu familia en «En familia».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1))),
+    ('R-conv-3', 'CONVERSACION', 'conv-3', 'Completa la misión «El mito que traje de casa».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-6', 'EVENTOS', 1))),
+    ('R-conv-4', 'CONVERSACION', 'conv-4', 'Completa la misión «Mi futuro».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b1-7', 'EVENTOS', 1))),
+    ('R-conv-5', 'CONVERSACION', 'conv-5', 'Completa la misión «Lo que valoro en un trabajo».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b2-3', 'EVENTOS', 1))),
+    ('R-conv-6', 'CONVERSACION', 'conv-6', 'Completa la misión «Lo que se me da bien y lo que me cuesta».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b2-4', 'EVENTOS', 1))),
+    ('R-conv-7', 'CONVERSACION', 'conv-7', 'Completa la misión «El mercado laboral».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-3', 'EVENTOS', 1))),
+    ('R-conv-8', 'CONVERSACION', 'conv-8', 'Completa la misión «Caminos que no van en línea recta».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b3-10', 'EVENTOS', 1))),
+    ('R-conv-9', 'CONVERSACION', 'conv-9', 'Completa la misión «Tres rutas sobre la mesa».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b4-3', 'EVENTOS', 1))),
+    ('R-conv-10', 'CONVERSACION', 'conv-10', 'Completa la misión «Mi proyecto».', (('ESCRIBE_CARTA', None, 'EVENTOS', 1), ('COMPLETA_ACTIVIDAD', 'b5-1', 'EVENTOS', 1))),
     # Ajuste cartas-diario: las siete cartas del camino, al completar su actividad, y las dos de conversaciones, al
     # responder los dos.
     ('R-d-llego', 'PREGUNTA_DIARIO', 'd-llego', 'Lumi te abre el diario en el bosque de las voces.', (('COMPLETA_ACTIVIDAD', 'b0-2', 'EVENTOS', 1),)),
@@ -1321,19 +1513,80 @@ REGLAS = (
     ('R-d-conv-fortalezas', 'PREGUNTA_DIARIO', 'd-conv-fortalezas', 'Se abre cuando tú y tu familia respondan «Fortalezas que quizá no vemos».', (('COMPLETA_CONVERSACION', 'conv-6', 'EVENTOS', 1),)),
 
     ('R-d-conv-acompanar', 'PREGUNTA_DIARIO', 'd-conv-acompanar', 'Se abre cuando tú y tu familia respondan «Ayúdame como lo necesito».', (('COMPLETA_CONVERSACION', 'conv-10', 'EVENTOS', 1),)),
-    # PROVISIONAL: insignia de inicio y niveles.
-
-    ('R-t-ins-1', 'INSIGNIA', 't-ins-1', 'Conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
-    ('R-NIV-2', 'NIVEL', 2, 'Termina el primer tramo para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
-    ('R-NIV-3', 'NIVEL', 3, 'Termina el primer tramo y mira tres carreras para subir de nivel.', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1), ('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 3))),
-    # PROVISIONAL: recuerdos de Lumi por amistad e insignias de vistas, tal cual en `ruta`.
-    *(r for r in ruta.REGLAS if r[2] in ruta.RECUERDOS_LUMI),
-    *(r for r in ruta.REGLAS if r[1] == 'INSIGNIA' and r[2] != 't-ins-1'),
+    # Adenda de niveles: cada nivel se obtiene al cerrar un tramo del camino; sin evaluador, una condición.
+    ('R-NIV-2', 'NIVEL', 2, 'Completa «Dudar también es avanzar», la última misión del tramo «Inicio».', (('COMPLETA_BLOQUE', 'B0', 'EVENTOS', 1),)),
+    ('R-NIV-3', 'NIVEL', 3, 'Completa «Intereses y ambientes de trabajo», la última misión del tramo «Me conozco».', (('COMPLETA_BLOQUE', 'B2', 'EVENTOS', 1),)),
+    ('R-NIV-4', 'NIVEL', 4, 'Completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional».', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1),)),
+    ('R-NIV-5', 'NIVEL', 5, 'Completa «Lo que decía el pergamino», la última misión del tramo «Mi decisión».', (('COMPLETA_BLOQUE', 'B5', 'EVENTOS', 1),)),
+    # Ajuste coherencia-lumi: el recuerdo n se abre al llegar al nivel n de amistad (mismo umbral y mismo conteo).
+    *((f'R-{codigo}', 'ACTIVIDAD', codigo, mensaje, (('ESCRIBE_ENTRADA_DIARIO', None, 'EVENTOS_TOPE_DIARIO', umbral),))
+      for codigo, umbral, mensaje in zip(RECUERDOS_LUMI, UMBRALES_AMISTAD, MENSAJES_RECUERDOS_LUMI, strict=True)),
+    # Ajuste logros: una regla por insignia. Las que llevan evaluador (`EVALUADORES_REGLAS`) tienen la condición que
+    # debe reevaluarlas. El mensaje es el requisito, con el título de lo que nombra la condición.
+    ('R-ins-chispa', 'INSIGNIA', 'ins-chispa', 'Conoce a Lumi en el muelle: completa la misión «Bienvenida: la vocación se construye».', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
+    ('R-ins-primera-sombra', 'INSIGNIA', 'ins-primera-sombra', 'Gana tu primera batalla.', (('SUPERA_BATALLA', None, 'EVENTOS', 1),)),
+    ('R-ins-destello', 'INSIGNIA', 'ins-destello', 'Gana una batalla sin perder destellos.', (('VENCE_DESAFIO_INTACTO', None, 'EVENTOS', 1),)),
+    ('R-ins-sin-sombras', 'INSIGNIA', 'ins-sin-sombras', 'Gana todas las batallas de la isla, también las que aparecen en el camino.', (('SUPERA_BATALLA', None, 'EVENTOS', 1),)),
+    ('R-ins-helena', 'INSIGNIA', 'ins-helena', 'En el libro de Helena, rompe los sellos de «Lo que te atrae hacer», «Cómo te relacionas» y «Tus formas de ser inteligente».', (
+        ('REVELA_RESULTADO', 'APL-RIASEC', 'EVENTOS', 1), ('REVELA_RESULTADO', 'APL-HABILIDADES', 'EVENTOS', 1),
+        ('REVELA_RESULTADO', 'APL-INTELIGENCIAS', 'EVENTOS', 1))),
+    ('R-ins-bitacora', 'INSIGNIA', 'ins-bitacora', 'Completa todos los registros, también los que aparecen en el camino y en la ciudad.', (('COMPLETA_ACTIVIDAD', None, 'EVENTOS', 1),)),
+    ('R-ins-faro', 'INSIGNIA', 'ins-faro', 'Abre el pergamino en la sala de la luz: completa la misión «Lo que decía el pergamino».', (('COMPLETA_ACTIVIDAD', 'b5-5', 'EVENTOS', 1),)),
+    ('R-ins-isla', 'INSIGNIA', 'ins-isla', 'Completa todas las misiones del camino y de la ciudad, incluidas las opcionales.', (('COMPLETA_ACTIVIDAD', None, 'EVENTOS', 1),)),
+    ('R-ins-caso', 'INSIGNIA', 'ins-caso', 'Resuelve tu primer caso en la Central.', (('SUPERA_CASO', None, 'EVENTOS', 1),)),
+    ('R-ins-expediente', 'INSIGNIA', 'ins-expediente', 'Resuelve los seis casos de la Central.', (('SUPERA_CASO', None, 'EVENTOS', 1),)),
+    ('R-ins-carreras', 'INSIGNIA', 'ins-carreras', 'Mira el detalle de diez carreras distintas en el catálogo.', (('VISTA_CARRERA', None, 'REFERENCIAS_DISTINTAS', 10),)),
+    ('R-ins-ocupaciones', 'INSIGNIA', 'ins-ocupaciones', 'Mira el detalle de diez ocupaciones distintas en el catálogo.', (('VISTA_OCUPACION', None, 'REFERENCIAS_DISTINTAS', 10),)),
+    ('R-ins-puertas', 'INSIGNIA', 'ins-puertas', 'Mira instituciones de todos los tipos.', (('VISTA_INSTITUCION', None, 'EVENTOS', 1),)),
+    ('R-ins-voz', 'INSIGNIA', 'ins-voz', 'Publica una entrevista.', (('PUBLICA_ENTREVISTA', None, 'EVENTOS', 1),)),
+    ('R-ins-leyenda', 'INSIGNIA', 'ins-leyenda', 'Logra que tu entrevista sea Leyenda.', (('ENTREVISTA_LEYENDA', None, 'EVENTOS', 1),)),
+    ('R-ins-plan-a', 'INSIGNIA', 'ins-plan-a', 'Crea tu Plan A en «Mis planes».', (('CREA_PLAN', None, 'REFERENCIAS_DISTINTAS', 1),)),
+    ('R-ins-plan-b', 'INSIGNIA', 'ins-plan-b', 'Crea tu Plan B en «Mis planes».', (('CREA_PLAN', None, 'REFERENCIAS_DISTINTAS', 2),)),
+    ('R-ins-plan-c', 'INSIGNIA', 'ins-plan-c', 'Crea tu Plan C en «Mis planes».', (('CREA_PLAN', None, 'REFERENCIAS_DISTINTAS', 3),)),
+    ('R-ins-plan-completo', 'INSIGNIA', 'ins-plan-completo', 'Completa las cuatro secciones de uno de tus planes.', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
+    ('R-ins-planes-completos', 'INSIGNIA', 'ins-planes-completos', 'Completa las cuatro secciones de tus tres planes.', (('ACTUALIZA_PLAN', None, 'EVENTOS', 1),)),
+    ('R-ins-senderos', 'INSIGNIA', 'ins-senderos', 'Completa tres registros con respuestas desarrolladas.', (('REGISTRO_ADECUADO', None, 'REFERENCIAS_DISTINTAS', 3),)),
+    ('R-ins-lumi', 'INSIGNIA', 'ins-lumi', 'Escucha los cinco recuerdos de Lumi en tu diario: «De dónde vengo», «Lo que escribí en el tronco», «Un poco de todo», «Hasta la mitad» y «Lo que elijo yo».',
+     tuple(('COMPLETA_ACTIVIDAD', codigo, 'EVENTOS', 1) for codigo in RECUERDOS_LUMI)),
+    ('R-ins-brujula', 'INSIGNIA', 'ins-brujula', 'Haz tu check-in en cinco días distintos.', (('REGISTRA_CHECK_IN', None, 'DIAS_DISTINTOS', 5),)),
+    ('R-ins-conversacion', 'INSIGNIA', 'ins-conversacion', 'Completa una conversación con tu familia en «En familia».', (('COMPLETA_CONVERSACION', None, 'EVENTOS', 1),)),
+    ('R-ins-sobremesa', 'INSIGNIA', 'ins-sobremesa', 'Completa todas las conversaciones con tu familia.', (('COMPLETA_CONVERSACION', None, 'EVENTOS', 1),)),
 )
 
-# PROVISIONAL: textos de las condiciones de insignias y niveles, de `ruta` (mismos códigos de regla).
-TEXTOS_CONDICIONES = {**ruta.TEXTOS_CONDICIONES, 'R-t-ins-1': ('Conoce a Lumi en el muelle',), 'R-NIV-2': ('Termina el primer tramo',),
-                      'R-NIV-3': ('Termina el primer tramo', 'Mira tres carreras distintas')}
+# Texto de cada condición, en el orden de su regla: niveles e insignias (ajuste logros).
+TEXTOS_CONDICIONES = {
+    'R-NIV-2': ('Termina el tramo «Inicio»',),
+    'R-NIV-3': ('Termina el tramo «Me conozco»',),
+    'R-NIV-4': ('Termina el tramo «Exploro el mundo profesional»',),
+    'R-NIV-5': ('Termina el tramo «Mi decisión»',),
+    'R-ins-chispa': ('Completa la misión «Bienvenida: la vocación se construye»',),
+    'R-ins-primera-sombra': ('Gana una batalla',),
+    'R-ins-destello': ('Gana una batalla sin perder destellos',),
+    'R-ins-sin-sombras': ('Batallas ganadas',),
+    'R-ins-helena': ('Rompe el sello de «Lo que te atrae hacer»', 'Rompe el sello de «Cómo te relacionas»',
+                     'Rompe el sello de «Tus formas de ser inteligente»'),
+    'R-ins-bitacora': ('Registros completados',),
+    'R-ins-faro': ('Completa la misión «Lo que decía el pergamino»',),
+    'R-ins-isla': ('Misiones completadas',),
+    'R-ins-caso': ('Resuelve un caso de la Central',),
+    'R-ins-expediente': ('Casos resueltos',),
+    'R-ins-carreras': ('Carreras distintas vistas',),
+    'R-ins-ocupaciones': ('Ocupaciones distintas vistas',),
+    'R-ins-puertas': ('Mira instituciones de todos los tipos',),
+    'R-ins-voz': ('Publica una entrevista',),
+    'R-ins-leyenda': ('Logra que tu entrevista sea Leyenda',),
+    'R-ins-plan-a': ('Crea un plan en «Mis planes»',),
+    'R-ins-plan-b': ('Planes creados',),
+    'R-ins-plan-c': ('Planes creados',),
+    'R-ins-plan-completo': ('Planes con sus cuatro secciones completas',),
+    'R-ins-planes-completos': ('Planes con sus cuatro secciones completas',),
+    'R-ins-senderos': ('Registros con respuestas desarrolladas',),
+    'R-ins-lumi': ('Escucha «De dónde vengo»', 'Escucha «Lo que escribí en el tronco»', 'Escucha «Un poco de todo»',
+                   'Escucha «Hasta la mitad»', 'Escucha «Lo que elijo yo»'),
+    'R-ins-brujula': ('Días con check-in',),
+    'R-ins-conversacion': ('Completa una conversación con tu familia',),
+    'R-ins-sobremesa': ('Conversaciones completadas',),
+}
 
 # Reglas con evaluador especial: {regla: (evaluador, parámetro)}. Cada una lleva también la condición cuyo evento
 # debe reevaluarla (ACTUALIZA_PLAN en las de planes).
@@ -1343,8 +1596,15 @@ EVALUADORES_REGLAS = {
     'R-b4-1': ('por_que_en_planes', 1),
     'R-b4-5': ('por_que_en_planes', 2),
     'R-b5-1': ('pasos_plan_a', 1),
-    # PROVISIONAL: insignias de vistas, de `ruta`.
-    **{r: v for r, v in ruta.EVALUADORES_REGLAS.items() if r.startswith('R-t-ins-')},
+    # Ajuste logros: insignias con evaluador (el total sale del contenido cargado, sin cifras fijas).
+    'R-ins-sin-sombras': ('todas_las_batallas', None),
+    'R-ins-bitacora': ('todos_los_registros', None),
+    'R-ins-isla': ('todas_las_actividades', None),
+    'R-ins-expediente': ('todos_los_casos', None),
+    'R-ins-puertas': ('instituciones_tipos_distintos', None),
+    'R-ins-plan-completo': ('planes_completos', 1),
+    'R-ins-planes-completos': ('planes_completos', 3),
+    'R-ins-sobremesa': ('todas_las_conversaciones', None),
 }
 
 

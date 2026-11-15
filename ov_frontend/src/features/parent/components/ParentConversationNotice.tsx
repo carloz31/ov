@@ -62,7 +62,7 @@ export function ParentConversationNotice({ model }: { model: ReturnType<typeof u
         </>
       ) : (
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Las conversaciones se habilitarán a medida que {nombreHijo ?? 'tu hijo'} avance en su
+          Las conversaciones se habilitarán a medida que {nombreHijo ?? 'su hijo o hija'} avance en su
           recorrido.
         </p>
       )}

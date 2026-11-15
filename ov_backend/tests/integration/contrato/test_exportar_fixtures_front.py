@@ -11,6 +11,9 @@ from scripts import exportar_fixtures_front as exportador
 from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
+from app.schemas.panel import (
+    EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel,
+)
 from app.schemas.referencias import ReferenciasConsultadas
 from app.schemas.acciones import (
     RespuestaAccion, RespuestaAgrupada, RespuestaReiniciarInstrumento, RespuestaResolverBatalla, RespuestaResolverCaso,
@@ -101,6 +104,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'referencias-investigador-cierre',
     # F09: en curso con sugerencias, Luis con guía lista, por ocupación y el detalle propio.
     'investigaciones-en-curso', 'investigaciones-luis', 'entrevistas-familia', 'entrevista-detalle-propia',
+    # Ajuste panel-salon: el panel del salón de ori-carmen.
+    'panel-seguimiento', 'panel-intereses', 'panel-areas', 'panel-instituciones', 'panel-estudiantes',
 )}
 
 
@@ -112,7 +117,14 @@ NOMBRES_CONTENIDO = {f'contenido-{nombre}.json' for nombre in (
     'registro-b1-1-completado')} | {
     # Ajuste front de registros (lote 2): los registros con piezas y ecos, sin responder y completados.
     f'contenido-registro-{actividad}-{momento}.json' for actividad in ('b4-1', 'b4-5', 'b5-1', 'b5-3')
-    for momento in ('inicial', 'completado')}
+    for momento in ('inicial', 'completado')} | {
+    # Ajuste lumi-mensajes: las actividades de una cuenta nueva de `contenido`, para el camino del mapa.
+    'contenido-actividades-inicial.json'} | {
+    # Ajuste panel-estudiantes: la lista y el perfil de los casos 1, 5 y 7 de `sembrar_panel_ejemplo.py`.
+    'contenido-panel-lista.json', 'contenido-panel-lista-conversar.json'} | {
+    f'contenido-panel-{caso}-{parte}.json' for caso in (1, 5, 7)
+    for parte in ('perfil', 'tests', 'planes', 'respuestas', 'avance', 'partida-llegada')} | {
+    f'contenido-panel-{caso}-{parte}.json' for caso in (5, 7) for parte in ('resultado', 'plan-a', 'registro')}
 
 
 def leer(archivos):
@@ -527,14 +539,23 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert propia.propia and [r.reportada_por_mi for r in propia.lista_reacciones if r.tipo] == [True]
     eco, = ReferenciasConsultadas.model_validate(datos['referencias-investigador-cierre']).referencias
     assert eco.tipo == 'LO_QUE_PIENSO' and eco.estado == 'DISPONIBLE'
+    # Ajuste panel-salon: el panel de 5A con el estado del recorrido, a una fecha fija.
+    seguimiento = SeguimientoPanel.model_validate(datos['panel-seguimiento'])
+    assert (seguimiento.fecha.isoformat(), seguimiento.total_estudiantes, seguimiento.test.listo) == ('2026-10-20', 5, 1)
+    panel_intereses = InteresesPanel.model_validate(datos['panel-intereses'])
+    assert panel_intereses.con_planes == 2 and panel_intereses.areas.total == 3
+    assert PaginaAreasPanel.model_validate(datos['panel-areas']).total == 3
+    assert PaginaInstitucionesPanel.model_validate(datos['panel-instituciones']).total == 1
+    assert len(TypeAdapter(list[EstudiantePanel]).validate_python(datos['panel-estudiantes'])) == 5
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')
     exportador.exportar_fixtures(destino)
     assert {ruta.name: ruta.read_bytes() for ruta in archivos} == bytes_antes
     assert conservar.read_text(encoding='utf-8') == 'Conservar'
-    # Dos exportaciones, cada una con tres bases: ruta, el registro b1-1 y los registros de piezas (lote 2).
-    assert len(bases) == 6 and all(not ruta.parent.exists() for ruta in bases)
+    # Dos exportaciones, cada una con cuatro bases: ruta, el registro b1-1, los registros de piezas (lote 2) y los
+    # estudiantes de ejemplo del panel (ajuste panel-estudiantes).
+    assert len(bases) == 8 and all(not ruta.parent.exists() for ruta in bases)
     assert ruta_ajena.read_bytes() == b'Base del usuario: conservar estos bytes'
 
 

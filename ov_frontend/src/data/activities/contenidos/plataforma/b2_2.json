@@ -6,10 +6,10 @@
   "subtitulo": "El reparto de tareas",
   "escenario": "bosque_volcan",
   "bloque": 2,
-  "orden": 2,
-  "obligatoria": true,
+  "orden": 5,
+  "obligatoria": false,
   "requisitos": [
-    "b2-1"
+    "b2-3"
   ],
   "ubicacion": "Bosque del volcán, campamento de la brigada",
   "duracionEstimadaMin": 10,
@@ -348,7 +348,7 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Otra página de tu libro. Ya van dos con dueño."
+      "texto": "Otra página de tu libro, y ya sabemos quién la guarda."
     },
     {
       "id": "b2-2-14",
@@ -362,8 +362,9 @@
     "mensajeFin": "Todos tenemos las siete. Lo que te distingue es cómo las combinas. En la ciudad, el maestro Bruno guarda las preguntas de otra página."
   },
   "mapa": {
-    "x": 770,
-    "y": 440,
-    "icono": "informativa"
+    "x": 640,
+    "y": 335,
+    "icono": "informativa",
+    "origen": "b2-3"
   }
 }

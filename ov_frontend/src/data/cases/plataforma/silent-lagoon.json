@@ -7,7 +7,7 @@
       "Circula una fotografía de un camión con recipientes junto a un antiguo taller. Unos vecinos señalan a ese negocio; otros culpan a los cultivos y otros aseguran que se trata de un fenómeno natural. Las familias no saben qué usos del agua son seguros.",
       "Tu misión es reunir especialistas para investigar la circulación del agua, contrastar las posibles causas y proponer medidas ambientales y de gestión respaldadas por evidencias, sin acusar de manera apresurada."
     ],
-    "imagen": "silent-lagoon-intro.png",
+    "imagen": "silent-lagoon-intro.webp",
     "alerta": "La laguna presenta cambios inquietantes"
   },
   "presupuesto": 12,
@@ -87,7 +87,7 @@
         "textoMovil": "Pescadores, agricultores y vecinos tienen observaciones distintas sobre la laguna. Escucha sus testimonios antes de iniciar la investigación."
       },
       "fondo": {
-        "imagen": "silent-lagoon-phase-1.png",
+        "imagen": "silent-lagoon-phase-1.webp",
         "posicion": "54% 50%"
       },
       "mensajes": [
@@ -128,7 +128,7 @@
           "id": "alternate-water-sources",
           "quien": "Representante de vecinos",
           "contexto": "Centro comunal",
-          "mensaje": "Algunas familias necesitan organizar el uso de agua de fuentes alternativas ya existentes. Por ahora no se construirá ni modificará ninguna red de agua potable; necesitamos criterios para distribuir la disponible y revisar su calidad, sin usar la laguna hasta saber qué usos son seguros.",
+          "mensaje": "Mientras no sepamos si el agua de la laguna es segura, no la vamos a usar. Tenemos otras fuentes de agua, pero hay que organizar cómo repartirla y revisar su calidad. No se va a construir ninguna red nueva.",
           "resumen": "Las familias necesitan gestionar fuentes de agua ya existentes",
           "posicion": {
             "x": 79,
@@ -140,36 +140,36 @@
         {
           "id": "water-flow-map",
           "titulo": "¿De dónde viene el agua?",
-          "detalle": "Reconstruir el movimiento del agua hacia la laguna y representar sus canales, conexiones y posibles entradas en un mapa actualizado.",
-          "resultado": "La investigación comienza con un modelo de recorridos de agua y una representación geográfica de las conexiones.",
+          "detalle": "Averiguar por dónde se mueve el agua hasta llegar a la laguna, y dibujar un mapa actualizado con los canales, sus conexiones y las posibles entradas.",
+          "resultado": "La investigación arranca sabiendo por dónde se mueve el agua y con un mapa que muestra cómo se conectan los canales.",
           "necesidades": [
             {
               "onet": "19-2043.00",
-              "aporte": "Investiga la circulación y distribución del agua, incluyendo la influencia de lluvias y escorrentías.",
-              "siFalta": "No se comprendieron adecuadamente las rutas por las que el agua alcanzó distintas zonas de la laguna."
+              "aporte": "Estudia cómo circula y se reparte el agua, y cómo influyen las lluvias y el agua que corre por el terreno.",
+              "siFalta": "No se entendió bien por qué rutas llegó el agua a las distintas zonas de la laguna."
             },
             {
               "onet": "17-1021.00",
-              "aporte": "Organiza datos espaciales y prepara mapas que muestran las conexiones y puntos de observación de la investigación.",
-              "siFalta": "Los datos de canales y puntos afectados permanecieron dispersos, lo que dificultó comparar ubicaciones."
+              "aporte": "Reúne los datos de ubicación y elabora mapas que muestran los canales, sus conexiones y los puntos que se están observando.",
+              "siFalta": "Los datos de canales y puntos afectados siguieron dispersos, y fue difícil comparar un lugar con otro."
             }
           ]
         },
         {
           "id": "sampling-and-water-management",
           "titulo": "Una comunidad sin respuestas",
-          "detalle": "Organizar un muestreo ambiental comparable y una estrategia provisional de gestión del agua a partir de fuentes alternativas ya existentes; no diseñar infraestructura nueva.",
-          "resultado": "La comunidad obtiene medidas provisionales de gestión y el equipo científico dispone de una base de muestras mejor organizada.",
+          "detalle": "Tomar muestras de agua en varios puntos de la laguna, todas de la misma forma para poder compararlas, y organizar mientras tanto cómo usar y repartir el agua de otras fuentes que ya existen. No se construirá nada nuevo.",
+          "resultado": "La comunidad ya tiene reglas provisionales para usar el agua disponible, y el equipo científico cuenta con muestras mejor organizadas.",
           "necesidades": [
             {
               "onet": "19-4042.00",
-              "aporte": "Realiza toma de muestras y pruebas de campo o laboratorio, bajo la dirección técnica correspondiente, para recopilar datos ambientales comparables.",
-              "siFalta": "Los datos disponibles no representaron adecuadamente distintas zonas y fue más difícil estudiar el problema."
+              "aporte": "Toma muestras y hace pruebas en el campo o en el laboratorio, guiado por los especialistas, para reunir datos que se puedan comparar.",
+              "siFalta": "Los datos no representaban bien las distintas zonas de la laguna y fue más difícil estudiar el problema."
             },
             {
               "onet": "11-9121.02",
-              "aporte": "Organiza estrategias de gestión de suministro y calidad de recursos hídricos existentes mientras se obtiene información oficial sobre el agua de la laguna.",
-              "siFalta": "Las familias no contaron con criterios coordinados para gestionar las fuentes alternativas disponibles mientras duraba la investigación."
+              "aporte": "Organiza cómo abastecerse y cuidar la calidad del agua de las fuentes que ya existen, mientras llegan los resultados oficiales sobre la laguna.",
+              "siFalta": "Las familias no tuvieron criterios comunes para usar las otras fuentes de agua mientras duraba la investigación."
             }
           ]
         }
@@ -184,7 +184,7 @@
         "textoMovil": "El laboratorio y la comunidad reunieron indicios todavía incompletos. Escucha sus testimonios antes de continuar los análisis."
       },
       "fondo": {
-        "imagen": "silent-lagoon-phase-2.png",
+        "imagen": "silent-lagoon-phase-2.webp",
         "posicion": "51% 53%"
       },
       "mensajes": [
@@ -237,36 +237,36 @@
         {
           "id": "chemistry-and-microorganisms",
           "titulo": "¿Sustancias peligrosas o algo que está creciendo?",
-          "detalle": "Analizar sustancias y concentraciones en el agua e investigar la presencia y proliferación de organismos microscópicos.",
-          "resultado": "Los resultados permiten examinar explicaciones químicas y microbiológicas como líneas de investigación distintas.",
+          "detalle": "Analizar qué sustancias tiene el agua y en qué cantidad, e investigar qué son los organismos diminutos que aparecieron y por qué hay tantos.",
+          "resultado": "Ahora hay dos explicaciones posibles que se investigan por separado: las sustancias que tiene el agua y los organismos diminutos que crecen en ella.",
           "necesidades": [
             {
               "onet": "19-2031.00",
-              "aporte": "Realiza análisis cualitativos y cuantitativos de las sustancias presentes en las muestras.",
-              "siFalta": "Quedaron sin esclarecer componentes y concentraciones que podrían ayudar a entender el cambio del agua."
+              "aporte": "Analiza las muestras para saber qué sustancias contienen y en qué cantidad.",
+              "siFalta": "No se supo qué sustancias había ni en qué cantidad, datos que podían ayudar a entender el cambio del agua."
             },
             {
               "onet": "19-1022.00",
-              "aporte": "Investiga organismos microscópicos, incluidas algas, y la posible proliferación observada en el agua.",
-              "siFalta": "No se estudió adecuadamente la concentración inusual de organismos microscópicos y su relación con el fenómeno."
+              "aporte": "Estudia los organismos que solo se ven con microscopio, como las algas, y por qué se están multiplicando en el agua.",
+              "siFalta": "No se estudió bien por qué había tantos organismos microscópicos ni qué relación tenían con lo ocurrido."
             }
           ]
         },
         {
           "id": "wildlife-and-evidence",
           "titulo": "Los peces no pueden contarnos qué pasó",
-          "detalle": "Examinar los efectos sobre poblaciones de fauna y sus hábitats e integrar la evidencia de varios estudios para evaluar las hipótesis.",
-          "resultado": "El equipo dispone de análisis sobre la fauna y una evaluación integrada de las evidencias, sin atribuir responsabilidades automáticamente. Los análisis disponibles apuntan a nutrientes elevados tras las lluvias, proliferación de algas y zonas con poco oxígeno disuelto. Son indicios compatibles con eutrofización y falta de oxígeno para los peces, pero no permiten determinar la procedencia exacta de los nutrientes ni probar un vertido industrial concreto.",
+          "detalle": "Estudiar qué les pasó a los animales silvestres de la laguna, peces y aves, y al lugar donde viven, y juntar los resultados de todos los estudios para ver qué explicación tiene más respaldo.",
+          "resultado": "El equipo ya tiene un estudio sobre los animales y una comparación de todas las evidencias, sin culpar a nadie de antemano. Lo que se sabe: después de las lluvias llegaron muchos nutrientes a la laguna, las algas se multiplicaron y en algunas zonas el agua se quedó con poco oxígeno, lo que explicaría la muerte de los peces. A esto se le llama eutrofización. Todavía no se sabe de dónde vinieron exactamente los nutrientes ni se puede probar que una industria los haya vertido.",
           "necesidades": [
             {
               "onet": "19-1023.00",
-              "aporte": "Estudia las poblaciones de animales silvestres y las condiciones ambientales que afectan su hábitat.",
-              "siFalta": "Se obtuvo información limitada sobre cómo cambiaron los animales y su hábitat tras el episodio."
+              "aporte": "Estudia a los animales silvestres y cómo los cambios del ambiente afectan el lugar donde viven.",
+              "siFalta": "Se supo poco sobre cómo cambiaron los animales y su hábitat después de lo ocurrido."
             },
             {
               "onet": "19-2041.00",
-              "aporte": "Integra información de varias disciplinas ambientales para comparar las explicaciones y los riesgos identificados.",
-              "siFalta": "Los informes quedaron fragmentados y resultó más difícil evaluar en conjunto qué hipótesis tenían mayor respaldo."
+              "aporte": "Reúne la información de las distintas ciencias del ambiente para comparar las explicaciones y los riesgos encontrados.",
+              "siFalta": "Los informes quedaron sueltos y fue más difícil ver, en conjunto, qué explicación tenía más respaldo."
             }
           ]
         }
@@ -281,7 +281,7 @@
         "textoMovil": "La comunidad quiere actuar, pero todavía hay dudas sobre el origen del daño. Escucha los testimonios antes de formar el equipo."
       },
       "fondo": {
-        "imagen": "silent-lagoon-phase-3.png",
+        "imagen": "silent-lagoon-phase-3.webp",
         "posicion": "50% 50%"
       },
       "mensajes": [
@@ -300,8 +300,8 @@
           "id": "unverified-sources",
           "quien": "Agricultor",
           "contexto": "Cerca de los canales",
-          "mensaje": "Hablan de prohibir actividades, pero no han revisado de dónde provienen realmente los aportes detectados.",
-          "resumen": "Aún no se sabe de dónde llegaron todos los aportes",
+          "mensaje": "Hablan de prohibir actividades, pero no han revisado de dónde viene realmente lo que está llegando a la laguna.",
+          "resumen": "Aún no se sabe de dónde viene lo que contamina la laguna",
           "posicion": {
             "x": 73,
             "y": 69
@@ -323,18 +323,18 @@
         {
           "id": "restoration-and-inspection",
           "titulo": "Recuperar la laguna sin cometer otra injusticia",
-          "detalle": "Diseñar acciones de control y recuperación ambiental, y revisar formalmente posibles fuentes de contaminación y su cumplimiento normativo.",
-          "resultado": "La comunidad inicia una recuperación gradual y una investigación institucional de las fuentes de contaminación, sin dar el problema por resuelto de inmediato.",
+          "detalle": "Diseñar las medidas para reducir lo que daña a la laguna y recuperarla poco a poco, e investigar de manera oficial de dónde viene la contaminación y si alguien incumplió las normas.",
+          "resultado": "La comunidad empieza a recuperar la laguna poco a poco y hay una investigación oficial sobre el origen de la contaminación. El problema todavía no está resuelto.",
           "necesidades": [
             {
               "onet": "17-2081.00",
-              "aporte": "Planifica medidas de ingeniería para prevenir, controlar y corregir riesgos ambientales, con seguimiento de los resultados.",
-              "siFalta": "No se diseñó un plan técnico suficiente para reducir los aportes dañinos y recuperar gradualmente el entorno."
+              "aporte": "Planifica soluciones técnicas para prevenir, controlar y corregir los daños al ambiente, y hace seguimiento para comprobar que funcionan.",
+              "siFalta": "No hubo un plan técnico suficiente para reducir lo que dañaba a la laguna ni para recuperarla poco a poco."
             },
             {
               "onet": "13-1041.01",
-              "aporte": "Investiga fuentes potenciales de contaminación y verifica el cumplimiento de las normas aplicables antes de atribuir infracciones.",
-              "siFalta": "Las posibles fuentes de contaminación no se examinaron formalmente y persistieron acusaciones sin sustento verificado."
+              "aporte": "Investiga las posibles fuentes de contaminación y comprueba si se cumplieron las normas antes de señalar a un responsable.",
+              "siFalta": "Las posibles fuentes de contaminación no se investigaron de manera oficial y siguieron las acusaciones sin pruebas."
             }
           ]
         }

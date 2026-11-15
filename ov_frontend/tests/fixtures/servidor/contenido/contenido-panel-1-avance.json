@@ -1,0 +1,59 @@
+{
+  "casos_superados": 0,
+  "dias_ultima_entrada": null,
+  "entradas_diario": 0,
+  "familia": null,
+  "opcionales_ciudad": 0,
+  "senales": [],
+  "tramos": [
+    {
+      "estado": "VA_AQUI",
+      "hechas": 0,
+      "nombre": "Inicio",
+      "numero": 1,
+      "siguiente": null,
+      "total": 6
+    },
+    {
+      "estado": "POR_ABRIR",
+      "hechas": 0,
+      "nombre": "Mi historia y mis aspiraciones",
+      "numero": 2,
+      "siguiente": null,
+      "total": 7
+    },
+    {
+      "estado": "POR_ABRIR",
+      "hechas": 0,
+      "nombre": "Me conozco",
+      "numero": 3,
+      "siguiente": null,
+      "total": 3
+    },
+    {
+      "estado": "POR_ABRIR",
+      "hechas": 0,
+      "nombre": "Exploro el mundo profesional",
+      "numero": 4,
+      "siguiente": null,
+      "total": 7
+    },
+    {
+      "estado": "POR_ABRIR",
+      "hechas": 0,
+      "nombre": "Mis opciones",
+      "numero": 5,
+      "siguiente": null,
+      "total": 5
+    },
+    {
+      "estado": "POR_ABRIR",
+      "hechas": 0,
+      "nombre": "Mi decisión",
+      "numero": 6,
+      "siguiente": null,
+      "total": 5
+    }
+  ],
+  "viene_bajando": null
+}

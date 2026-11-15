@@ -69,7 +69,7 @@ export function CabeceraMisActividades({
               </button>
             </>
           ) : (
-            <p className="pa-diploma-pendiente">Termine sus actividades para ver su diploma de compromiso.</p>
+            <p className="pa-diploma-pendiente">Termine sus actividades para ver su Diploma de compromiso.</p>
           )}
         </div>
       </aside>

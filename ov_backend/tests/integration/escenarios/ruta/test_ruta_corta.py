@@ -313,7 +313,7 @@ def test_hu094_partida_llegada_prioritarios_y_apertura_de_t2(cliente):
     revelar(cliente, instrumento=instrumento, aplicacion='APL-LLEGADA')
     comparacion = pedir(cliente, 'GET', f'/cuentas/est-ana/instrumentos/{instrumento}/comparacion')
     assert [(d['tematica'], d['zona_partida'], d['zona_llegada']) for d in comparacion['dimensiones']] == [
-        ('A', 'EN_CAMINO', 'EN_CAMINO'), ('B', 'EN_CAMINO', 'FUERTE'), ('C', 'EN_CAMINO', 'FUERTE'),
+        ('A', 'EN_CAMINO', 'FUERTE'), ('B', 'EN_CAMINO', 'FUERTE'), ('C', 'EN_CAMINO', 'FUERTE'),
         ('D', 'EN_CAMINO', 'FUERTE'), ('E', 'EN_CAMINO', 'FUERTE')]
     assert all(i['cambio'] for d in comparacion['dimensiones'] for i in d['items'])
 

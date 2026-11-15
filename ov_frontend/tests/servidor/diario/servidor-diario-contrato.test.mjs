@@ -35,11 +35,12 @@ test('las entradas llevan el título mostrado, su origen, «editada» y ninguna 
 
 test('amistad: nombre del nivel del servidor, un recuerdo por nivel y cuánto falta', () => {
   assert.deepEqual(copia(diario.amistadDiario(amistad)), {
+    // Ajuste coherencia-lumi: con los umbrales 1–5, 3 puntos son el nivel 3.
     puntos: 3,
-    nivel: 'Conociéndonos',
-    indiceNivel: 0,
-    recuerdosAbiertos: 1,
-    siguienteEn: 5,
+    nivel: 'Compañía de ruta',
+    indiceNivel: 2,
+    recuerdosAbiertos: 3,
+    siguienteEn: 4,
   })
   const ultimo = diario.amistadDiario({ puntos: 50, nivel: 5, siguiente_en: null })
   assert.equal(ultimo.nivel, 'Lumi te conoce de verdad')

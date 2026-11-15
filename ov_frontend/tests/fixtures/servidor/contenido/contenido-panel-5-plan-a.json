@@ -1,0 +1,178 @@
+{
+  "actualizada_en": "2026-10-07T10:00:00",
+  "carrera": "Psicología",
+  "conoce": {
+    "dudas": [
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "¿Cómo es un día normal de alguien de Psicología?"
+      },
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "¿Qué cursos se llevan en Psicología?"
+      },
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "¿Cómo se ingresa a Psicología?"
+      },
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "¿A quién podría preguntarle sobre Psicología?"
+      },
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "DATO DE PRUEBA: duda propia 1"
+      },
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "DATO DE PRUEBA: duda propia 2"
+      },
+      {
+        "hallazgo": null,
+        "resuelta": false,
+        "texto": "DATO DE PRUEBA: duda propia 3"
+      }
+    ],
+    "dudas_visibles": 4,
+    "preguntas": [
+      {
+        "codigo": "DIA_NORMAL",
+        "respuesta": "NO",
+        "texto": "cómo es un día normal"
+      },
+      {
+        "codigo": "DONDE_TRABAJAR",
+        "respuesta": "SI",
+        "texto": "dónde podría trabajar"
+      },
+      {
+        "codigo": "CURSOS",
+        "respuesta": "NO",
+        "texto": "qué cursos lleva"
+      },
+      {
+        "codigo": "INGRESO",
+        "respuesta": "MAS_O_MENOS",
+        "texto": "cómo se ingresa"
+      },
+      {
+        "codigo": "CONOCE_ALGUIEN",
+        "respuesta": "NO",
+        "texto": "si conoce a alguien que la estudie o ejerza"
+      }
+    ]
+  },
+  "en_areas": true,
+  "medidores": {
+    "capacidad": 2,
+    "entusiasmo": 3,
+    "recursos": 1
+  },
+  "pasos": [
+    {
+      "hallazgo": null,
+      "hecho": false,
+      "hecho_en": null,
+      "sale_de": null,
+      "texto": "DATO DE PRUEBA: paso 2."
+    },
+    {
+      "hallazgo": null,
+      "hecho": false,
+      "hecho_en": null,
+      "sale_de": null,
+      "texto": "DATO DE PRUEBA: paso 3."
+    },
+    {
+      "hallazgo": null,
+      "hecho": false,
+      "hecho_en": null,
+      "sale_de": null,
+      "texto": "DATO DE PRUEBA: paso 4."
+    },
+    {
+      "hallazgo": null,
+      "hecho": false,
+      "hecho_en": null,
+      "sale_de": null,
+      "texto": "DATO DE PRUEBA: paso 5."
+    },
+    {
+      "hallazgo": null,
+      "hecho": false,
+      "hecho_en": null,
+      "sale_de": null,
+      "texto": "DATO DE PRUEBA: paso 6."
+    },
+    {
+      "hallazgo": "DATO DE PRUEBA: el ciclo dura cuatro meses.",
+      "hecho": true,
+      "hecho_en": "2026-10-07T10:00:00",
+      "sale_de": null,
+      "texto": "DATO DE PRUEBA: paso 1."
+    }
+  ],
+  "planes": [
+    1,
+    2
+  ],
+  "por_que": {
+    "idea_origen": "MIA",
+    "motivos": [
+      "Crear",
+      "Aprender"
+    ],
+    "relato": "DATO DE PRUEBA: me gusta entender a la gente."
+  },
+  "prioridad": 1,
+  "realidad": {
+    "camino": "Prepararme primero",
+    "ciclos": 10,
+    "complicaciones": [
+      "Económicas",
+      "DATO DE PRUEBA: queda lejos de mi casa"
+    ],
+    "costo_carrera": 6000,
+    "costo_primer_anio": 1200,
+    "financiamiento": [
+      "Apoyo de mi familia"
+    ],
+    "institucion": {
+      "gestion": "PUBLICA",
+      "nombre": "Universidad Nacional Federico Villarreal",
+      "tipo": "UNIVERSIDAD"
+    },
+    "rubros": [
+      "Matrícula"
+    ]
+  },
+  "secciones": [
+    {
+      "codigo": "POR_QUE",
+      "estado": "LISTA",
+      "nombre": "Por qué la elijo"
+    },
+    {
+      "codigo": "CONOCIMIENTO",
+      "estado": "LISTA",
+      "nombre": "Qué tanto la conozco"
+    },
+    {
+      "codigo": "REALIDAD",
+      "estado": "LISTA",
+      "nombre": "Cómo lo haría realidad"
+    },
+    {
+      "codigo": "PASOS",
+      "estado": "LISTA",
+      "nombre": "Mis próximos pasos"
+    }
+  ],
+  "tipo": "UNIVERSIDAD"
+}

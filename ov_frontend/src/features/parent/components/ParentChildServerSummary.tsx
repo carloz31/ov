@@ -31,7 +31,7 @@ export function ParentChildServerSummary({
           Mis hijos
         </h2>
         <p className="text-muted-foreground">
-          Todavía no tienes un hijo vinculado. Pídele a la orientadora del colegio que te vincule.
+          Todavía no tiene un hijo o hija vinculado. Pídale a la orientadora del colegio que vincule su cuenta.
         </p>
       </Card>
     )
@@ -48,7 +48,7 @@ export function ParentChildServerSummary({
       {familia && hijo ? (
         <TarjetaHijo hijo={hijo} diploma={familia.diploma.obtenido} resultados={resultados} />
       ) : (
-        <Card className="staff-entity-header" aria-busy="true" aria-label="Cargando a tu hijo">
+        <Card className="staff-entity-header" aria-busy="true" aria-label="Cargando a su hijo o hija">
           <div className="flex flex-wrap items-center justify-between gap-6 p-6">
             <div className="flex items-center gap-4">
               <Skeleton className="size-15 rounded-2xl" />

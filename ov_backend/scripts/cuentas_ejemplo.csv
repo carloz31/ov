@@ -1,0 +1,6 @@
+rol,codigo,nombre,salon,correo,contrasena,hijos,parentesco
+ORIENTADORA,ori-prueba,Orientadora,5P,ori@ov.test,,,
+ESTUDIANTE,nav-01,Navegante-01,5P,nav01@ov.test,,,
+ESTUDIANTE,nav-02,Navegante-02,5P,nav02@ov.test,,,
+APODERADO,fam-01,Familia-01,,fam01@ov.test,,nav-01,madre
+APODERADO,fam-02,Familia-02,,fam02@ov.test,,nav-02,padre

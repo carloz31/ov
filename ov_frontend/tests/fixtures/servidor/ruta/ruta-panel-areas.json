@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "carreras": [
+        {
+          "cantidad": 2,
+          "nombre": "Psicología"
+        }
+      ],
+      "codigo": "313",
+      "en_planes": 2,
+      "nombre": "Psicología",
+      "plan_a": 2,
+      "solo_favoritos": 0,
+      "total": 2
+    },
+    {
+      "carreras": [
+        {
+          "cantidad": 1,
+          "nombre": "Ciencias de la Comunicación"
+        }
+      ],
+      "codigo": "321",
+      "en_planes": 1,
+      "nombre": "Ciencias de la Comunicación",
+      "plan_a": 0,
+      "solo_favoritos": 0,
+      "total": 1
+    },
+    {
+      "carreras": [],
+      "codigo": "531",
+      "en_planes": 0,
+      "nombre": "Ingeniería Civil",
+      "plan_a": 0,
+      "solo_favoritos": 1,
+      "total": 1
+    }
+  ],
+  "tipos": [
+    "UNIVERSIDAD"
+  ],
+  "total": 3
+}

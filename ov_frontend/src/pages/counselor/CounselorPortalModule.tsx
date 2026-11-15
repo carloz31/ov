@@ -15,7 +15,7 @@ const labels: Record<CounselorView, string> = {
   students: 'Estudiantes',
   reviews: 'Registros observados',
   publications: 'Publicaciones',
-  priorities: 'Prioritarios',
+  priorities: 'Configuración del salón',
   settings: 'Configuración',
   explorar: 'Explorar opciones',
 }
@@ -55,7 +55,7 @@ function CounselorPortalModule() {
           {
             id: 'priorities',
             icon: BookOpenCheck,
-            label: 'Prioritarios',
+            label: 'Configuración del salón',
             onSelect: () => navigate(appPaths.counselor.priorities),
           },
           ...(catalogoEnPortal

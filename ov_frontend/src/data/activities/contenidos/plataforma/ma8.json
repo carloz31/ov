@@ -106,8 +106,8 @@
     "mensajeFin": "Una objeción con respuesta pesa menos. Y si todavía no la tienes, ya sabes qué averiguar."
   },
   "mapa": {
-    "x": 0,
-    "y": 0,
+    "x": 490,
+    "y": 320,
     "icono": "registro",
     "origen": "b4-5",
     "adicional": true

@@ -6,7 +6,7 @@
   "subtitulo": "Nico vuelve a aparecer",
   "escenario": "bosque_volcan",
   "bloque": 2,
-  "orden": 4,
+  "orden": 2,
   "obligatoria": true,
   "requisitos": [
     "b2-3"

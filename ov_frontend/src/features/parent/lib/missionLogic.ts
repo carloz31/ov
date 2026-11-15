@@ -4,6 +4,13 @@ import type { Actividad, NodoPregunta } from '@/types/activities'
 
 type ParentActivityOptions = { disponible?: boolean; servidor?: boolean }
 
+// Ajuste coherencia-apoderado: la opción va entre comillas una sola vez y sin su punto final, que pone la frase
+// («…a nadie».), aunque la opción ya traiga sus propias comillas.
+function citarOpcion(texto: string) {
+  const limpio = texto.trim()
+  const interior = limpio.startsWith('«') && limpio.endsWith('»') ? limpio.slice(1, -1) : limpio
+  return `«${interior.replace(/\.$/, '')}»`
+}
 export function evaluateParentQuestion(node: NodoPregunta, selected: string[], previousAttempts: number) {
   const correctOptions = node.opciones.filter((option) => option.correcta)
   const correct =
@@ -11,7 +18,7 @@ export function evaluateParentQuestion(node: NodoPregunta, selected: string[], p
     correctOptions.every((option) => selected.includes(option.id))
   const wrongOptions = node.opciones.filter((option) => !option.correcta && selected.includes(option.id))
   const final = correct || node.opciones.length === 2 || previousAttempts >= 1
-  const answers = correctOptions.map((option) => `«${option.texto}»`).join(' y ')
+  const answers = correctOptions.map((option) => citarOpcion(option.texto)).join(' y ')
   const plural = correctOptions.length > 1
   const someCorrect = correctOptions.some((option) => selected.includes(option.id))
   const title = final
@@ -97,6 +104,15 @@ export function completedParentActivities(activities: Actividad[], state: Journe
     )
     .map((activity) => activity.id)
 }
+// Ajuste coherencia-apoderado: si el contenido cambió y el nodo guardado ya no existe, la actividad empieza de nuevo.
+export function progresoObsoleto(activity: Actividad, progress: JourneyState['progress'][string] | undefined) {
+  return (
+    progress?.estado === 'en_curso' &&
+    !!progress.nodoActualId &&
+    progress.nodoActualId !== '$fin' &&
+    !activity.nodos.some((node) => node.id === progress.nodoActualId)
+  )
+}
 export function startParentActivity(
   activity: Actividad,
   state: JourneyState,
@@ -104,13 +120,15 @@ export function startParentActivity(
   opciones?: ParentActivityOptions,
 ): JourneyState {
   const progress = state.progress[activity.id]
+  const obsoleto = progresoObsoleto(activity, progress)
   if (
     !(opciones?.disponible ?? parentActivityAvailable(activity, state)) ||
-    (progress && (!opciones?.servidor || progress.nodoActualId || progress.estado !== 'no_iniciada'))
+    (progress && !obsoleto && (!opciones?.servidor || progress.nodoActualId || progress.estado !== 'no_iniciada'))
   )
     return state
   return {
     ...state,
+    attempts: obsoleto ? state.attempts.filter((attempt) => attempt.actividadId !== activity.id) : state.attempts,
     progress: {
       ...state.progress,
       [activity.id]: {

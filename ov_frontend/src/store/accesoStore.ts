@@ -126,6 +126,12 @@ export function useSesionAcceso() {
   return useSyncExternalStore(suscribir, () => sesion, () => null)
 }
 
+// Los datos de `GET /sesion` (salones de la orientadora, hijos del apoderado), reactivos: al entrar directo a una
+// vista, llegan después del primer render y la vista debe volver a pintarse con ellos.
+export function useDatosSesion() {
+  return useSyncExternalStore(suscribir, () => datos, () => datos)
+}
+
 export function useAvisoSesion() {
   return useSyncExternalStore(suscribir, () => aviso, () => null)
 }

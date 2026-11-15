@@ -24,7 +24,7 @@ const CASO_LOCAL: CasoJugable = {
       'Durante la madrugada, un incendio forestal se originó en las colinas cercanas a una pequeña localidad rural. Impulsado por el viento y la vegetación seca de la temporada, el fuego avanza sin control, amenazando viviendas, caminos y a las familias que viven en la zona. La comunidad ha dado la voz de alerta y ha solicitado apoyo urgente.',
       'Tú has sido designado como coordinador de respuesta ante la emergencia.',
     ],
-    imagen: getExplorationImagePath('forest-fire-case-background.png'),
+    imagen: getExplorationImagePath('forest-fire-case-background.webp'),
     alerta: 'Emergencia activa',
     llama: true,
   },

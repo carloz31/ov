@@ -74,6 +74,7 @@ export function MapScreenLayout({
     explicarCiudad,
     mostrarCiudadBloqueada,
     pasosAyuda,
+    avisoAyuda,
     iniciales,
     closePoint,
     selectPoint,
@@ -125,7 +126,7 @@ export function MapScreenLayout({
             zone === 'missions' ? 'Aventura · Camino de misiones' : 'Central de Casos · Llamados de la ciudad'
           }
           backgroundImage={
-            zone === 'missions' ? '/images/adventure/journey-map.png' : '/images/adventure/city-map.png'
+            zone === 'missions' ? '/images/adventure/journey-map.webp' : '/images/adventure/city-map.webp'
           }
         />
         {mostrarCiudadBloqueada && <CityLocked adventure={adventure} />}
@@ -185,7 +186,7 @@ export function MapScreenLayout({
             (() => (zone === 'missions' ? selectPoint('city') : navigate(appPaths.student.missions)))
           }
         />
-        <MapControls onHelp={() => openGuide(pasosAyuda)} />
+        <MapControls onHelp={() => openGuide(pasosAyuda)} aviso={avisoAyuda} />
         <ZoomControls
           scale={scale}
           minimumScale={minimumScale}

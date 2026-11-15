@@ -23,8 +23,8 @@ const contenido = (app, clave) => app.load('src/data/activities/contenidos.ts').
 test('el fondo sale del escenario del contenido; sin escenario, del respaldo de la pantalla', () => {
   const app = fixtureServidor()
   const { fondoEscenario } = app.load('src/lib/activities/escenario.ts')
-  assert.equal(fondoEscenario('bosque_volcan', '/images/background/bosque.png'), '/images/background/bosque_volcan.png')
-  assert.equal(fondoEscenario(undefined, '/images/background/bosque.png'), '/images/background/bosque.png')
+  assert.equal(fondoEscenario('bosque_volcan', '/images/background/bosque.webp'), '/images/background/bosque_volcan.webp')
+  assert.equal(fondoEscenario(undefined, '/images/background/bosque.webp'), '/images/background/bosque.webp')
   assert.equal(fondoEscenario(undefined), undefined)
   assert.equal(contenido(app, 't_valores').escenario, 'bosque')
 })

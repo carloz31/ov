@@ -1,11 +1,28 @@
 import * as apiBatallas from '@/services/api/batallas'
 import * as apiAcciones from '@/services/api/acciones'
-import { consultarCuenta } from './sesion'
+import { consultarCuenta, obtenerEstadoServidor, sesionServidor } from './sesion'
 import { accionConRefresco } from './refresco'
 import type { RespuestaBatallaEntrada, RespuestaResolverBatalla } from '@/types/servidor'
 
+// Auditoría plataforma (F5): el drawer y el reproductor la piden al abrir la misma batalla. Se comparte mientras las
+// actividades cargadas sean las mismas (lo que abre fichas o batallas llega con un refresco) y se olvida tras cada
+// intento, que cambia intentos y estado. Un error no se guarda.
+let lectura: {
+  sesion: number
+  actividades: unknown
+  promesa: ReturnType<typeof pedirBatallas>
+} | null = null
+const pedirBatallas = () => consultarCuenta(apiBatallas.obtenerBatallas)
 export function consultarBatallas() {
-  return consultarCuenta(apiBatallas.obtenerBatallas)
+  const sesion = sesionServidor(),
+    actividades = obtenerEstadoServidor().actividades.datos
+  if (lectura?.sesion === sesion && lectura.actividades === actividades) return lectura.promesa
+  const actual = { sesion, actividades, promesa: pedirBatallas() }
+  lectura = actual
+  void actual.promesa.then((r) => {
+    if (r.tipo !== 'ok' && lectura === actual) lectura = null
+  })
+  return actual.promesa
 }
 // F04b: cada intento pide preguntas nuevas al servidor; nunca se guardan ni se comparten entre intentos.
 export function consultarPreguntasBatalla(actividad: string) {
@@ -19,6 +36,7 @@ export function resolverBatalla(
   confirmada?: RespuestaResolverBatalla,
 ) {
   // Ajuste notificaciones: CierreBatalla anuncia lo desbloqueado (sin toast).
+  lectura = null
   return accionConRefresco(
     (cuenta) => apiAcciones.resolverBatalla({ cuenta, actividad, respuestas }),
     confirmada,

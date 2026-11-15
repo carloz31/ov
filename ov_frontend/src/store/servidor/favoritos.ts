@@ -46,8 +46,11 @@ const suscribir = (oyente: () => void) => {
 }
 function leerFavoritos(sesion: number, activos: boolean) {
   if (activos && !favoritosCuenta.has(sesion)) {
+    // Auditoría plataforma (F11): solo se conserva la sesión actual; la respuesta tardía de otra se descarta.
+    favoritosCuenta.clear()
     favoritosCuenta.set(sesion, 'cargando')
     void consultarCuenta(apiFavoritos.obtenerFavoritos).then((respuesta) => {
+      if (!favoritosCuenta.has(sesion)) return
       favoritosCuenta.set(sesion, respuesta)
       avisar()
     })

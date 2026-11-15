@@ -35,7 +35,7 @@ export type InstrumentoServidor = {
 export function MaraInteractionPlayer({
   codigo,
   revision = false,
-  imageUrl = '/images/background/afueras-ciudad.png',
+  imageUrl = '/images/background/afueras-ciudad.webp',
   onClose,
 }: {
   codigo: string

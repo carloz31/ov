@@ -11,7 +11,10 @@ import type {
 } from '@/types/servidor'
 
 export type AplicacionInstrumento = { instrumento: string; aplicacion: string }
-export const APLICACION_RIASEC: AplicacionInstrumento = { instrumento: 'TEST-RIASEC', aplicacion: 'APL-RIASEC' }
+export const APLICACION_RIASEC: AplicacionInstrumento = {
+  instrumento: 'TEST-RIASEC',
+  aplicacion: 'APL-RIASEC',
+}
 export const APLICACION_PARTIDA: AplicacionInstrumento = {
   instrumento: 'TEST-PARTIDA-LLEGADA',
   aplicacion: 'APL-PARTIDA',
@@ -102,15 +105,24 @@ export type ResultadoFamilia = {
   calculadoEn: string
   remoto: ResultadoPublico
 }
-export function resultadoFamilia(resultado: ResultadoPublico, catalogo: InstrumentoPublico[]): ResultadoFamilia {
+export function resultadoFamilia(
+  resultado: ResultadoPublico,
+  catalogo: Pick<InstrumentoPublico, 'codigo' | 'nombre' | 'descripcion'>[],
+): ResultadoFamilia {
   const instrumento = catalogo.find((i) => i.codigo === resultado.instrumento)
-  const dimensiones = resultado.dimensiones.map(({ codigo, nombre, descripcion }) => ({ codigo, nombre, descripcion }))
+  const dimensiones = resultado.dimensiones.map(({ codigo, nombre, descripcion }) => ({
+    codigo,
+    nombre,
+    descripcion,
+  }))
   const codigos = resultado.codigo_interes?.codigo.split('') ?? []
   const protagonistas = resultado.perfil_plano
     ? []
     : resultado.dimensiones_destacadas
       ? resultado.dimensiones_destacadas.map(({ codigo, nombre }) => ({ codigo, nombre }))
-      : dimensiones.filter((d) => codigos.includes(d.codigo)).sort((a, b) => codigos.indexOf(a.codigo) - codigos.indexOf(b.codigo))
+      : dimensiones
+          .filter((d) => codigos.includes(d.codigo))
+          .sort((a, b) => codigos.indexOf(a.codigo) - codigos.indexOf(b.codigo))
   return {
     instrumento: resultado.instrumento,
     nombre: instrumento?.nombre ?? resultado.instrumento,

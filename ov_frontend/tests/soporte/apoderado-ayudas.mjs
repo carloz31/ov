@@ -12,6 +12,7 @@ const nativeRequire = createRequire(import.meta.url)
 export function fixtureApoderado(opciones = {}) {
   const app = fixtureServidor({ cuenta: 'apo-rosa', ...opciones })
   const cache = new Map()
+  const cambiosQuery = []
   // La actividad de la ruta que leen useParams y useLocation; se cambia con setActivityId.
   let activo = null,
     activityId = 't-apo-1'
@@ -89,7 +90,8 @@ export function fixtureApoderado(opciones = {}) {
           useNavigate: () => (url) => app.navigations.push(url),
           useLocation: () => ({ pathname: `/parent/activities/${activityId}` }),
           useParams: () => ({ activityId }),
-          useSearchParams: () => [app.query, () => {}],
+          // No cambia la URL; cada llamada queda en `cambiosQuery` (auditoría del panel, F1).
+          useSearchParams: () => [app.query, (siguiente) => cambiosQuery.push(siguiente)],
           useOutletContext: () => {
             const { completedIds: completedActivityIds, ...source } = load(
               'src/features/parent/hooks/useParentActivities.ts',
@@ -109,6 +111,7 @@ export function fixtureApoderado(opciones = {}) {
   return {
     ...app,
     load,
+    cambiosQuery,
     setActivityId: (codigo) => {
       activityId = codigo
     },

@@ -28,10 +28,21 @@ def fecha_accion(entrada: FechaAccion) -> datetime:
     return fecha.replace(tzinfo=None)
 
 
+# Auditoría plataforma (D-B4): la cuenta que leyó el guardia para la petición (la del token).
+CUENTA_DEL_TOKEN = 'cuenta_del_token'
+
+
+def cuenta_del_token(sesion: Session, codigo: str) -> Cuenta | None:
+    """La cuenta del token si es la pedida y sigue en la sesión; sin consulta."""
+    cuenta = sesion.info.get(CUENTA_DEL_TOKEN)
+    return cuenta if cuenta is not None and cuenta.codigo == codigo and cuenta in sesion else None
+
+
 @usar_contexto
 def buscar_por_codigo(sesion: Session, modelo, codigo: str):
     entidad = (contexto(sesion).definiciones.por_codigo(modelo, codigo) if modelo in MODELOS_FIJOS
-               else sesion.scalar(select(modelo).where(modelo.codigo == codigo)))
+               else (modelo is Cuenta and cuenta_del_token(sesion, codigo))
+               or sesion.scalar(select(modelo).where(modelo.codigo == codigo)))
     if entidad is None:
         raise ErrorAccion("Cuenta o referencia no encontrada", estado_http=404)
     return entidad

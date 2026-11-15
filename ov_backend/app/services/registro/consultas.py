@@ -58,12 +58,15 @@ def _respuesta(item, respuesta, hoy):
         eco_cambiado=eco_cambiado(item, respuesta, hoy))
 
 
-def _item_cuenta(sesion, cuenta, item, respuesta):
-    """Un ítem con su contexto de hoy (de `resolver_contexto`) y su respuesta vigente."""
-    try:
-        hoy, faltante = resolver_contexto(sesion, cuenta, item.codigo), None
-    except MarcadorSinValor as error:
-        hoy, faltante = None, error.marcador
+def _item_cuenta(sesion, cuenta, item, respuesta, hoy=None):
+    """Un ítem con su contexto de hoy (de `resolver_contexto`, o el ya resuelto que se recibe) y su respuesta
+    vigente."""
+    faltante = None
+    if hoy is None:
+        try:
+            hoy = resolver_contexto(sesion, cuenta, item.codigo)
+        except MarcadorSinValor as error:
+            hoy, faltante = None, error.marcador
     eleccion = None if item.fuente_opciones is None else EleccionItem(
         minima=item.eleccion_minima, maxima=item.eleccion_maxima, ordenada=item.eleccion_ordenada,
         permite_otra=item.permite_otra, etiqueta_otra=item.etiqueta_otra)
@@ -82,7 +85,7 @@ def _item_cuenta(sesion, cuenta, item, respuesta):
         respuesta=None if respuesta is None else _respuesta(item, respuesta, hoy))
 
 
-def registro_cuenta(sesion, cuenta, actividad, items) -> RegistroConsultado:
+def registro_cuenta(sesion, cuenta, actividad, items, contextos=None) -> RegistroConsultado:
     """El registro para el estudiante: por ítem, su contexto de hoy y su respuesta vigente; el ítem en que va (el primero
     sin intento vigente, calculado) y el estado de la actividad. Lo resuelve ítem por ítem (hasta
     `MAXIMO_ITEMS_REGISTRO`)."""
@@ -90,7 +93,8 @@ def registro_cuenta(sesion, cuenta, actividad, items) -> RegistroConsultado:
     return RegistroConsultado(
         estado=None if registro.progreso is None else registro.progreso.estado,
         item_actual=next((item.codigo for item in items if item.id not in registro.vigentes), None),
-        items=[_item_cuenta(sesion, cuenta, item, registro.vigentes.get(item.id)) for item in items])
+        items=[_item_cuenta(sesion, cuenta, item, registro.vigentes.get(item.id), (contextos or {}).get(item.codigo))
+               for item in items])
 
 
 @usar_contexto

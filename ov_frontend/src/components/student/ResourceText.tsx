@@ -39,6 +39,8 @@ export function ResourceText({ text }: { text: string }) {
           return <ul key={i}>{lineas.map((linea, n) => <li key={n}>{enLinea(linea.slice(2))}</li>)}</ul>
         if (lineas.every((linea) => /^\d+\. /.test(linea)))
           return <ol key={i}>{lineas.map((linea, n) => <li key={n}>{enLinea(linea.replace(/^\d+\. /, ''))}</li>)}</ol>
+        if (/^\d+\. /.test(lineas[0]) && lineas.every((linea) => /^(\d+\. |\s+[-*] )/.test(linea)))
+          return <ol key={i}>{listaAnidada(lineas)}</ol>
         if (lineas.every((linea) => linea.startsWith('>')))
           return <blockquote key={i}>{enLinea(lineas.map((linea) => linea.replace(/^> ?/, '')).join('\n'))}</blockquote>
         return (
@@ -51,7 +53,27 @@ export function ResourceText({ text }: { text: string }) {
   )
 }
 
-const esSeparador = (fila: string) => /^[\s|:-]+$/.test(fila) && fila.includes('-')
+// Ajuste coherencia-apoderado: una lista numerada cuyos ítems traen viñetas sangradas debajo (FP05).
+function listaAnidada(lineas: string[]) {
+  const items: { texto: string; sub: string[] }[] = []
+  for (const linea of lineas)
+    if (/^\d+\. /.test(linea)) items.push({ texto: linea.replace(/^\d+\. /, ''), sub: [] })
+    else items.at(-1)!.sub.push(linea.replace(/^\s+[-*] /, ''))
+  return items.map((item, n) => (
+    <li key={n}>
+      {enLinea(item.texto)}
+      {item.sub.length > 0 && (
+        <ul>
+          {item.sub.map((sub, k) => (
+            <li key={k}>{enLinea(sub)}</li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ))
+}
+
+const esSeparador =(fila: string) => /^[\s|:-]+$/.test(fila) && fila.includes('-')
 
 // Ajuste coherencia-bloque2: un signo escapado (`O\*NET`) se muestra sin la barra.
 const sinEscapes = (texto: string) => texto.replace(/\\([\\`*_{}[\]()#+\-.!|>~])/g, '$1')

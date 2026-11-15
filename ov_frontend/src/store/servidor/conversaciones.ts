@@ -1,13 +1,14 @@
 import * as apiConversaciones from '@/services/api/conversaciones'
 import type { RespuestaAccion, RespuestaServidor } from '@/types/servidor'
-import { accionConRefresco } from './refresco'
-import { vencerSeccion } from './secciones'
+import { accionConRefresco, conDesbloqueos, vencerSiNoRefrescada } from './refresco'
 
 // F08: la carta y las respuestas del estudiante. Refrescan el camino como completar (la carta habilita
 // conversaciones; conversar abre una pregunta del diario) y vencen `conversaciones`, que la vista vuelve a pedir.
+// Auditoría plataforma (F2b): sin desbloqueos no cambian el camino; con un CONVERSACION, el refresco ya venció la lista.
 async function accionConversaciones(accion: Parameters<typeof accionConRefresco>[0]) {
-  const respuesta = await accionConRefresco(accion)
-  if (respuesta.tipo === 'ok' || respuesta.tipo === 'guardado_sin_refrescar') vencerSeccion('conversaciones')
+  const respuesta = await accionConRefresco(accion, undefined, false, conDesbloqueos)
+  if (respuesta.tipo === 'ok') vencerSiNoRefrescada('conversaciones', respuesta.datos)
+  else if (respuesta.tipo === 'guardado_sin_refrescar') vencerSiNoRefrescada('conversaciones', undefined)
   return respuesta
 }
 

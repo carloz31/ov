@@ -83,7 +83,7 @@ test('las iniciales del panel salen del nombre de la cuenta', () => {
 })
 
 // Ajuste inicio-apoderado: la tarjeta del hijo elegido con su título y su avance; el avance hacia el diploma
-// pasó a «Tus actividades».
+// pasó a «Tus actividades» (hoy «Sus actividades», ajuste coherencia-apoderado).
 test('el resumen del apoderado en api usa GET /familia: hijo elegido, título, avance y sus cuestionarios', () => {
   const app = fixtureApoderado({ portal: true })
   const familia = jsonServidor('ruta/ruta-familia')
@@ -94,7 +94,7 @@ test('el resumen del apoderado en api usa GET /familia: hijo elegido, título, a
   const tarjeta = tree.props.children[1]
   assert.deepEqual([tarjeta.props.hijo.nombre, tarjeta.props.diploma], ['Ana', true])
   const vacia = ParentChildServerSummary({ familia: { ...familia, estudiantes: [] }, hijo: null, onElegir() {}, resultados })
-  assert.match(texto(vacia), /Todavía no tienes un hijo vinculado\. Pídele a la orientadora del colegio que te vincule\./)
+  assert.match(texto(vacia), /Todavía no tiene un hijo o hija vinculado\. Pídale a la orientadora del colegio que vincule su cuenta\./)
   const { avanceConFamilia, nombreHijo } = app.load('src/features/parent/lib/familia.ts')
   const local = { completed: 0, total: 5, percent: 0, complete: false, next: 'x' }
   assert.deepEqual(copia(avanceConFamilia(local, familia)), { completed: 2, total: 2, percent: 100, complete: true, next: 'x' })

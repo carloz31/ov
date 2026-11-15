@@ -11,15 +11,23 @@ import {
   UsersRound,
 } from 'lucide-react'
 import '../styles/access.css'
+import { AVISO_INGRESO_LENTO } from '../lib/mensajeIngreso'
 
 type LoginScreenProps = {
   onEnter: (usuario: string, contrasena: string) => void
   error?: string | null
   enviando?: boolean
+  lento?: boolean
   mostrarAvisoDemo?: boolean
 }
 
-export function LoginScreen({ onEnter, error = null, enviando = false, mostrarAvisoDemo = false }: LoginScreenProps) {
+export function LoginScreen({
+  onEnter,
+  error = null,
+  enviando = false,
+  lento = false,
+  mostrarAvisoDemo = false,
+}: LoginScreenProps) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [visible, setVisible] = useState(false)
@@ -145,6 +153,12 @@ export function LoginScreen({ onEnter, error = null, enviando = false, mostrarAv
               {enviando ? 'Ingresando…' : 'Ingresar'} <ArrowRight size={20} aria-hidden="true" />
             </button>
           </form>
+          {enviando && lento && (
+            <div className="ov-login-demo" role="status">
+              <Info size={18} aria-hidden="true" />
+              <p>{AVISO_INGRESO_LENTO}</p>
+            </div>
+          )}
           {error && (
             <div className="ov-login-demo" role="alert">
               <Info size={18} aria-hidden="true" />

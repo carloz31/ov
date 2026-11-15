@@ -76,8 +76,8 @@
     "mensajeFin": "En tu diario te espera una carta para el niño o la niña que fuiste."
   },
   "mapa": {
-    "x": 0,
-    "y": 0,
+    "x": 706,
+    "y": 194,
     "icono": "informativa",
     "origen": "b1-1",
     "adicional": true

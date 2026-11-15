@@ -164,6 +164,12 @@ LISTAS_COMUNES = (
       ('CURSOS', '¿Sabes qué cursos se llevan en {carrera}?'),
       ('INGRESO', '¿Sabes cómo se ingresa a {carrera}?'),
       ('CONOCE_ALGUIEN', '¿Conoces a alguien que estudie o trabaje en {carrera}?'))),
+    # Ajuste panel-estudiantes: las mismas cinco preguntas dichas a la orientadora (perfil del estudiante y tema
+    # «Conoce poco su Plan A»), en minúscula para ir dentro de una frase.
+    ('CONOCIMIENTO_ORIENTADORA', 'Qué tanto conoce la carrera (orientadora)',
+     (('DIA_NORMAL', 'cómo es un día normal'), ('DONDE_TRABAJAR', 'dónde podría trabajar'),
+      ('CURSOS', 'qué cursos lleva'), ('INGRESO', 'cómo se ingresa'),
+      ('CONOCE_ALGUIEN', 'si conoce a alguien que la estudie o ejerza'))),
     # Ajuste registros: listas comunes de los registros definitivos (la «otra» la decide cada ítem).
     ('HABILIDADES', 'Habilidades',
      (('ORGANIZAR', 'Organizar'), ('EXPLICAR', 'Explicar o enseñar'), ('CREAR', 'Crear o diseñar'),
@@ -262,8 +268,8 @@ def _sin_institucion(texto):
 
 # B11 · Secciones de la tarjeta de carrera: (código, nombre, ¿cuenta para «listo para comparar»?). Cada ruta
 # decide con reglas SECCION_PLAN cuándo se abre cada una.
-SECCIONES_TARJETA = (('POR_QUE', 'Por qué', True), ('CONOCIMIENTO', 'Qué tanto la conozco', False),
-                     ('REALIDAD', 'Qué tan real es', True), ('PASOS', 'Mis pasos', False))
+SECCIONES_TARJETA = (('POR_QUE', 'Por qué la elijo', True), ('CONOCIMIENTO', 'Qué tanto la conozco', False),
+                     ('REALIDAD', 'Cómo lo haría realidad', True), ('PASOS', 'Mis próximos pasos', False))
 
 # Rubros que el front propone en REALIDAD: (rubro, frecuencia recomendada, monto de referencia en soles o None si
 # se consulta en la institución, en cero si la institución es pública, solo si el camino incluye prepararse).
@@ -910,11 +916,143 @@ def _cargar_respaldos(sesion, listas):
                    for lista, codigo, tipo, texto in RESPALDOS_PASOS)
 
 
+# Panel del salón de la orientadora (ajuste panel-salon). Grupos de alertas: (código, nombre); el orden es el de la
+# tupla.
+GRUPOS_ALERTA = (('conversar', 'Conversar pronto'), ('atras', 'Se están quedando atrás'),
+                 ('para-conversar', 'Para conversar'))
+# Ajuste panel-estudiantes: grupos que no aparecen en el Inicio, en sus conteos ni en la lista de estudiantes (solo en
+# el Resumen del perfil).
+GRUPOS_FUERA_DE_INICIO = frozenset({'para-conversar'})
+
+# Ajuste pendientes-orientadora: los medidores de un plan (columnas de `tarjeta_carrera`, 1 a 3) con los nombres y
+# niveles que ve el estudiante. Son la única fuente de los textos de los temas; `scripts/verificar_contenido_front.py`
+# comprueba que coincidan con `MEDIDORES` y `ESCALA_MEDIDOR` del front.
+MEDIDORES_PLAN = {'entusiasmo': 'Me entusiasma', 'capacidad': 'Me siento capaz', 'recursos': 'Tengo cómo lograrlo'}
+NIVELES_MEDIDOR = ('Poco', 'Algo', 'Mucho')
+_TEXTOS_MEDIDORES = {'nombres_medidores': dict(MEDIDORES_PLAN), 'niveles': list(NIVELES_MEDIDOR)}
+
+# El orden de los temas «Para conversar» (es su prioridad: así se listan y así se corta el tope). Incluye los de
+# `contenido`; un conjunto que no declara alguno simplemente no lo tiene.
+ORDEN_PARA_CONVERSAR = ('voces-chocan', 'plan-poco-entusiasmo', 'plan-fuera-areas', 'valores-fuera-del-plan',
+                        'plan-se-ve-lejos', 'plan-conoce-poco', 'plan-b-desanima', 'forma-de-decidir',
+                        'proyecto-poco-seguro', 'llegada-sin-avance')
+ORDENES_FIJOS = {'para-conversar': ORDEN_PARA_CONVERSAR}
+
+# Alertas: (código, grupo, nombre, descripción, evaluador, parámetros). El orden dentro del grupo es el de la tupla.
+# `{clave}` en el nombre o la descripción se resuelve con los parámetros. Una alerta de un tipo nuevo necesita un
+# evaluador nuevo en `app/services/panel/alertas.py`; una variante de uno existente es solo una fila.
+ALERTAS = (
+    ('respuesta-sensible', 'conversar', 'Escribió algo que conviene leer',
+     'En un registro, Lumi lo derivó a la orientadora en lugar de seguir preguntando.', 'respuesta_sensible', {}),
+    ('seguridad-baja', 'conversar', 'Se sienten poco seguros en sus últimas señales',
+     'Sus {senales} últimas señales registradas fueron {nivel_maximo} o menos, sin importar cada cuánto ingresan.',
+     'seguridad_baja', {'senales': 3, 'nivel_maximo': 2}),
+    ('sin-ingreso', 'atras', 'No ingresan hace {dias} días o más', None, 'sin_ingreso',
+     {'dias': 7, 'texto_nunca': 'nunca'}),
+    ('avance-bajo', 'atras', 'Van muy por detrás del salón', '{tramos} tramos o más por debajo de la mayoría.',
+     'avance_bajo_salon', {'tramos': 2, 'textos_tramo': {'SIN_EMPEZAR': 'Sin empezar', 'TERMINO': 'Terminó el camino'}}),
+    ('test-por-revisar', 'atras', 'Test de intereses por revisar', 'Perfil plano o respondido con prisa.',
+     'instrumento_por_revisar', {'instrumento': INSTRUMENTO_INTERESES, 'avisos_velocidad': 2, 'textos_motivo': {
+         'PLANO': 'Su resultado salió plano: todas las respuestas parecidas',
+         'PRISA': 'Lo respondió muy rápido (estimado por tiempo)'}}),
+    ('familia-pendiente', 'atras', 'Su familia aún no se registra', None, 'familia_pendiente', {'textos_motivo': {
+        'SIN_VINCULO': 'No tiene un apoderado vinculado',
+        'SIN_INGRESO': 'Su apoderado tiene cuenta, pero no ha ingresado'}}),
+    # Temas «Para conversar» (ajuste panel-estudiantes; reglas definitivas del ajuste pendientes-orientadora). Las de
+    # registro nombran ítems de `contenido` y están en `datos/contenido.py` (`ALERTAS`); su orden lo fija
+    # `ORDEN_PARA_CONVERSAR`.
+    ('plan-poco-entusiasmo', 'para-conversar', 'Poco entusiasmo con su Plan A', None, 'plan_medidor',
+     {'medidores': ['entusiasmo'], 'nivel_maximo': 1, 'origenes': ['FAMILIA', 'CONOCIDO'],
+      'textos_origen': {'FAMILIA': 'de su familia', 'CONOCIDO': 'de alguien que conoce'},
+      'frases': {'idea': ' La idea de estudiarla vino {origen}.'}, **_TEXTOS_MEDIDORES}),
+    ('plan-fuera-areas', 'para-conversar', 'Su Plan A no está entre sus áreas sugeridas', None, 'plan_fuera_de_areas',
+     {}),
+    ('plan-se-ve-lejos', 'para-conversar', 'Su Plan A se ve lejos', None, 'plan_medidor',
+     {'medidores': ['capacidad', 'recursos'], 'nivel_maximo': 1, 'con_complicaciones': True,
+      'frases': {'complicaciones': ' Ve como posibles complicaciones: {lista}.'}, **_TEXTOS_MEDIDORES}),
+    ('plan-conoce-poco', 'para-conversar', 'Conoce poco su Plan A', None, 'plan_conoce_poco',
+     {'minimo_no': 3, 'frases': {'duda': ' Tiene {n} duda abierta.', 'dudas': ' Tiene {n} dudas abiertas.'}}),
+    ('llegada-sin-avance', 'para-conversar', 'Sin avance entre la partida y la llegada', None, 'llegada_sin_avance',
+     {'textos_detalle': {'bajo': '{dimensiones} bajó', 'sigue': '{dimensiones} sigue por trabajar'}}),
+)
+
+# Ajuste panel-estudiantes: textos cuando se habla de un estudiante (lista y perfil) y pestaña del perfil a la que
+# lleva el enlace: código → (nombre_perfil, descripcion_perfil, destino). `{clave}` se llena con los parámetros de la
+# fila y con los datos que el evaluador devuelve para ese estudiante. Sin nombre de perfil se usa `nombre`.
+TEXTOS_PERFIL_ALERTAS = {
+    'respuesta-sensible': ('Escribió algo que conviene leer',
+                           'En «{registro}», Lumi lo derivó a usted en lugar de seguir preguntando.', 'RESPUESTAS'),
+    'seguridad-baja': ('Poca seguridad en sus últimas señales', 'Marcó {valores} de 5 ({fechas}).', 'AVANCE'),
+    'sin-ingreso': ('No ingresa hace {dias} días o más', 'Último ingreso: {ultimo}.', None),
+    'avance-bajo': ('Va muy por detrás de su salón', 'Va en «{tramo}»; la mayoría del salón va en «{tramo_salon}».',
+                    'AVANCE'),
+    'test-por-revisar': ('Test de intereses por revisar', '{motivo}.', 'TESTS'),
+    'familia-pendiente': ('Su familia aún no se registra', '{motivo}.', 'AVANCE'),
+    'plan-poco-entusiasmo': (None, 'Marcó «{nivel}» en «{medidor}» frente a su Plan A ({carrera}).{idea}', 'PLANES'),
+    'plan-fuera-areas': (None, 'Su Plan A ({carrera}) no está entre sus áreas sugeridas.', 'PLANES'),
+    'plan-se-ve-lejos': (None, 'Marcó «{nivel}» en {medidores} frente a su Plan A ({carrera}).{complicaciones}',
+                         'PLANES'),
+    'plan-conoce-poco': (None, 'Dice conocer poco su Plan A: respondió «No» a {cantidad} de {total} preguntas.{dudas}',
+                         'PLANES'),
+    'llegada-sin-avance': (None, 'Entre la partida y la llegada: {detalle}.', 'TESTS'),
+}
+
+# Parámetros del panel: (código, valor, uso). El servidor convierte el valor.
+PARAMETROS_PANEL = (
+    ('PANEL_DIAS_INGRESO_RECIENTE', '7', 'Días del indicador «Ingresaron esta semana».'),
+    ('PANEL_INSTRUMENTO_PRINCIPAL', INSTRUMENTO_INTERESES, 'Instrumento con bloque propio en el panel.'),
+    ('PANEL_AVISOS_VELOCIDAD_PRISA', '2', 'Avisos de velocidad desde los que un test queda «Por revisar».'),
+    ('PANEL_NOMBRES_VISIBLES_ALERTA', '5', 'Hasta cuántos nombres se listan dentro de una alerta.'),
+    ('PANEL_DIAS_DETENIDO', '7', 'Días sin completar actividades para «Donde más se detienen».'),
+    ('PANEL_MINIMO_DETENIDOS', '2', 'Mínimo de estudiantes para mostrar «Donde más se detienen».'),
+    ('PANEL_SEGURIDAD_BAJA_MAXIMO', '2', 'Banda «Poco seguros»: última señal menor o igual a este valor.'),
+    ('PANEL_SEGURIDAD_ALTA_MINIMO', '4', 'Banda «Seguros»: última señal mayor o igual a este valor.'),
+    ('PANEL_TOP_INTERESES', '5', 'Filas de las tablas de áreas e instituciones en Inicio.'),
+    ('PANEL_TOP_COMPLICACIONES', '5', 'Filas de «Lo que podría complicar sus planes».'),
+    # Ajuste panel-estudiantes.
+    ('PANEL_SENALES_PERFIL', '6', 'Señales de seguridad que se muestran en «Avance y familia» del perfil.'),
+    ('PANEL_OPCIONES_BAJAS', '2', 'Una respuesta de partida o llegada es «baja» si está entre las N opciones '
+                                  'inferiores de su escala (con los ítems inversos ya invertidos).'),
+    ('PANEL_AFIRMACIONES_POR_GRUPO', '5', 'Máximo de afirmaciones por grupo en «Afirmaciones para conversar».'),
+    ('PANEL_TEMAS_VISIBLES', '4', 'Temas «Para conversar» visibles en el Resumen antes de «Ver los N temas restantes».'),
+    ('PANEL_DUDAS_VISIBLES', '4', 'Dudas visibles en el plan completo antes de «Ver las N restantes».'),
+    ('PANEL_FILAS_ESTUDIANTES', '20', 'Tamaño de página de la lista de estudiantes.'),
+    ('PANEL_MAXIMO_CARACTERES_NOTA', '1000', 'Tope de caracteres de una nota de la orientadora.'),
+)
+
+
+def _cargar_panel(sesion):
+    grupos = {c: modelos.GrupoAlerta(codigo=c, nombre=n, orden=orden, en_inicio=c not in GRUPOS_FUERA_DE_INICIO)
+              for orden, (c, n) in enumerate(GRUPOS_ALERTA, start=1)}
+    sesion.add_all(grupos.values())
+    sesion.flush()
+    cargar_alertas(sesion, {c: g.id for c, g in grupos.items()}, ALERTAS, TEXTOS_PERFIL_ALERTAS)
+    sesion.add_all(modelos.Parametro(codigo=c, valor=v, descripcion=d) for c, v, d in PARAMETROS_PANEL)
+
+
+def cargar_alertas(sesion, grupos: dict[str, int], alertas, textos) -> None:
+    """Filas de `alerta` con sus textos de perfil. El orden dentro del grupo es el de `ORDENES_FIJOS` si el grupo lo
+    tiene (así `contenido` puede sumar filas en su lugar) y, si no, el de la tupla. `datos/contenido.py` también la
+    usa."""
+    ordenes = Counter()
+    for c, g, n, d, e, p in alertas:
+        ordenes[g] += 1
+        if g in ORDENES_FIJOS and c not in ORDENES_FIJOS[g]:
+            raise ValueError(f'La alerta {c} no está en el orden de su grupo {g}')
+        orden = ORDENES_FIJOS[g].index(c) + 1 if g in ORDENES_FIJOS else ordenes[g]
+        nombre_perfil, descripcion_perfil, destino = textos[c]
+        sesion.add(modelos.Alerta(codigo=c, grupo_id=grupos[g], nombre=n, descripcion=d, evaluador=e,
+                                  parametros=dict(p), orden=orden, nombre_perfil=nombre_perfil,
+                                  descripcion_perfil=descripcion_perfil,
+                                  destino=modelos.DestinoPerfil(destino) if destino else None))
+
+
 def cargar(sesion: Session) -> Fijos:
     sesion.add_all(modelos.TextoFijo(codigo=c, texto=t) for c, t in TEXTOS_FIJOS)
     secciones = _cargar_secciones(sesion)
     _cargar_presentaciones(sesion)
     _cargar_investigaciones(sesion)
+    _cargar_panel(sesion)
     listas = cargar_listas(sesion, LISTAS_COMUNES, comun=True)
     secciones_tarjeta = _cargar_tarjeta(sesion, listas)
     tematicas = _cargar_tematicas(sesion)

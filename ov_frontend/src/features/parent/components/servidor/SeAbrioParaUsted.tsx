@@ -63,7 +63,7 @@ export function SeAbrioParaUsted({
       clave: 'diploma',
       icono: Award,
       tipo: 'Ruta completada',
-      titulo: 'Su diploma de compromiso',
+      titulo: 'Su Diploma de compromiso',
       accion: 'Ver diploma',
       onClick: onDiploma,
     })

@@ -4,83 +4,83 @@
   "tipo": "encuentro",
   "audiencia": "apoderado",
   "titulo": "El panorama de hoy",
-  "subtitulo": "Lo que cambió desde que usted eligió",
+  "subtitulo": "Lo que su experiencia sabe y lo que dicen los datos",
   "bloque": 1,
   "orden": 5,
   "obligatoria": true,
-  "requisitos": [
-    "p4"
-  ],
-  "duracionEstimadaMin": 10,
-  "personajeIds": [
-    "orientacion"
-  ],
-  "objetivoAprendizaje": "Al terminar, el apoderado conoce las rutas actuales después del colegio, los datos públicos del mercado, el licenciamiento, los costos reales y las becas del Estado, y detecta ideas desactualizadas.",
+  "requisitos": ["p4"],
+  "duracionEstimadaMin": 14,
+  "personajeIds": ["orientacion"],
+  "objetivoAprendizaje": "Al terminar, el apoderado sabe en qué casos la universidad paga más que el instituto y en cuáles no, entiende que un título ayuda pero no asegura empleo formal, sabe comprobar si una institución puede dar un título válido, calcula el costo completo del primer año y conoce los caminos que existen cuando el dinero es el límite.",
   "nodos": [
     {
       "id": "p5-01",
       "tipo": "diapositiva",
-      "titulo": "Muchas ideas de casa son de hace veinte o treinta años",
+      "etiqueta": "Para empezar",
+      "titulo": "Lo que usted sabe y lo que cambió",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Algunas siguen valiendo; otras ya no. Esta actividad repasa cinco cosas que cambiaron desde que usted terminó el colegio, con datos públicos, para que su experiencia y los datos de hoy acompañen juntos."
+          "texto": "Usted conoce el mundo del trabajo mejor que su hijo o hija: lleva años en él. Esa experiencia vale. Lo que puede haber cambiado son los datos: qué se estudia, cuánto cuesta, cuánto se gana."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Le proponemos algo distinto esta vez: antes de cada dato, apueste. Después compare su apuesta con lo que muestran las cifras."
         }
-      ],
-      "etiqueta": "Para empezar"
+      ]
     },
     {
       "id": "p5-02",
       "tipo": "eleccion",
       "registrar": false,
-      "enunciado": "¿Cuál de estas frases ha dicho o escuchado en su casa?",
-      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "enunciado": "Para empezar, ¿cuál de estas ideas se parece más a lo que usted piensa hoy?",
+      "nota": "No se guarda ni la ve nadie.",
       "opciones": [
         {
           "id": "p5-02a",
-          "texto": "«Solo la universidad da futuro.»",
+          "texto": "La universidad da más seguridad que un instituto.",
           "reaccion": [
             {
               "id": "p5-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Es la más común. Los datos del Ministerio de Trabajo la discuten; lo verá en un momento."
+              "texto": "Es una idea muy extendida, y tiene base. En un momento va a ver qué tan cierta es y en qué casos no."
             }
           ]
         },
         {
           "id": "p5-02b",
-          "texto": "«Con título hay trabajo seguro.»",
+          "texto": "Lo importante es que tenga un título.",
           "reaccion": [
             {
               "id": "p5-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Hoy menos de la mitad de los egresados trabaja en algo vinculado a lo que estudió. Veamos qué significa."
+              "texto": "Un título abre puertas, eso es cierto. Vamos a mirar cuánto asegura por sí solo."
             }
           ]
         },
         {
           "id": "p5-02c",
-          "texto": "«Estudiar es muy caro.»",
+          "texto": "Estudiar cuesta más de lo que podemos pagar.",
           "reaccion": [
             {
               "id": "p5-02cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Depende de dónde: la diferencia entre una pública y una privada es de un orden de magnitud, y hay becas del Estado."
+              "texto": "Es una preocupación concreta. Hacia el final va a ver cuánto cuesta de verdad y qué caminos existen cuando el dinero es el límite."
             }
           ]
         },
         {
           "id": "p5-02d",
-          "texto": "Ninguna: en mi casa no hablamos de esto.",
+          "texto": "No sé bien cómo está el panorama hoy.",
           "reaccion": [
             {
               "id": "p5-02dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Entonces esta actividad le da con qué empezar."
+              "texto": "Entonces esta actividad es para usted. Y no le pasa solo a usted: mucho cambió en pocos años."
             }
           ]
         }
@@ -88,59 +88,77 @@
     },
     {
       "id": "p5-03",
-      "tipo": "diapositiva",
-      "titulo": "Las rutas y el mercado",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Primera apuesta.",
+      "enunciado": "Hay 22 familias de carreras que se pueden estudiar tanto en una universidad como en un instituto. ¿En cuántas gana más, al empezar a trabajar, quien estudió en la universidad?",
+      "opciones": [
         {
-          "tipo": "parrafo",
-          "texto": "Además de la universidad y el instituto, hoy la educación técnica permite continuar en la universidad convalidando, hay carreras en horario nocturno y a distancia, y las escuelas de las Fuerzas Armadas y la Policía pagan una asignación durante la formación. Solo tres de cada diez jóvenes pasan a la educación superior (Inei 2023, Minedu 2024): combinar estudio y trabajo o empezar por una ruta corta es frecuente y razonable."
+          "id": "a",
+          "texto": "En 6 de las 22.",
+          "correcta": false,
+          "retroalimentacion": "Son más. La idea de que el instituto paga mejor viene de algunos casos muy visibles, como minería, que no son la regla."
         },
         {
-          "tipo": "tabla",
-          "columnas": [
-            "Lo que se creía",
-            "Lo que muestran los datos"
-          ],
-          "filas": [
-            [
-              "Solo la universidad paga",
-              "Varias familias técnicas, como minería o ingeniería eléctrica, superan al promedio universitario al inicio (Mi Carrera, MTPE)"
-            ],
-            [
-              "Una carrera «segura» garantiza empleo",
-              "Menos de la mitad de los egresados trabaja en una ocupación vinculada a lo que estudió (Minedu y UNESCO, 2026)"
-            ],
-            [
-              "Con título hay trabajo formal",
-              "El 84,8 % de los ocupados de 14 a 24 años tiene empleo informal (INEI, abril 2025–marzo 2026); el título ayuda a entrar al empleo formal, pero no lo garantiza"
-            ]
-          ]
+          "id": "b",
+          "texto": "En 11 de las 22.",
+          "correcta": false,
+          "retroalimentacion": "Son más de la mitad. La universidad paga más al inicio en la mayoría, aunque no en todas."
+        },
+        {
+          "id": "c",
+          "texto": "En 18 de las 22.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Si usted pensaba que la universidad suele pagar más, los datos le dan la razón en general. Las otras cuatro muestran que no es una regla."
+        },
+        {
+          "id": "d",
+          "texto": "En las 22.",
+          "correcta": false,
+          "retroalimentacion": "Casi, pero no. En cuatro de las 22, quien estudió en la universidad no gana más al empezar."
         }
       ],
-      "etiqueta": "Concepto"
+      "explicacion": "En 18 de 22. Es una mayoría clara, y aun así no alcanza para decidir: lo que importa es qué pasa con la familia de carreras que le interesa a su hijo o hija.",
+      "pistas": [
+        {
+          "id": "p5-03p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Piense en la mayoría, pero no en todas."
+        }
+      ]
     },
     {
       "id": "p5-04",
       "tipo": "diapositiva",
-      "titulo": "Instituciones, costos y becas",
+      "etiqueta": "El dato",
+      "titulo": "Universidad e instituto: las dos cosas son ciertas",
       "bloques": [
         {
-          "tipo": "destacado",
-          "variante": "alerta",
-          "texto": "Desde 2014 las universidades necesitan licencia de la Sunedu y los institutos, del Minedu. En el primer proceso, 46 universidades no la obtuvieron y sus estudiantes tuvieron que trasladarse. Antes de que su hijo o hija postule, verifique la licencia en gob.pe; toma cinco minutos."
+          "tipo": "tabla",
+          "columnas": ["Lo que muestran los datos", "Qué quiere decir"],
+          "filas": [
+            ["En 18 de 22 familias, quien estudió en la universidad gana más al inicio", "Como regla general, la universidad paga más"],
+            ["La mitad de las familias universitarias paga menos de S/ 3 100 al inicio; la mitad de las de instituto, menos de S/ 2 600", "La diferencia existe, y es menor de lo que suele creerse"],
+            ["La familia de instituto mejor pagada (minería, metalurgia y petróleo, S/ 6 804) supera a casi todas las universitarias", "Depende de la familia de carreras, no solo del tipo de institución"],
+            ["Un instituto dura 2 o 3 años; una universidad, 5", "Quien va al instituto empieza a ganar antes"]
+          ]
         },
         {
           "tipo": "parrafo",
-          "texto": "Los costos van más allá de la pensión: matrícula por ciclo, materiales, transporte, alimentación y, si estudia en otra ciudad, vivienda. Una carrera privada de cinco años puede pasar los S/ 100 000; en una pública, el primer año cuesta materiales, transporte y trámites. Pedir a su hijo o hija el total del primer año, y no solo la pensión, es la mejor conversación sobre dinero que pueden tener."
+          "texto": "Además, un camino no cierra el otro. Muchas universidades reconocen parte de lo estudiado en un instituto; cuánto reconocen lo decide cada universidad, y conviene preguntarlo antes de matricularse."
         },
         {
           "tipo": "destacado",
-          "variante": "dato",
-          "texto": "Beca 18 ofrece para 2026 veinte mil becas integrales en diez modalidades; la ordinaria pide buen rendimiento en los dos últimos años de secundaria, condición de pobreza según el Sisfoh y menos de 22 años. El crédito educativo es deuda: calcule la cuota contra el ingreso real de los egresados jóvenes de esa carrera."
+          "variante": "idea_clave",
+          "texto": "No hay una respuesta general. Hay una respuesta para la carrera que le interesa a su hijo o hija, y está en los datos."
         },
         {
           "tipo": "fuente",
-          "texto": "Mi Carrera (MTPE). Sunedu, consulta de licenciamiento. Pronabec, Beca 18 convocatoria 2026. La República (2026), acceso a educación superior. INEI (2026), mercado laboral, abril 2025–marzo 2026. Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú.",
+          "texto": "Catálogo de la plataforma, con datos de Ponte en Carrera y Mi Carrera (MTPE): ingreso promedio mensual de egresados de 18 a 29 años con empleo en planilla.",
           "url": "https://micarrera.trabajo.gob.pe/"
         }
       ]
@@ -152,101 +170,272 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un padre dice: «Mi hija quiere estudiar en un instituto. Yo le digo que mejor universidad, porque un técnico siempre gana menos». ¿Qué le muestra el panorama de hoy?",
+      "transicion": "Segunda apuesta.",
+      "enunciado": "De cada diez jóvenes de 14 a 24 años que trabajan en el Perú, ¿cuántos tienen un empleo informal, es decir, sin seguro de salud ni pensión?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Que tiene razón.",
+          "texto": "Tres de cada diez.",
           "correcta": false,
-          "retroalimentacion": "Es la idea de hace treinta años. Los datos de planilla del MTPE la contradicen en varias familias."
+          "retroalimentacion": "Son muchos más. El empleo con todos los beneficios es, a esa edad, la excepción."
         },
         {
           "id": "b",
-          "texto": "Que varias familias técnicas pagan más al inicio que muchas universitarias, que la técnica dura menos y cuesta menos, y que luego puede continuar en la universidad convalidando.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. La ruta técnica no es «la opción B»; y no cierra la puerta a la universidad."
+          "texto": "Cinco de cada diez.",
+          "correcta": false,
+          "retroalimentacion": "Son más. Entre los jóvenes, la informalidad pasa largamente de la mitad."
         },
         {
           "id": "c",
-          "texto": "Que los institutos no dan título.",
+          "texto": "Siete de cada diez.",
           "correcta": false,
-          "retroalimentacion": "Dan título de técnico o profesional técnico, con el que se puede continuar en la universidad."
+          "retroalimentacion": "Esa es la cifra para todas las edades. Entre los jóvenes es todavía más alta."
+        },
+        {
+          "id": "d",
+          "texto": "Más de ocho de cada diez.",
+          "correcta": true,
+          "retroalimentacion": "Sí: el 84,8 %. Entre todas las personas que trabajan, de cualquier edad, es el 69,8 %."
         }
       ],
-      "explicacion": "«Solo la universidad paga» es la idea desactualizada más frecuente. Hoy hay cinco rutas con datos de ingreso públicos, y se pueden encadenar.",
+      "explicacion": "El 84,8 % de quienes tienen entre 14 y 24 años y trabajan lo hace en un empleo informal. Es el mercado al que va a entrar su hijo o hija, estudie lo que estudie.",
       "pistas": [
         {
           "id": "p5-05p1",
           "tipo": "dialogo",
           "hablanteId": "orientacion",
-          "texto": "Primera fila de la tabla «Lo que se creía»."
+          "texto": "Es más alto de lo que la mayoría imagina."
         }
-      ],
-      "transicion": "Dos ideas para revisar."
+      ]
     },
     {
       "id": "p5-06",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Su hijo le dice que le interesa una universidad privada nueva, con mucha publicidad y pensión «desde S/ 500». ¿Qué conviene hacer primero?",
-      "opciones": [
+      "tipo": "diapositiva",
+      "etiqueta": "El dato",
+      "titulo": "Un título ayuda, y no asegura",
+      "bloques": [
         {
-          "id": "a",
-          "texto": "Verificar en gob.pe que esté licenciada por la Sunedu, incluida la sede, y pedir el costo total del primer año, no la pensión «desde».",
-          "correcta": true,
-          "retroalimentacion": "Sí. Cinco minutos de verificación evitan un título sin valor; y el total del primer año evita la sorpresa del segundo mes."
+          "tipo": "parrafo",
+          "texto": "Buscar un camino seguro para un hijo es razonable. Lo que conviene saber es que ninguna carrera lo es por sí sola."
         },
         {
-          "id": "b",
-          "texto": "Matricularlo pronto, antes de que se acaben las vacantes.",
-          "correcta": false,
-          "retroalimentacion": "La urgencia es un recurso de la publicidad. Primero la licencia, luego el costo completo."
+          "tipo": "lista",
+          "items": [
+            "Menos de la mitad de los egresados trabaja en algo vinculado a lo que estudió: el 44 % de los técnicos y el 38,4 % de los universitarios.",
+            "Los sueldos que se publican por carrera son de quienes consiguieron empleo en planilla. No todos lo consiguen, ni lo consiguen pronto.",
+            "Una carrera muy pedida por las empresas no es empleo seguro si también es la que más gente estudia."
+          ]
         },
         {
-          "id": "c",
-          "texto": "Descartarla por nueva.",
-          "correcta": false,
-          "retroalimentacion": "Nueva no es mala; sin licencia sí. Verificar es lo que distingue una de otra."
-        }
-      ],
-      "explicacion": "Dos cosas que no existían cuando usted eligió: la licencia obligatoria y los costos públicos por rubro. Las dos se revisan antes de decidir.",
-      "pistas": [
+          "tipo": "parrafo",
+          "texto": "Entonces, ¿qué hace más seguro un camino? Más que el nombre de la carrera: dónde se estudia, si tiene prácticas, qué tanto se pide en su región y que su hijo o hija la termine."
+        },
         {
-          "id": "p5-06p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "La tarjeta de alerta y el párrafo de costos tienen las dos acciones."
+          "tipo": "fuente",
+          "texto": "INEI (2026), indicadores de mercado laboral, abril de 2025 a marzo de 2026. Minedu y UNESCO (2026), Revisión de la Política de Educación y Formación Técnica y Profesional del Perú. El último párrafo es una recomendación del equipo de orientación.",
+          "url": "https://www.inei.gob.pe/media/MenuRecursivo/boletines/empleo-nacional-i-trimestre-2026.pdf"
         }
       ]
     },
     {
       "id": "p5-07",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Ahora una situación.",
+      "enunciado": "A su hijo o hija le interesa un instituto que tiene mucha publicidad y ofrece pensiones «desde S/ 500». ¿Qué conviene hacer primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Comparar esa pensión con la de otros dos institutos de la zona.",
+          "correcta": false,
+          "retroalimentacion": "Comparar es buena idea, pero más adelante. «Desde S/ 500» no es lo que se termina pagando, y antes hay que saber si el instituto puede funcionar."
+        },
+        {
+          "id": "b",
+          "texto": "Preguntar a conocidos si han oído hablar bien de ese instituto.",
+          "correcta": false,
+          "retroalimentacion": "La opinión de gente que estudió ahí sirve mucho. Pero no reemplaza lo primero: comprobar con qué autorización funciona."
+        },
+        {
+          "id": "c",
+          "texto": "Pedir con qué resolución funciona y cuánto cuesta el primer año completo.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Primero, que pueda dar un título válido; segundo, el costo real. Con esas dos respuestas recién vale la pena comparar."
+        },
+        {
+          "id": "d",
+          "texto": "Descartarlo si no aparece en la lista de institutos licenciados.",
+          "correcta": false,
+          "retroalimentacion": "Con una universidad sería lo correcto. Con un instituto no: la mayoría todavía no tiene licencia, y muchos funcionan con una autorización anterior. Hay que preguntar cuál."
+        }
+      ],
+      "explicacion": "La regla no es la misma para todos. Una universidad sin licencia se descarta. En los institutos, solo dos de cada diez tienen licencia; de los demás, muchos están autorizados desde antes y siguen funcionando mientras se licencian. Lo que toca es pedir la resolución.",
+      "pistas": [
+        {
+          "id": "p5-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Hay dos cosas que conviene saber antes de comparar precios."
+        }
+      ]
+    },
+    {
+      "id": "p5-08",
       "tipo": "diapositiva",
+      "etiqueta": "En la práctica",
+      "titulo": "Antes de pagar la primera cuota",
+      "bloques": [
+        {
+          "tipo": "pasos",
+          "pasos": [
+            {
+              "titulo": "Que pueda dar un título válido",
+              "texto": "Universidad: búsquela en la lista de universidades licenciadas de la Sunedu, en gob.pe, y revise también la sede donde estudiaría. Instituto: búsquelo en la lista del Minedu; si no está, pida la resolución con la que funciona."
+            },
+            {
+              "titulo": "Cuánto cuesta el primer año completo",
+              "texto": "No solo la pensión: matrícula por ciclo, materiales, pasajes, comida y, si es en otra ciudad, vivienda. La admisión también se paga."
+            }
+          ]
+        },
+        {
+          "tipo": "tabla",
+          "titulo": "Una cuenta de ejemplo",
+          "columnas": ["", "Privada", "Pública"],
+          "filas": [
+            ["Pensión", "S/ 1 800 al mes", "No hay"],
+            ["Matrícula", "S/ 600 por ciclo", "Un pago bajo"],
+            ["Materiales y pasajes", "S/ 2 100 al año", "S/ 2 100 al año"],
+            ["Primer año", "Cerca de S/ 21 300", "Cerca de S/ 2 100"],
+            ["Cinco años", "Más de S/ 100 000", "Cerca de S/ 10 500"]
+          ],
+          "nota": "Montos de ejemplo. Los reales están en la página de cada institución."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Ley N.° 30220 y Ley N.° 30512. Sunedu y Minedu, listas de instituciones licenciadas en gob.pe.",
+          "url": "https://www.gob.pe/institucion/sunedu/tramites-y-servicios"
+        }
+      ]
+    },
+    {
+      "id": "p5-09",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Tercera apuesta.",
+      "enunciado": "Beca 18 es la beca integral del Estado para jóvenes con buen rendimiento y pocos recursos. ¿En qué momento se postula?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "El año anterior a empezar: en quinto de secundaria o ya egresado.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Es antes de lo que la mayoría supone, y por eso conviene saberlo con tiempo."
+        },
+        {
+          "id": "b",
+          "texto": "En el verano, apenas termina el colegio y tiene sus notas finales.",
+          "correcta": false,
+          "retroalimentacion": "Es lo que parece lógico, y por eso muchas familias llegan tarde. Para el verano la inscripción ya cerró."
+        },
+        {
+          "id": "c",
+          "texto": "Después de ingresar a la universidad o al instituto elegido.",
+          "correcta": false,
+          "retroalimentacion": "Hay becas para quienes ya estudian, pero Beca 18 empieza antes: la inscripción y el examen son el año anterior."
+        },
+        {
+          "id": "d",
+          "texto": "En cualquier momento del año, cuando la familia lo necesite.",
+          "correcta": false,
+          "retroalimentacion": "Tiene una sola convocatoria al año, con fechas fijas. Fuera de ellas no se puede postular."
+        }
+      ],
+      "explicacion": "Para estudiar en 2027, la inscripción cerró en octubre de 2026, con el examen de preselección en noviembre. Quien no llegó puede postular en la convocatoria siguiente, ya como egresado. La inscripción es gratuita y por internet: nadie cobra por postular.",
+      "pistas": [
+        {
+          "id": "p5-09p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Es antes de lo que parece."
+        }
+      ]
+    },
+    {
+      "id": "p5-10",
+      "tipo": "diapositiva",
+      "etiqueta": "En la práctica",
+      "titulo": "Si el dinero es el límite",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Decir «no nos alcanza» a tiempo sirve más que callarlo. Estos son los caminos que existen, con lo que conviene saber de cada uno."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": ["Camino", "Qué conviene saber"],
+          "filas": [
+            ["Institución pública", "No se paga pensión. Ingresar es más difícil, y se pagan igual la admisión, los materiales, los pasajes y la comida"],
+            ["Beca 18", "El número cambia mucho de un año a otro: 20 000 becas para 2026 y 6 000 para 2027. Conviene postular y tener otro camino pensado"],
+            ["Becas de la institución", "Por rendimiento, deporte o situación económica. Se piden en la propia institución, y muchas se pierden si baja el promedio"],
+            ["Estudiar y trabajar", "Toma más tiempo, evita deuda y deja experiencia"],
+            ["Crédito educativo", "Es una deuda. Antes de firmar, compare la cuota con lo que ganan al inicio los egresados de esa carrera"]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "dato",
+          "texto": "La modalidad ordinaria de Beca 18 pide hogar en situación de pobreza o pobreza extrema, menos de 22 años y tercio superior en los dos últimos grados de secundaria. Hay otras modalidades, con requisitos propios."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Pronabec, Beca 18, convocatorias 2026 y 2027. Las cifras y las fechas cambian cada año: confírmelas en la página del Pronabec.",
+          "url": "https://www.pronabec.gob.pe/beca-18/"
+        }
+      ]
+    },
+    {
+      "id": "p5-11",
+      "tipo": "diapositiva",
+      "etiqueta": "Para llevarse",
       "titulo": "Para llevarse",
       "bloques": [
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Su experiencia vale; los datos del mercado de hoy también. Juntos acompañan mejor que cualquiera de los dos solo."
+          "texto": "Su experiencia vale, y los datos de hoy también. Juntos acompañan mejor que cualquiera de los dos por separado."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Le dejamos dos cosas para hacer con su hijo o hija. Las dos son de mirar juntos, no de decidir."
         },
         {
           "tipo": "pasos",
+          "titulo": "Esta semana",
           "pasos": [
             {
-              "titulo": "Esta semana",
-              "texto": "Entre con su hijo o hija a Mi Carrera (MTPE) y miren juntos los ingresos de la familia de carreras que le interesa, por región."
+              "titulo": "Pídale que le muestre una carrera",
+              "texto": "En el catálogo de la plataforma, que abra la carrera que le interesa y miren juntos «Cuánto ganan sus egresados»."
+            },
+            {
+              "titulo": "Hagan una sola cuenta",
+              "texto": "El costo del primer año completo de esa carrera en una institución. Los montos están en la página de la institución."
             }
           ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar recibe la ficha «El panorama de hoy». Queda en Mis actividades, con las cifras, los pasos para comprobar una institución y dónde mirar cada dato."
         }
-      ],
-      "etiqueta": "Resumen",
-      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+      ]
     }
   ],
   "recompensa": {
-    "mensajeFin": "Su experiencia vale; los datos de hoy también."
+    "mensajeFin": "Su experiencia vale, y los datos de hoy también."
   }
 }

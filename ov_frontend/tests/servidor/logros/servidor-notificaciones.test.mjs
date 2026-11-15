@@ -279,3 +279,16 @@ test('la barra del portal: campana inerte sin prop, ninguna con null y la del ap
   const { useCampanaPortal } = app.load('src/hooks/useCampanaNotificaciones.ts')
   assert.equal(useCampanaPortal().activa, true)
 })
+
+// Auditoría plataforma (F1): el ingreso y el mapa la piden casi a la vez; la segunda reutiliza la lista recién leída.
+test('dos pedidos seguidos de la campana hacen un solo GET; otra cuenta la vuelve a pedir', async () => {
+  const { app, store } = await iniciar({ pagina: logros })
+  const lecturas = () => app.requests.filter((r) => r.url.includes('/notificaciones?')).length
+  await store.cargarNotificaciones()
+  await store.cargarNotificaciones()
+  assert.equal(lecturas(), 1)
+  assert.equal(store.obtenerNotificaciones().total, logros.total)
+  store.limpiarNotificaciones()
+  await store.cargarNotificaciones()
+  assert.equal(lecturas(), 2)
+})

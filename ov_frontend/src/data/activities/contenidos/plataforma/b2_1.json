@@ -3,13 +3,13 @@
   "codigo": "b2-1",
   "tipo": "encuentro",
   "titulo": "Las habilidades sociales",
-  "subtitulo": "La brigada del volcán",
+  "subtitulo": "El aviso de la brigada",
   "escenario": "bosque_volcan",
   "bloque": 2,
-  "orden": 1,
-  "obligatoria": true,
+  "orden": 4,
+  "obligatoria": false,
   "requisitos": [
-    "b1-7"
+    "b2-3"
   ],
   "ubicacion": "Bosque del volcán, puesto de la brigada",
   "duracionEstimadaMin": 12,
@@ -23,7 +23,7 @@
       "id": "b2-1-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "La aguja no se ha movido desde las piedras: apunta derecho a ese puesto de madera, entre el humo. Huele a azufre. Y hay un aviso pegado en la puerta."
+      "texto": "El puesto de la brigada. El aviso sigue pegado en la puerta, y nadie lo ha arrancado."
     },
     {
       "id": "b2-1-02",
@@ -42,7 +42,7 @@
       "tipo": "dialogo",
       "hablanteId": "rosa",
       "expresion": "neutral",
-      "texto": "¿Vienen por el aviso? ¿No? Ah, la aguja de Iván. Soy Rosa, jefa de la brigada. La ladera está cerrada hasta que termine la ronda, así que el bosque se cruza con nosotros o no se cruza. Y me falta gente."
+      "texto": "¿Lo estás leyendo? Lleva un mes ahí. Me falta gente, y casi nadie se anima a tocar la puerta."
     },
     {
       "id": "b2-1-04",
@@ -368,7 +368,7 @@
       "hablanteId": "rosa",
       "nuevoMomento": true,
       "expresion": "neutral",
-      "texto": "Sirves para la ronda. Mañana toca repartir tareas y ahí me vas a hacer falta."
+      "texto": "Servirías para la brigada. El aviso se queda en la puerta, por si acaso."
     },
     {
       "id": "b2-1-16",
@@ -388,15 +388,16 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Lo de la hoja de Rosa y lo de las cinco habilidades te lo dejé en la mochila: «Qué es un test y para qué sirve» y «Las habilidades sociales»."
+      "texto": "Lo de las cinco habilidades te lo dejé en la mochila: «Las habilidades sociales»."
     }
   ],
   "recompensa": {
     "mensajeFin": "Las habilidades sociales se practican. En la ciudad, Dora guarda las preguntas de una página de tu libro."
   },
   "mapa": {
-    "x": 840,
-    "y": 470,
-    "icono": "informativa"
+    "x": 800,
+    "y": 330,
+    "icono": "informativa",
+    "origen": "b2-3"
   }
 }

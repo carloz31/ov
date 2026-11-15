@@ -82,7 +82,8 @@ export type ProgresoCondicion = {
   cumplida: boolean
   texto: string | null
 }
-export type ResultadoEvaluador = { nombre: string; cumplido: boolean }
+// Ajuste logros: `actual` y `requerido` solo llegan cuando el evaluador da su avance («5 de 8»).
+export type ResultadoEvaluador = { nombre: string; cumplido: boolean; actual?: number; requerido?: number }
 export type ObjetivoLegible = { codigo: string; nombre: string }
 export type DesbloqueoNuevo = {
   regla: string
@@ -333,3 +334,7 @@ export type RespuestaResolverCaso = RespuestaAccion & {
   puntaje_minimo: number
   puntaje_maximo: number
 }
+// app/schemas/panel.py vive en servidorPanel.ts (ajuste panel-salon).
+export * from './servidorPanel'
+// app/schemas/panel_estudiante.py vive en servidorPanelEstudiante.ts (ajuste panel-estudiantes).
+export * from './servidorPanelEstudiante'

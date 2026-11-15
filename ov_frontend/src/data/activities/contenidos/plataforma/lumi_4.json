@@ -1,0 +1,49 @@
+{
+  "id": "lumi-4",
+  "codigo": "lumi-4",
+  "tipo": "encuentro",
+  "titulo": "Hasta la mitad",
+  "bloque": 8,
+  "orden": 4,
+  "obligatoria": false,
+  "requisitos": [],
+  "duracionEstimadaMin": 3,
+  "personajeIds": [
+    "companero"
+  ],
+  "nodos": [
+    {
+      "id": "lumi-4-01",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Un día empecé a acompañar a los que llegaban al muelle. Me salió solo: les enseñaba el camino, les contaba lo que sabía."
+    },
+    {
+      "id": "lumi-4-02",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Pero siempre los dejaba a la mitad."
+    },
+    {
+      "id": "lumi-4-03",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "nuevoMomento": true,
+      "texto": "El faro es una luz que guía barcos y no se mueve de su sitio. Cada vez que lo veía, me acordaba del lugar que me habían dado. Por eso lo miraba un rato y me daba la vuelta."
+    },
+    {
+      "id": "lumi-4-04",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "texto": "Una viajera me preguntó por qué nunca iba con ella hasta el final. Le dije: «Ese no es mi camino»."
+    },
+    {
+      "id": "lumi-4-05",
+      "tipo": "dialogo",
+      "hablanteId": "companero",
+      "expresion": "pensativo",
+      "texto": "Siguió sola. Y yo me quedé pensando que eso no lo había decidido. Me había escapado, otra vez."
+    }
+  ]
+}

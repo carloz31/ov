@@ -52,18 +52,29 @@ export function insigniasServidor(logros: LogrosCuenta | null): AchievementGroup
   return grupos
 }
 // Todas las reglas (alternativas) con sus condiciones; el resumen cuenta la regla más avanzada. Una condición sin
-// texto muestra el respaldo: el requisito de la insignia o el mensaje de bloqueo de la regla.
+// texto muestra el respaldo: el requisito de la insignia o el mensaje de bloqueo de la regla. Ajuste logros: en una
+// insignia (`conAvance`), la única condición de una regla cuyo evaluador trae su avance muestra el del evaluador
+// («Batallas ganadas», 5 de 8), porque la condición solo sirve para reevaluarla.
 export function condicionesObjetivo(
   progreso: ProgresoObjetivo,
   respaldo?: string | null,
+  conAvance = false,
 ): CondicionesPasaporte {
-  const bloques = progreso.reglas.map((r) =>
-    r.condiciones.map((c) => ({
-      texto: c.texto ?? respaldo ?? r.mensaje_bloqueo,
-      cumplida: c.cumplida,
-      ...(c.requerido > 1 ? { actual: Math.min(c.actual, c.requerido), requerido: c.requerido } : {}),
-    })),
-  )
+  const bloques = progreso.reglas.map((r) => {
+    const evaluador = r.evaluador_especial
+    const avance =
+      conAvance && evaluador?.requerido !== undefined && r.condiciones.length === 1 ? evaluador : null
+    return r.condiciones.map((c) => {
+      const [actual, requerido, cumplida] = avance
+        ? [avance.actual ?? 0, avance.requerido ?? 0, avance.cumplido]
+        : [c.actual, c.requerido, c.cumplida]
+      return {
+        texto: c.texto ?? respaldo ?? r.mensaje_bloqueo,
+        cumplida,
+        ...(requerido > 1 ? { actual: Math.min(actual, requerido), requerido } : {}),
+      }
+    })
+  })
   const proporcion = (b: CondicionPasaporte[]) => b.filter((c) => c.cumplida).length / (b.length || 1)
   const indice = bloques.reduce((m, b, i) => (proporcion(b) > proporcion(bloques[m]) ? i : m), 0)
   const mejor: CondicionPasaporte[] | undefined = bloques[indice]
@@ -82,6 +93,9 @@ export const actividadServidor = (
   bloques: BloqueActividades[] | null,
   codigo: string,
 ): ActividadCuenta | undefined => bloques?.flatMap((b) => b.actividades).find((a) => a.codigo === codigo)
+// Ajuste lumi-mensajes (§1.1): el mapa espera a que se resuelva la primera misión del camino (b0-1).
+export const primeraMisionResuelta = (bloques: BloqueActividades[] | null) =>
+  bloquesZona(bloques, 'CAMINO')[0]?.actividades[0]?.estado === 'COMPLETADA'
 export const ciudadDisponible = (bloques: BloqueActividades[] | null) =>
   bloques?.some((b) => b.codigo === 'CIUDAD' && b.estado === 'DISPONIBLE') === true
 export const fichaDisponible = (fichas: ContenidoEstado[] | null, codigo: string) =>

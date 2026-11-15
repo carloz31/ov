@@ -1,0 +1,240 @@
+{
+  "intereses": {
+    "aplicacion": "APL-RIASEC",
+    "areas": [
+      "Educación Secundaria",
+      "Psicología",
+      "Educación Primaria",
+      "Tecnología Médica",
+      "Educación Artística"
+    ],
+    "barras": [
+      {
+        "codigo": "S",
+        "en_codigo": true,
+        "nombre": "Social",
+        "valor": 100
+      },
+      {
+        "codigo": "I",
+        "en_codigo": true,
+        "nombre": "Investigativa",
+        "valor": 75
+      },
+      {
+        "codigo": "A",
+        "en_codigo": true,
+        "nombre": "Artística",
+        "valor": 75
+      },
+      {
+        "codigo": "R",
+        "en_codigo": false,
+        "nombre": "Realista",
+        "valor": 25
+      },
+      {
+        "codigo": "E",
+        "en_codigo": false,
+        "nombre": "Emprendedora",
+        "valor": 25
+      },
+      {
+        "codigo": "C",
+        "en_codigo": false,
+        "nombre": "Convencional",
+        "valor": 25
+      }
+    ],
+    "codigo": [
+      {
+        "codigo": "S",
+        "nombre": "Social"
+      },
+      {
+        "codigo": "I",
+        "nombre": "Investigativa"
+      },
+      {
+        "codigo": "A",
+        "nombre": "Artística"
+      }
+    ],
+    "estado": "LISTO",
+    "etiqueta": "REQUISITO",
+    "fecha": "2026-10-07",
+    "frente_planes": [
+      {
+        "carrera": "Ingeniería de Petroleo y Gas Natural",
+        "en_areas": false,
+        "prioridad": 1
+      },
+      {
+        "carrera": "Ciencias de la Comunicación",
+        "en_areas": false,
+        "prioridad": 2
+      },
+      {
+        "carrera": "Psicología",
+        "en_areas": true,
+        "prioridad": 3
+      }
+    ],
+    "instrumento": "TEST-RIASEC",
+    "mensaje": "Resultado exploratorio: insumo para la tutoría, no diagnóstico.",
+    "motivo_revision": null,
+    "nombre": "Test de intereses",
+    "partes_respondidas": 6,
+    "partes_total": 6,
+    "rehizo_plano": false
+  },
+  "otros": [
+    {
+      "aplicacion": null,
+      "destaca": [],
+      "estado": "SIN_EMPEZAR",
+      "etiqueta": "OPCIONAL",
+      "instrumento": "TEST-HABILIDADES",
+      "nombre": "Mi comportamiento con los demás",
+      "para_practicar": null,
+      "partes_respondidas": 0,
+      "partes_total": 4
+    },
+    {
+      "aplicacion": null,
+      "destaca": [],
+      "estado": "SIN_EMPEZAR",
+      "etiqueta": "OPCIONAL",
+      "instrumento": "TEST-INTELIGENCIAS",
+      "nombre": "Test de las inteligencias múltiples",
+      "para_practicar": null,
+      "partes_respondidas": 0,
+      "partes_total": 5
+    }
+  ],
+  "partida_llegada": {
+    "etiqueta": "CAMINO",
+    "grupos": [
+      {
+        "afirmaciones": [
+          {
+            "enunciado": "La decisión sobre mi futuro la tomo yo.",
+            "item": "AUTO-13",
+            "llegada": "Poco de acuerdo",
+            "partida": "Muy de acuerdo"
+          },
+          {
+            "enunciado": "Puedo conversar con mi familia sobre lo que quiero.",
+            "item": "AUTO-14",
+            "llegada": "Poco de acuerdo",
+            "partida": "Muy de acuerdo"
+          },
+          {
+            "enunciado": "Elijo pensando en lo que quiero y no solo en lo que otros esperan.",
+            "item": "AUTO-15",
+            "llegada": "Poco de acuerdo",
+            "partida": "Muy de acuerdo"
+          },
+          {
+            "enunciado": "Busco información por mi cuenta antes de decidir.",
+            "item": "AUTO-16",
+            "llegada": "Poco de acuerdo",
+            "partida": "Muy de acuerdo"
+          }
+        ],
+        "codigo": "BAJARON"
+      },
+      {
+        "afirmaciones": [
+          {
+            "enunciado": "Sé qué quiero hacer cuando termine el colegio.",
+            "item": "AUTO-01",
+            "llegada": "Poco de acuerdo",
+            "partida": "Nada de acuerdo"
+          }
+        ],
+        "codigo": "SIGUEN_BAJAS"
+      },
+      {
+        "afirmaciones": [
+          {
+            "enunciado": "Puedo explicar con mis palabras qué camino me atrae.",
+            "item": "AUTO-02",
+            "llegada": "Muy de acuerdo",
+            "partida": "Poco de acuerdo"
+          },
+          {
+            "enunciado": "Tengo una o dos opciones que me interesan más que las demás.",
+            "item": "AUTO-03",
+            "llegada": "Muy de acuerdo",
+            "partida": "Poco de acuerdo"
+          },
+          {
+            "enunciado": "Me siento perdido cuando pienso en lo que viene después del colegio.",
+            "item": "AUTO-04",
+            "llegada": "Nada de acuerdo",
+            "partida": "Bastante de acuerdo"
+          },
+          {
+            "enunciado": "Conozco las actividades que más disfruto.",
+            "item": "AUTO-05",
+            "llegada": "Muy de acuerdo",
+            "partida": "Poco de acuerdo"
+          },
+          {
+            "enunciado": "Sé en qué soy bueno.",
+            "item": "AUTO-06",
+            "llegada": "Muy de acuerdo",
+            "partida": "Poco de acuerdo"
+          }
+        ],
+        "codigo": "MEJORARON"
+      }
+    ],
+    "instrumento": "TEST-PARTIDA-LLEGADA",
+    "mensaje": "Medida antes y después: su valor está en el cambio.",
+    "nombre": "Punto de partida y de llegada",
+    "resumen": {
+      "dimensiones": [
+        {
+          "cambio": "SUBIO",
+          "codigo": "AUTO-A",
+          "nombre": "Claridad",
+          "zona_llegada": "FUERTE",
+          "zona_partida": "POR_TRABAJAR"
+        },
+        {
+          "cambio": "SUBIO",
+          "codigo": "AUTO-B",
+          "nombre": "Conocimiento de mí",
+          "zona_llegada": "FUERTE",
+          "zona_partida": "POR_TRABAJAR"
+        },
+        {
+          "cambio": "SUBIO",
+          "codigo": "AUTO-C",
+          "nombre": "Conocimiento de las opciones",
+          "zona_llegada": "FUERTE",
+          "zona_partida": "POR_TRABAJAR"
+        },
+        {
+          "cambio": "BAJO",
+          "codigo": "AUTO-D",
+          "nombre": "Decisión propia",
+          "zona_llegada": "POR_TRABAJAR",
+          "zona_partida": "FUERTE"
+        },
+        {
+          "cambio": "SUBIO",
+          "codigo": "AUTO-E",
+          "nombre": "Confianza",
+          "zona_llegada": "FUERTE",
+          "zona_partida": "POR_TRABAJAR"
+        }
+      ],
+      "estado": "CON_LLEGADA",
+      "fecha_llegada": "2026-10-07",
+      "fecha_partida": "2026-10-07"
+    }
+  }
+}

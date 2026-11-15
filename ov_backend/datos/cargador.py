@@ -44,6 +44,7 @@ _DICCIONARIOS = frozenset({
     'PROPIEDADES', 'DESCRIPCIONES', 'CONFIGURACION_BATALLAS', 'CONFIGURACION_CASOS', 'PROPIEDADES_ITEMS',
     'TEXTOS_INSIGNIAS', 'PAGINAS_INSIGNIAS', 'PISTAS_INSIGNIAS', 'CITAS_LUMI', 'TEXTOS_CONDICIONES',
     'EVALUADORES_REGLAS', 'CARRERAS_RUTA', 'INSTITUCIONES_RUTA', 'UBICACIONES_RUTA', 'VARIANTES_DIARIO', 'TARJETAS',
+    'TEXTOS_PERFIL_ALERTAS',
 })
 
 
@@ -89,17 +90,43 @@ def _validar_origen_testimonios(m):
         raise ValueError(f'Testimonios sin regla SUPERA_CASO ni COMPLETA_ACTIVIDAD: {sorted(sin_origen)}')
 
 
+def crear_salones(sesion, colegios, filas):
+    """Los salones de `filas` (código, nombre, colegio), en los colegios de `colegios` (código → Colegio). Los deja con
+    id. Los usan el cargador y `scripts/crear_cuentas.py`."""
+    salones = {c: modelos.Salon(codigo=c, nombre=n, colegio_id=colegios[colegio].id) for c, n, colegio in filas}
+    sesion.add_all(salones.values())
+    sesion.flush()
+    return salones
+
+
+def crear_cuentas(sesion, salones, filas):
+    """Las cuentas de `filas` (código, nombre, rol, salón o None, correo, contraseña), con el correo normalizado y la
+    contraseña con Argon2id. Las agrega a la sesión sin confirmar; quien llama hace el flush."""
+    cuentas = {c: modelos.Cuenta(codigo=c, nombre=n, rol=modelos.Rol(r),
+                                 salon_id=None if salon is None else salones[salon].id,
+                                 correo=correo.strip().lower(), contrasena_hash=_hash(contrasena))
+               for c, n, r, salon, correo, contrasena in filas}
+    sesion.add_all(cuentas.values())
+    return cuentas
+
+
+def asignar_orientadoras(sesion, cuentas, salones, filas):
+    """Cada fila (orientadora, salón, es principal) asigna una orientadora a un salón."""
+    sesion.add_all(modelos.OrientadoraSalon(orientadora_id=cuentas[o].id, salon_id=salones[salon].id,
+                                            es_principal=p) for o, salon, p in filas)
+
+
+def vincular_familias(sesion, cuentas, filas):
+    """Cada fila (código, estudiante, apoderado, parentesco) vincula un apoderado con su hijo."""
+    sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
+                                           parentesco=p) for c, e, a, p in filas)
+
+
 def _cargar_estructura(m, sesion):
     colegios = {c: modelos.Colegio(codigo=c, nombre=n) for c, n in m.COLEGIOS}
     sesion.add_all(colegios.values())
     sesion.flush()
-    salones = {c: modelos.Salon(codigo=c, nombre=n, colegio_id=colegios[colegio].id) for c, n, colegio in m.SALONES}
-    sesion.add_all(salones.values())
-    sesion.flush()
-    cuentas = {c: modelos.Cuenta(codigo=c, nombre=n, rol=modelos.Rol(r),
-                                 salon_id=None if salon is None else salones[salon].id,
-                                 correo=correo.strip().lower(), contrasena_hash=_hash(contrasena))
-               for c, n, r, salon, correo, contrasena in m.CUENTAS}
+    salones = crear_salones(sesion, colegios, m.SALONES)
     bloques = {c: modelos.Bloque(codigo=c, numero=num, nombre=n, espacio=modelos.Espacio(e),
                                 audiencia=modelos.Audiencia(a)) for c, num, n, e, a in m.BLOQUES}
     fichas = {c: modelos.Ficha(codigo=c, titulo=t, descripcion=d, tema=tema, contenido=texto,
@@ -136,13 +163,12 @@ def _cargar_estructura(m, sesion):
     niveles = {num: modelos.Nivel(numero=num, titulo=t, descripcion=d, cita_lumi=m.CITAS_LUMI.get(num))
                for num, t, d in m.NIVELES}
     preguntas = _preguntas_diario(m, sesion)
-    sesion.add_all([*cuentas.values(), *bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
+    cuentas = crear_cuentas(sesion, salones, m.CUENTAS)
+    sesion.add_all([*bloques.values(), *fichas.values(), *testimonios.values(), *conversaciones.values(),
                     *insignias.values(), *niveles.values(), *preguntas.values()])
     sesion.flush()
-    sesion.add_all(modelos.VinculoFamiliar(codigo=c, estudiante_id=cuentas[e].id, apoderado_id=cuentas[a].id,
-                                           parentesco=p) for c, e, a, p in m.VINCULOS)
-    sesion.add_all(modelos.OrientadoraSalon(orientadora_id=cuentas[o].id, salon_id=salones[salon].id,
-                                            es_principal=p) for o, salon, p in m.ORIENTADORAS_SALONES)
+    vincular_familias(sesion, cuentas, m.VINCULOS)
+    asignar_orientadoras(sesion, cuentas, salones, m.ORIENTADORAS_SALONES)
     ordenes = {}
     actividades = {}
     for codigo, bloque, titulo, tipo, puntaje, duracion in m.ACTIVIDADES:
@@ -634,8 +660,11 @@ def _cargar_reglas(m, sesion, objetivos):
     for codigo, tipo, objetivo, mensaje, condiciones in m.REGLAS:
         if not mensaje.strip():
             raise ValueError(f'La regla {codigo} no tiene mensaje de bloqueo')
-        # Los recuerdos de Lumi no desbloquean nada: ninguna regla depende de ellos ni de su bloque (F05).
-        if any(referencia in (*m.RECUERDOS_LUMI, 'LUMI') for _, referencia, _, _ in condiciones):
+        # Los recuerdos de Lumi no desbloquean nada: ninguna regla depende de ellos ni de su bloque (F05). Ajuste
+        # logros: una insignia sí puede pedir los recuerdos («Alguien preguntó»), porque no abre contenido; del
+        # bloque LUMI no depende ninguna.
+        recuerdos = () if tipo == 'INSIGNIA' else tuple(m.RECUERDOS_LUMI)
+        if any(referencia in (*recuerdos, 'LUMI') for _, referencia, _, _ in condiciones):
             raise ValueError(f'La regla {codigo} depende de un recuerdo de Lumi o de su bloque')
         regla = modelos.ReglaDesbloqueo(codigo=codigo, nombre=f'Desbloquear {objetivo}', mensaje_bloqueo=mensaje,
             tipo_objetivo=modelos.TipoObjetivo(tipo), id_objetivo=objetivos[tipo][objetivo].id,
@@ -683,6 +712,56 @@ def _cargar_catalogo(m, sesion):
                        for p, letra in enumerate(letras, start=1))
 
 
+def _cargar_alertas(m, sesion):
+    """Ajuste pendientes-orientadora: las alertas propias del conjunto (temas que nombran sus ítems), en los grupos
+    de `fijos`."""
+    if not m.ALERTAS:
+        return
+    grupos = dict(sesion.execute(select(modelos.GrupoAlerta.codigo, modelos.GrupoAlerta.id)).all())
+    fijos.cargar_alertas(sesion, grupos, m.ALERTAS, m.TEXTOS_PERFIL_ALERTAS)
+
+
+def validar_alertas(sesion: Session) -> None:
+    """Una fila de tema mal armada falla al cargar, no al consultar: cada `item` y cada ítem de `datos` existe y es de
+    elección, cada código de `opciones` es una opción de su ítem, cada medidor es una columna de medidor y el podio de
+    `valores_fuera_del_plan` usa la lista `VALORES` (la de los motivos del plan)."""
+    items = {i.codigo: i for i in sesion.scalars(select(modelos.ItemRegistro))}
+    listas = {i: c for i, c in sesion.execute(select(modelos.ListaOpciones.id, modelos.ListaOpciones.codigo))}
+    opciones_lista = {}
+    for lista_id, codigo in sesion.execute(select(modelos.OpcionLista.lista_id, modelos.OpcionLista.codigo)):
+        opciones_lista.setdefault(lista_id, set()).add(codigo)
+
+    def item_de_eleccion(alerta, codigo):
+        item = items.get(codigo)
+        if item is None:
+            raise ValueError(f'La alerta {alerta} nombra un ítem que no existe: {codigo}')
+        if item.lista_id is None and not item.opciones_propias and item.fuente_opciones is None:
+            raise ValueError(f'La alerta {alerta} nombra un ítem sin elección: {codigo}')
+        return item
+
+    for alerta in sesion.scalars(select(modelos.Alerta)):
+        p = alerta.parametros or {}
+        if alerta.evaluador == 'eleccion_registro':
+            item = item_de_eleccion(alerta.codigo, p.get('item'))
+            validas = opciones_lista.get(item.lista_id, set()) | {o['codigo'] for o in item.opciones_propias or ()}
+            ajenas = sorted(set(p.get('opciones') or ()) - validas)
+            if not p.get('opciones') or ajenas:
+                raise ValueError(f'La alerta {alerta.codigo} usa opciones que no son de {item.codigo}: {ajenas}')
+            for otro in (p.get('datos') or {}).values():
+                item_de_eleccion(alerta.codigo, otro)
+            planes = set(p.get('omitir_si_cambio') or ()) | set(p.get('valores_requeridos') or ())
+            if planes - {'plan_a', 'plan_b'}:
+                raise ValueError(f'La alerta {alerta.codigo} compara planes desconocidos: {sorted(planes)}')
+        elif alerta.evaluador == 'valores_fuera_del_plan':
+            item = item_de_eleccion(alerta.codigo, p.get('item'))
+            if listas.get(item.lista_id) != 'VALORES':
+                raise ValueError(f'La alerta {alerta.codigo} necesita un podio de la lista VALORES: {item.codigo}')
+        elif alerta.evaluador == 'plan_medidor':
+            desconocidos = sorted(set(p.get('medidores') or ()) - set(fijos.MEDIDORES_PLAN))
+            if not p.get('medidores') or desconocidos:
+                raise ValueError(f'La alerta {alerta.codigo} usa medidores que no existen: {desconocidos}')
+
+
 def cargar(sesion: Session, modulo) -> None:
     """Carga `fijos` y las tuplas de `modulo`. La validación de la distribución de ítems la llama el módulo de datos
     después (`validar_distribucion_items`), para que una falla tardía revierta toda la carga."""
@@ -697,4 +776,6 @@ def cargar(sesion: Session, modulo) -> None:
     _cargar_registros(m, sesion, objetivos['ACTIVIDAD'], base)
     _cargar_salones(m, sesion, objetivos.pop('SALON'), objetivos['ACTIVIDAD'])
     _cargar_reglas(m, sesion, objetivos)
+    _cargar_alertas(m, sesion)
     sesion.flush()
+    validar_alertas(sesion)

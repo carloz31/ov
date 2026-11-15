@@ -431,7 +431,7 @@ test('counselor v2 screens expose the revised controls and terminology', () => {
   assert.doesNotMatch(publications, /Borrador/)
 
   const priorities = render('/counselor/priorities')
-  assert.match(priorities, />Prioritarios</)
+  assert.match(priorities, />Configuración del salón</)
   assert.match(priorities, /Visible para el apoderado/)
   assert.match(priorities, /role="checkbox"/)
   assert.doesNotMatch(priorities, /Editar actividades|Guardar cambios/)
@@ -663,7 +663,7 @@ test('new map canvases draw segments only on the path, with completion and front
   journey.progress['mission-welcome'] = { estado: 'completada' }
   journey.progress['enc-mitos'] = { estado: 'completada' }
   const points = getCaminoPoints(store.createInitialAdventure(), journey)
-  const props = { points, panelOpen: false, onSelect() {}, onScaleChange() {}, backgroundImage: '/images/adventure/journey-map.png', label: 'Mapa de prueba' }
+  const props = { points, panelOpen: false, onSelect() {}, onScaleChange() {}, backgroundImage: '/images/adventure/journey-map.webp', label: 'Mapa de prueba' }
   const route = renderToStaticMarkup(React.createElement(MapCanvas, { ...props, variant: 'route' }))
   const city = renderToStaticMarkup(React.createElement(MapCanvas, { ...props, variant: 'open' }))
   assert.equal((route.match(/data-map-segment=/g) ?? []).length, points.length - 1)
@@ -828,13 +828,14 @@ test('student overlay queue prioritizes real city arrival, section introductions
   assert.equal(getNextOverlay({ ...args, activityOpen: true }), null)
 })
 
+// Ajuste lumi-mensajes: la presentación del mapa tiene cinco pasos (mapa, candados, panel, perfil y ayuda).
 test('every student section has its purpose introduction and a help guide of one to four steps', () => {
   const { guideSteps, sectionIntros, passportGuideSteps } = load(path.resolve('src/data/content/guideTexts.ts'))
   const { studentViews } = load(path.resolve('src/lib/studentViews.ts'))
   const inRange = (steps) => Array.isArray(steps) && steps.length >= 1 && steps.length <= 4 && steps.every((step) => step.trim())
   for (const view of studentViews) {
     assert.ok(inRange(guideSteps[view]), `ayuda ${view}`)
-    assert.ok(inRange(sectionIntros[view]), `presentación ${view}`)
+    assert.ok(inRange(sectionIntros[view]) || (view === 'missions' && sectionIntros[view].length === 5), `presentación ${view}`)
     assert.notDeepEqual(sectionIntros[view], guideSteps[view], view)
   }
   assert.ok(inRange(passportGuideSteps))
@@ -2455,7 +2456,7 @@ test('live priority configuration updates table, header, summary and profile fil
     assert.match(profile, /aria-valuenow="50"/)
     assert.doesNotMatch(profile, /Ver resultado<\/a>.*Test de intereses/)
     const questionnaires = render('/counselor/students/ejemplo-06?section=questionnaires')
-    assert.match(questionnaires, /Prioritarios.*1/)
+    assert.match(questionnaires, /Configuración del salón.*1/)
     assert.doesNotMatch(questionnaires, /Test de intereses/)
     const records = render('/counselor/students/ejemplo-06?section=records')
     assert.match(records, /Aún no marcas actividades de registro como prioritarias/)
@@ -2487,7 +2488,7 @@ test('family results require assigned route completion and honor sharing indepen
   const completed = { parentJourney: completedParentJourney() }
   const route = '/parent/children/ejemplo-07/questionnaires/interests'
   const saved = prioritySettingsStore.getSnapshot()
-  assert.match(render('/parent/overview'), /Podrás ver los resultados de Gabriela/)
+  assert.match(render('/parent/overview'), /Podrá ver los resultados de Gabriela cuando complete sus actividades/)
   assert.match(render(route), /Completa tus actividades/)
   assert.doesNotMatch(render(route), /Código de interés|Ocupaciones afines/)
   assert.match(render(route,completed), /Código de interés|Ocupaciones afines/)
@@ -2508,7 +2509,7 @@ test('family home unites own route and shared child summary with no private stud
   assert.equal(parentChildren.length,1)
   assert.equal(parentChildren[0].id,'ejemplo-07')
   assert.match(html,/Hola, José|Hola, Jos/)
-  assert.match(html,/Conozco mi rol|Completaste tu ruta/)
+  assert.match(html,/Diploma de compromiso|Completó su ruta/)
   assert.match(html,/Repasar mis actividades|Seguir con las conversaciones/)
   assert.match(html,/Gabriela García Muñoz|Avance de su recorrido|Resultados de sus cuestionarios/)
   assert.doesNotMatch(html,/Último avance|Hitos del proceso|Intereses destacados|Próximo hito|Conversación sugerida|Último acceso|Avance prioritario|Seguridad y diario|role="tab"/)
@@ -2894,18 +2895,28 @@ test('phase 8 every novelty kind retains its existing destination and unread two
   journeyStore.updateJourney(() => journeyLogic.initialJourney()); noveltyUi.updateStudentUi(() => noveltyUi.initialStudentUiState())
 })
 
-test('PNG maps fill their triple-sized worlds and cover the entire viewport at minimum zoom', () => {
+// Auditoría plataforma (imágenes en WebP): el ancho y el alto salen de la cabecera VP8, VP8L o VP8X.
+function dimensionesWebp(archivo) {
+  const tipo = archivo.subarray(12, 16).toString()
+  if (tipo === 'VP8 ') return [archivo.readUInt16LE(26) & 0x3fff, archivo.readUInt16LE(28) & 0x3fff]
+  if (tipo === 'VP8L') {
+    const bits = archivo.readUInt32LE(21)
+    return [(bits & 0x3fff) + 1, ((bits >> 14) & 0x3fff) + 1]
+  }
+  return [archivo.readUIntLE(24, 3) + 1, archivo.readUIntLE(27, 3) + 1]
+}
+
+test('map images fill their triple-sized worlds and cover the entire viewport at minimum zoom', () => {
   const geometry = load(path.resolve('src/features/adventure/lib/geometry.ts'))
   const { canvasSize, imageSize, initialScale, getMinimumScale, zoomTransform, clampTransform, mapPosition } = geometry
   assert.equal(canvasSize.width, 5016); assert.equal(canvasSize.height, 2823)
   assert.equal(initialScale, .5)
   for (const name of ['journey-map', 'city-map']) {
-    const png = readFileSync(path.resolve(`public/images/adventure/${name}.png`))
-    assert.equal(png.subarray(1, 4).toString(), 'PNG')
-    assert.equal(png.readUInt32BE(16), imageSize.width)
-    assert.equal(png.readUInt32BE(20), imageSize.height)
+    const imagen = readFileSync(path.resolve(`public/images/adventure/${name}.webp`))
+    assert.equal(imagen.subarray(8, 12).toString(), 'WEBP')
+    assert.deepEqual(dimensionesWebp(imagen), [imageSize.width, imageSize.height])
     const markup = render(name === 'journey-map' ? '/student/missions' : '/student/exploration')
-    assert.match(markup, new RegExp(`src="/images/adventure/${name}\\.png"`))
+    assert.match(markup, new RegExp(`src="/images/adventure/${name}\\.webp"`))
     assert.match(markup, /width:5016px;height:2823px/)
     assert.match(markup, /scale\(0.5\)/)
   }
@@ -3003,7 +3014,7 @@ test('phase 9 panel has five direct links, a compact next-step action and the re
   let tree = panel.draw({ adventure, points, recommended: points[0], progress: { label: 'Recorrido', value: 0 }, onSelect: id => { selected = id }, onCheckIn() {} })
   const links = panel.find(tree, element => element.props['aria-label'] === 'Accesos rápidos').props.children
   // Ajuste del panel (F05): Mi perfil es la cabecera; entra Mis planes.
-  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mis planes', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Información'])
+  assert.deepEqual(Array.from(links, element => panel.text(element)), ['Mis planes', 'Mi diario', 'En familia', 'Recursos', 'Investigaciones', 'Catálogo'])
   assert.deepEqual(Array.from(links, element => element.props.to), ['/student/profile/decisions', '/student/journal', '/student/conversations', '/student/resources', '/student/investigations', '/student/catalog/professions'])
   assert.ok(links.every(element => element.type !== 'button'))
   // Ajuste del panel (F05): el siguiente paso es su propio componente (también en local); se pinta aparte.

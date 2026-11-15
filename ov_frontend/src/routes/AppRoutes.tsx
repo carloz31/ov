@@ -2,24 +2,23 @@ import { LoginRoute } from '@/pages/auth/LoginRoute'
 import { PortalDeCuenta } from './PortalDeCuenta'
 import { SoloLocal } from './SoloLocal'
 import { SegunModo } from './SegunModo'
+import { subrutasEstudiantes } from './SubrutasEstudiantes'
 import { subrutasFamilia } from './SubrutasFamilia'
 import { rutasInvestigaciones } from './SubrutasInvestigaciones'
 import { rutasLibroHelena } from './SubrutasLibroHelena'
 import { subrutasExplorar } from './SubrutasExplorar'
+import { subrutasPanelSalon } from './SubrutasPanelSalon'
 import { SeccionProtegida } from '@/features/adventure/components/SeccionProtegida'
 import { Navigate, Route, Routes } from 'react-router'
-import { CounselorDashboardView } from '@/pages/counselor/CounselorDashboardView'
 import { CounselorPortalModule } from '@/pages/counselor/CounselorPortalModule'
 import { CounselorSettingsView } from '@/pages/counselor/CounselorSettingsView'
 import { PrioritiesView } from '@/pages/counselor/PrioritiesView'
 import { PublicationsView } from '@/pages/counselor/PublicationsView'
 import { PublicacionesServidorView } from '@/pages/counselor/PublicacionesServidorView'
 import { PublicacionServidorView } from '@/pages/counselor/PublicacionServidorView'
-import { StudentDetailView } from '@/pages/counselor/StudentDetailView'
 import { QuestionnaireDetailView } from '@/pages/counselor/QuestionnaireDetailView'
 import { StudentRecordDetailView } from '@/pages/counselor/StudentRecordDetailView'
 import { FamilyRecordDetailView } from '@/pages/counselor/FamilyRecordDetailView'
-import { StudentsView } from '@/pages/counselor/StudentsView'
 import { OccupationExplorationModule } from '@/pages/student/OccupationExplorationModule'
 import { ExplorationCaseIntroPage } from '@/pages/student/ExplorationCaseIntroPage'
 import { ForestFireCasePage } from '@/pages/student/ForestFireCasePage'
@@ -257,14 +256,13 @@ function AppRoutes() {
 
       <Route element={<CounselorPortalModule />} path="/counselor">
         <Route element={<Navigate replace to={appPaths.counselor.home} />} index />
-        <Route element={<CounselorDashboardView />} path="home" />
-        <Route element={<StudentsView />} path="students" />
+        {subrutasPanelSalon()}
+        {subrutasEstudiantes()}
         <Route element={<PrioritiesView />} path="students/priorities" />
         <Route
           element={<QuestionnaireDetailView />}
           path="students/:studentId/questionnaires/:questionnaireId"
         />
-        <Route element={<StudentDetailView />} path="students/:studentId" />
         <Route element={<StudentRecordDetailView />} path="students/:studentId/records/:recordId" />
         <Route element={<FamilyRecordDetailView />} path="students/:studentId/family-records/:activityId" />
         <Route

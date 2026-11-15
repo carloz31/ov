@@ -204,7 +204,8 @@ def test_reglas_con_su_condicion_nueva(sesion_contenido):
     assert (reglas['R-b4-1'].evaluador_especial, reglas['R-b4-1'].parametro_evaluador) == ('por_que_en_planes', 1)
     assert (reglas['R-b4-5'].evaluador_especial, reglas['R-b4-5'].parametro_evaluador) == ('por_que_en_planes', 2)
     assert (reglas['R-b5-1'].evaluador_especial, reglas['R-b5-1'].parametro_evaluador) == ('pasos_plan_a', 1)
-    assert reglas['R-b4-5'].mensaje_bloqueo == 'Calla al Eco y cuenta por qué elegiste tus dos primeros planes.'
+    assert reglas['R-b4-5'].mensaje_bloqueo == ('Gana «Batalla: decidir con criterio» y, en «Mis planes», completa «Por qué la elijo» en tu Plan A '
+                                                'y en tu Plan B.')
     assert {c.tipo_evento for c in reglas['R-b4-5'].condiciones} == {m.TipoEventoUso.SUPERA_BATALLA,
                                                                      m.TipoEventoUso.ACTUALIZA_PLAN}
 

@@ -1,0 +1,166 @@
+{
+  "avisos": [
+    {
+      "avisos": [
+        {
+          "codigo": "seguridad-baja",
+          "descripcion": "Marcó 2, 2 y 1 de 5 (el 7, 9 y 11 de noviembre).",
+          "destino": "AVANCE",
+          "nombre": "Poca seguridad en sus últimas señales"
+        }
+      ],
+      "codigo": "conversar",
+      "nombre": "Conversar pronto"
+    }
+  ],
+  "cabecera": {
+    "apoderado": {
+      "estado": "INGRESO",
+      "nombre": "José Paredes",
+      "parentesco": "padre"
+    },
+    "codigo": "est-panel-5",
+    "dias_sin_ingreso": 0,
+    "nombre": "Luciana Paredes Soto",
+    "salon": {
+      "codigo": "5A",
+      "nombre": "Quinto A"
+    },
+    "tramo": {
+      "codigo": "B5",
+      "nombre": "Mi decisión",
+      "numero": 6,
+      "total": 6
+    }
+  },
+  "intereses": {
+    "areas": [
+      "Educación Secundaria",
+      "Psicología",
+      "Educación Primaria",
+      "Tecnología Médica",
+      "Educación Artística"
+    ],
+    "codigo": [
+      {
+        "codigo": "S",
+        "nombre": "Social"
+      },
+      {
+        "codigo": "I",
+        "nombre": "Investigativa"
+      },
+      {
+        "codigo": "A",
+        "nombre": "Artística"
+      }
+    ],
+    "estado": "LISTO",
+    "fecha": "2026-10-07",
+    "instrumento": "TEST-RIASEC",
+    "motivo_revision": null,
+    "partes_respondidas": 6,
+    "partes_total": 6
+  },
+  "notas": [],
+  "partida": {
+    "dimensiones": [
+      {
+        "cambio": null,
+        "codigo": "AUTO-A",
+        "nombre": "Claridad",
+        "zona_llegada": null,
+        "zona_partida": "EN_CAMINO"
+      },
+      {
+        "cambio": null,
+        "codigo": "AUTO-B",
+        "nombre": "Conocimiento de mí",
+        "zona_llegada": null,
+        "zona_partida": "EN_CAMINO"
+      },
+      {
+        "cambio": null,
+        "codigo": "AUTO-C",
+        "nombre": "Conocimiento de las opciones",
+        "zona_llegada": null,
+        "zona_partida": "EN_CAMINO"
+      },
+      {
+        "cambio": null,
+        "codigo": "AUTO-D",
+        "nombre": "Decisión propia",
+        "zona_llegada": null,
+        "zona_partida": "EN_CAMINO"
+      },
+      {
+        "cambio": null,
+        "codigo": "AUTO-E",
+        "nombre": "Confianza",
+        "zona_llegada": null,
+        "zona_partida": "POR_TRABAJAR"
+      }
+    ],
+    "estado": "SOLO_PARTIDA",
+    "fecha_llegada": null,
+    "fecha_partida": "2026-10-07"
+  },
+  "planes": [
+    {
+      "carrera": "Psicología",
+      "en_areas": true,
+      "institucion": {
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "tipo": "UNIVERSIDAD"
+      },
+      "prioridad": 1
+    },
+    {
+      "carrera": "Ciencias de la Comunicación",
+      "en_areas": false,
+      "institucion": {
+        "gestion": "PUBLICA",
+        "nombre": "Universidad Nacional Federico Villarreal",
+        "tipo": "UNIVERSIDAD"
+      },
+      "prioridad": 2
+    }
+  ],
+  "respuestas": {
+    "aun_no_lo_sabe": 0,
+    "completados": 1,
+    "destacados": true,
+    "requiere_atencion": 0,
+    "sin_contenido": 1,
+    "total": 1
+  },
+  "temas": [
+    {
+      "codigo": "voces-chocan",
+      "destino": "RESPUESTAS",
+      "texto": "Marcó que lo que se espera en su entorno y lo que quiere hacer al terminar el colegio chocan. La voz que eligió: Mamá."
+    },
+    {
+      "codigo": "valores-fuera-del-plan",
+      "destino": "PLANES",
+      "texto": "Lo que más valora en un trabajo (Estabilidad, Ingresos y Ayudar a otros) no aparece entre los motivos de su Plan A (Crear y Aprender)."
+    },
+    {
+      "codigo": "plan-se-ve-lejos",
+      "destino": "PLANES",
+      "texto": "Marcó «Poco» en «Tengo cómo lograrlo» frente a su Plan A (Psicología). Ve como posibles complicaciones: económicas y DATO DE PRUEBA: queda lejos de mi casa."
+    },
+    {
+      "codigo": "plan-conoce-poco",
+      "destino": "PLANES",
+      "texto": "Dice conocer poco su Plan A: respondió «No» a 3 de 5 preguntas. Tiene 7 dudas abiertas."
+    },
+    {
+      "codigo": "plan-b-desanima",
+      "destino": "RESPUESTAS",
+      "texto": "Al imaginar que le tocaba su Plan B (Ciencias de la Comunicación), marcó «Me desanimé»."
+    }
+  ],
+  "temas_visibles": 4
+}

@@ -3,7 +3,12 @@ import type { FamiliaPublica, TipoInstitucionServidor } from './servidorCatalogo
 
 // Ajuste carga-instrumentos: cuatro piezas por dimensión (descripción, ejemplos, fortalezas y desarrollo).
 export type TextosDimension = { ejemplos: string | null; fortalezas: string[]; desarrollo: string[] }
-export type DimensionPublica = { codigo: string; nombre: string; descripcion: string; orden: number } & TextosDimension
+export type DimensionPublica = {
+  codigo: string
+  nombre: string
+  descripcion: string
+  orden: number
+} & TextosDimension
 export type ActividadPublica = { codigo: string; titulo: string; orden: number }
 export type AplicacionPublica = {
   codigo: string
@@ -42,6 +47,8 @@ export type RespuestaPublica = {
   opcion: OpcionPublica
   creada_en: string
   actualizada_en: string
+  // Ajuste color-partida-llegada: solo en partida y llegada, si es una de las respuestas menos favorables.
+  baja?: boolean | null
 }
 export type RespuestasActividad = { cuenta: string; actividad: string; respuestas: RespuestaPublica[] }
 export type RespuestaItemEntrada = { item: string; opcion: number; tiempo_ms?: number | null }
@@ -123,7 +130,15 @@ export type ResultadoPublico = {
 }
 export type ResultadoHistorico = ResultadoPublico & { anulado_en: string | null }
 export type ZonaDimension = 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR'
-export type ComparacionItem = { item: string; enunciado: string; partida: string; llegada: string; cambio: boolean }
+export type ComparacionItem = {
+  item: string
+  enunciado: string
+  partida: string
+  llegada: string
+  cambio: boolean
+  // Ajuste color-partida-llegada: si la respuesta subió o bajó (por valor, del servidor); nulo si no cambió.
+  direccion?: 'SUBIO' | 'BAJO' | null
+}
 export type ComparacionDimension = {
   codigo: string
   nombre: string

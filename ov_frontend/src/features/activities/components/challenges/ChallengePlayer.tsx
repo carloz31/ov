@@ -9,7 +9,7 @@ import type { DesafioServidor } from '@/features/activities/hooks/useChallengePl
 export function ChallengePlayer({
   challenge: c,
   servidor,
-  imageUrl = '/images/background/afueras-ciudad.png',
+  imageUrl = '/images/background/afueras-ciudad.webp',
   onClose,
 }: {
   challenge: Challenge

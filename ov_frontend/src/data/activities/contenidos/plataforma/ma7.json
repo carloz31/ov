@@ -226,8 +226,8 @@
     "mensajeFin": "Un promedio se lee por partes: de dónde es, de qué edad y de quiénes."
   },
   "mapa": {
-    "x": 0,
-    "y": 0,
+    "x": 619,
+    "y": 492,
     "icono": "informativa",
     "origen": "b3-4",
     "adicional": true

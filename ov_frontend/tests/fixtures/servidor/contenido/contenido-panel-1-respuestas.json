@@ -1,0 +1,215 @@
+{
+  "hay_destacados": true,
+  "leer_primero": [],
+  "registros": [
+    {
+      "actividad": "b1-1",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Mi historia personal",
+      "tramo": "Mi historia y mis aspiraciones"
+    },
+    {
+      "actividad": "b1-3",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": true,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Las voces y la mía",
+      "tramo": "Mi historia y mis aspiraciones"
+    },
+    {
+      "actividad": "b1-6",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "El mito que traje de casa",
+      "tramo": "Mi historia y mis aspiraciones"
+    },
+    {
+      "actividad": "b1-7",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Mi futuro",
+      "tramo": "Mi historia y mis aspiraciones"
+    },
+    {
+      "actividad": "ma3",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Lo que ya tengo de ese día",
+      "tramo": "Mi historia y mis aspiraciones"
+    },
+    {
+      "actividad": "b2-3",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Lo que valoro en un trabajo",
+      "tramo": "Me conozco"
+    },
+    {
+      "actividad": "b2-4",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Lo que se me da bien y lo que me cuesta",
+      "tramo": "Me conozco"
+    },
+    {
+      "actividad": "b3-4",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Lo que necesito saber",
+      "tramo": "Exploro el mundo profesional"
+    },
+    {
+      "actividad": "b3-a",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Lo que aprendí de una trayectoria",
+      "tramo": "Exploro el mundo profesional"
+    },
+    {
+      "actividad": "b4-1",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Mi perfil frente a mi Plan A",
+      "tramo": "Mis opciones"
+    },
+    {
+      "actividad": "b4-2",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Cómo decido",
+      "tramo": "Mis opciones"
+    },
+    {
+      "actividad": "b4-5",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Pongo a prueba mi orden",
+      "tramo": "Mis opciones"
+    },
+    {
+      "actividad": "ma8",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "El abogado del diablo",
+      "tramo": "Mis opciones"
+    },
+    {
+      "actividad": "b5-1",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Mi proyecto",
+      "tramo": "Mi decisión"
+    },
+    {
+      "actividad": "b5-3",
+      "cambio_despues": false,
+      "ciudad": false,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Mirar el camino",
+      "tramo": "Mi decisión"
+    },
+    {
+      "actividad": "h1",
+      "cambio_despues": false,
+      "ciudad": true,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Una habilidad para practicar",
+      "tramo": "La ciudad"
+    },
+    {
+      "actividad": "h2",
+      "cambio_despues": false,
+      "ciudad": true,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "¿Me reconozco?",
+      "tramo": "La ciudad"
+    },
+    {
+      "actividad": "h3",
+      "cambio_despues": false,
+      "ciudad": true,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "La familia de carreras que me llama",
+      "tramo": "La ciudad"
+    },
+    {
+      "actividad": "ma4",
+      "cambio_despues": false,
+      "ciudad": true,
+      "destacado": false,
+      "estado": "AUN_NO_LLEGA",
+      "etiquetas": [],
+      "fecha": null,
+      "titulo": "Alguien que ya lo hace",
+      "tramo": "La ciudad"
+    }
+  ]
+}

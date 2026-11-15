@@ -3,50 +3,99 @@
   "codigo": "p7",
   "tipo": "encuentro",
   "audiencia": "apoderado",
-  "titulo": "Cuando mi hijo duda o cambia de opinión",
-  "subtitulo": "La duda como parte del proceso",
+  "titulo": "Cuando mi hijo o hija duda o cambia de opinión",
+  "subtitulo": "Lo que cambia y lo que no cambia",
   "bloque": 1,
   "orden": 7,
   "obligatoria": true,
   "requisitos": [
     "p6"
   ],
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 12,
   "personajeIds": [
     "orientacion"
   ],
-  "objetivoAprendizaje": "Al terminar, el apoderado entiende la indecisión como fase normal, reconoce lo que se siente en casa de cada lado, sabe responder a cuatro situaciones frecuentes y cuándo pedir ayuda.",
+  "objetivoAprendizaje": "Al terminar, el apoderado reconoce lo que él siente y lo que siente su hijo o hija ante un cambio de opinión, sabe buscar lo que se mantiene entre opciones que cambian, distingue de dónde viene una duda para responder a ella, tiene una forma de acompañar «quiero esperar un año» y «no ingresé», y sabe cuándo pedir ayuda.",
   "nodos": [
     {
       "id": "p7-01",
       "tipo": "diapositiva",
+      "etiqueta": "Para empezar",
       "titulo": "«Ya no quiero estudiar eso»",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Suena a retroceso. Casi siempre es lo contrario: la señal de que su hijo o hija está mirando en serio. El programa del MINEDU lo plantea sin rodeos: la indecisión es una fase normal del proceso, incluso necesaria."
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "Un estudio reciente con adolescentes (Mata-Correas y otros, 2025) distingue la indecisión propia de la edad, que se resuelve explorando, de la que se vuelve un problema porque la ansiedad o la presión la bloquean. La familia influye en cuál de las dos se instala."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "MINEDU (2013), cartilla, parte 2. Mata-Correas, Hernández-Franco y Prieto-Ursúa (2025), Educación XX1.",
-          "url": "https://revistas.uned.es/index.php/educacionXX1/article/view/42209"
+          "texto": "Pocas frases mueven tanto a un padre o a una madre. Antes de ver qué hacer con ella, le proponemos empezar por lo que usted siente cuando la escucha, o cuando imagina escucharla."
         }
-      ],
-      "etiqueta": "Para empezar"
+      ]
     },
     {
       "id": "p7-02",
+      "tipo": "eleccion",
+      "registrar": false,
+      "enunciado": "Su hijo o hija le dice que ya no quiere lo que había elegido. ¿Qué es lo primero que siente usted?",
+      "nota": "No se guarda ni la ve nadie.",
+      "opciones": [
+        {
+          "id": "p7-02a",
+          "texto": "Preocupación por el tiempo y la plata.",
+          "reaccion": [
+            {
+              "id": "p7-02ar",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es una preocupación real, y vale decirla. Solo tenga presente que, mientras usted hace esa cuenta, su hijo o hija suele estar sintiendo miedo a decepcionarle."
+            }
+          ]
+        },
+        {
+          "id": "p7-02b",
+          "texto": "Fastidio: ya habíamos quedado en algo.",
+          "reaccion": [
+            {
+              "id": "p7-02br",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Se entiende: usted ya se había hecho una idea y había empezado a organizarse. Del otro lado suele haber vergüenza por cambiar, justamente porque sabe que usted contaba con eso."
+            }
+          ]
+        },
+        {
+          "id": "p7-02c",
+          "texto": "Alivio de que me lo cuente.",
+          "reaccion": [
+            {
+              "id": "p7-02cr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Si es lo que le sale, dígaselo con esas palabras. Es probable que su hijo o hija también sienta alivio al decirlo, mezclado con temor a su reacción."
+            }
+          ]
+        },
+        {
+          "id": "p7-02d",
+          "texto": "Duda: ¿debí decir algo antes?",
+          "reaccion": [
+            {
+              "id": "p7-02dr",
+              "tipo": "dialogo",
+              "hablanteId": "orientacion",
+              "texto": "Es una pregunta que muchos padres se hacen. No hace falta resolverla ahora: lo que importa es lo que usted haga a partir de hoy, y esta actividad trata de eso."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p7-03",
       "tipo": "diapositiva",
-      "titulo": "Lo que se siente en casa",
+      "etiqueta": "La idea",
+      "titulo": "Las dos caras del mismo momento",
       "bloques": [
         {
           "tipo": "tabla",
           "columnas": [
-            "Lo que siente usted",
+            "Lo que puede sentir usted",
             "Lo que suele sentir su hijo o hija"
           ],
           "filas": [
@@ -55,157 +104,303 @@
               "Miedo a decepcionar"
             ],
             [
-              "Frustración («ya habíamos quedado en…»)",
+              "Fastidio: «ya habíamos quedado en…»",
               "Vergüenza por cambiar"
             ],
             [
-              "Inseguridad sobre si debió decir algo antes",
+              "Duda sobre si debió decir algo antes",
               "Alivio al decirlo, y temor a la reacción"
             ]
-          ],
-          "nota": "Las dos columnas son legítimas. El problema aparece cuando la primera se descarga sobre la segunda."
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Las dos columnas son legítimas. Lo que conviene cuidar es que la primera no caiga encima de la segunda."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Y hay algo que alivia a los dos lados: no haber decidido todavía es lo normal a esta edad. Es el momento en que se explora."
+        }
+      ]
+    },
+    {
+      "id": "p7-04",
+      "tipo": "diapositiva",
+      "etiqueta": "Una situación",
+      "titulo": "Tres ideas en un año",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Óscar es conductor de una empresa de transporte. Su hija Lucero está en quinto de secundaria. Esto es lo que ella ha dicho este año."
         },
         {
           "tipo": "pasos",
           "pasos": [
             {
-              "titulo": "«Ya no quiero la carrera que había elegido»",
-              "texto": "Antes de preguntar por qué, pregunte qué vio. Un cambio con información (habló con alguien, visitó, leyó) es un avance; uno sin información es una duda que hay que explorar, no reprimir."
+              "titulo": "En marzo: Enfermería",
+              "texto": "Su tía es enfermera, y a Lucero siempre le gustó escucharla contar su día."
             },
             {
-              "titulo": "«No sé qué quiero»",
-              "texto": "No llene el vacío con sugerencias. Pregunte qué ha descartado y por qué: casi siempre hay más claridad de la que parece."
+              "titulo": "En junio: Psicología",
+              "texto": "Acompañó a su tía un sábado al hospital. Lo que más le gustó no fueron las curaciones: fue conversar con los pacientes."
             },
             {
-              "titulo": "«Quiero esperar un año»",
-              "texto": "Pregunte para qué. Un año con plan (trabajar, un curso, prepararse) es razonable; uno sin plan, no. Acuerden qué haría con ese tiempo."
-            },
-            {
-              "titulo": "«No ingresé»",
-              "texto": "Es común en las públicas más demandadas. Lo que necesita es un plan para el siguiente intento, no un balance de lo que hizo mal."
+              "titulo": "En setiembre: «No sé. Quizá Trabajo Social. O nada»",
+              "texto": "Averiguó cuánto cuesta Psicología en la universidad que conoce. Óscar le dijo que tal vez convenía algo más corto."
             }
-          ],
-          "titulo": "Cuatro situaciones, cuatro respuestas"
-        }
-      ],
-      "etiqueta": "Concepto"
-    },
-    {
-      "id": "p7-03",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Su hijo, que iba a estudiar Ingeniería Civil, le dice que después de hablar con un ingeniero y de ver cuánto se convalida quiere cambiarse a Arquitectura. ¿Cómo lo lee?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Como un retroceso: ya habíamos quedado en Civil.",
-          "correcta": false,
-          "retroalimentacion": "Es la frustración de la columna izquierda, descargada sobre él."
+          ]
         },
         {
-          "id": "b",
-          "texto": "Como un avance: cambió con información (habló con alguien, averiguó convalidaciones); conviene preguntar qué vio.",
-          "correcta": true,
-          "retroalimentacion": "Exacto. Un giro informado y a tiempo es exactamente lo que el proceso busca."
-        },
-        {
-          "id": "c",
-          "texto": "Como una moda: la próxima semana querrá otra cosa.",
-          "correcta": false,
-          "retroalimentacion": "Tal vez. Pero este cambio vino con datos; eso lo distingue de una moda."
-        }
-      ],
-      "explicacion": "Antes de preguntar por qué, pregunte qué vio. Un cambio con información es un avance; cuesta menos corregir en quinto de secundaria que en tercer ciclo.",
-      "pistas": [
-        {
-          "id": "p7-03p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "Primera de las cuatro situaciones."
-        }
-      ],
-      "transicion": "Dos situaciones."
-    },
-    {
-      "id": "p7-04",
-      "tipo": "pregunta",
-      "hablanteId": "orientacion",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Su hija no ingresó a la universidad pública a la que postuló. Llega a casa callada. ¿Qué conviene decir?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "«Te lo dije: debiste estudiar más.»",
-          "correcta": false,
-          "retroalimentacion": "Un balance de lo que hizo mal no la ayuda a postular de nuevo; la aleja."
-        },
-        {
-          "id": "b",
-          "texto": "«No ingresar a la primera es común ahí. ¿Armamos un plan para el siguiente intento?»",
-          "correcta": true,
-          "retroalimentacion": "Sí. Lo que necesita es un plan, y saber que usted está del mismo lado."
-        },
-        {
-          "id": "c",
-          "texto": "«Entonces estudia otra cosa, cualquier cosa, pero ya.»",
-          "correcta": false,
-          "retroalimentacion": "Cambiar de opción por no ingresar una vez es otra decisión apurada."
-        }
-      ],
-      "explicacion": "No ingresar a la primera es lo más común en las públicas más demandadas. La respuesta que ayuda es un plan para el siguiente intento, no un juicio.",
-      "pistas": [
-        {
-          "id": "p7-04p1",
-          "tipo": "dialogo",
-          "hablanteId": "orientacion",
-          "texto": "Cuarta situación."
+          "tipo": "parrafo",
+          "texto": "Óscar piensa: «Cada tres meses es otra cosa. Esta chica no sabe lo que quiere»."
         }
       ]
     },
     {
       "id": "p7-05",
-      "tipo": "diapositiva",
-      "titulo": "Cuándo pedir ayuda",
-      "bloques": [
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Mire de nuevo las tres ideas de Lucero. ¿Qué es lo que no cambió?",
+      "opciones": [
         {
-          "tipo": "destacado",
-          "variante": "alerta",
-          "texto": "Si la duda viene con semanas de mal dormir, aislamiento, llanto frecuente o abandono de lo que antes disfrutaba, ya no es un tema vocacional. Hable con la orientadora o la psicóloga del colegio. En el Perú, la ansiedad es el motivo más frecuente de atención en salud mental, y los adolescentes son uno de cada siete atendidos."
+          "id": "a",
+          "texto": "Que en las tres busca la carrera que le parece más fácil.",
+          "correcta": false,
+          "retroalimentacion": "Ninguna de las tres es fácil, y ella no lo plantea así. Lo que la mueve en cada cambio es otra cosa."
         },
         {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Un hijo que cambia de opinión frente a usted es un hijo que todavía le cuenta. Cuide eso."
+          "id": "b",
+          "texto": "Que en las tres sigue lo que le sugiere alguien de la familia.",
+          "correcta": false,
+          "retroalimentacion": "La familia pesa: empezó por su tía y en setiembre escuchó a su papá. Pero el paso a Psicología fue suyo, por algo que vio ella."
         },
         {
-          "tipo": "fuente",
-          "texto": "El Peruano (2022), atenciones de salud mental del Minsa.",
-          "url": "https://www.elperuano.pe/noticia/192010-minsa-pone-la-lupa-en-la-ansiedad"
+          "id": "c",
+          "texto": "Que en las tres quiere trabajar de cerca con personas, ayudándolas.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Cambió el nombre de la carrera tres veces, y lo que busca es lo mismo desde marzo. Eso es lo que Óscar todavía no vio."
+        },
+        {
+          "id": "d",
+          "texto": "Nada: son tres ideas sueltas, sin relación una con otra.",
+          "correcta": false,
+          "retroalimentacion": "Así se ve desde afuera, y es lo que piensa Óscar. Mire qué tienen en común las tres: en qué consiste el trabajo de cada una."
+        }
+      ],
+      "explicacion": "Desde afuera parece que Lucero cambia todo el tiempo. Desde adentro está afinando: sabe cada vez mejor qué le gusta. Y cada cambio tuvo su motivo. El de junio fue con información, porque fue y vio. El de setiembre viene de un choque entre lo que quiere y lo que cuesta, y ese choque es real: la preocupación de Óscar por el costo es válida, y es justo lo que les toca conversar.",
+      "pistas": [
+        {
+          "id": "p7-05p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "No mire los nombres de las carreras. Mire qué haría Lucero cada día en cada una."
         }
       ]
     },
     {
       "id": "p7-06",
       "tipo": "diapositiva",
+      "etiqueta": "En la práctica",
+      "titulo": "Antes de responder, ubique la duda",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "No todas las dudas son iguales, y cada una pide algo distinto de usted. Le proponemos esta guía para ubicarla."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "De dónde viene",
+            "Cómo suena",
+            "Qué ayuda desde casa"
+          ],
+          "filas": [
+            [
+              "Le falta información",
+              "«No sé qué se hace en eso», «no sé cuánto cuesta»",
+              "Averiguar juntos: un dato, una visita, una conversación con alguien que trabaje en eso"
+            ],
+            [
+              "Hay voces que chocan",
+              "«Me gusta, pero es caro», «me gusta, pero ustedes prefieren otra cosa»",
+              "Conversar qué pesa para cada uno y mirar los caminos que hay"
+            ],
+            [
+              "Todavía no quiere pensarlo",
+              "«Ya veré», «falta mucho»",
+              "Un paso pequeño con fecha, sin pedirle la decisión"
+            ]
+          ]
+        },
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Un cambio con información es un avance. Por eso, antes de «¿por qué?», sirve más preguntar «¿qué viste?»."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Gati, Krausz y Osipow (1996), A taxonomy of difficulties in career decision making. Mata-Correas, Hernández-Franco y Prieto-Ursúa (2025), Educación XX1. La columna «Qué ayuda desde casa» es una recomendación del equipo de orientación.",
+          "url": "https://revistas.uned.es/index.php/educacionXX1/article/view/42209"
+        }
+      ]
+    },
+    {
+      "id": "p7-07",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Dos frases que cuestan más.",
+      "enunciado": "Su hijo o hija le dice: «No quiero postular este año. Quiero esperar». ¿Qué conviene hacer primero?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Decirle que un año sin estudiar es un año perdido.",
+          "correcta": false,
+          "retroalimentacion": "Su preocupación por el tiempo es válida, y puede decirla. Pero dicho así cierra la conversación antes de saber qué hay detrás del pedido."
+        },
+        {
+          "id": "b",
+          "texto": "Preguntarle qué haría con ese año y acordar un plan.",
+          "correcta": true,
+          "retroalimentacion": "Sí. Un año para trabajar, prepararse, llevar un curso corto o averiguar mejor es un año con sentido. Lo que conviene evitar es un año de espera."
+        },
+        {
+          "id": "c",
+          "texto": "Aceptarlo sin más, porque insistirle sería presionar.",
+          "correcta": false,
+          "retroalimentacion": "Respetar su ritmo está bien. Aceptarlo sin preguntar nada lo deja solo con un año entero por delante y sin plan."
+        },
+        {
+          "id": "d",
+          "texto": "Pedirle que postule igual, por si acaso, y después vea.",
+          "correcta": false,
+          "retroalimentacion": "Es una salida frecuente, y a veces funciona. El riesgo es que postule a algo que no eligió y, si ingresa, empiece una carrera sin haberla querido."
+        }
+      ],
+      "explicacion": "«Quiero esperar» puede querer decir muchas cosas: no me siento listo, no sé qué elegir, tengo miedo de no ingresar. La pregunta «¿qué te gustaría hacer con ese año?» le ayuda a usted a saber cuál es, y a los dos a ponerle fechas.",
+      "pistas": [
+        {
+          "id": "p7-07p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Busque la opción que ni cierra la puerta ni la deja abierta sin más."
+        }
+      ]
+    },
+    {
+      "id": "p7-08",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Su hijo o hija postuló a una universidad pública y no ingresó. Llega a casa sin decir nada. ¿Qué conviene decir esa tarde?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "«No te preocupes, no pasa nada. Ya vas a ingresar.»",
+          "correcta": false,
+          "retroalimentacion": "La intención es consolar. Pero para él o ella sí pasó algo, y oír que no es nada puede hacerle sentir que no se entiende lo que le duele."
+        },
+        {
+          "id": "b",
+          "texto": "«Vamos a ver en qué fallaste, para corregirlo de una vez.»",
+          "correcta": false,
+          "retroalimentacion": "Revisar qué mejorar va a servir, y mucho. Esa misma tarde suena a balance de errores, justo cuando más le duele."
+        },
+        {
+          "id": "c",
+          "texto": "«Entonces busquemos ya otra carrera donde sí ingreses.»",
+          "correcta": false,
+          "retroalimentacion": "Tener otra opción puede ser parte del plan. Dicho hoy, le dice que su primera elección ya no cuenta, por un solo intento."
+        },
+        {
+          "id": "d",
+          "texto": "«Sé que duele. Hoy descansa; mañana vemos qué sigue.»",
+          "correcta": true,
+          "retroalimentacion": "Sí. Primero el golpe, después el plan. Le dice que lo entiende y que no está solo para lo que viene."
+        }
+      ],
+      "explicacion": "No ingresar al primer intento es frecuente en las universidades públicas más pedidas, y no dice nada sobre lo que su hijo o hija es capaz de hacer. Al día siguiente sí toca el plan: volver a postular con más preparación, entrar por otra modalidad o a otra institución, o empezar por un instituto y continuar después.",
+      "pistas": [
+        {
+          "id": "p7-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Piense en qué necesita primero alguien a quien algo le acaba de salir mal."
+        }
+      ]
+    },
+    {
+      "id": "p7-09",
+      "tipo": "diapositiva",
+      "etiqueta": "Para distinguir",
+      "titulo": "Cuando ya no es una duda",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "A veces lo que parece una duda sobre el futuro es otra cosa. Conviene pedir ayuda si, durante varias semanas, usted nota alguna de estas señales."
+        },
+        {
+          "tipo": "lista",
+          "items": [
+            "Duerme mal o casi no come.",
+            "Se aísla, o llora con frecuencia.",
+            "Dejó lo que antes disfrutaba.",
+            "No logra concentrarse en nada."
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "En ese caso, hable con la orientadora o con la psicóloga del colegio. Pedir ayuda no es exagerar: en el Perú, la ansiedad es el motivo más frecuente de atención en salud mental, y uno de cada siete atendidos es adolescente."
+        },
+        {
+          "tipo": "fuente",
+          "texto": "El Peruano (2022), atenciones de salud mental del Minsa en 2022.",
+          "url": "https://www.elperuano.pe/noticia/192010-minsa-pone-la-lupa-en-la-ansiedad"
+        }
+      ]
+    },
+    {
+      "id": "p7-10",
+      "tipo": "diapositiva",
+      "etiqueta": "Para llevarse",
       "titulo": "Para llevarse",
       "bloques": [
         {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Un hijo que cambia de opinión frente a usted es un hijo que todavía le cuenta. Cuide eso."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Le dejamos un ejercicio que puede hacer hoy mismo, sin decirle nada a nadie."
+        },
+        {
           "tipo": "pasos",
+          "titulo": "Esta semana",
           "pasos": [
             {
-              "titulo": "Esta semana",
-              "texto": "Si su hijo o hija expresa una duda, pregunte primero «¿qué viste?» antes de «¿por qué?»."
+              "titulo": "Busque lo que no cambia",
+              "texto": "Piense en las dos o tres cosas que su hijo o hija ha dicho que le gustaría hacer. ¿Qué tienen en común?"
+            },
+            {
+              "titulo": "Dígaselo",
+              "texto": "«Me he dado cuenta de que en todo lo que te ha gustado hay…». Puede que acierte o que no; en los dos casos, van a tener de qué conversar."
             }
           ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar recibe la ficha «Si duda o cambia de opinión». Queda en Mis actividades, con la guía para ubicar una duda y qué hacer en cada situación."
         }
-      ],
-      "etiqueta": "Resumen",
-      "transicion": "Ya tiene una acción. Repase el resumen cuando quiera."
+      ]
     }
   ],
   "recompensa": {

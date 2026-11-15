@@ -325,7 +325,7 @@
           "codigo": "POR_QUE",
           "estado": "EN_PROCESO",
           "guardada_en": "2026-10-07T10:00:00",
-          "nombre": "Por qué"
+          "nombre": "Por qué la elijo"
         },
         {
           "bloqueo": [
@@ -373,7 +373,7 @@
           "codigo": "REALIDAD",
           "estado": "BLOQUEADA",
           "guardada_en": null,
-          "nombre": "Qué tan real es"
+          "nombre": "Cómo lo haría realidad"
         },
         {
           "bloqueo": [
@@ -397,7 +397,7 @@
           "codigo": "PASOS",
           "estado": "BLOQUEADA",
           "guardada_en": null,
-          "nombre": "Mis pasos"
+          "nombre": "Mis próximos pasos"
         }
       ],
       "sugerencias": [],

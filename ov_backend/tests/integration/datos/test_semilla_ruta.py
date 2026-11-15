@@ -29,7 +29,7 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # Ajuste registros: 14 listas comunes de los registros y 4 opciones nuevas en DIFICULTADES (de `fijos`).
         # Ajuste registros llm (lote 2): salen 8 listas (6 de los registros y las 2 de dimensiones), ESTILOS pasa a
         # 9 opciones y no hay criterios.
-        'ocupacion_familia': 341, 'lista_opciones': 19, 'opcion_lista': 123, 'item_registro': 17,
+        'ocupacion_familia': 341, 'lista_opciones': 20, 'opcion_lista': 128, 'item_registro': 17,
         # ajuste llm-sugerencias: DIFICULTADES sin SALUD; ajuste cartas-diario: salen las dos referencias de
         # preguntas del diario
         'referencia': 12, 'tematica': 5,
@@ -44,10 +44,16 @@ def test_catalogo_estructura_y_estado_vacio(sesion, aplicacion):
         # Ajuste registros: `t-referencia` (3 ítems y 2 referencias) y `LUMI_SENSIBLE`.
         # LUMI_SENSIBLE; ajuste registros llm (lote 2): los 49 textos de las piezas (4 grupos, 27 orígenes y las 18
         # frases de los tres tests); lote 3: sale PISTA_SIN_REPREGUNTA y entran LUMI_EMOCIONAL y LUMI_SIN_EVALUAR.
-        'texto_fijo': 52}
+        'texto_fijo': 52,
+        # Ajuste panel-salon: dos grupos de alertas, seis alertas y diez parámetros del panel. Ajuste
+        # panel-estudiantes: el grupo «Para conversar», sus cinco temas, seis parámetros y la lista común
+        # CONOCIMIENTO_ORIENTADORA (cinco opciones).
+        'grupo_alerta': 3, 'alerta': 11, 'parametro': 17}
     # Ajuste registros llm (lote 2): salen `criterio_completitud`, `turno_seguimiento` y `evaluacion_respuesta`.
-    # Ajuste llm-sugerencias: entra `respaldo_paso`.
-    assert len(Base.metadata.tables) == 94
+    # Ajuste llm-sugerencias: entra `respaldo_paso`. Ajuste panel-salon: entran las tres tablas del panel.
+    # Ajuste panel-estudiantes: entra `nota_orientadora` (estado, vacía). Ajuste pendientes-orientadora: entra
+    # `PANEL_TEMAS_VISIBLES`; las alertas siguen siendo 11 en `ruta` (salen tres temas y entran tres).
+    assert len(Base.metadata.tables) == 98
     for tabla in Base.metadata.sorted_tables:
         assert sesion.scalar(select(func.count()).select_from(tabla)) == esperados.get(tabla.name, 0), tabla.name
     assert set(sesion.scalars(select(modelos.Bloque.codigo))) == {'T0', 'T1', 'T2', 'CIUDAD', 'FAMILIA', 'LUMI'}

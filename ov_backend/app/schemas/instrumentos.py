@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.models import MomentoAplicacion, TipoInstitucion, TipoResultado, ZonaDimension
 from app.schemas.catalogo import FamiliaPublica
@@ -74,6 +74,10 @@ class RespuestaPublica(BaseModel):
     opcion: OpcionPublica
     creada_en: datetime
     actualizada_en: datetime
+    baja: bool | None = Field(default=None, description=(
+        "Ajuste color-partida-llegada: solo en un instrumento de comparación (partida y llegada), si la respuesta "
+        "está entre las PANEL_OPCIONES_BAJAS opciones menos favorables de su escala (inversos ya invertidos); la "
+        "misma marca que ve la orientadora. Nulo en los demás instrumentos."))
 
 
 class RespuestasActividad(BaseModel):
@@ -203,6 +207,9 @@ class ComparacionItem(BaseModel):
     partida: str
     llegada: str
     cambio: bool
+    direccion: Literal["SUBIO", "BAJO"] | None = Field(default=None, description=(
+        "Ajuste color-partida-llegada: si la respuesta subió o bajó por valor (inversos ya invertidos); nulo si no "
+        "cambió."))
 
 
 class ComparacionDimension(BaseModel):

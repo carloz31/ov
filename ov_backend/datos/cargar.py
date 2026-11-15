@@ -76,17 +76,36 @@ def main(argumentos=None) -> int:
     analizador = argparse.ArgumentParser(description=__doc__)
     analizador.add_argument('conjunto', choices=CONJUNTOS)
     analizador.add_argument('--vaciar', action='store_true')
+    analizador.add_argument('--con-ejemplos', action='store_true', help=(
+        'Solo con `contenido` y ENTORNO=desarrollo: después de cargar, siembra los estudiantes de ejemplo del panel '
+        '(scripts/sembrar_panel_ejemplo.py).'))
     opciones = analizador.parse_args(argumentos)
+    configuracion = cargar_configuracion()
+    if opciones.con_ejemplos and (opciones.conjunto != 'contenido' or configuracion.entorno != 'desarrollo'):
+        analizador.exit(1, 'No se pudieron cargar los datos: --con-ejemplos solo va con `contenido` y '
+                           'ENTORNO=desarrollo.\n')
     try:
-        conteos = preparar_base(cargar_configuracion().url_bd, opciones.conjunto,
-                               vaciar=opciones.vaciar)
+        conteos = preparar_base(configuracion.url_bd, opciones.conjunto, vaciar=opciones.vaciar)
     except (OSError, ValueError, RuntimeError) as error:
         analizador.exit(1, f'No se pudieron cargar los datos: {error}\n')
     except SQLAlchemyError:
         analizador.exit(1, 'No se pudieron cargar los datos: no se pudo acceder a la base de datos.\n')
     for tabla, cantidad in conteos.items():
         print(f'{tabla}: {cantidad}')
+    if opciones.con_ejemplos:
+        return _sembrar_ejemplos(configuracion.url_bd)
     return 0
+
+
+def _sembrar_ejemplos(url: str) -> int:
+    """Corre el script de ejemplos como otro proceso (`datos` no importa `scripts`), sobre la misma base."""
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+    script = Path(__file__).resolve().parents[1] / 'scripts' / 'sembrar_panel_ejemplo.py'
+    entorno = {**os.environ, 'DATABASE_URL': url, 'ENTORNO': 'desarrollo'}
+    return subprocess.run([sys.executable, str(script), '--desarrollo'], env=entorno, check=False).returncode
 
 
 if __name__ == '__main__':

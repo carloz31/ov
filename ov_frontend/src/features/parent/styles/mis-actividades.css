@@ -250,8 +250,66 @@ button.pa-chip {
   .pa-cabecera {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Con poco ancho (tablet o celular): ícono y texto arriba y el botón debajo, en lugar de encoger el texto; una
+     ficha de título largo se parte en líneas sin deformar su borde. */
   .pa-fila {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px 16px;
+    align-items: start;
+  }
+  .pa-fila > .pa-boton {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .pa-chip {
+    max-width: 100%;
+    padding: 6px 14px;
+    border-radius: 16px;
+    text-align: left;
+  }
+}
+/* Celular: más compacto y el botón a todo el ancho. En la cabecera, el título usa todo el ancho (las iniciales son
+   decorativas) y «Ver» del diploma baja bajo su texto. */
+@media (max-width: 560px) {
+  .pa-cabecera {
+    gap: 16px;
+    padding: 20px 16px;
+  }
+  .pa-iniciales {
+    display: none;
+  }
+  .pa-cabecera h1 {
+    font-size: 24px;
+  }
+  .pa-panel {
+    padding: 14px;
+  }
+  .pa-diploma {
     flex-wrap: wrap;
+  }
+  .pa-diploma > div {
+    flex: 1 1 160px;
+  }
+  .pa-diploma .pa-boton-ver {
+    flex: 1 0 100%;
+  }
+  .pa-fila {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 12px 14px;
+    padding: 18px 16px;
+  }
+  .pa-fila-estado {
+    width: 40px;
+    height: 40px;
+  }
+  .pa-fila h3 {
+    font-size: 17px;
+  }
+  .pa-fila > .pa-boton {
+    grid-column: 1 / -1;
+    justify-content: center;
+    width: 100%;
   }
 }
 .pa-volver {

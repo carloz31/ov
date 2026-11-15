@@ -61,7 +61,7 @@ function StudentJournalView() {
         <StudentActivityPlayer
           key={capitulo.id}
           activity={capitulo}
-          imageUrl="/images/background/bosque.png"
+          imageUrl="/images/background/bosque.webp"
           onClose={cerrarCapitulo}
           desdeInicio
           salida={{

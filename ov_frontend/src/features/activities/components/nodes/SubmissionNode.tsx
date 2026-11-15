@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Check, Star } from 'lucide-react'
 import type { Actividad, Entregable, NodoConsigna } from '@/types/activities'
 import { applyCompletion, latestSubmission, studentId, validateSubmission } from '@/lib/activities/logic'
-import { journeyEnServidor, updateJourney, useJourney } from '@/store/journeyStore'
+import { guardarJourneyPendiente, journeyEnServidor, updateJourney, useJourney } from '@/store/journeyStore'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { FollowUp } from '../followup/FollowUp'
 import { getFollowUpRecord, recoverFollowUp, setFollowUpRecord } from '../../store/followUpStore'
@@ -62,6 +62,8 @@ export function SubmissionNode({
       initialRecord.current.turnos.some((turn) => !turn.omitida && !!turn.respuesta?.trim()),
   )
   const spec = node.entregable
+  // Auditoría plataforma (F8): un borrador pendiente se guarda al desmontar el nodo.
+  useEffect(() => () => void guardarJourneyPendiente(), [])
   useEffect(() => {
     if (needsQuestion) void prepareQuestion(activity, node).catch((reason: Error) => setError(reason.message))
     if (influencesLater && (!needsQuestion || shownQuestion) && !getReflections().introVista) {
@@ -217,11 +219,17 @@ export function SubmissionNode({
             maxLength={spec.maxCaracteres}
             onChange={(event) => {
               setText(event.target.value)
-              updateJourney((current) => ({
-                ...current,
-                drafts: { ...current.drafts, [draftKey]: event.target.value },
-              }))
+              // Auditoría plataforma (F8): en api el borrador se escribe con espera; se guarda al salir del campo,
+              // al desmontar y antes de enviar (el envío escribe al instante).
+              updateJourney(
+                (current) => ({
+                  ...current,
+                  drafts: { ...current.drafts, [draftKey]: event.target.value },
+                }),
+                { diferido: true },
+              )
             }}
+            onBlur={() => guardarJourneyPendiente()}
           />
         )}
       </label>

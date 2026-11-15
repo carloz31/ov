@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from 'react'
 import { modoApi } from '@/config/env'
 import { actividadServidor } from '@/lib/servidor/adaptadores'
 import { cuentaActiva } from './cuenta'
@@ -9,6 +10,7 @@ import {
   vencerSeccion,
   vencerErroresActivos,
 } from './secciones'
+import type { NombreSeccion } from './sesion'
 import { encolarPorRevelar, revelarDesbloqueos } from './revelado'
 import { incorporarNotificaciones } from './notificaciones'
 import { cargarResultadoRiasec } from './resultado'
@@ -24,7 +26,42 @@ const checkInAbierto = () =>
   !!obtenerEstadoServidor().secciones.datos?.some((s) => s.codigo === 'CHECK_IN' && s.estado === 'DISPONIBLE')
 const visibles = (bloques: BloqueActividades[] | null) =>
   bloques?.flatMap((b) => b.actividades.filter((a) => a.visible).map((a) => a.codigo))
+// Auditoría plataforma (F2b): cada acción confirmada suma una revisión. Lo que muestra condiciones con «actual de
+// requerido» (`GET progreso`: Ciudad cerrada, ficha o voz bloqueada) se vuelve a pedir con ella, haya refrescado el
+// camino o no, porque esos conteos cambian con los eventos y no siempre con un desbloqueo.
+let revisionAcciones = 0
+const oyentesAcciones = new Set<() => void>()
+function avisarAccion() {
+  revisionAcciones++
+  oyentesAcciones.forEach((oyente) => oyente())
+}
+const suscribirAcciones = (oyente: () => void) => {
+  oyentesAcciones.add(oyente)
+  return () => {
+    oyentesAcciones.delete(oyente)
+  }
+}
+export const useRevisionAcciones = () => useSyncExternalStore(suscribirAcciones, () => revisionAcciones)
+
+// Auditoría plataforma (F2b): el progreso de una actividad solo cambia al completarla, responder sus ítems, reiniciar
+// un instrumento, en batallas, casos y registros. Las demás acciones (diario, cartas, planes, investigaciones, vistas
+// del catálogo) solo cambian el camino, el avance o las secciones con un desbloqueo, que viene en su respuesta.
+// Ajuste logros: una insignia no cambia el camino; si todo lo desbloqueado son insignias, solo se vence `logros`.
+export const conDesbloqueos = (datos: RespuestaAccion) =>
+  datos.nuevos_desbloqueos.some((d) => d.tipo_objetivo !== 'INSIGNIA')
+// Una sección que el refresco ya venció por un desbloqueo (y ya pidió si está montada) no se vence otra vez.
+export function vencerSiNoRefrescada(nombre: NombreSeccion, datos: RespuestaAccion | undefined) {
+  if (datos && seccionesPorDesbloqueos(datos.nuevos_desbloqueos).includes(nombre)) return
+  vencerSeccion(nombre)
+}
+
 export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<RespuestaServidor<null>> {
+  const respuesta = await refrescarCamino(desbloqueos)
+  if (desbloqueos !== undefined) avisarAccion()
+  return respuesta
+}
+
+async function refrescarCamino(desbloqueos?: DesbloqueoNuevo[]): Promise<RespuestaServidor<null>> {
   const sesion = sesionServidor(),
     cuenta = cuentaActiva(),
     turno = ++revision
@@ -79,7 +116,11 @@ export async function refrescar(desbloqueos?: DesbloqueoNuevo[]): Promise<Respue
     encolarPorRevelar(ahora.filter((codigo) => !visiblesAntes.includes(codigo)))
   }
   const final = actividadServidor(obtenerEstadoServidor().actividades.datos, 'act-tip-final')
+  // Auditoría plataforma (F3): el resultado solo cambia al revelar o reiniciar, y esas acciones lo vuelven a leer con
+  // el libro (`conInstrumentos`). Ya leído (o sin resultado, 409), no se pide en cada refresco; sí tras un error.
+  const resultadoLeido = ['listo', 'pendiente'].includes(obtenerEstadoServidor().estadoResultado)
   if (final && final.estado !== 'BLOQUEADA') {
+    if (resultadoLeido) return { tipo: 'ok', datos: null }
     const resultado = await cargarResultadoRiasec()
     if (!vigente()) return cambioCuenta()
     if (resultado.tipo !== 'ok') return resultado
@@ -98,10 +139,13 @@ export type AccionConRefresco<T extends RespuestaAccion> =
 // Una acción con eventos y desbloqueos refresca el camino como completar: toasts y revelado de opcionales.
 // Con `confirmada`, solo se reintenta el refresco de una acción que el servidor ya guardó. Con `conCierre` (batalla
 // y caso), su pantalla de cierre anuncia lo desbloqueado: las notificaciones se marcan vistas, sin toast.
+// Auditoría plataforma: con `refrescarSi`, la acción solo refresca el camino si su respuesta lo pide (lo que cambia el
+// mapa llega declarado: desbloqueos y eventos de completar). Sin él, refresca siempre.
 export async function accionConRefresco<T extends RespuestaAccion>(
   accion: (cuenta: string) => Promise<RespuestaServidor<T>>,
   confirmada?: T,
   conCierre = false,
+  refrescarSi?: (datos: T) => boolean,
 ): Promise<AccionConRefresco<T>> {
   const cuenta = cuentaActiva()
   const sesion = sesionServidor()
@@ -115,6 +159,15 @@ export async function accionConRefresco<T extends RespuestaAccion>(
     return { tipo: 'http', estado: 409, detalle: 'La cuenta activa cambió durante la acción.' }
   revelarDesbloqueos(respuesta.datos.nuevos_desbloqueos)
   incorporarNotificaciones(respuesta.datos.nuevas_notificaciones, conCierre)
+  if (refrescarSi && !refrescarSi(respuesta.datos)) {
+    // Ajuste logros: sin refrescar el camino, las insignias nuevas solo vencen el pasaporte (y lo piden si se ve).
+    if (respuesta.datos.nuevos_desbloqueos.length > 0) {
+      vencerSeccion('logros')
+      await Promise.all(cargarVencidasMontadas())
+    }
+    avisarAccion()
+    return respuesta
+  }
   const estado = await refrescar(respuesta.datos.nuevos_desbloqueos)
   return estado.tipo === 'ok'
     ? respuesta

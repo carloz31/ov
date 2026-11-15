@@ -1,13 +1,14 @@
 """Consultas de instrumentos: derivan vistas sin modificar respuestas ni resultados."""
 
 from collections import Counter
-from typing import Literal
+from typing import Literal, NamedTuple
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.contexto import contexto, usar_contexto
 from app.core.definiciones import MODELOS_FIJOS
+from app.core.parametros import MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES
 from app.exceptions import ConsultaPendiente
 from app.models import (
     Actividad, ActividadItem, Aplicacion, AplicacionActividad, Audiencia, Bloque, Carrera,
@@ -25,9 +26,11 @@ from app.schemas.instrumentos import (
 )
 from app.schemas.catalogo import FamiliaPublica
 from app.services.instrumentos.calculo import (
-    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_zona,
-    clasificar_preparacion, puntaje_visual, recomendar_familias, seleccionar_afines,
+    DimensionCalculada, calcular_codigo_interes, calcular_dimensiones_destacadas, calcular_puntaje_item, calcular_zona,
+    clasificar_preparacion, direccion_respuesta, es_respuesta_baja, puntaje_visual, recomendar_familias,
+    seleccionar_afines,
 )
+from app.services.instrumentos.parametros import entero, leer_parametros
 
 
 AudienciaTextos = Literal['estudiante', 'apoderado', 'orientadora']
@@ -158,8 +161,29 @@ def items_presentados(sesion: Session, actividad: Actividad) -> list[ItemPublico
     ) for item, orden in filas]
 
 
+def _instrumento_de_actividad(definiciones, actividad: Actividad) -> Instrumento | None:
+    aplicaciones = {fila.aplicacion_id for fila in definiciones.listar(AplicacionActividad)
+                    if fila.actividad_id == actividad.id}
+    if not aplicaciones:
+        return None
+    return definiciones.obtener(Instrumento, definiciones.obtener(Aplicacion, min(aplicaciones)).instrumento_id)
+
+
+def _valor_respuesta(definiciones, item: ItemInstrumento, opcion: OpcionEscala) -> tuple[float, list[float]]:
+    """El valor del ítem (inverso ya aplicado) y los puntajes de su escala, desde la caché de definiciones."""
+    puntajes = sorted(o.puntaje for o in definiciones.listar(OpcionEscala) if o.escala_id == item.escala_id)
+    return calcular_puntaje_item(opcion.puntaje, puntajes[0], puntajes[-1], item.inverso), puntajes
+
+
 @usar_contexto
 def respuestas_actuales(sesion: Session, cuenta: Cuenta, actividad: Actividad) -> RespuestasActividad:
+    """Ajuste color-partida-llegada: en un instrumento de comparación cada respuesta trae `baja`, con el mismo parámetro
+    que el panel (una consulta más, solo en esas actividades); en los demás, nula y sin consultar."""
+    definiciones = contexto(sesion).definiciones
+    instrumento = _instrumento_de_actividad(definiciones, actividad)
+    opciones_bajas = None
+    if instrumento is not None and instrumento.tipo_resultado == TipoResultado.COMPARACION:
+        opciones_bajas = entero(leer_parametros(sesion), "PANEL_OPCIONES_BAJAS")
     filas = sesion.execute(select(RespuestaItem, ItemInstrumento.codigo, OpcionEscala).select_from(
         RespuestaItem,
     ).join(ProgresoActividad).join(ItemInstrumento, ItemInstrumento.id == RespuestaItem.item_id).join(
@@ -167,9 +191,16 @@ def respuestas_actuales(sesion: Session, cuenta: Cuenta, actividad: Actividad) -
     ).join(OpcionEscala, OpcionEscala.id == RespuestaItem.opcion_id).where(
         ProgresoActividad.cuenta_id == cuenta.id, ProgresoActividad.actividad_id == actividad.id,
     ).order_by(ActividadItem.orden, ItemInstrumento.numero))
+    def baja(respuesta, opcion) -> bool | None:
+        if opciones_bajas is None:
+            return None
+        item = definiciones.obtener(ItemInstrumento, respuesta.item_id)
+        return es_respuesta_baja(*_valor_respuesta(definiciones, item, opcion), opciones_bajas)
+
     return RespuestasActividad(cuenta=cuenta.codigo, actividad=actividad.codigo, respuestas=[
         RespuestaPublica(item=codigo, opcion=opcion_publica(opcion), creada_en=respuesta.creada_en,
-                        actualizada_en=respuesta.actualizada_en) for respuesta, codigo, opcion in filas
+                        actualizada_en=respuesta.actualizada_en, baja=baja(respuesta, opcion))
+        for respuesta, codigo, opcion in filas
     ])
 
 
@@ -276,14 +307,91 @@ def familia_publica(familia: FamiliaCarrera) -> FamiliaPublica:
                           area_nombre=familia.area_nombre)
 
 
+def _recomendadas(sesion, afines_guardadas, principales):
+    """La selección de afines, la familia principal de cada una y las familias recomendadas (un solo cálculo para
+    el resultado y para el panel del salón)."""
+    definiciones = contexto(sesion).definiciones
+    seleccion = seleccionar_afines([(o.codigo, c.correlacion) for c, o in afines_guardadas])
+    familia_de = {o.codigo: definiciones.obtener(FamiliaCarrera, principales[o.id])
+                  for _, o in afines_guardadas if o.id in principales}
+    return seleccion, familia_de, recomendar_familias(seleccion.ocupaciones,
+                                                      {c: f.codigo for c, f in familia_de.items()})
+
+
+class _Correlacion(NamedTuple):
+    correlacion: float
+
+
+class _OcupacionAfin(NamedTuple):
+    id: int
+    codigo: str
+
+
+@usar_contexto
+def intereses_por_cuenta(sesion: Session, resultados: list[ResultadoInstrumento],
+                         con_familias: set[int] | None = None) -> dict[int, tuple[str, list[str]]]:
+    """Por cuenta, el código de interés y los códigos de las familias recomendadas de su resultado de intereses
+    (vigente y no plano), con el mismo cálculo que `representar_resultado`, pero leído por lotes (panel del salón,
+    ajuste panel-salon). Las familias, solo de las cuentas de `con_familias` (todas si es `None`); las demás llevan
+    una lista vacía.
+
+    Auditoría del panel (H2): lee columnas, no entidades, y de cada resultado solo las coincidencias que
+    `seleccionar_afines` puede elegir (posición ≤ el mayor entre el máximo y el mínimo de afines: las posiciones
+    van de 1 en adelante por r descendente). No usa la caché de `representar_resultado`, que necesita las
+    ocupaciones completas. Lo calculado queda en el contexto de la petición, por resultado."""
+    datos = contexto(sesion)
+    if not hasattr(datos, 'intereses_panel'):
+        datos.intereses_panel = {}
+    calculados = datos.intereses_panel
+    pide_familias = {r.id for r in resultados if con_familias is None or r.cuenta_id in con_familias}
+    faltan = [r for r in resultados if r.id not in calculados
+              or (r.id in pide_familias and calculados[r.id][1] is None)]
+    if faltan:
+        _calcular_intereses(sesion, faltan, pide_familias, calculados)
+    return {r.cuenta_id: (calculados[r.id][0], (calculados[r.id][1] or []) if r.id in pide_familias else [])
+            for r in resultados}
+
+
+def _calcular_intereses(sesion, resultados, pide_familias, calculados) -> None:
+    """Guarda en `calculados` (código, familias o `None` si no se pidieron) de cada resultado."""
+    ids = [r.id for r in resultados]
+    puntajes: dict[int, list[tuple[str, float]]] = {i: [] for i in ids}
+    for resultado_id, codigo, puntaje in sesion.execute(select(
+            ResultadoDimension.resultado_id, Dimension.codigo, ResultadoDimension.puntaje).join(
+            Dimension, Dimension.id == ResultadoDimension.dimension_id).where(
+            ResultadoDimension.resultado_id.in_(ids)).order_by(Dimension.orden, Dimension.codigo)):
+        puntajes[resultado_id].append((codigo, puntaje))
+    familias_de = {r.id for r in resultados if r.id in pide_familias}
+    afines: dict[int, list[tuple[_Correlacion, _OcupacionAfin]]] = {i: [] for i in familias_de}
+    principales = {}
+    if familias_de:
+        tope = max(MAXIMO_OCUPACIONES_AFINES, MINIMO_OCUPACIONES_AFINES)
+        usadas = select(Coincidencia.ocupacion_id).where(Coincidencia.resultado_id.in_(familias_de),
+                                                         Coincidencia.posicion <= tope)
+        for resultado_id, correlacion, ocupacion_id, codigo in sesion.execute(select(
+                Coincidencia.resultado_id, Coincidencia.correlacion, Ocupacion.id, Ocupacion.codigo).join(
+                Ocupacion, Ocupacion.id == Coincidencia.ocupacion_id).where(
+                Coincidencia.resultado_id.in_(familias_de), Coincidencia.posicion <= tope).order_by(
+                Coincidencia.resultado_id, Coincidencia.posicion)):
+            afines[resultado_id].append((_Correlacion(correlacion), _OcupacionAfin(ocupacion_id, codigo)))
+        principales = dict(sesion.execute(select(OcupacionFamilia.ocupacion_id, OcupacionFamilia.familia_id).where(
+            OcupacionFamilia.es_principal, OcupacionFamilia.ocupacion_id.in_(usadas))).all())
+    for resultado in resultados:
+        filas = puntajes[resultado.id]
+        codigo = calcular_codigo_interes([p for _, p in filas], [c for c, _ in filas])
+        familias = None
+        if resultado.id in familias_de:
+            _, _, recomendadas = _recomendadas(sesion, afines[resultado.id], principales)
+            familias = [f.codigo for f in recomendadas]
+        calculados[resultado.id] = (codigo.codigo, familias)
+
+
 def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:
     """Lo que el resultado de intereses deriva al leer (ajuste resultados-intereses): las ocupaciones afines que
     se muestran, agrupadas también por área, y las familias recomendadas."""
     definiciones = contexto(sesion).definiciones
     por_codigo = {ocupacion.codigo: ocupacion for _, ocupacion in afines_guardadas}
-    seleccion = seleccionar_afines([(o.codigo, c.correlacion) for c, o in afines_guardadas])
-    familia_de = {codigo: definiciones.obtener(FamiliaCarrera, principales[o.id])
-                  for codigo, o in por_codigo.items() if o.id in principales}
+    seleccion, familia_de, recomendadas = _recomendadas(sesion, afines_guardadas, principales)
     ocupaciones = []
     for posicion, afin in enumerate(seleccion.ocupaciones, start=1):
         ocupacion, familia = por_codigo[afin.codigo], familia_de.get(afin.codigo)
@@ -301,7 +409,6 @@ def ocupaciones_y_familias(sesion, afines_guardadas, principales) -> dict:
                                            else familia.area_nombre, ocupaciones=[])
         areas[clave].ocupaciones.append(ocupacion.codigo)
     por_area = [a for c, a in areas.items() if c is not None] + ([areas[None]] if None in areas else [])
-    recomendadas = recomendar_familias(seleccion.ocupaciones, {c: f.codigo for c, f in familia_de.items()})
     carreras = carreras_por_familia(definiciones)
     # Los totales por familia se leen solo si hay familias que mostrar.
     totales = ocupaciones_principales_por_familia(sesion) if recomendadas else Counter()
@@ -401,15 +508,24 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
         ).where(ResultadoInstrumento.cuenta_id == cuenta.id, ResultadoInstrumento.anulado_en.is_(None),
                 ResultadoInstrumento.aplicacion_id.in_((entrada.id, salida.id))))}
     actividades = [{actividad.id for actividad in actividades_de_aplicacion(sesion, aplicacion)} for aplicacion in (entrada, salida)]
-    respuestas_por_actividad = sesion.execute(select(ProgresoActividad.actividad_id, ItemInstrumento.codigo, OpcionEscala.etiqueta).select_from(
+    respuestas_por_actividad = sesion.execute(select(ProgresoActividad.actividad_id, ItemInstrumento.codigo, OpcionEscala.etiqueta,
+                                                     RespuestaItem.item_id, RespuestaItem.opcion_id).select_from(
         RespuestaItem,
     ).join(ProgresoActividad).join(ItemInstrumento, ItemInstrumento.id == RespuestaItem.item_id).join(
         ActividadItem, (ActividadItem.item_id == ItemInstrumento.id) & (ActividadItem.actividad_id == ProgresoActividad.actividad_id),
     ).join(OpcionEscala, OpcionEscala.id == RespuestaItem.opcion_id).where(
         ProgresoActividad.cuenta_id == cuenta.id, ProgresoActividad.actividad_id.in_(set.union(*actividades)),
     )).all()
-    partida, llegada = ({codigo: etiqueta for actividad_id, codigo, etiqueta in respuestas_por_actividad if actividad_id in ids}
+    partida, llegada = ({codigo: etiqueta for actividad_id, codigo, etiqueta, *_ in respuestas_por_actividad if actividad_id in ids}
                         for ids in actividades)
+    # Ajuste color-partida-llegada: el valor de cada respuesta (inverso aplicado) solo para la dirección del cambio.
+    def valor(item_id, opcion_id):
+        item, opcion = definiciones.obtener(ItemInstrumento, item_id), definiciones.obtener(OpcionEscala, opcion_id)
+        return _valor_respuesta(definiciones, item, opcion)[0]
+
+    valor_partida, valor_llegada = ({codigo: valor(item_id, opcion_id)
+                                     for actividad_id, codigo, _, item_id, opcion_id in respuestas_por_actividad
+                                     if actividad_id in ids} for ids in actividades)
     completadas = {identificador for identificador, progreso in contexto(sesion).progresos_de(cuenta.id).items()
                    if progreso.estado == EstadoProgreso.COMPLETADA}
     por_tematica = Counter(fila.tematica_id for fila in definiciones.listar(ActividadTematica)
@@ -428,7 +544,8 @@ def comparacion_autopercepcion(sesion: Session, cuenta: Cuenta, instrumento: Ins
             zona_llegada=calcular_zona(puntajes[salida.id, d.id], cantidades[d.id]),
             actividades_completadas=por_tematica[d.tematica_id] if d.tematica_id is not None else 0,
             items=[ComparacionItem(item=i.codigo, enunciado=i.enunciado, partida=partida[i.codigo],
-                                   llegada=llegada[i.codigo], cambio=partida[i.codigo] != llegada[i.codigo])
+                                   llegada=llegada[i.codigo], cambio=partida[i.codigo] != llegada[i.codigo],
+                                   direccion=direccion_respuesta(valor_partida[i.codigo], valor_llegada[i.codigo]))
                    for i in items if i.dimension_id == d.id])
             for d in dimensiones])
 

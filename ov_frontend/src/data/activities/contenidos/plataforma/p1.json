@@ -4,90 +4,89 @@
   "tipo": "encuentro",
   "audiencia": "apoderado",
   "titulo": "Acompañar no es decidir",
-  "subtitulo": "El rol de la familia",
+  "subtitulo": "El lugar de la familia en esta decisión",
   "bloque": 1,
   "orden": 1,
   "obligatoria": true,
   "requisitos": [],
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 12,
   "personajeIds": [
     "orientacion"
   ],
-  "objetivoAprendizaje": "Al terminar, el apoderado distingue acompañar, informar y respetar; sabe qué dice la evidencia sobre el apoyo familiar y reconoce qué ayuda y qué no.",
+  "objetivoAprendizaje": "Al terminar, el apoderado sabe que influye aunque no diga nada, conoce los tres momentos que recorre su hijo o hija, identifica qué puede aportar aunque no sepa de carreras y distingue respetar de callar o de fingir acuerdo.",
   "nodos": [
     {
       "id": "p1-01",
       "tipo": "diapositiva",
-      "titulo": "Su hijo o hija está por tomar una decisión importante",
+      "etiqueta": "Una situación",
+      "titulo": "Una noche cualquiera",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "En el último año de secundaria, muchos jóvenes sienten que deben saber qué harán con su vida. Es una etapa de dudas, ilusiones y presión. Usted va a estar al lado. La pregunta no es si influye, porque influye de todas maneras, sino cómo."
+          "texto": "Antes de hablar de su hijo o hija, le proponemos mirar una escena. Puede que le resulte conocida."
         },
         {
-          "tipo": "lista",
-          "items": [
-            "Reconocer el rol que el programa de orientación propone a la familia.",
-            "Distinguir lo que ayuda de lo que no.",
-            "Llevarse una idea concreta para la primera conversación en casa."
-          ],
-          "titulo": "En esta actividad usted podrá:"
+          "tipo": "parrafo",
+          "texto": "Elena vende abarrotes en el mercado desde hace veinte años. Su hijo Diego está en quinto de secundaria. Una noche, mientras ella cuadra la caja, él le dice casi de pasada: «Mamá, creo que quiero estudiar Psicología»."
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Elena siempre lo imaginó en Contabilidad: algo seguro y, de paso, alguien que la ayude con las cuentas del puesto. De Psicología sabe poco. Diego se queda esperando a ver qué dice."
         }
-      ],
-      "etiqueta": "Para empezar"
+      ]
     },
     {
       "id": "p1-02",
       "tipo": "eleccion",
       "registrar": false,
-      "enunciado": "Cuando piensa en el futuro de su hijo o hija, ¿qué le preocupa más en este momento?",
-      "nota": "Su respuesta no se guarda ni la ve nadie. Solo sirve para mostrarle lo más útil.",
+      "enunciado": "Póngase un momento en el lugar de Elena. ¿Qué le habría salido a usted primero?",
+      "nota": "No hay respuesta correcta. Lo que marque no se guarda ni lo ve nadie.",
       "opciones": [
         {
           "id": "p1-02a",
-          "texto": "Que no consiga trabajo.",
+          "texto": "«¿Psicología? ¿Y de eso se puede vivir?»",
           "reaccion": [
             {
               "id": "p1-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Es la preocupación más frecuente. Hoy hay información pública sobre empleo e ingresos por carrera; la verá en una actividad más adelante."
+              "texto": "La pregunta es válida, y en algún momento hay que hacerla. Como primera respuesta, lo que Diego suele escuchar es «a mi mamá no le gustó», y la próxima vez quizá lo piense dos veces antes de contarle. Guardarla para después de escucharlo cambia cómo le llega."
             }
           ]
         },
         {
           "id": "p1-02b",
-          "texto": "Que elija algo que no le convenga.",
+          "texto": "«Tú verás, hijo. Es tu vida.»",
           "reaccion": [
             {
               "id": "p1-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Es natural. Lo que muestra la evidencia es que la mejor forma de que su opinión cuente es que su hijo o hija sienta que usted escucha."
+              "texto": "Suena a respeto, y la intención lo es. Lo que Diego puede escuchar es «en esto estás solo». Él no vino a pedir permiso: vino a ver si podía hablarlo con su mamá."
             }
           ]
         },
         {
           "id": "p1-02c",
-          "texto": "Que no sepa qué quiere.",
+          "texto": "«¿Y eso? Cuéntame qué te llamó la atención.»",
           "reaccion": [
             {
               "id": "p1-02cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "La indecisión a esta edad es normal; una actividad más adelante trata justamente de eso."
+              "texto": "Con esa frase Diego sigue hablando, y Elena se entera de qué hay detrás de «Psicología». No la compromete a estar de acuerdo: todavía no ha opinado nada."
             }
           ]
         },
         {
           "id": "p1-02d",
-          "texto": "Que elija solo para darme gusto.",
+          "texto": "Me habría quedado en silencio, para no decir algo equivocado.",
           "reaccion": [
             {
               "id": "p1-02dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Esa preocupación habla bien de usted. Esta actividad le da herramientas para que eso no pase."
+              "texto": "Es una reacción cuidadosa. Solo que Diego también lee el silencio, y suele leerlo como desaprobación. Decir «me tomaste por sorpresa, cuéntame más» es más claro que callar."
             }
           ]
         }
@@ -96,67 +95,85 @@
     {
       "id": "p1-03",
       "tipo": "diapositiva",
-      "titulo": "Lo que dice la evidencia",
+      "etiqueta": "La idea",
+      "titulo": "Usted influye aunque no diga nada",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Los estudios sobre familia y elección de carrera coinciden: el apoyo de los padres, entendido como interés, conversación y respaldo, se asocia con jóvenes más seguros y con decisiones más maduras (Whiston y Keller, 2004)."
+          "texto": "Cualquiera que haya sido su respuesta, hay algo que vale para todas: no existe la opción de no influir. La frase, el gesto, el silencio y hasta el tema que se cambia le dicen algo a su hijo o hija sobre lo que puede contarle y lo que no. La pregunta útil no es si usted influye, sino cómo."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Lo que hace la familia",
+            "Lo que suele pasar con el hijo o la hija"
+          ],
+          "filas": [
+            [
+              "Decide por él o ella",
+              "Le cuesta más decidir por su cuenta"
+            ],
+            [
+              "Se hace a un lado «para que decida solo»",
+              "También le cuesta más decidir"
+            ],
+            [
+              "Acompaña: se interesa, conversa, ayuda a averiguar",
+              "Explora más y se siente más capaz de decidir"
+            ]
+          ]
         },
         {
           "tipo": "destacado",
           "variante": "dato",
-          "texto": "Un estudio con 652 estudiantes de secundaria (Söner y Gültekin, 2024) muestra el mecanismo: cuando los hijos sienten apoyo, crece su confianza en sus propias capacidades, y con esa confianza sus planes se acercan más a lo que la familia espera, sin necesidad de imponerlos."
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "El camino más corto para que su hijo o hija tome en cuenta lo que usted piensa es que sienta que usted lo escucha."
+          "texto": "Cuando los hijos sienten el apoyo de sus padres, confían más en sus propias capacidades y se sienten más en sintonía con ellos al hablar de su futuro. Lo encontró un estudio con 652 escolares."
         },
         {
           "tipo": "fuente",
-          "texto": "Whiston y Keller (2004), The Counseling Psychologist. Söner y Gültekin (2024), International Journal for Educational and Vocational Guidance.",
+          "texto": "Dietrich y Kracke (2009), Journal of Vocational Behavior. Whiston y Keller (2004), The Counseling Psychologist. Söner y Gültekin (2024), International Journal for Educational and Vocational Guidance.",
           "url": "https://link.springer.com/article/10.1007/s10775-024-09658-7"
         }
-      ],
-      "etiqueta": "Concepto"
+      ]
     },
     {
       "id": "p1-04",
       "tipo": "diapositiva",
-      "titulo": "Tres verbos",
+      "etiqueta": "Para ubicarse",
+      "titulo": "Lo que su hijo o hija está haciendo este año",
       "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Para acompañar ayuda saber por dónde va su hijo o hija. Elegir qué hacer después del colegio no ocurre en un día, y nadie lo decide por él o ella: ni un cuestionario, ni el colegio, ni la plataforma. Lo que la plataforma hace es acompañarle por tres momentos, y cada uno se nota distinto en casa."
+        },
         {
           "tipo": "tabla",
           "columnas": [
-            "Verbo",
-            "Qué significa en la práctica"
+            "Momento",
+            "Qué hace",
+            "Qué puede notar usted"
           ],
           "filas": [
             [
-              "Acompañar",
-              "Estar disponible, preguntar, escuchar sin juzgar las dudas; no desaparecer ni ocupar todo el espacio"
+              "Conocerse",
+              "Repasa su historia y responde cuestionarios sobre sus intereses, sus habilidades sociales y sus inteligencias",
+              "Preguntas sobre su niñez o sobre el trabajo de usted; comentarios del tipo «me salió que…»"
             ],
             [
-              "Informar",
-              "Compartir lo que usted sabe del trabajo y de la vida, y ayudar a conseguir información que no tienen"
+              "Explorar",
+              "Revisa carreras, ocupaciones e instituciones: qué se hace, cuánto dura, cuánto se gana, cuánto cuesta",
+              "Nombres de carreras que usted no conocía; opciones que aparecen y desaparecen de una semana a otra"
             ],
             [
-              "Respetar",
-              "Aceptar que la decisión final es de su hijo o hija, aunque no sea la que usted habría tomado"
+              "Decidir",
+              "Arma un plan principal y alternativas, con sus razones, sus dudas y sus próximos pasos",
+              "Preguntas sobre dinero y sobre qué opina usted; a ratos mucha seguridad y a ratos ninguna"
             ]
-          ],
-          "nota": "Así resume el programa de orientación vocacional del Ministerio de Educación el rol de la familia."
+          ]
         },
         {
-          "tipo": "comparacion",
-          "izquierda": {
-            "titulo": "Ayuda",
-            "texto": "Preguntar «¿qué has pensado?» antes de opinar. Contar su propia historia, con las dudas y los cambios de rumbo. Acompañar a buscar datos en lugar de opinar de memoria."
-          },
-          "derecha": {
-            "titulo": "No ayuda",
-            "texto": "Decidir por él o ella «porque usted sabe lo que le conviene». Condicionar el cariño o el apoyo a una carrera. Comparar con primos, vecinos o con lo que usted hizo a su edad."
-          }
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "Que cambie de idea mientras explora no es falta de seriedad: es lo que se espera de esa etapa. Lo que usted ve en casa son partes de un proceso más largo."
         }
       ]
     },
@@ -167,115 +184,293 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Daniela le cuenta a su papá que le interesa estudiar Gastronomía. Él responde: «Eso no es carrera; vas a estudiar Administración como tu primo». ¿Qué verbo está faltando?",
+      "transicion": "Volvamos con Elena y Diego.",
+      "enunciado": "Unos días después, Diego le enseña a Elena el resultado de un cuestionario de intereses: lo que más le atrae son las actividades de ayudar a otros y las de investigar. Elena pregunta: «¿Y ahí dice qué carrera te toca?». ¿Qué conviene que Elena sepa de un resultado así?",
       "opciones": [
         {
           "id": "a",
-          "texto": "Informar: debió darle datos sobre Administración.",
+          "texto": "Que confirma Psicología, así que Diego ya puede dejar de mirar otras opciones.",
           "correcta": false,
-          "retroalimentacion": "Dar datos sirve, pero el problema de la frase es otro: decide por ella y la compara."
+          "retroalimentacion": "El resultado calza con Psicología, pero también con muchas otras ocupaciones. Cerrar la búsqueda tan pronto es justo lo que el cuestionario no pide."
         },
         {
           "id": "b",
-          "texto": "Respetar: la decisión final es de Daniela; comparar con el primo y decidir por ella no acompaña.",
+          "texto": "Que señala áreas donde vale la pena explorar, pero no le asigna una carrera a nadie.",
           "correcta": true,
-          "retroalimentacion": "Así es. Puede expresar su preocupación; lo que no ayuda es resolverla por ella."
+          "retroalimentacion": "Así es. Un cuestionario de intereses ordena lo que a Diego le atrae y sugiere dónde mirar. Qué carrera elige depende también de lo que sabe hacer, de lo que cuesta y de lo que averigüe."
         },
         {
           "id": "c",
-          "texto": "Ninguno: el papá tiene experiencia y sabe lo que le conviene.",
+          "texto": "Que solo refleja lo que Diego quiso responder, así que no aporta nada nuevo.",
           "correcta": false,
-          "retroalimentacion": "La experiencia vale, pero es de otro momento y de otra persona. Decidir por ella resuelve hoy y cuesta después."
+          "retroalimentacion": "Es cierto que el resultado sale de sus propias respuestas. Aun así aporta: las ordena y le muestra ocupaciones que quizá no conocía."
+        },
+        {
+          "id": "d",
+          "texto": "Que Diego debería elegir entre las carreras que el resultado le recomienda.",
+          "correcta": false,
+          "retroalimentacion": "Las sugerencias sirven para empezar a mirar, no como lista cerrada. Una carrera que no aparece ahí no queda descartada."
         }
       ],
-      "explicacion": "Decidir por el hijo y compararlo con otros son dos de las cosas que no ayudan. La preocupación del padre es legítima; la forma de decirla es lo que cambia el resultado.",
+      "explicacion": "Un resultado de intereses es un punto de partida para conversar, no un veredicto. La mejor pregunta de Elena no es «¿qué te toca?», sino «¿te reconoces en eso?». Cuando su hijo o hija le muestre un resultado, esa misma pregunta le va a servir a usted.",
       "pistas": [
         {
           "id": "p1-05p1",
           "tipo": "dialogo",
           "hablanteId": "orientacion",
-          "texto": "Fíjese en dos palabras del padre: «vas a» y «como tu primo»."
+          "texto": "Piense en qué mide el cuestionario: lo que a Diego le atrae. ¿Alcanza eso solo para decidir una carrera?"
         }
-      ],
-      "transicion": "Ya conoce los tres verbos. Ahora, un caso."
+      ]
     },
     {
       "id": "p1-06",
       "tipo": "pregunta",
       "hablanteId": "orientacion",
-      "formato": "opcion_multiple",
+      "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Su hijo le dice: «Creo que quiero estudiar Diseño Gráfico». ¿Cuáles de estas respuestas acompañan? Marque todas las que correspondan.",
+      "enunciado": "Esa noche Elena se queda pensando: «Yo no pasé por la universidad. ¿Qué le voy a decir yo de carreras?». ¿Qué es lo más valioso que puede aportar?",
       "opciones": [
         {
           "id": "a",
-          "texto": "«¿Qué te llama la atención de eso?»",
-          "correcta": true,
-          "retroalimentacion": "Pregunta abierta: acompaña."
+          "texto": "Buscar a alguien que sí sepa de carreras y dejar que esa persona lo oriente.",
+          "correcta": false,
+          "retroalimentacion": "Conseguirle a alguien con quien conversar ayuda mucho. Lo que no conviene es retirarse: esa persona no reemplaza el interés de su mamá."
         },
         {
           "id": "b",
-          "texto": "«¿Y eso en qué vas a trabajar?»",
+          "texto": "Mantenerse al margen, para no confundirlo con ideas que quizá ya no valen.",
           "correcta": false,
-          "retroalimentacion": "Suena a pregunta, pero cierra: ya trae el veredicto."
+          "retroalimentacion": "Revisar si lo que uno sabe sigue vigente es sensato. Pero hacerse a un lado deja a Diego solo, y el interés de Elena no depende de estar al día."
         },
         {
           "id": "c",
-          "texto": "«Me da curiosidad. ¿Buscamos juntos qué hace un diseñador y cuánto gana al inicio?»",
+          "texto": "Interesarse por lo que él piensa, decirle que confía en él y ayudarlo a averiguar.",
           "correcta": true,
-          "retroalimentacion": "Informar sin decidir: acompaña."
+          "retroalimentacion": "Sí. Para acompañar no hace falta saber de carreras. Hace falta interés, confianza y disposición a averiguar juntos."
         },
         {
           "id": "d",
-          "texto": "«Primero termina el colegio y después hablamos.»",
+          "texto": "Averiguar ella misma qué carrera conviene más y proponérsela con buenos datos.",
           "correcta": false,
-          "retroalimentacion": "Posponer la conversación es dejar de acompañar justo cuando él la abrió."
+          "retroalimentacion": "Traer datos es un aporte. El problema es llegar con la respuesta ya elegida: Diego recibe una decisión, no información."
         }
       ],
-      "explicacion": "Acompañar es preguntar abierto y ayudar a buscar datos. Las frases que cierran o posponen cortan la conversación que su hijo acaba de empezar.",
+      "explicacion": "Un estudio con cerca de 300 escolares y sus padres encontró que el interés y el respaldo de los padres pesaban más que las acciones específicas sobre carreras, como conseguirles material informativo (Keller y Whiston, 2008). Vale también para quien sí estudió una carrera: conocer el camino propio no vuelve a nadie experto en el de su hijo o hija.",
       "pistas": [
         {
           "id": "p1-06p1",
           "tipo": "dialogo",
           "hablanteId": "orientacion",
-          "texto": "Pregúntese de cada frase: ¿la respuesta la conozco yo de antemano? Si sí, cierra."
+          "texto": "Fíjese en cuáles opciones dejan a Elena dentro de la conversación y cuáles la sacan."
         }
-      ]
+      ],
+      "transicion": "Una duda que muchos padres tienen."
     },
     {
       "id": "p1-07",
       "tipo": "diapositiva",
-      "titulo": "Para llevarse",
+      "etiqueta": "En la práctica",
+      "titulo": "Lo que sí está en sus manos",
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "Puede darles su amor, pero no sus pensamientos: ellos tienen los suyos (Khalil Gibrán, El profeta). Es la lectura con la que el programa abre su taller con familias."
+          "texto": "Esto es lo que le proponemos tener a la mano. No hace falta hacerlo todo: con una o dos cosas ya cambia cómo llega su interés."
         },
         {
-          "tipo": "pasos",
-          "pasos": [
-            {
-              "titulo": "Esta semana",
-              "texto": "Pregúntele a su hijo o hija «¿qué has pensado?» y escuche hasta el final antes de opinar."
-            },
-            {
-              "titulo": "En las siguientes actividades",
-              "texto": "Revisará sus propias expectativas, practicará cómo conversar y, al final, escribirá una carta para su hijo o hija."
-            }
+          "tipo": "lista",
+          "titulo": "Cinco cosas que hacían los padres de los hijos con más confianza para decidir, según un estudio",
+          "items": [
+            "Interesarse por lo que a su hijo o hija le importa, no solo por lo que va a estudiar.",
+            "Decirle que espera mucho de él o ella. Esperar algo bueno no es presionar; presionar es exigir una carrera en particular.",
+            "Dejar que tome sus propias decisiones, también las pequeñas.",
+            "Decirle que siente orgullo por él o ella, con un ejemplo concreto.",
+            "Ayudarle a entender los resultados de sus cuestionarios cuando se los muestre: preguntar «¿te reconoces en eso?»."
+          ]
+        },
+        {
+          "tipo": "lista",
+          "titulo": "Tres aportes que no dependen de haber estudiado",
+          "items": [
+            "Contar su propia historia de trabajo: cómo empezó, qué cambió en el camino y qué habría querido saber a esa edad.",
+            "Abrir su red: «¿a quién conocemos que trabaje en eso?». Una conversación con alguien que ejerce vale más que muchas opiniones.",
+            "Decir con claridad qué puede aportar la familia en dinero y en tiempo, y mirar los costos juntos antes de descartar o de prometer."
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "Keller y Whiston (2008), The role of parental influences on young adolescents' career development, Journal of Career Assessment. Los tres aportes finales son recomendaciones del equipo de orientación.",
+          "url": "https://ncda.org/aws/NCDA/pt/sd/news_article/4911/_PARENT/layout_details_cc/false"
+        }
+      ]
+    },
+    {
+      "id": "p1-08",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_multiple",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "enunciado": "Durante el mes siguiente, Elena hizo varias cosas. ¿Cuáles acompañan a Diego? Marque todas las que correspondan.",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "Le contó cómo empezó en el mercado y qué le habría gustado saber a los diecisiete.",
+          "correcta": true,
+          "retroalimentacion": "Su historia es información que Diego no encuentra en ningún otro lado."
+        },
+        {
+          "id": "b",
+          "texto": "Le preguntó a una clienta que es psicóloga si podía conversar un rato con él.",
+          "correcta": true,
+          "retroalimentacion": "Abrió su red y dejó que Diego escuche a alguien que ejerce."
+        },
+        {
+          "id": "c",
+          "texto": "Le recordó en cada almuerzo que Contabilidad tiene más campo que Psicología.",
+          "correcta": false,
+          "retroalimentacion": "Dicho una vez, es una opinión. Repetido en cada almuerzo y sin un dato detrás, se vuelve insistencia."
+        },
+        {
+          "id": "d",
+          "texto": "Le dijo cuánto puede aportar la familia al mes y propuso revisar los costos juntos.",
+          "correcta": true,
+          "retroalimentacion": "Hablar claro del dinero no es poner un freno: le da a Diego un dato real con el cual planear."
+        }
+      ],
+      "explicacion": "Acompañar se nota en cosas concretas: contar, conectar, averiguar juntos, hablar claro. Opinar también está permitido; lo que desgasta es repetir la misma opinión hasta que parezca una orden. Si usted ya hace alguna de estas cosas, va por buen camino.",
+      "pistas": [
+        {
+          "id": "p1-08p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Pregúntese de cada una: ¿le deja a Diego algo nuevo con qué pensar?"
+        }
+      ]
+    },
+    {
+      "id": "p1-09",
+      "tipo": "diapositiva",
+      "etiqueta": "La idea",
+      "titulo": "Tres verbos para el lugar de la familia",
+      "bloques": [
+        {
+          "tipo": "parrafo",
+          "texto": "Si tuviéramos que resumir su lugar en tres palabras, serían estas."
+        },
+        {
+          "tipo": "tabla",
+          "columnas": [
+            "Verbo",
+            "Es",
+            "No es"
           ],
-          "titulo": "Una acción concreta"
+          "filas": [
+            [
+              "Acompañar",
+              "Estar disponible, preguntar y escuchar las dudas sin juzgarlas",
+              "Desaparecer del tema u ocupar todo el espacio"
+            ],
+            [
+              "Informar",
+              "Compartir lo que usted sabe del trabajo y de la vida, y ayudar a conseguir lo que no saben",
+              "Llegar con la respuesta ya elegida"
+            ],
+            [
+              "Respetar",
+              "Aceptar que la decisión final es de su hijo o hija, aunque no sea la que usted habría tomado",
+              "Callar lo que le preocupa o decir que está de acuerdo cuando no lo está"
+            ]
+          ]
+        },
+        {
+          "tipo": "fuente",
+          "texto": "MINEDU (2013), Orientación vocacional: cartilla para tutores, actividad 3, taller con madres y padres."
+        }
+      ]
+    },
+    {
+      "id": "p1-10",
+      "tipo": "pregunta",
+      "hablanteId": "orientacion",
+      "formato": "opcion_unica",
+      "bloqueante": true,
+      "alAgotarPistas": "revelar_y_continuar",
+      "transicion": "Una última escena con Elena y Diego.",
+      "enunciado": "Pasan dos semanas. Diego ya conversó con la psicóloga y sigue firme. A Elena todavía le preocupa cómo van a pagar cinco años de carrera. ¿Qué sería respetar en este momento?",
+      "opciones": [
+        {
+          "id": "a",
+          "texto": "No volver a mencionar el dinero, porque Diego ya decidió y toca aceptarlo.",
+          "correcta": false,
+          "retroalimentacion": "Callar una preocupación real no es respeto. Además le quita a Diego un dato que su plan necesita."
+        },
+        {
+          "id": "b",
+          "texto": "Decirle que está de acuerdo en todo, para que no sienta que su mamá duda.",
+          "correcta": false,
+          "retroalimentacion": "Diego nota cuando el acuerdo es fingido. Elena puede apoyarlo sin estar convencida, y decirlo así."
+        },
+        {
+          "id": "c",
+          "texto": "Apoyarlo con la condición de que antes pruebe un ciclo de Contabilidad.",
+          "correcta": false,
+          "retroalimentacion": "Parece un punto medio, pero pone el apoyo bajo condición. Diego aprende que el respaldo depende de elegir lo que su mamá prefiere."
+        },
+        {
+          "id": "d",
+          "texto": "Contarle su preocupación como suya y proponerle ver juntos costos y formas de pago.",
+          "correcta": true,
+          "retroalimentacion": "Eso es. Elena dice lo que siente sin convertirlo en veto, y la decisión sigue siendo de Diego, ahora con más información."
+        }
+      ],
+      "explicacion": "Respetar no es quedarse callado ni estar de acuerdo. Es decir lo que a uno le preocupa como preocupación propia y ayudar a resolverla. Qué quiere estudiar lo decide su hijo o hija; cuánto puede aportar la familia lo decide la familia. Decir ese límite a tiempo no es vetar la carrera: es un dato con el que se buscan caminos, como una institución pública, una beca o estudiar y trabajar.",
+      "pistas": [
+        {
+          "id": "p1-10p1",
+          "tipo": "dialogo",
+          "hablanteId": "orientacion",
+          "texto": "Busque la opción en la que Elena dice lo que siente y Diego sigue decidiendo."
+        }
+      ]
+    },
+    {
+      "id": "p1-11",
+      "tipo": "diapositiva",
+      "etiqueta": "Para llevarse",
+      "titulo": "Para llevarse",
+      "bloques": [
+        {
+          "tipo": "destacado",
+          "variante": "idea_clave",
+          "texto": "La decisión es de su hijo o hija. Que no la tome a solas depende de usted."
         },
         {
           "tipo": "parrafo",
-          "texto": "Todo lo que usted lea aquí queda guardado en Mis actividades, para volver cuando quiera."
+          "texto": "Le dejamos dos cosas pequeñas para esta semana. No son tareas: son formas de empezar."
+        },
+        {
+          "tipo": "pasos",
+          "titulo": "Esta semana",
+          "pasos": [
+            {
+              "titulo": "Una pregunta",
+              "texto": "Pregúntele «¿qué has estado pensando para después del colegio?» y escuche hasta el final antes de opinar."
+            },
+            {
+              "titulo": "Una historia",
+              "texto": "Cuéntele cómo llegó usted a su trabajo: qué eligió, qué le tocó y qué habría querido saber a su edad."
+            }
+          ]
+        },
+        {
+          "tipo": "parrafo",
+          "texto": "Al terminar recibe la ficha «Acompañar no es decidir». Queda en Mis actividades, con las dudas más frecuentes de los padres, para consultarla cuando la necesite."
         }
-      ],
-      "etiqueta": "Resumen",
-      "transicion": "Ya tiene una acción para esta semana. Repase el resumen cuando quiera."
+      ]
     }
   ],
   "recompensa": {
-    "mensajeFin": "Acompañar, informar, respetar. La decisión es de su hijo o hija; usted es el soporte."
+    "mensajeFin": "La decisión es de su hijo o hija. Que no la tome a solas depende de usted."
   }
 }

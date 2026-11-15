@@ -282,7 +282,7 @@ export function getPointDetails(
     caseProgress: point.id === 'forest-fire',
     description: cityCase?.description ?? '',
     imageUrl: getExplorationImagePath(
-      point.id === 'forest-fire' ? 'forest-fire-case-background.png' : 'exploration-case-background.png',
+      point.id === 'forest-fire' ? 'forest-fire-case-background.webp' : 'exploration-case-background.webp',
     ),
     actionLabel: point.id === 'forest-fire' ? getForestFireCaseStatus(adventure).actionLabel : 'Iniciar',
     disabled: !point.actionEnabled,

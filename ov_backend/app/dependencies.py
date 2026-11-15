@@ -13,6 +13,7 @@ from app.database import obtener_sesion
 from app.exceptions import ErrorAccion, traducir_error_accion
 from app.models import Cuenta
 from app.services import cuentas as servicio_cuentas
+from app.services.comun import CUENTA_DEL_TOKEN
 from app.services.acceso import Actor, TokenInvalido, es_propia, leer_token
 from app.services.notificaciones import olvidar_nuevas
 
@@ -52,9 +53,9 @@ async def _cuerpo_json(request: Request):
 
 
 def _autorizar(sesion: Session, datos: dict, objetivo: str | None, politicas) -> Actor:
+    confirmar = False
     try:
-        fila = sesion.execute(select(Cuenta.id, Cuenta.codigo, Cuenta.rol, Cuenta.activa)
-                              .where(Cuenta.codigo == datos["sub"])).first()
+        fila = sesion.scalar(select(Cuenta).where(Cuenta.codigo == datos["sub"]))
         if fila is None or not fila.activa:
             raise _no_autenticado()
         actor = Actor(fila.id, fila.codigo, fila.rol, datetime.fromtimestamp(datos["exp"], UTC))
@@ -63,10 +64,21 @@ def _autorizar(sesion: Session, datos: dict, objetivo: str | None, politicas) ->
                 select(Cuenta.id).where(Cuenta.codigo == objetivo))
             if objetivo_id is None or not any(politica(sesion, actor.id, objetivo_id) for politica in politicas):
                 raise _no_encontrada()
+        confirmar = True
         return actor
     finally:
         # La consulta autoinicia una transacción; sin cerrarla, `ejecutar_accion` no podría abrir `sesion.begin()`.
-        sesion.rollback()
+        # Auditoría plataforma (D-B4): autorizada, se cierra sin expirar lo leído y la cuenta queda para la petición
+        # (`obtener_cuenta` y `buscar_por_codigo` la reutilizan); si no, se revierte como antes.
+        if confirmar:
+            sesion.info[CUENTA_DEL_TOKEN] = fila
+            expirar, sesion.expire_on_commit = sesion.expire_on_commit, False
+            try:
+                sesion.commit()
+            finally:
+                sesion.expire_on_commit = expirar
+        else:
+            sesion.rollback()
 
 
 async def guardia(request: Request, sesion: SesionBD) -> None:
