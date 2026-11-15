@@ -268,7 +268,7 @@ def _sin_institucion(texto):
 
 # B11 · Secciones de la tarjeta de carrera: (código, nombre, ¿cuenta para «listo para comparar»?). Cada ruta
 # decide con reglas SECCION_PLAN cuándo se abre cada una.
-SECCIONES_TARJETA = (('POR_QUE', 'Por qué', True), ('CONOCIMIENTO', 'Qué tanto la conozco', False),
+SECCIONES_TARJETA = (('POR_QUE', 'Por qué la elijo', True), ('CONOCIMIENTO', 'Qué tanto la conozco', False),
                      ('REALIDAD', 'Cómo lo haría realidad', True), ('PASOS', 'Mis próximos pasos', False))
 
 # Rubros que el front propone en REALIDAD: (rubro, frecuencia recomendada, monto de referencia en soles o None si

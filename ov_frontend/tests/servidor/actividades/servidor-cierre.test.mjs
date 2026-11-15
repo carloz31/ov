@@ -226,7 +226,7 @@ test('«Se abrió para ti» enlaza cada sección y la zona; las filas de planes 
     desbloqueo('SECCION', 'CATALOGO', 'Catálogo'),
     desbloqueo('SECCION', 'CHECK_IN', 'Check-in'),
     desbloqueo('SECCION', 'PLANES', 'Planes'),
-    desbloqueo('SECCION_PLAN', 'POR_QUE', 'Por qué'),
+    desbloqueo('SECCION_PLAN', 'POR_QUE', 'Por qué la elijo'),
     desbloqueo('BLOQUE', 'CIUDAD', 'La ciudad'),
     desbloqueo('ACTIVIDAD', 'a'),
     desbloqueo('ACTIVIDAD', 'b'),
@@ -247,7 +247,7 @@ test('«Se abrió para ti» enlaza cada sección y la zona; las filas de planes 
     filas[0],
     /<a href="\/student\/catalog\/professions"[^>]*>Catálogo<\/a>, Check-in y <a href="\/student\/profile\/decisions"[^>]*>Planes<\/a>/,
   )
-  assert.match(filas[1], /Nueva sección en tus planes: Por qué/)
+  assert.match(filas[1], /Nueva sección en tus planes: Por qué la elijo/)
   assert.doesNotMatch(filas[1], /<a /)
   assert.match(filas[2], /La ciudad te espera.*href="\/student\/exploration"/)
   assert.match(filas[3], /2 actividades nuevas en el mapa/)

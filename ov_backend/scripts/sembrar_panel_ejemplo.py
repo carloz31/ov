@@ -191,7 +191,7 @@ class Sembrador:
                     {'tipo': 'conversar', 'texto': 'DATO DE PRUEBA: hablar con una psicóloga.'}]})
 
     def preparar_planes(self, codigo):
-        """Como el recorrido de pruebas: Psicología (A) y Periodismo (B), con «Por qué» y «Cómo lo haría realidad»."""
+        """Como el recorrido de pruebas: Psicología (A) y Periodismo (B), con «Por qué la elijo» y «Cómo lo haría realidad»."""
         from soporte_planes import por_que_lista, realidad_lista
         for carrera in ('PSICOLOGIA', 'PERIODISMO'):
             self.crear_plan(codigo, carrera)
@@ -229,7 +229,7 @@ def sembrar_casos(s: Sembrador) -> list[str]:
         s.avanzar('est-panel-3', 'b3-8')
         s.intereses('est-panel-3', plano=True)
         s.diario('est-panel-3', 3)
-    if 'est-panel-4' in hecho:  # 4 · Con prisa; un plan con solo «Por qué».
+    if 'est-panel-4' in hecho:  # 4 · Con prisa; un plan con solo «Por qué la elijo».
         s.ingreso('est-panel-4', 1)
         s.avanzar('est-panel-4', 'b3-5', planes=False)
         # Ajuste recorte-puerto: b3-6 y b3-7 son opcionales; se hacen para dejar el mismo avance de antes.

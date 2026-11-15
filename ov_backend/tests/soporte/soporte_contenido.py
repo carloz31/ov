@@ -45,7 +45,7 @@ def completar(cliente, codigo, cuenta='est-ana'):
 
 
 def preparar_planes(cliente):
-    """Dos planes desde favoritos, con «Por qué» y «Cómo lo haría realidad» listos (REALIDAD se abre con b3-8). PSICOLOGIA es
+    """Dos planes desde favoritos, con «Por qué la elijo» y «Cómo lo haría realidad» listos (REALIDAD se abre con b3-8). PSICOLOGIA es
     el Plan A y PERIODISMO el Plan B: R-b4-1 pide el «Por qué» del A y R-b4-5 el de los dos."""
     for carrera in (PSICOLOGIA, PERIODISMO):
         crear(cliente, carrera)
