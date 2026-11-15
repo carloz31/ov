@@ -8,10 +8,9 @@ import {
   letraPlan,
   textoDudas,
   textoEnAreas,
-  textoMedidor,
   textoSoles,
 } from '@/lib/servidor/adaptadoresPanelEstudiante'
-import { textoIdea } from '@/lib/servidor/adaptadoresPlanes'
+import { MEDIDORES, nivelMedidor, textoIdea } from '@/lib/servidor/adaptadoresPlanes'
 import { cn } from '@/lib/utils'
 import type { OrigenIdea, PlanCompleto, SeccionCompleta, TipoInstitucionServidor } from '@/types/servidor'
 import { ChipPerfil, type TonoChip } from './ChipPerfil'
@@ -88,11 +87,7 @@ function Dudas({ plan }: { plan: PlanCompleto }) {
 export function PlanCompletoPerfil({ plan, nombre }: { plan: PlanCompleto; nombre: string }) {
   const [porQue, conoce, realidad, pasos] = plan.secciones
   const r = plan.realidad
-  const medidores: [string, number | null][] = [
-    ['Entusiasmo', plan.medidores.entusiasmo],
-    ['Se siente capaz', plan.medidores.capacidad],
-    ['Recursos para lograrlo', plan.medidores.recursos],
-  ]
+  const medidores: [string, number | null][] = MEDIDORES.map((m) => [m.nombre, plan.medidores[m.codigo]])
   return (
     <div className="space-y-4">
       <BloquePanel
@@ -108,7 +103,7 @@ export function PlanCompletoPerfil({ plan, nombre }: { plan: PlanCompleto; nombr
           {medidores.map(([titulo, valor]) => (
             <div key={titulo} className={cn('rounded-lg p-3', valor === 1 ? 'bg-warning-soft' : 'bg-muted')}>
               <p className="text-sm">{titulo}</p>
-              <p className="font-bold">{textoMedidor(valor)}</p>
+              <p className="font-bold">{nivelMedidor(valor)}</p>
             </div>
           ))}
         </div>

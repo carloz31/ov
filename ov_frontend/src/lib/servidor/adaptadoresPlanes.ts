@@ -66,6 +66,9 @@ export const FRECUENCIAS: [FrecuenciaGasto, string][] = [
   ['ANUAL', 'Anual'],
 ]
 export const ESCALA_MEDIDOR = ['Poco', 'Algo', 'Mucho'] as const
+// Ajuste pendientes-orientadora: el nivel de un medidor con estas palabras, también en el perfil de la orientadora
+// (las mismas que citan los temas «Para conversar»); sin fijar, «Sin marcar».
+export const nivelMedidor = (valor: number | null) => (valor && ESCALA_MEDIDOR[valor - 1]) || 'Sin marcar'
 export const MEDIDORES: { codigo: keyof Medidores; nombre: string; pregunta: string }[] = [
   { codigo: 'entusiasmo', nombre: 'Me entusiasma', pregunta: '¿Cuánto te atrae esta opción?' },
   {

@@ -19,6 +19,7 @@ export function PestanaResumen({
       <AvisosParaConversar
         avisos={datos.avisos}
         temas={datos.temas}
+        temasVisibles={datos.temas_visibles}
         nombre={nombre}
         onIr={modelo.irADestino}
       />

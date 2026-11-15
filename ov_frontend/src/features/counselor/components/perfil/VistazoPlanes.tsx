@@ -7,10 +7,9 @@ import {
   textoConoce,
   textoDudas,
   textoEnAreas,
-  textoMedidor,
   textoSoles,
 } from '@/lib/servidor/adaptadoresPanelEstudiante'
-import { textoIdea } from '@/lib/servidor/adaptadoresPlanes'
+import { MEDIDORES, nivelMedidor, textoIdea } from '@/lib/servidor/adaptadoresPlanes'
 import type { OrigenIdea, PlanesEstudiante, PlanVistazo, TipoInstitucionServidor } from '@/types/servidor'
 import { ChipPerfil } from './ChipPerfil'
 import { textoInstitucionPerfil } from '@/features/counselor/lib/perfilEstudiante'
@@ -81,8 +80,7 @@ const FILAS: [string, (p: PlanVistazo) => ReactNode][] = [
   ],
   [
     'Cómo se ve frente al plan',
-    (p) =>
-      `Entusiasmo ${textoMedidor(p.medidores.entusiasmo).toLocaleLowerCase('es')} · se siente capaz ${textoMedidor(p.medidores.capacidad).toLocaleLowerCase('es')} · recursos ${textoMedidor(p.medidores.recursos).toLocaleLowerCase('es')}`,
+    (p) => MEDIDORES.map((m) => `${m.nombre}: ${nivelMedidor(p.medidores[m.codigo])}`).join(' · '),
   ],
   ['Partes llenas', (p) => `${p.secciones_listas} de ${p.secciones_total}`],
 ]

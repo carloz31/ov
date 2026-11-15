@@ -53,10 +53,6 @@ export const enlaceDestino: Record<DestinoPerfil, string> = {
 export const letraPlan = (prioridad: number) => `Plan ${'ABC'[prioridad - 1] ?? prioridad}`
 export const textoEnAreas = (dentro: boolean) =>
   dentro ? 'Entre sus áreas sugeridas' : 'No está entre sus áreas sugeridas'
-// 1 Bajo, 2 Medio, 3 Alto; sin fijar, «Sin marcar».
-export const textoMedidor = (valor: number | null) =>
-  valor === 1 ? 'Bajo' : valor === 2 ? 'Medio' : valor === 3 ? 'Alto' : 'Sin marcar'
-
 // «hoy», «ayer», «hace N días» o «Nunca ingresó».
 export function textoIngreso(dias: number | null) {
   if (dias === null) return 'Nunca ingresó'

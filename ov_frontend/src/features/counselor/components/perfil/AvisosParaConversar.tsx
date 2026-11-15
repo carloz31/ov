@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { BloquePanel } from '@/features/counselor/components/panel/PanelComun'
 import { enlaceDestino } from '@/lib/servidor/adaptadoresPanelEstudiante'
@@ -14,14 +15,21 @@ const BOTON_AVISO: Record<DestinoPerfil, string> = {
 export function AvisosParaConversar({
   avisos,
   temas,
+  temasVisibles,
   nombre,
   onIr,
 }: {
   avisos: GrupoAvisosPerfil[]
   temas: TemaPerfil[]
+  temasVisibles: number
   nombre: string
   onIr: (destino: DestinoPerfil) => void
 }) {
+  // Ajuste pendientes-orientadora: los primeros `temasVisibles` y, si hay más, el resto en el mismo bloque (como las
+  // dudas del plan completo). No se guarda en la URL.
+  const [todos, setTodos] = useState(false)
+  const visibles = todos ? temas : temas.slice(0, temasVisibles)
+  const restantes = temas.length - visibles.length
   return (
     <>
       {avisos.length > 0 && (
@@ -59,22 +67,29 @@ export function AvisosParaConversar({
         subtitulo={`Puntos que la plataforma encontró en lo que ${nombre} registró. No son problemas: son entradas para la conversación.`}
       >
         {temas.length ? (
-          <ul className="divide-y divide-border">
-            {temas.map((t) => (
-              <li key={t.codigo} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <p className="min-w-0 flex-1">{t.texto}</p>
-                {t.destino && (
-                  <Button
-                    variant="link"
-                    className="min-h-11 px-2 font-semibold"
-                    onClick={() => onIr(t.destino!)}
-                  >
-                    {enlaceDestino[t.destino]}
-                  </Button>
-                )}
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="divide-y divide-border">
+              {visibles.map((t) => (
+                <li key={t.codigo} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <p className="min-w-0 flex-1">{t.texto}</p>
+                  {t.destino && (
+                    <Button
+                      variant="link"
+                      className="min-h-11 px-2 font-semibold"
+                      onClick={() => onIr(t.destino!)}
+                    >
+                      {enlaceDestino[t.destino]}
+                    </Button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {restantes > 0 && (
+              <Button variant="link" className="min-h-11 px-0 font-semibold" onClick={() => setTodos(true)}>
+                {restantes === 1 ? 'Ver el tema restante' : `Ver los ${restantes} temas restantes`}
+              </Button>
+            )}
+          </>
         ) : (
           <p className="text-muted-foreground">
             Todavía no hay puntos para conversar. Aparecerán cuando registre sus planes y responda sus

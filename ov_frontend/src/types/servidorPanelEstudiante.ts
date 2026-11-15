@@ -101,6 +101,8 @@ export type PerfilEstudiante = {
   cabecera: CabeceraEstudiante
   avisos: GrupoAvisosPerfil[]
   temas: TemaPerfil[]
+  // Ajuste pendientes-orientadora: cuántos temas se ven antes de «Ver los N temas restantes».
+  temas_visibles: number
   intereses: InteresesResumen | null
   planes: PlanResumen[]
   partida: PartidaResumen
