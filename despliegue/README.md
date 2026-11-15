@@ -22,7 +22,7 @@ Archivos de esta carpeta:
 | `../amplify.yml` | Build del front (monorepo, `appRoot: ov_frontend`, Node 22). |
 | `amplify/reescrituras.json` | Reglas de Amplify: `/api` → EC2 y la regla SPA de react-router. |
 | `ec2/instalar.sh` | Preparación única de la instancia. |
-| `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, migraciones y reinicio. Con `--recargar`, borra la base y carga `contenido`. |
+| `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, migraciones y reinicio. Con `--recargar`, borra la base y carga `contenido` con los estudiantes de ejemplo del panel; con `--recargar --sin-ejemplos`, sin ellos. |
 | `ec2/ov-backend.service` | Servicio systemd (uvicorn, 2 workers). |
 | `ec2/nginx-ov.conf` | Proxy inverso de nginx hacia uvicorn, con gzip para el JSON. En una instancia ya instalada, el gzip se aplica a mano (paso 8.3). |
 | `ec2/env.produccion.example` | Plantilla del `.env` de producción. |
@@ -95,7 +95,7 @@ sudo systemctl start ov-backend
 curl -s -o /dev/null -w "%{http_code}\n" https://3-91-20-15.sslip.io/docs   # 200
 ```
 
-`datos.cargar contenido` crea también los usuarios de `datos/usuarios_prueba.txt`. Sirven para la primera prueba; antes de abrirlo a estudiantes reales, crea las cuentas propias con `scripts/crear_cuentas.py` (paso 8.4) y desactiva esas.
+`datos.cargar contenido` crea también los usuarios de `datos/usuarios_prueba.txt`, los apoderados de prueba de `contenido` y los estudiantes de ejemplo del panel de la orientadora (`est-panel-*` en 5A; `--sin-ejemplos` los omite). Sirven para la primera prueba; antes de abrirlo a estudiantes reales, crea las cuentas propias con `scripts/crear_cuentas.py` (paso 8.4) y desactiva esas.
 
 ## 6. Amplify (front)
 
@@ -159,9 +159,13 @@ Un push **conserva los datos**: solo migra la estructura. Si cambiaste datos que
 
 ### 7.5 Recargar el contenido (borra la base)
 
-Actions > **Pruebas y despliegue** > **Run workflow** > rama `deploy` > marca **recargar_contenido** > Run. Corre las pruebas y, si pasan, en la EC2: detiene el backend, elimina el esquema completo (cuentas, progreso y catálogo), crea las tablas con `alembic upgrade head`, carga `contenido` (con los usuarios de `datos/usuarios_prueba.txt`), reinicia y publica el front.
+Actions > **Pruebas y despliegue** > **Run workflow** > rama `deploy` > marca **recargar_contenido** > Run. Corre las pruebas y, si pasan, en la EC2: detiene el backend, elimina el esquema completo (cuentas, progreso y catálogo), crea las tablas con `alembic upgrade head`, carga `contenido` (con los usuarios de `datos/usuarios_prueba.txt` y los estudiantes de ejemplo del panel), reinicia y publica el front. Marca también **sin_ejemplos** para cargarla sin los estudiantes de ejemplo.
 
-A mano, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar`.
+A mano, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar` (o `--recargar --sin-ejemplos`).
+
+**Antes de una prueba con usuarios, recarga sin ejemplos** (**sin_ejemplos** o `--sin-ejemplos`): los estudiantes y apoderados de ejemplo son cuentas inventadas cuyas credenciales están en el repositorio (`CREDENCIALES` de `scripts/sembrar_panel_ejemplo.py`).
+
+La siembra corre en un proceso aparte con `ENTORNO=desarrollo` solo para él (fija la fecha de cada acción) y con el cliente de prueba del LLM: no llama a Claude ni a la red, y el backend desplegado sigue en producción. Si falla, la base queda con `contenido` sin ejemplos, el backend se reinicia igual y el paso termina con error (código 3) después de comprobar la API.
 
 Úsalo solo mientras no haya datos reales de estudiantes ni apoderados.
 

@@ -589,6 +589,9 @@ dev = [
     { name = "pytest" },
     { name = "pytest-xdist" },
 ]
+ejemplos = [
+    { name = "httpx" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -614,6 +617,7 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-xdist", specifier = ">=3.8.0" },
 ]
+ejemplos = [{ name = "httpx", specifier = ">=0.28.1" }]
 
 [[package]]
 name = "packaging"

@@ -10,7 +10,8 @@ Se niega a correr sin `--desarrollo` o si la configuración dice `ENTORNO=produc
 
     uv run python scripts/sembrar_panel_ejemplo.py --desarrollo
 
-O, de una vez, al cargar el conjunto: `uv run python -m datos.cargar contenido --vaciar --con-ejemplos`.
+O, de una vez, al cargar el conjunto (por defecto; `--sin-ejemplos` lo omite): `uv run python -m datos.cargar contenido --vaciar`.
+`datos.cargar` corre este script con ENTORNO=desarrollo y sin clave del LLM solo para este proceso, también en la EC2.
 
 Cada estudiante y apoderado de ejemplo puede ingresar con las credenciales de `CREDENCIALES` (DATO DE PRUEBA, correos
 de example.com, dominio reservado). No van en `datos/usuarios_prueba.txt`, que es solo de `ruta`.
