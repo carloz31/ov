@@ -51,3 +51,60 @@ Comprobado contra `main`: todos los textos de la columna «Hoy» coinciden; ning
 
 ## Preguntas abiertas
 Ninguna: lo que el texto no define (coordenadas nuevas) se propone arriba.
+
+## Ajuste · recorte-puerto
+
+### Contexto
+
+Recorte del bloque B3 (puerto) para la prueba con usuarios, como el del volcán: `b3-6` (elegir una institución), `b3-7` (batalla de las instituciones) y `b3-9` (batalla de los costos) pasan a opcionales y la ruta requerida queda `b3-1 → b3-2 → b3-3 → b3-4 → b3-5 → b3-8 → b3-10` (de 98 a ~70 min). Debe poder revertirse: no se borra ninguna actividad, ficha ni banco. Texto de observaciones: `ajuste-recorte-puerto.md`.
+
+**Dónde vive:** la spec en curso es `ajuste-recorte-volcan.md`, que aún no está en `main`. El ajuste se agrega a ella como sección `## Ajuste · recorte-puerto` y se trabaja en una rama nueva `ajuste/recorte-puerto` **creada desde `ajuste/recorte-volcan`** (si naciera de `main` no tendría la spec ni el recorte del volcán, y las pruebas de conteo chocarían). Commits `Ajuste recorte-puerto · F3/F4`, siguiendo la numeración de fases de la spec.
+
+Comprobado contra el código: todos los textos «Hoy» coinciden; `R-b3-8` y `R-b3-10` tienen las condiciones que dice el ajuste; «Cómo llegaría» está dentro de «Cómo lo haría realidad» (`SeccionRealidad.tsx`), que abre `R-PLAN-REALIDAD` con `b3-8`, así que la mención sí se mueve.
+
+### Qué cambia (hoy → pasará a)
+
+#### Backend · `ov_backend/datos/contenido.py`
+- `ACTIVIDADES`, B3: orden `b3-1…b3-5`, `b3-8`, `b3-10`, `b3-6`, `b3-7`, `b3-9`, `b3-a`, `b3-b`.
+- `PROPIEDADES`: `b3-6`, `b3-7`, `b3-9` → `{'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'}` (con comentario del ajuste).
+- `R-b3-8`: SUPERA_BATALLA b3-7 → SUPERA_BATALLA b3-5, «Gana «Batalla: el mercado y las rutas».»
+- `R-b3-10`: SUPERA_BATALLA b3-9 → COMPLETA_ACTIVIDAD b3-8, «Completa la misión «Cuánto cuesta estudiar».»
+- `scripts/sembrar_panel_ejemplo.py`, caso 4 («con prisa»): hoy `avanzar(..., 'b3-7')` (ya no es requerida y fallaría) → `avanzar(..., 'b3-5')` y luego completar `b3-6` y `b3-7`, para dejar el mismo estado de antes.
+
+#### Front · `ov_frontend/src/data/activities/contenidos/plataforma/`
+- `b3_1.json` `b3-1-13`: sin la frase de «Cómo llegaría».
+- `b3_6.json`, `b3_7.json`, `b3_9.json`: `obligatoria` false y `mapa.origen` (`b3-5`, `b3-6`, `b3-8`).
+- `b3_8.json`: `requisitos` `["b3-5"]`; fila «Admisión» de `b3-8-11` («Inscripción al examen de admisión, …»); `b3-8-15` con el texto nuevo.
+- `b3_10.json`: `requisitos` `["b3-8"]`.
+- `b4_3.json`: `b4-3-07` («otra forma de ingresar») y la fila «No ingresar» de `b4-3-10` («otra forma de ingreso»).
+- `orden` (1.6): `b3-8` 6, `b3-10` 7, `b3-6` 8, `b3-7` 9, `b3-9` 10; `b3-a` y `b3-b` como están. Solo ordena (los JSON de `plataforma/` no los lee el modo local; en api el orden viene del servidor).
+- **Mapa:** `b3-6` (460, 550) se queda: la línea nueva `b3-5 (450,450) → b3-8 (260,500)` va hacia la izquierda y no pasa cerca. `b3-7` (370, 500) **se reubica a (380, 590)**: el camino nuevo pasaría a ~28 px de su marcador; queda a ~89 de `b3-6` y lejos de `b3-a`. `b3-9` (370, 400) se queda (a ~149 de `b3-8`, sin cruzar líneas). Se valida con las reglas de `servidor-posiciones-mapa.test.mjs` y en el navegador.
+
+#### Front · `ov_frontend/src/data/content/challenges.ts`
+- `desafio-feriante` y `desafio-prestamista`: `obligatoria` false y `recompensa.lugar` «el puerto» (lo que usan `desafio-cifra-rutas` y `desafio-eco`).
+- `desafio-cifra`: hoy `lugar` «la feria del malecón» → «la caseta de Clotilde».
+
+### Qué no cambia
+- `R-b3-6`, `R-b3-7`, `R-b3-9`, `R-b3-a`, `R-b3-b`, `R-feria`, `R-F11`…`R-F17`, `R-PLAN-REALIDAD`, `R-tb3-*`, `R-conv-7/8`, `R-B4`, bancos y configuración de las tres batallas.
+- **Lo que sigue colgando de las opcionales:** de `b3-6`, `R-b3-7`, `R-F14`, `R-F15` y `R-feria`; de `b3-8` (requerida), `R-b3-9`. Ninguna insignia, nivel, testimonio, conversación ni carta pide `b3-6`, `b3-7` o `b3-9`; las insignias de `contenido` no cuentan batallas.
+- **Textos revisados sin cambio:** F11 dice «licenciada por la Sunedu» al definir cada ruta (no da por visto `b3-6`); «modalidad ordinaria» de `b3-8` y F16 es la de Beca 18, explicada ahí mismo; «tablón» de `b0-1` y `b5-5` es el del muelle, no el del puerto; `p5`, `p7` y los recursos del catálogo son del apoderado; las menciones de Clotilde en `b4-3` son de la caseta (`b3-8`, requerida). Ningún texto fuera de su desafío da por ganada la batalla de Clotilde.
+- Motor: `COMPLETA_BLOQUE` cuenta solo requeridas. Sin cambios de modelo, esquema ni contrato. Modo local congelado.
+
+### Pruebas (adaptación autorizada por el ajuste, §5; se anota en `decisiones.md`)
+- `tests/integration/datos/test_carga_contenido.py`: `b3-6`, `b3-7`, `b3-9` entran en `opcionales`.
+- Conteo de requeridas del camino 36 → 33: `test_recorrido_contenido.py` (back) y `servidor-posiciones-mapa.test.mjs` y `servidor-camino-visible.test.mjs` (front).
+- `test_mensajes_reglas_contenido.py` debe pasar sin cambios con los mensajes nuevos.
+- Nueva, en `test_recorrido_contenido.py`: al ganar `b3-5` se abren `b3-8`, `b3-6` y `b3-b`; al completar `b3-8`, `b3-10` y `b3-9`; al completar `b3-10`, B3 queda completo (evento `COMPLETA_BLOQUE`) y B4 abierto sin `b3-6`, `b3-7` ni `b3-9`. (B4 pide además los instrumentos revelados: se usa `revelar_para_b4`.)
+- Fixtures del front regenerados.
+
+### Fases
+1. **F3 · Backend:** `contenido.py`, sembrado del panel, pruebas; `pruebas` corre `tests/integration/datos`, `registros`, `escenarios`, `panel` y `contrato`. Commit.
+2. **F4 · Front:** JSON, `challenges.ts`, mapa, fixtures y pruebas de mapa; `pruebas` corre `npm run test:servidor` y `tests/local/actividades`. Commit.
+3. **Cierre:** suite completa de ambos repos; `decisiones.md`; sección en la spec. Comprobaciones del §6 en el navegador con una base aparte (como en el volcán), si las pides.
+
+### Verificación
+- Suites completas y `verificar_contenido_front.py`.
+- Navegador (§6): Doña Cifra no manda a la feria; tras `b3-5` aparecen `b3-8` disponible y `b3-6`/`b3-b` con «?»; `b3-8` sin opcionales nombra «Mis planes» y abre «Cómo lo haría realidad» con «Cómo llegaría»; `b3-9` con «?» y `b3-10` disponible; `b3-10` abre el acantilado; mensajes de bloqueo exactos; opcionales después de `b3-10` sin mandar a lugares ya pasados, con F14, F15 y la feria; `b3-1` y `b4-3` sin los textos viejos.
+
+### Preguntas abiertas
+Ninguna.

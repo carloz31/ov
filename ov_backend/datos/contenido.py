@@ -95,11 +95,11 @@ ACTIVIDADES = (
     ('b3-3', 'B3', 'El mercado laboral', 'INFORMATIVA', None, 12),
     ('b3-4', 'B3', 'Lo que necesito saber', 'REGISTRO', None, 8),
     ('b3-5', 'B3', 'Batalla: el mercado y las rutas', 'BATALLA', None, 8),
+    ('b3-8', 'B3', 'Cuánto cuesta estudiar', 'INFORMATIVA', None, 12),
+    ('b3-10', 'B3', 'Caminos que no van en línea recta', 'INFORMATIVA', None, 10),
     ('b3-6', 'B3', 'Elegir una institución', 'INFORMATIVA', None, 12),
     ('b3-7', 'B3', 'Batalla de las instituciones', 'BATALLA', None, 8),
-    ('b3-8', 'B3', 'Cuánto cuesta estudiar', 'INFORMATIVA', None, 12),
     ('b3-9', 'B3', 'Batalla de los costos', 'BATALLA', None, 8),
-    ('b3-10', 'B3', 'Caminos que no van en línea recta', 'INFORMATIVA', None, 10),
     ('b3-a', 'B3', 'Lo que aprendí de una trayectoria', 'REGISTRO', None, 4),
     ('b3-b', 'B3', 'Batalla de las rutas (repaso)', 'BATALLA', None, 5),
     ('b4-1', 'B4', 'Mi perfil frente a mi Plan A', 'REGISTRO', None, 12),
@@ -155,6 +155,11 @@ PROPIEDADES = {
     # Ajuste recorte-volcan: las dos informativas que presentan tests opcionales salen de la ruta requerida.
     'b2-1': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b2-2': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    # Ajuste recorte-puerto, para la prueba con usuarios (en la versión final vuelven a ser requeridas): la
+    # institución y las batallas del Feriante y de Clotilde salen de la ruta requerida del puerto.
+    'b3-6': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    'b3-7': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
+    'b3-9': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b3-a': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b3-b': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'ma1': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
@@ -1187,9 +1192,9 @@ REGLAS = (
     ('R-b3-5', 'ACTIVIDAD', 'b3-5', 'Completa la misión «Lo que necesito saber».', (('COMPLETA_ACTIVIDAD', 'b3-4', 'EVENTOS', 1),)),
     ('R-b3-6', 'ACTIVIDAD', 'b3-6', 'Gana «Batalla: el mercado y las rutas».', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
     ('R-b3-7', 'ACTIVIDAD', 'b3-7', 'Completa la misión «Elegir una institución».', (('COMPLETA_ACTIVIDAD', 'b3-6', 'EVENTOS', 1),)),
-    ('R-b3-8', 'ACTIVIDAD', 'b3-8', 'Gana «Batalla de las instituciones».', (('SUPERA_BATALLA', 'b3-7', 'EVENTOS', 1),)),
+    ('R-b3-8', 'ACTIVIDAD', 'b3-8', 'Gana «Batalla: el mercado y las rutas».', (('SUPERA_BATALLA', 'b3-5', 'EVENTOS', 1),)),
     ('R-b3-9', 'ACTIVIDAD', 'b3-9', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
-    ('R-b3-10', 'ACTIVIDAD', 'b3-10', 'Gana «Batalla de los costos».', (('SUPERA_BATALLA', 'b3-9', 'EVENTOS', 1),)),
+    ('R-b3-10', 'ACTIVIDAD', 'b3-10', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
     # El mensaje de R-B4 nombra las páginas de los cuestionarios prioritarios del salón (hoy solo intereses, SALON_INSTRUMENTOS); si cambian, cambia con ellos.
     # R-B4 y R-b5-1 se ven cuando su tramo anterior ya está completo: primero dicen lo que falta y la misión, «si aún no lo hiciste».
     ('R-B4', 'BLOQUE', 'B4', 'En el libro de Helena (desde tu perfil), rompe el sello de las páginas «Tu punto de partida y llegada» y «Lo que te atrae hacer»: sus preguntas están en las seis misiones «Mis intereses», en la ciudad. Y, si aún no lo hiciste, completa «Caminos que no van en línea recta», la última misión del tramo «Exploro el mundo profesional».', (('COMPLETA_BLOQUE', 'B3', 'EVENTOS', 1), ('REVELA_RESULTADO', None, 'EVENTOS', 1))),

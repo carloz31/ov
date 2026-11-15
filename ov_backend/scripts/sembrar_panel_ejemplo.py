@@ -231,7 +231,10 @@ def sembrar_casos(s: Sembrador) -> list[str]:
         s.diario('est-panel-3', 3)
     if 'est-panel-4' in hecho:  # 4 · Con prisa; un plan con solo «Por qué».
         s.ingreso('est-panel-4', 1)
-        s.avanzar('est-panel-4', 'b3-7', planes=False)
+        s.avanzar('est-panel-4', 'b3-5', planes=False)
+        # Ajuste recorte-puerto: b3-6 y b3-7 son opcionales; se hacen para dejar el mismo avance de antes.
+        for opcional in ('b3-6', 'b3-7'):
+            s.completar('est-panel-4', opcional)
         s.intereses('est-panel-4')
         cuenta_id = s.cuenta('est-panel-4').id
         aplicacion_id = s.sesion.scalar(select(m.Aplicacion.id).where(m.Aplicacion.codigo == 'APL-RIASEC'))

@@ -82,7 +82,8 @@ def test_camino_del_estudiante_de_punta_a_punta(cliente_contenido):
         if siguiente:
             assert actividades[siguiente] == 'DISPONIBLE', siguiente
     # Ajuste recorte-volcan (adaptación autorizada): b2-1 y b2-2 salen de las requeridas (38 → 36).
-    assert len(REQUERIDAS) == 36 and estados(cliente)[1]['b5-5'] == 'COMPLETADA'
+    # Ajuste recorte-puerto (adaptación autorizada): b3-6, b3-7 y b3-9 también (36 → 33).
+    assert len(REQUERIDAS) == 33 and estados(cliente)[1]['b5-5'] == 'COMPLETADA'
     completos = {e['referencia'] for e in eventos(cliente) if e['tipo'] == 'COMPLETA_BLOQUE'}
     assert completos >= set(CAMINO)
 
@@ -211,3 +212,24 @@ def test_el_volcan_se_cierra_sin_las_opcionales(cliente_contenido):
     fichas = {f['codigo']: f for f in pedir(cliente, 'GET', '/cuentas/est-ana/fichas')}
     assert fichas['F07']['obtenida_en'] and fichas['F10']['obtenida_en']
     assert not fichas['F08']['obtenida_en'] and not fichas['F09']['obtenida_en']
+
+
+def test_el_puerto_se_cierra_sin_las_opcionales(cliente_contenido):
+    """Ajuste recorte-puerto: b3-5 abre b3-8 y sus opcionales; b3-8 abre b3-10 y b3-9; b3-10 cierra B3 sin ellas."""
+    cliente = cliente_contenido
+    avanzar(cliente, 'b0-1', 'b3-4')
+    respuesta = completar(cliente, 'b3-5')
+    assert {'R-b3-8', 'R-b3-6', 'R-b3-b'} <= {d['regla'] for d in respuesta['nuevos_desbloqueos']}
+    _, actividades = estados(cliente)
+    assert actividades['b3-8'] == actividades['b3-6'] == actividades['b3-b'] == 'DISPONIBLE'
+    assert actividades['b3-10'] == actividades['b3-7'] == actividades['b3-9'] == 'BLOQUEADA'
+    respuesta = completar(cliente, 'b3-8')
+    assert {'R-b3-10', 'R-b3-9'} <= {d['regla'] for d in respuesta['nuevos_desbloqueos']}
+    _, actividades = estados(cliente)
+    assert actividades['b3-10'] == actividades['b3-9'] == 'DISPONIBLE'
+    revelar_para_b4(cliente)
+    completar(cliente, 'b3-10')
+    bloques, actividades = estados(cliente)
+    assert bloques['B4'] == 'DISPONIBLE'
+    assert 'B3' in {e['referencia'] for e in eventos(cliente) if e['tipo'] == 'COMPLETA_BLOQUE'}
+    assert all(actividades[c] != 'COMPLETADA' for c in ('b3-6', 'b3-7', 'b3-9'))
