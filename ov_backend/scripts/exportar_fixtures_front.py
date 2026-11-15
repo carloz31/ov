@@ -640,6 +640,8 @@ def _recorrer_panel(cliente, aplicacion):
             'panel-areas': _pedir(cliente, 'GET', f'{base}/areas?salon=5A'),
             'panel-instituciones': _pedir(cliente, 'GET', f'{base}/instituciones?salon=5A'),
             'panel-estudiantes': _pedir(cliente, 'GET', f'{base}/estudiantes?salon=5A&conjunto=avisos'),
+            # Ajuste panel-entrevistas-configuracion: la configuración del colegio (cuestionarios y destacados).
+            'panel-configuracion': _pedir(cliente, 'GET', f'{base}/configuracion'),
         }
     finally:
         aplicacion.dependency_overrides.pop(obtener_ahora, None)

@@ -12,6 +12,7 @@ from soporte_ruta import BLOQUE_FAMILIA
 
 from app import main as principal
 from app.schemas.panel import (
+    ConfiguracionColegio,
     EstudiantePanel, InteresesPanel, PaginaAreasPanel, PaginaInstitucionesPanel, SeguimientoPanel,
 )
 from app.schemas.referencias import ReferenciasConsultadas
@@ -106,6 +107,8 @@ NOMBRES = {f'ruta-{nombre}.json' for nombre in (
     'investigaciones-en-curso', 'investigaciones-luis', 'entrevistas-familia', 'entrevista-detalle-propia',
     # Ajuste panel-salon: el panel del salón de ori-carmen.
     'panel-seguimiento', 'panel-intereses', 'panel-areas', 'panel-instituciones', 'panel-estudiantes',
+    # Ajuste panel-entrevistas-configuracion: la configuración del colegio.
+    'panel-configuracion',
 )}
 
 
@@ -547,6 +550,9 @@ def test_fixtures_reproducen_el_contrato_y_se_regeneran_identicos(tmp_path, monk
     assert PaginaAreasPanel.model_validate(datos['panel-areas']).total == 3
     assert PaginaInstitucionesPanel.model_validate(datos['panel-instituciones']).total == 1
     assert len(TypeAdapter(list[EstudiantePanel]).validate_python(datos['panel-estudiantes'])) == 5
+    configuracion = ConfiguracionColegio.model_validate(datos['panel-configuracion'])
+    assert [c.codigo for c in configuracion.cuestionarios if c.visibilidad_apoderado == 'SEGUN_COLEGIO'] == [
+        'TEST-HABILIDADES', 'TEST-INTELIGENCIAS']
     # Regenera sobre archivos existentes sin tocar otros archivos del destino.
     conservar = destino / 'ruta' / 'conservar.txt'
     conservar.write_text('Conservar', encoding='utf-8')

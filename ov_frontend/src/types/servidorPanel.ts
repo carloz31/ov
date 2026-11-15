@@ -116,3 +116,22 @@ export type ConjuntoPanel =
   | 'area'
   | 'institucion'
   | 'plan_fuera_test'
+
+// Ajuste panel-entrevistas-configuracion: la configuración del colegio de la orientadora
+// (GET /cuentas/{c}/panel/configuracion y POST /acciones/configurar-colegio, que responde la nueva).
+export type VisibilidadApoderado = 'SIEMPRE' | 'NUNCA' | 'SEGUN_COLEGIO'
+export type CuestionarioConfiguracion = {
+  codigo: string
+  nombre: string
+  descripcion: string
+  obligatorio: boolean
+  visibilidad_apoderado: VisibilidadApoderado
+  visible: boolean
+}
+export type RegistroConfiguracion = { codigo: string; titulo: string; requerida: boolean; destacado: boolean }
+export type BloqueConfiguracion = { codigo: string; nombre: string; registros: RegistroConfiguracion[] }
+export type ConfiguracionColegio = {
+  cuestionarios: CuestionarioConfiguracion[]
+  registros: BloqueConfiguracion[]
+}
+export type ConfigurarColegioEntrada = { cuenta: string; visibles: string[]; destacados: string[] }

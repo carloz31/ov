@@ -24,7 +24,8 @@ test('la misma promoción cambia de nombre al pasar el año', () => {
 })
 
 test('los salones de la sesión llevan su nombre sin perder sus datos', () => {
-  assert.deepEqual(salonesConNombre([{ codigo: '5A', promocion: 2026, seccion: 'A', es_principal: true }], 2026), [
-    { codigo: '5A', promocion: 2026, seccion: 'A', es_principal: true, nombre: 'Quinto A' },
-  ])
+  assert.deepEqual(
+    salonesConNombre([{ codigo: '5A', promocion: 2026, seccion: 'A', es_principal: true }], 2026),
+    [{ codigo: '5A', promocion: 2026, seccion: 'A', es_principal: true, nombre: 'Quinto A' }],
+  )
 })

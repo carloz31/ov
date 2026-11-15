@@ -1,5 +1,6 @@
-import { obtener } from './cliente'
+import { enviar, obtener } from './cliente'
 import type {
+  ConfiguracionColegio,
   ConjuntoPanel,
   EstudiantePanel,
   InteresesPanel,
@@ -73,4 +74,20 @@ export function obtenerEstudiantes(
   valor: string,
 ): Promise<RespuestaServidor<EstudiantePanel[]>> {
   return obtener(ruta(cuenta, `estudiantes${consulta({ salon, conjunto, valor })}`))
+}
+
+// Ajuste panel-entrevistas-configuracion: una sola configuración para todos sus salones (sin parámetro de colegio).
+export function obtenerConfiguracion(
+  cuenta: string,
+  senal?: AbortSignal,
+): Promise<RespuestaServidor<ConfiguracionColegio>> {
+  return obtener(ruta(cuenta, 'configuracion'), senal)
+}
+
+export function enviarConfigurarColegio(
+  cuenta: string,
+  visibles: string[],
+  destacados: string[],
+): Promise<RespuestaServidor<ConfiguracionColegio>> {
+  return enviar('/acciones/configurar-colegio', { cuenta, visibles, destacados })
 }

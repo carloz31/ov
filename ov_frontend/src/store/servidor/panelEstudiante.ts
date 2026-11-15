@@ -72,6 +72,14 @@ export function descartarPerfil(estudiante: string) {
   avisar()
 }
 
+// Ajuste panel-entrevistas-configuracion: al cambiar los registros destacados del colegio, el perfil cargado (su
+// Resumen y su pestaña Respuestas) se vuelve a pedir al abrirlo.
+export function descartarPerfilCargado() {
+  if (!perfil) return
+  perfil = null
+  avisar()
+}
+
 export async function cargarSeccion<T>(
   estudiante: string,
   llave: string,

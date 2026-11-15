@@ -6,6 +6,7 @@ import { appPaths } from '@/routes/paths'
 import { cerrarSesion } from '@/store/accesoStore'
 import { CounselorPortalProvider } from '@/features/counselor/store/CounselorPortalState'
 import { useCounselorProfile } from '@/features/counselor/hooks/useCounselorProfile'
+import { useEtiquetaConfiguracion } from '@/features/counselor/hooks/useEtiquetaConfiguracion'
 import type { CounselorView } from '@/features/counselor/types'
 import { useModoCatalogo } from '@/features/discovery/hooks/useModoCatalogo'
 import { useCampanaPortal } from '@/hooks/useCampanaNotificaciones'
@@ -24,6 +25,7 @@ function CounselorPortalModule() {
   const navigate = useNavigate()
   const location = useLocation()
   const counselorProfile = useCounselorProfile()
+  const etiquetaConfiguracion = useEtiquetaConfiguracion()
   const view = getView(location.pathname)
   // Ajuste catalogo-apoderado: el catálogo de solo lectura, solo en api.
   const { catalogoEnPortal } = useModoCatalogo()
@@ -55,7 +57,7 @@ function CounselorPortalModule() {
           {
             id: 'priorities',
             icon: BookOpenCheck,
-            label: 'Configuración del salón',
+            label: etiquetaConfiguracion,
             onSelect: () => navigate(appPaths.counselor.priorities),
           },
           ...(catalogoEnPortal
@@ -71,7 +73,7 @@ function CounselorPortalModule() {
         ],
       },
     ],
-    [navigate, catalogoEnPortal],
+    [navigate, catalogoEnPortal, etiquetaConfiguracion],
   )
   return (
     <CounselorPortalProvider>
@@ -86,7 +88,7 @@ function CounselorPortalModule() {
           navigate(appPaths.login, { replace: true })
         }}
         onOpenProfile={() => navigate(appPaths.counselor.settings)}
-        title={labels[view]}
+        title={view === 'priorities' ? etiquetaConfiguracion : labels[view]}
         userName={counselorProfile.name}
         userRole={counselorProfile.role}
       >

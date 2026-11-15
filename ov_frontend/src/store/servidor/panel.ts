@@ -13,6 +13,7 @@ import type {
   RespuestaServidor,
   TipoFormacion,
 } from '@/types/servidor'
+import { descartarPerfilCargado } from './panelEstudiante'
 import { consultarCuentaSesion, sesionServidor } from './sesion'
 
 // Ajuste panel-salon · Panel del salón de la orientadora. Lo cambian las cuentas de sus estudiantes, así que cada
@@ -298,4 +299,28 @@ export function useListaPanel<T extends TipoLista>(tipo: T, filtros: FiltrosList
     mostrarMas: () => void cargarListaPanel(tipo, JSON.parse(clave) as FiltrosListaPanel, true),
     reintentar: () => void cargarListaPanel(tipo, JSON.parse(clave) as FiltrosListaPanel, false, true),
   }
+}
+
+// Ajuste panel-entrevistas-configuracion: la configuración del colegio. Se revalida al abrir su vista (la puede
+// cambiar otra orientadora del colegio); guardar deja lo que respondió el servidor y vence los perfiles cargados,
+// que filtran por los registros destacados. El seguimiento no depende de ella.
+export const llaveConfiguracion = 'configuracion'
+
+export function useConfiguracionPanel() {
+  return useCarga(llaveConfiguracion, (cuenta) => apiPanel.obtenerConfiguracion(cuenta))
+}
+
+export async function guardarConfiguracion(visibles: string[], destacados: string[]) {
+  const respuesta = await consultarCuentaSesion((cuenta) =>
+    apiPanel.enviarConfigurarColegio(cuenta, visibles, destacados),
+  )
+  if (respuesta.tipo === 'ok') {
+    vigente()
+    const llave = `${sesionServidor()}:${llaveConfiguracion}`
+    nuevoTurno(llave)
+    guardar(cargas, llave, { estado: 'listo', datos: respuesta.datos, error: null })
+    avisar()
+    descartarPerfilCargado()
+  }
+  return respuesta
 }

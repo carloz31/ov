@@ -13,6 +13,7 @@ import { Navigate, Route, Routes } from 'react-router'
 import { CounselorPortalModule } from '@/pages/counselor/CounselorPortalModule'
 import { CounselorSettingsView } from '@/pages/counselor/CounselorSettingsView'
 import { PrioritiesView } from '@/pages/counselor/PrioritiesView'
+import { ConfiguracionServidorView } from '@/pages/counselor/ConfiguracionServidorView'
 import { PublicationsView } from '@/pages/counselor/PublicationsView'
 import { PublicacionesServidorView } from '@/pages/counselor/PublicacionesServidorView'
 import { PublicacionServidorView } from '@/pages/counselor/PublicacionServidorView'
@@ -56,6 +57,8 @@ import { StudentLumiLettersView } from '@/pages/student/StudentLumiLettersView'
 import { CommunityView } from '@/pages/student/CommunityView'
 import { StudentResourcesView } from '@/pages/student/StudentResourcesView'
 import { FamilyConversationsView } from '@/features/family-conversations/components/FamilyConversationsView'
+// Ajuste panel-entrevistas-configuracion: la configuración del colegio en api; en local, la de siempre.
+const configuracionOrientadora = <SegunModo api={<ConfiguracionServidorView />} local={<PrioritiesView />} />
 function AppRoutes() {
   return (
     <Routes>
@@ -258,7 +261,7 @@ function AppRoutes() {
         <Route element={<Navigate replace to={appPaths.counselor.home} />} index />
         {subrutasPanelSalon()}
         {subrutasEstudiantes()}
-        <Route element={<PrioritiesView />} path="students/priorities" />
+        <Route element={configuracionOrientadora} path="students/priorities" />
         <Route
           element={<QuestionnaireDetailView />}
           path="students/:studentId/questionnaires/:questionnaireId"
@@ -273,7 +276,7 @@ function AppRoutes() {
           element={<SegunModo api={<PublicacionServidorView />} local={<PublicationsView />} />}
           path="publications/interviews/:interviewId"
         />
-        <Route element={<PrioritiesView />} path="priorities" />
+        <Route element={configuracionOrientadora} path="priorities" />
         <Route element={<CounselorSettingsView />} path="settings" />
         {subrutasExplorar('orientadora')}
         <Route element={<Navigate replace to={appPaths.counselor.home} />} path="dashboard" />

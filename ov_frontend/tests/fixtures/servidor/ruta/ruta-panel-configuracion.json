@@ -1,0 +1,110 @@
+{
+  "cuestionarios": [
+    {
+      "codigo": "TEST-PARTIDA-LLEGADA",
+      "descripcion": "Las mismas afirmaciones al inicio y al cierre, para ver cuánto cambiaste.",
+      "nombre": "Punto de partida y de llegada",
+      "obligatorio": true,
+      "visibilidad_apoderado": "NUNCA",
+      "visible": false
+    },
+    {
+      "codigo": "TEST-RIASEC",
+      "descripcion": "Descubre qué tipo de actividades te atraen y qué ocupaciones se parecen a ti.",
+      "nombre": "Test de intereses",
+      "obligatorio": true,
+      "visibilidad_apoderado": "SIEMPRE",
+      "visible": true
+    },
+    {
+      "codigo": "TEST-HABILIDADES",
+      "descripcion": "Descubre cómo te relacionas con los demás y qué habilidades sociales tienes más a mano hoy.",
+      "nombre": "Mi comportamiento con los demás",
+      "obligatorio": false,
+      "visibilidad_apoderado": "SEGUN_COLEGIO",
+      "visible": false
+    },
+    {
+      "codigo": "TEST-INTELIGENCIAS",
+      "descripcion": "Descubre cuáles de las siete inteligencias usas más hoy y cómo aprendes y resuelves mejor.",
+      "nombre": "Test de las inteligencias múltiples",
+      "obligatorio": false,
+      "visibilidad_apoderado": "SEGUN_COLEGIO",
+      "visible": false
+    }
+  ],
+  "registros": [
+    {
+      "codigo": "T1",
+      "nombre": "Camino",
+      "registros": [
+        {
+          "codigo": "t-expectativas",
+          "destacado": true,
+          "requerida": true,
+          "titulo": "Registro de expectativas"
+        },
+        {
+          "codigo": "t-valores",
+          "destacado": false,
+          "requerida": false,
+          "titulo": "Registro de valores"
+        },
+        {
+          "codigo": "t-eco",
+          "destacado": false,
+          "requerida": false,
+          "titulo": "Registro que retoma respuestas"
+        },
+        {
+          "codigo": "t-explorar",
+          "destacado": false,
+          "requerida": false,
+          "titulo": "Registro de exploración"
+        }
+      ]
+    },
+    {
+      "codigo": "T2",
+      "nombre": "Decisión",
+      "registros": [
+        {
+          "codigo": "t-comparar",
+          "destacado": false,
+          "requerida": true,
+          "titulo": "Registro para comparar tus planes"
+        },
+        {
+          "codigo": "t-proyecto",
+          "destacado": false,
+          "requerida": true,
+          "titulo": "Registro de tu proyecto"
+        }
+      ]
+    },
+    {
+      "codigo": "CIUDAD",
+      "nombre": "La ciudad",
+      "registros": [
+        {
+          "codigo": "t-contraste",
+          "destacado": false,
+          "requerida": true,
+          "titulo": "Registro de contraste de intereses"
+        },
+        {
+          "codigo": "t-investigador-cierre",
+          "destacado": false,
+          "requerida": false,
+          "titulo": "Lo que cambió"
+        },
+        {
+          "codigo": "t-referencia",
+          "destacado": false,
+          "requerida": false,
+          "titulo": "Registro desde tus planes"
+        }
+      ]
+    }
+  ]
+}
