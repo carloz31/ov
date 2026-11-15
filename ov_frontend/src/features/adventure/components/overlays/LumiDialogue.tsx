@@ -1,21 +1,26 @@
 import { useRef, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { ArrowLeft, ChevronRight, X } from 'lucide-react'
+import { ArrowLeft, ChevronRight, CircleHelp, X } from 'lucide-react'
 import { useThemeClass } from '@/components/common/ThemeScope'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { useTypewriter } from '@/hooks/useTypewriter'
+import type { VarianteGuia } from '@/features/adventure/context/overlayContext'
 type LumiOverlayProps = {
   open: boolean
   steps: string[]
   onClose: () => void
   onFinish?: () => void
   finalLabel?: string
+  variante?: VarianteGuia
 }
+// Ajuste desbloqueos: la variante `ayuda` lleva un ícono de pregunta en el lugar de Lumi y se llama «Ayuda»; con un
+// solo mensaje, sin indicadores de pasos ni «Anterior». La guía de Lumi no cambia.
 export function LumiDialogue({
   steps,
   onClose,
   onFinish,
   finalLabel = 'Entendido',
+  variante = 'lumi',
 }: Omit<LumiOverlayProps, 'open'>) {
   const [step, setStep] = useState(0)
   const themeClass = useThemeClass()
@@ -24,12 +29,15 @@ export function LumiDialogue({
   const primaryButton = useRef<HTMLButtonElement>(null)
   const returnFocus = useRef<HTMLElement | null>(null)
   const last = step === steps.length - 1
+  const ayuda = variante === 'ayuda'
+  const nombre = ayuda ? 'Ayuda' : 'Orientación de Lumi'
+  const unPaso = ayuda && steps.length === 1
   return (
     <Dialog.Portal>
       <Dialog.Overlay className={`sx-root ${themeClass} sx-lumi-backdrop`} />
       <Dialog.Content
         className={`sx-root ${themeClass} sx-glass sx-lumi-dialog`}
-        aria-label="Orientación de Lumi"
+        aria-label={nombre}
         onClick={() => {
           if (!done) complete()
         }}
@@ -43,7 +51,7 @@ export function LumiDialogue({
           if (returnFocus.current?.isConnected) returnFocus.current.focus()
         }}
       >
-        <Dialog.Title className="sr-only">Orientación de Lumi</Dialog.Title>
+        <Dialog.Title className="sr-only">{nombre}</Dialog.Title>
         <button
           type="button"
           className="sx-icon-button sx-lumi-close"
@@ -56,16 +64,26 @@ export function LumiDialogue({
           <X aria-hidden="true" size={18} />
         </button>
         <div className="sx-lumi-avatar">
-          <CharacterAvatar id="companero" size="lg" />
+          {ayuda ? (
+            <span aria-hidden="true" className="sx-character-circle sx-character-lg">
+              <CircleHelp size={56} />
+            </span>
+          ) : (
+            <CharacterAvatar id="companero" size="lg" />
+          )}
         </div>
-        <div className="sx-lumi-indicators" aria-hidden="true">
-          {steps.map((_, index) => (
-            <span key={index} data-active={index <= step} />
-          ))}
-        </div>
-        <p className="sr-only">
-          Paso {step + 1} de {steps.length}
-        </p>
+        {!unPaso && (
+          <>
+            <div className="sx-lumi-indicators" aria-hidden="true">
+              {steps.map((_, index) => (
+                <span key={index} data-active={index <= step} />
+              ))}
+            </div>
+            <p className="sr-only">
+              Paso {step + 1} de {steps.length}
+            </p>
+          </>
+        )}
         <Dialog.Description asChild>
           <div className="sx-lumi-text">
             <span aria-hidden="true">{visible}</span>
@@ -73,17 +91,19 @@ export function LumiDialogue({
           </div>
         </Dialog.Description>
         <div className="sx-lumi-footer">
-          <button
-            type="button"
-            className="sx-secondary-button"
-            disabled={step === 0}
-            onClick={(event) => {
-              event.stopPropagation()
-              setStep(step - 1)
-            }}
-          >
-            <ArrowLeft size={16} /> Anterior
-          </button>
+          {!unPaso && (
+            <button
+              type="button"
+              className="sx-secondary-button"
+              disabled={step === 0}
+              onClick={(event) => {
+                event.stopPropagation()
+                setStep(step - 1)
+              }}
+            >
+              <ArrowLeft size={16} /> Anterior
+            </button>
+          )}
           <button
             ref={primaryButton}
             type="button"

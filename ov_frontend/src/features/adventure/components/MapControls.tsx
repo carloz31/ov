@@ -1,13 +1,10 @@
-import { useCallback, useState } from 'react'
 import { CircleHelp, Volume2, VolumeX } from 'lucide-react'
 import { updateStudentUi, useStudentUi } from '@/store/studentUiStore'
-import { AvisoAyudaMapa } from './AvisoAyudaMapa'
 
-// Ajuste lumi-mensajes: con `aviso`, el botón de ayuda abre un aviso junto a él en lugar de la guía de Lumi.
-export function MapControls({ onHelp, aviso }: { onHelp: () => void; aviso?: string }) {
+// Ajuste desbloqueos: lo que abre el botón de ayuda (la guía de Lumi o, antes de la primera misión, la ayuda sin
+// Lumi) lo decide quien pasa `onHelp`.
+export function MapControls({ onHelp }: { onHelp: () => void }) {
   const ui = useStudentUi()
-  const [avisoAbierto, setAvisoAbierto] = useState(false)
-  const cerrarAviso = useCallback(() => setAvisoAbierto(false), [])
   const SoundIcon = ui.soundOn ? Volume2 : VolumeX
   return (
     <div className="sx-map-controls">
@@ -15,7 +12,7 @@ export function MapControls({ onHelp, aviso }: { onHelp: () => void; aviso?: str
         type="button"
         className="sx-glass sx-icon-button"
         aria-label="Abrir guía"
-        onClick={aviso ? () => setAvisoAbierto((abierto) => !abierto) : onHelp}
+        onClick={onHelp}
       >
         <CircleHelp size={20} />
       </button>
@@ -28,7 +25,6 @@ export function MapControls({ onHelp, aviso }: { onHelp: () => void; aviso?: str
       >
         <SoundIcon size={20} />
       </button>
-      {aviso && avisoAbierto && <AvisoAyudaMapa texto={aviso} onCerrar={cerrarAviso} />}
     </div>
   )
 }

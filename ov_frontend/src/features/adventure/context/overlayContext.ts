@@ -7,8 +7,12 @@ import { getTodayCheckIn, localDateKey } from '../lib/checkIn'
 
 export type AutomaticOverlay =
   { kind: 'arrival' } | { kind: 'intro'; view: StudentView } | { kind: 'check-in'; day: string }
+// Ajuste desbloqueos: `ayuda` es el reproductor de Lumi sin Lumi (ícono de pregunta), para la ayuda del mapa antes
+// de la primera misión.
+export type VarianteGuia = 'lumi' | 'ayuda'
 export type ManualOverlay =
-  { kind: 'guide'; steps: string[] } | { kind: 'signal'; onReturnFocus?: () => void }
+  | { kind: 'guide'; steps: string[]; variante?: VarianteGuia }
+  | { kind: 'signal'; onReturnFocus?: () => void }
 
 export function getNextOverlay({
   adventure,
@@ -47,7 +51,7 @@ export function getNextOverlay({
 
 export const StudentOverlayContext = createContext({
   announcementBlocked: false,
-  openGuide: (_steps: string[]) => {},
+  openGuide: (_steps: string[], _variante?: VarianteGuia) => {},
   openCheckIn: (_onReturnFocus?: () => void) => {},
 })
 export const useStudentOverlays = () => useContext(StudentOverlayContext)

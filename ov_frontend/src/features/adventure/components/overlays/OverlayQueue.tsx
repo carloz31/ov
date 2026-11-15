@@ -37,6 +37,7 @@ export function OverlayQueue({
     badge,
     aviso,
     guide,
+    varianteGuia,
     closeGuide,
     dismissSignal,
     descartarAviso,
@@ -56,6 +57,7 @@ export function OverlayQueue({
         key={active?.kind === 'intro' ? `intro:${active.view}` : (active?.kind ?? 'closed')}
         open={!!guide}
         steps={guide ?? []}
+        variante={varianteGuia}
         onClose={closeGuide}
         finalLabel={active?.kind === 'arrival' ? 'Entrar a la ciudad' : undefined}
         onFinish={

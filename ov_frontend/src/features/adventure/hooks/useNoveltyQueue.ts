@@ -30,6 +30,7 @@ import {
   getNextOverlay,
   type AutomaticOverlay,
   type ManualOverlay,
+  type VarianteGuia,
 } from '@/features/adventure/context/overlayContext'
 
 // Vistas que `AppRoutes` envuelve en `SeccionProtegida`: con la sección cerrada se ve su tarjeta de bloqueo,
@@ -137,7 +138,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
   const context = useMemo(
     () => ({
       announcementBlocked,
-      openGuide: (steps: string[]) => setManual({ kind: 'guide', steps }),
+      openGuide: (steps: string[], variante?: VarianteGuia) => setManual({ kind: 'guide', steps, variante }),
       openCheckIn: (onReturnFocus?: () => void) => setManual({ kind: 'signal', onReturnFocus }),
     }),
     [announcementBlocked],
@@ -201,6 +202,7 @@ export function useNoveltyQueue(view: StudentView, activityOpen: boolean) {
     badge,
     aviso,
     guide,
+    varianteGuia: active?.kind === 'guide' ? active.variante : undefined,
     closeGuide,
     dismissSignal,
     descartarAviso,
