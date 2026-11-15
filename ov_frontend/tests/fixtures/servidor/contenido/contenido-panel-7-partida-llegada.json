@@ -1,148 +1,238 @@
 {
+  "conteo": [
+    {
+      "cantidad": 1,
+      "codigo": "BAJO"
+    },
+    {
+      "cantidad": 4,
+      "codigo": "SUBIO"
+    }
+  ],
   "dimensiones": [
     {
       "afirmaciones": [
         {
-          "enunciado": "Sé qué quiero hacer cuando termine el colegio.",
-          "item": "AUTO-01",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Puedo explicar con mis palabras qué camino me atrae.",
-          "item": "AUTO-02",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Tengo una o dos opciones que me interesan más que las demás.",
-          "item": "AUTO-03",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Me siento perdido cuando pienso en lo que viene después del colegio.",
-          "item": "AUTO-04",
-          "llegada": "Nada de acuerdo",
-          "partida": "Bastante de acuerdo"
-        }
-      ],
-      "codigo": "AUTO-A",
-      "nombre": "Claridad"
-    },
-    {
-      "afirmaciones": [
-        {
-          "enunciado": "Conozco las actividades que más disfruto.",
-          "item": "AUTO-05",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Sé en qué soy bueno.",
-          "item": "AUTO-06",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Sé qué es importante para mí en un trabajo.",
-          "item": "AUTO-07",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Reconozco qué cosas no me gustaría hacer.",
-          "item": "AUTO-08",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        }
-      ],
-      "codigo": "AUTO-B",
-      "nombre": "Conocimiento de mí"
-    },
-    {
-      "afirmaciones": [
-        {
-          "enunciado": "Conozco varias carreras o caminos que podría seguir.",
-          "item": "AUTO-09",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Sé qué se estudia en las carreras que me interesan.",
-          "item": "AUTO-10",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Sé dónde puedo estudiar lo que me interesa.",
-          "item": "AUTO-11",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        },
-        {
-          "enunciado": "Conozco cuánto cuesta y cuánto dura lo que me interesa estudiar.",
-          "item": "AUTO-12",
-          "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
-        }
-      ],
-      "codigo": "AUTO-C",
-      "nombre": "Conocimiento de las opciones"
-    },
-    {
-      "afirmaciones": [
-        {
+          "cambio": "BAJO",
           "enunciado": "La decisión sobre mi futuro la tomo yo.",
           "item": "AUTO-13",
           "llegada": "Poco de acuerdo",
-          "partida": "Muy de acuerdo"
+          "llegada_baja": true,
+          "partida": "Muy de acuerdo",
+          "partida_baja": false
         },
         {
+          "cambio": "BAJO",
           "enunciado": "Puedo conversar con mi familia sobre lo que quiero.",
           "item": "AUTO-14",
           "llegada": "Poco de acuerdo",
-          "partida": "Muy de acuerdo"
+          "llegada_baja": true,
+          "partida": "Muy de acuerdo",
+          "partida_baja": false
         },
         {
+          "cambio": "BAJO",
           "enunciado": "Elijo pensando en lo que quiero y no solo en lo que otros esperan.",
           "item": "AUTO-15",
           "llegada": "Poco de acuerdo",
-          "partida": "Muy de acuerdo"
+          "llegada_baja": true,
+          "partida": "Muy de acuerdo",
+          "partida_baja": false
         },
         {
+          "cambio": "BAJO",
           "enunciado": "Busco información por mi cuenta antes de decidir.",
           "item": "AUTO-16",
           "llegada": "Poco de acuerdo",
-          "partida": "Muy de acuerdo"
+          "llegada_baja": true,
+          "partida": "Muy de acuerdo",
+          "partida_baja": false
         }
       ],
+      "cambio": "BAJO",
       "codigo": "AUTO-D",
-      "nombre": "Decisión propia"
+      "nombre": "Decisión propia",
+      "zona_llegada": "POR_TRABAJAR",
+      "zona_partida": "FUERTE"
     },
     {
       "afirmaciones": [
         {
+          "cambio": "SIGUE_BAJA",
+          "enunciado": "Sé qué quiero hacer cuando termine el colegio.",
+          "item": "AUTO-01",
+          "llegada": "Poco de acuerdo",
+          "llegada_baja": true,
+          "partida": "Nada de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Puedo explicar con mis palabras qué camino me atrae.",
+          "item": "AUTO-02",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Tengo una o dos opciones que me interesan más que las demás.",
+          "item": "AUTO-03",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Me siento perdido cuando pienso en lo que viene después del colegio.",
+          "item": "AUTO-04",
+          "llegada": "Nada de acuerdo",
+          "llegada_baja": false,
+          "partida": "Bastante de acuerdo",
+          "partida_baja": true
+        }
+      ],
+      "cambio": "SUBIO",
+      "codigo": "AUTO-A",
+      "nombre": "Claridad",
+      "zona_llegada": "FUERTE",
+      "zona_partida": "POR_TRABAJAR"
+    },
+    {
+      "afirmaciones": [
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Conozco las actividades que más disfruto.",
+          "item": "AUTO-05",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Sé en qué soy bueno.",
+          "item": "AUTO-06",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Sé qué es importante para mí en un trabajo.",
+          "item": "AUTO-07",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Reconozco qué cosas no me gustaría hacer.",
+          "item": "AUTO-08",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        }
+      ],
+      "cambio": "SUBIO",
+      "codigo": "AUTO-B",
+      "nombre": "Conocimiento de mí",
+      "zona_llegada": "FUERTE",
+      "zona_partida": "POR_TRABAJAR"
+    },
+    {
+      "afirmaciones": [
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Conozco varias carreras o caminos que podría seguir.",
+          "item": "AUTO-09",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Sé qué se estudia en las carreras que me interesan.",
+          "item": "AUTO-10",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Sé dónde puedo estudiar lo que me interesa.",
+          "item": "AUTO-11",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        },
+        {
+          "cambio": "MEJORO",
+          "enunciado": "Conozco cuánto cuesta y cuánto dura lo que me interesa estudiar.",
+          "item": "AUTO-12",
+          "llegada": "Muy de acuerdo",
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
+        }
+      ],
+      "cambio": "SUBIO",
+      "codigo": "AUTO-C",
+      "nombre": "Conocimiento de las opciones",
+      "zona_llegada": "FUERTE",
+      "zona_partida": "POR_TRABAJAR"
+    },
+    {
+      "afirmaciones": [
+        {
+          "cambio": "MEJORO",
           "enunciado": "Me siento capaz de tomar una buena decisión.",
           "item": "AUTO-17",
           "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
         },
         {
+          "cambio": "MEJORO",
           "enunciado": "Si algo no sale como espero, sé que puedo buscar otro camino.",
           "item": "AUTO-18",
           "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
         },
         {
+          "cambio": "MEJORO",
           "enunciado": "Confío en que podré lograr lo que me proponga.",
           "item": "AUTO-19",
           "llegada": "Muy de acuerdo",
-          "partida": "Poco de acuerdo"
+          "llegada_baja": false,
+          "partida": "Poco de acuerdo",
+          "partida_baja": true
         }
       ],
+      "cambio": "SUBIO",
       "codigo": "AUTO-E",
-      "nombre": "Confianza"
+      "nombre": "Confianza",
+      "zona_llegada": "FUERTE",
+      "zona_partida": "POR_TRABAJAR"
     }
-  ]
+  ],
+  "estado": "CON_LLEGADA",
+  "etiqueta": "CAMINO",
+  "fecha_llegada": "2026-10-07",
+  "fecha_partida": "2026-10-07",
+  "instrumento": "TEST-PARTIDA-LLEGADA",
+  "lectura": "Mismas afirmaciones al inicio y al cierre de la ruta sobre claridad, conocimiento de sí, de las opciones, decisión propia y confianza. Lea el cambio entre las dos aplicaciones más que la zona aislada. Incluye la presión percibida del entorno, también de la familia: úselo en tutoría con criterio y sin exponer al estudiante frente a su familia.",
+  "nombre": "Punto de partida y de llegada",
+  "opciones_bajas": 2
 }

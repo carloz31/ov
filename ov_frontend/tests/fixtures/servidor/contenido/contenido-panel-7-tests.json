@@ -149,9 +149,14 @@
           {
             "enunciado": "Sé qué quiero hacer cuando termine el colegio.",
             "item": "AUTO-01",
-            "llegada": "Muy de acuerdo",
-            "partida": "Poco de acuerdo"
-          },
+            "llegada": "Poco de acuerdo",
+            "partida": "Nada de acuerdo"
+          }
+        ],
+        "codigo": "SIGUEN_BAJAS"
+      },
+      {
+        "afirmaciones": [
           {
             "enunciado": "Puedo explicar con mis palabras qué camino me atrae.",
             "item": "AUTO-02",
@@ -173,6 +178,12 @@
           {
             "enunciado": "Conozco las actividades que más disfruto.",
             "item": "AUTO-05",
+            "llegada": "Muy de acuerdo",
+            "partida": "Poco de acuerdo"
+          },
+          {
+            "enunciado": "Sé en qué soy bueno.",
+            "item": "AUTO-06",
             "llegada": "Muy de acuerdo",
             "partida": "Poco de acuerdo"
           }

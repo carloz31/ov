@@ -157,12 +157,14 @@ class Sembrador:
             self.responder_items(codigo, actividad, opcion_de or (lambda i: 3))
         return self.pedir('POST', '/acciones/completar-actividad', {'cuenta': codigo, 'actividad': actividad})
 
-    def autopercepcion(self, valor_de):
-        """Opción de partida o llegada para obtener `valor_de(dimensión)` con los ítems inversos ya invertidos."""
+    def autopercepcion(self, valor_de, por_item=None):
+        """Opción de partida o llegada para obtener `valor_de(dimensión)` (o `por_item[código]`, que manda) con los
+        ítems inversos ya invertidos."""
         inversos = {i.codigo for i in self.sesion.scalars(select(m.ItemInstrumento).where(m.ItemInstrumento.inverso))}
+        por_item = por_item or {}
 
         def opcion(item):
-            valor = valor_de(item['dimension'])
+            valor = por_item.get(item['codigo'], valor_de(item['dimension']))
             return 5 - valor if item['codigo'] in inversos else valor
         return opcion
 
@@ -223,7 +225,10 @@ def sembrar_casos(s: Sembrador) -> list[str]:
     # 1 · Nunca ingresó: nada más.
     if 'est-panel-2' in hecho:  # 2 · Recién empieza: parte del tramo 1, partida respondida.
         s.ingreso('est-panel-2', 12)
-        s.avanzar('est-panel-2', 'b0-4', partida=s.autopercepcion(lambda d: 2), planes=False)
+        # Ajuste color-partida-llegada: respuestas bajas en la partida, incluido el ítem inverso (AUTO-04), salvo en
+        # «Conocimiento de mí» y «Decisión propia».
+        s.avanzar('est-panel-2', 'b0-4', partida=s.autopercepcion(lambda d: {'AUTO-B': 3, 'AUTO-D': 3}.get(d, 2)),
+                  planes=False)
     if 'est-panel-3' in hecho:  # 3 · Perfil plano; un plan sin etiqueta de áreas.
         s.ingreso('est-panel-3', 2)
         s.avanzar('est-panel-3', 'b3-8')
@@ -295,9 +300,11 @@ def sembrar_casos(s: Sembrador) -> list[str]:
     if 'est-panel-7' in hecho:  # 7 · Terminó; una dimensión bajó; tres planes; Plan A fuera de sus áreas.
         s.ingreso('est-panel-7', 0)
         s.ingreso('apo-panel-7', 1)
-        s.avanzar('est-panel-7', 'b4-5', partida=s.autopercepcion(lambda d: {'AUTO-D': 4}.get(d, 2)))
+        # Ajuste color-partida-llegada: AUTO-01 sube de «Nada» a «Poco» (sube y sigue baja) y AUTO-04, inverso,
+        # cambia; «Decisión propia» baja.
+        s.avanzar('est-panel-7', 'b4-5', partida=s.autopercepcion(lambda d: {'AUTO-D': 4}.get(d, 2), {'AUTO-01': 1}))
         _plan_fuera_de_areas(s, 'est-panel-7', [PSICOLOGIA, PERIODISMO])
-        s.avanzar_resto('est-panel-7', llegada=s.autopercepcion(lambda d: {'AUTO-D': 2}.get(d, 4)))
+        s.avanzar_resto('est-panel-7', llegada=s.autopercepcion(lambda d: {'AUTO-D': 2}.get(d, 4), {'AUTO-01': 2}))
         # Ajuste pendientes-orientadora: seis temas, más que el tope. Respondió la moneda (`DESANIME`) antes de cambiar su
         # Plan B, así que `plan-b-desanima` no aparece.
         plan_a = s.sesion.scalar(select(m.Carrera.codigo).join(m.TarjetaCarrera).where(

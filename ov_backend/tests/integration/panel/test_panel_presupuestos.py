@@ -346,3 +346,18 @@ def test_presupuesto_de_las_lecturas_de_partida_y_llegada(ejemplos):
         assert respuesta.status_code == 200, respuesta.text
         medidas[ruta] = contador.cantidad
     assert medidas == PRESUPUESTO_PARTIDA
+
+
+def test_los_ejemplos_de_partida_y_llegada_muestran_cada_caso(ejemplos):
+    """`scripts/sembrar_panel_ejemplo.py`: el caso 7 tiene una dimensión que baja, una afirmación que sube y sigue
+    baja y un ítem inverso que cambia; el caso 2, respuestas bajas en la partida, incluido el inverso."""
+    _, cliente = ejemplos
+    siete = cliente.get(f'{BASE}/estudiantes/est-panel-7/tests/partida-llegada').json()
+    assert siete['estado'] == 'CON_LLEGADA' and siete['dimensiones'][0]['cambio'] == 'BAJO'
+    afirmaciones = {a['item']: a for d in siete['dimensiones'] for a in d['afirmaciones']}
+    assert afirmaciones['AUTO-01']['cambio'] == 'SIGUE_BAJA'
+    assert afirmaciones['AUTO-04']['cambio'] in ('MEJORO', 'BAJO')
+    dos = cliente.get(f'{BASE}/estudiantes/est-panel-2/tests/partida-llegada').json()
+    assert dos['estado'] == 'SOLO_PARTIDA'
+    bajas = {a['item'] for d in dos['dimensiones'] for a in d['afirmaciones'] if a['partida_baja']}
+    assert 'AUTO-04' in bajas and 'AUTO-05' not in bajas
