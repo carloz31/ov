@@ -185,7 +185,7 @@ export function ListenScreen({
         }}
       >
         <DialogContent
-          className="ff-modal ff-responsive-modal"
+          className="ff-modal ff-responsive-modal max-lg:translate-x-0 max-lg:translate-y-0"
           onCloseAutoFocus={(event) => {
             event.preventDefault()
             opener.current?.focus()

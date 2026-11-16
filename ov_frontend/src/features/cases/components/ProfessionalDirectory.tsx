@@ -149,7 +149,7 @@ export function ProfessionalDirectory({
         }}
       >
         <DialogContent
-          className="ff-modal ff-bottom-sheet ff-resume-sheet"
+          className="ff-modal ff-bottom-sheet ff-resume-sheet max-lg:translate-x-0 max-lg:translate-y-0"
           onCloseAutoFocus={(event) => {
             event.preventDefault()
             resumeOpener.current?.focus()

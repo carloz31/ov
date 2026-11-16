@@ -38,7 +38,9 @@ test('el guion se numera seguido (base 1–4) y termina con una pregunta propia'
   ])
   assert.equal(guion.total, 6)
   assert.equal(puedeTerminarGuion(datos.en_curso.preguntas), true)
-  assert.equal(puedeTerminarGuion([{ origen: 'SUGERIDA', texto: 'x' }]), false)
+  // Pedido del usuario: basta una sugerida; sin preguntas además de las base, no.
+  assert.equal(puedeTerminarGuion([{ origen: 'SUGERIDA', texto: 'x' }]), true)
+  assert.equal(puedeTerminarGuion([]), false)
   assert.equal(avisoMuchasPreguntas(10), false)
   assert.equal(avisoMuchasPreguntas(11), true)
 })

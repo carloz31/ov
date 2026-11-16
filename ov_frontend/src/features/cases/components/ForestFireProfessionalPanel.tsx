@@ -18,7 +18,7 @@ export function ForestFireProfessionalPanel({
       <DialogTrigger asChild>
         <button className="ff-secondary">{triggerLabel}</button>
       </DialogTrigger>
-      <DialogContent className="ff-modal ff-responsive-modal">
+      <DialogContent className="ff-modal ff-responsive-modal max-lg:translate-x-0 max-lg:translate-y-0">
         <DialogTitle className="sr-only">Hoja de vida de {professional.personName}</DialogTitle>
         <DialogDescription className="sr-only">Datos del catálogo de ocupaciones.</DialogDescription>
         <ProfessionalResume professional={professional} />

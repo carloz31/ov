@@ -74,8 +74,9 @@ class GuardarGuionEntrada(AccionCuenta):
         agregadas = [pregunta.sugerencia for pregunta in self.preguntas if pregunta.sugerencia is not None]
         if len(set(agregadas)) != len(agregadas) or set(agregadas) & set(self.descartadas):
             raise ValueError('Cada sugerencia se agrega o se descarta una sola vez')
-        if self.terminar and not any(p.origen == OrigenPreguntaGuion.PROPIA for p in self.preguntas):
-            raise ValueError('Para terminar el guion agrega al menos una pregunta tuya')
+        # Basta una pregunta además de las base: escrita por el estudiante o tomada de las sugerencias de Lumi.
+        if self.terminar and not self.preguntas:
+            raise ValueError('Para terminar el guion agrega al menos una pregunta: tuya o de las sugerencias de Lumi')
         return self
 
 

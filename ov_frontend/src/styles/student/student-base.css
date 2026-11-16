@@ -2005,6 +2005,14 @@ body:has([data-student-experience] .sx-shell) {
   position: absolute;
   top: -56px;
   left: 32px;
+  /* Un nombre largo («Guardián del pergamino») no pasa del ancho del avatar: va en dos líneas y no invade el texto. */
+  width: 112px;
+}
+.sx-root .sx-dialogue-avatar .sx-character-name {
+  max-width: 100%;
+  text-align: center;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 .sx-root .sx-dialogue-copy {
   padding-left: 144px;
@@ -2453,6 +2461,7 @@ body:has([data-student-experience] .sx-shell) {
   .sx-root .sx-dialogue-avatar {
     top: -36px;
     left: 16px;
+    width: 72px;
   }
   .sx-root .sx-dialogue-avatar .sx-character-circle {
     width: 72px;

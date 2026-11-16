@@ -10,7 +10,7 @@ from app.core.parametros import FAVORITOS_LEYENDA
 from app.exceptions import ErrorAccion
 from app.models import (
     Cuenta, Entrevista, EntrevistaAutor, EstadoEntrevista, EstadoInvestigacion, EstadoReporte, EstadoSugerenciaGuion,
-    FamiliaCarrera, Investigacion, OrigenPreguntaGuion, PreguntaGuion, Reaccion, Reporte, Rol, Salon, SugerenciaGuion,
+    FamiliaCarrera, Investigacion, PreguntaGuion, Reaccion, Reporte, Rol, Salon, SugerenciaGuion,
     TipoEventoUso, TipoNotificacion, TipoReaccion,
 )
 from app.models.base import sin_tildes
@@ -70,8 +70,8 @@ def guardar_lo_que_pienso(sesion: Session, entrada: GuardarLoQuePiensoEntrada) -
 @usar_contexto
 def guardar_guion(sesion: Session, entrada: GuardarGuionEntrada) -> RespuestaAccion:
     """Reemplaza las preguntas del guion. Las sugeridas citan una sugerencia pendiente (o ya agregada) de esta
-    investigación, que pasa a AGREGADA; las descartadas, una pendiente. `terminar` (al menos una pregunta propia o la
-    duda, validado en la entrada) deja la guía lista; la primera vez registra TERMINA_GUION."""
+    investigación, que pasa a AGREGADA; las descartadas, una pendiente. `terminar` (al menos una pregunta además de las
+    base, propia o sugerida, validado en la entrada) deja la guía lista; la primera vez registra TERMINA_GUION."""
     cuenta = cuenta_estudiante(sesion, entrada.cuenta)
     investigacion = exigir_investigacion_activa(sesion, cuenta)
     fecha = fecha_accion(entrada)
@@ -97,9 +97,8 @@ def guardar_guion(sesion: Session, entrada: GuardarGuionEntrada) -> RespuestaAcc
             investigacion.guia_lista_en = fecha
             eventos.append((TipoEventoUso.TERMINA_GUION, investigacion.familia_id))
         investigacion.estado = EstadoInvestigacion.GUIA_LISTA
-    elif investigacion.estado == EstadoInvestigacion.GUIA_LISTA and not any(
-            p.origen == OrigenPreguntaGuion.PROPIA for p in entrada.preguntas):
-        raise ErrorAccion('Tu guion necesita al menos una pregunta tuya', estado_http=422)
+    elif investigacion.estado == EstadoInvestigacion.GUIA_LISTA and not entrada.preguntas:
+        raise ErrorAccion('Tu guion necesita al menos una pregunta además de las base', estado_http=422)
     sesion.flush()
     return responder_con_eventos(sesion, cuenta, eventos, fecha)
 

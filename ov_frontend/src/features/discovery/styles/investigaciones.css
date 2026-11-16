@@ -389,6 +389,7 @@
 }
 .sx-i-panel {
   display: grid;
+  min-width: 0;
   gap: 14px;
   align-content: start;
   padding: 24px;
@@ -408,9 +409,15 @@
 }
 .sx-i-panel-cabecera {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
+  gap: 4px 12px;
+}
+/* En celular, un hijo de la rejilla o una fila flexible no debe ensanchar el panel más allá de la pantalla (el campo
+   de texto y el texto de una sugerencia tenían un ancho mínimo propio y empujaban el panel a la derecha). */
+.sx-i-panel > * {
+  min-width: 0;
 }
 .sx-i-panel-cabecera h3 {
   font-size: 18px;
@@ -759,6 +766,7 @@
 }
 .sx-i-sugerencia > span {
   flex: 1;
+  min-width: 0;
 }
 .sx-i-sugerencia .sx-i-boton {
   min-height: 34px;
@@ -775,6 +783,7 @@
 }
 .sx-i-agregar input {
   flex: 1;
+  min-width: 0;
 }
 .sx-i-aviso {
   padding: 10px 14px;
@@ -1152,4 +1161,18 @@
 }
 .sx-i-resumen {
   white-space: pre-line;
+}
+/* En celular, el conteo va bajo el título y la sugerencia deja el texto a todo el ancho, con sus botones debajo. */
+@media (max-width: 600px) {
+  .sx-i-panel-cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sx-i-sugerencia {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .sx-i-sugerencia > span {
+    flex-basis: 100%;
+  }
 }

@@ -20,7 +20,7 @@ export function ClueList({
       <DialogTrigger asChild>
         <button className="ff-secondary">{label}</button>
       </DialogTrigger>
-      <DialogContent className="ff-modal ff-responsive-modal">
+      <DialogContent className="ff-modal ff-responsive-modal max-lg:translate-x-0 max-lg:translate-y-0">
         <DialogTitle>Lo que dijo la comunidad</DialogTitle>
         <DialogDescription>
           Las {phase.messages.length} pistas de la {phase.name.toLowerCase()}.

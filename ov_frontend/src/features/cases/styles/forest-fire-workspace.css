@@ -877,6 +877,8 @@
     left: 0;
     right: 0;
     transform: none;
+    /* Al compilar, el minificador fusiona esto con `transform` y pierde el `translate`; el componente lo repone con
+       `max-lg:translate-x-0 max-lg:translate-y-0`. */
     translate: none;
     width: 100%;
     max-width: none;

@@ -28,7 +28,7 @@ function FilaPregunta({ fila, indice, p }: { fila: Fila; indice: number; p: Mode
 }
 
 // F09 (boceto 10 · HU-059): las preguntas base (fijas), las sugerencias de Lumi y las tuyas, numeradas seguido. Sin
-// tope; mínimo, las base y una propia (ajuste llm-sugerencias: la duda ya no entra como pregunta).
+// tope; mínimo, las base y una más, propia o sugerida (la duda ya no entra como pregunta).
 export function PasoMisPreguntas({
   p,
   familia,

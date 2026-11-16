@@ -48,6 +48,15 @@ def test_iniciar_editar_y_una_sola_en_curso(cliente):
     pensar(cliente, familia='no-existe', esperado=404)
 
 
+def test_basta_una_sugerida_para_terminar_el_guion(cliente):
+    """Pedido del usuario: para terminar basta una pregunta además de las base, aunque venga de las sugerencias."""
+    abrir_investigaciones(cliente)
+    pensar(cliente)
+    lista = guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'}])
+    assert [e['tipo'] for e in lista['eventos_registrados']] == ['TERMINA_GUION']
+    assert investigaciones(cliente)['en_curso']['estado'] == 'GUIA_LISTA'
+
+
 def test_guion_minimo_y_guia_lista(cliente, sesion):
     abrir_investigaciones(cliente)
     guion(cliente, esperado=409)
@@ -55,8 +64,6 @@ def test_guion_minimo_y_guia_lista(cliente, sesion):
     guion(cliente, preguntas=[], esperado=422)
     guion(cliente, preguntas=[{'origen': 'PROPIA', 'texto': '¿Qué te gusta de tu trabajo?'}], terminar=False)
     assert investigaciones(cliente)['en_curso']['estado'] == 'EN_CURSO'
-    # Ajuste llm-sugerencias: una sugerida aceptada no basta para terminar; hace falta una propia.
-    guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'}], esperado=422)
     guion(cliente, preguntas=[{'origen': 'DUDA', 'texto': PIENSO['duda']}], esperado=422)
     lista = guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'},
                                       {'origen': 'PROPIA', 'texto': '¿Qué te gusta de tu trabajo?'}])
@@ -64,11 +71,11 @@ def test_guion_minimo_y_guia_lista(cliente, sesion):
     en_curso = investigaciones(cliente)['en_curso']
     assert en_curso['estado'] == 'GUIA_LISTA' and en_curso['guia_lista_en'] is not None
     assert [p['origen'] for p in en_curso['preguntas']] == ['SUGERIDA', 'PROPIA']
-    # Editar el guion ya listo no repite el evento; quitar todas las propias no se permite.
+    # Editar el guion ya listo no repite el evento; dejarlo sin preguntas además de las base no se permite, pero basta
+    # una sugerida (pedido del usuario: no hace falta una propia).
     assert guion(cliente, preguntas=[{'origen': 'PROPIA', 'texto': '¿Cómo empezaste?'}])['eventos_registrados'] == []
     guion(cliente, preguntas=[], terminar=False, esperado=422)
-    guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'}], terminar=False,
-          esperado=422)
+    guion(cliente, preguntas=[{'origen': 'SUGERIDA', 'texto': '¿Cómo son tus horarios?'}], terminar=False)
     # Editar lo que pienso con la guía lista la mantiene lista.
     pensar(cliente, duda='¿Cuánto se gana al empezar en este oficio?')
     assert investigaciones(cliente)['en_curso']['estado'] == 'GUIA_LISTA'

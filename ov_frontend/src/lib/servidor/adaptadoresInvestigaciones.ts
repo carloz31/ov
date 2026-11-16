@@ -31,7 +31,8 @@ export function numerarGuion(base: PreguntaBasePublica[], preguntas: PreguntaGui
   }
 }
 // Mínimo para terminar: las base y una propia del estudiante (una sugerida no basta; ajuste llm-sugerencias).
-export const puedeTerminarGuion = (preguntas: PreguntaGuionPublica[]) => preguntas.some((p) => p.origen === 'PROPIA')
+// Basta una pregunta además de las base: escrita por el estudiante o tomada de las sugerencias de Lumi.
+export const puedeTerminarGuion = (preguntas: PreguntaGuionPublica[]) => preguntas.length > 0
 export const avisoMuchasPreguntas = (total: number) => total > AVISO_PREGUNTAS
 
 // Leyenda = destacada + N favoritos. El medidor promedia las dos condiciones (los favoritos hasta N).

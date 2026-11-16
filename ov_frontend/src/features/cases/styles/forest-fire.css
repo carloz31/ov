@@ -489,6 +489,8 @@
     left: auto;
     top: auto;
     transform: none;
+    /* Al compilar, el minificador fusiona esto con `transform` y pierde el `translate`; el componente lo repone con
+       `max-lg:translate-x-0 max-lg:translate-y-0`. */
     translate: none;
   }
 }

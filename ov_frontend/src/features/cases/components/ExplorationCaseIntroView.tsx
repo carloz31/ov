@@ -127,7 +127,7 @@ function ExplorationCaseIntroView({
         <section
           aria-label={phase === 'briefing' ? fullNarrative : `Fase 1: ${caso.intro.alerta}`}
           className={cn(
-            'absolute left-1/2 top-1/2 z-10 w-[calc(100%_-_2.5rem)] max-w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-[24px] border border-white/25 bg-[#191725]/82 p-5 text-center text-white shadow-[0_24px_70px_rgb(0_0_0/35%)] backdrop-blur-xl transition-opacity duration-700 md:w-[calc(100%_-_8rem)] md:p-8',
+            'absolute left-1/2 top-1/2 z-10 w-[calc(100%_-_2.5rem)] max-w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-[24px] border border-white/25 bg-[#191725]/82 p-5 text-center text-white shadow-[0_24px_70px_rgb(0_0_0/35%)] backdrop-blur-xl transition-opacity duration-700 md:w-[calc(100%_-_8rem)] md:p-8 max-lg:translate-x-0 max-lg:translate-y-0',
             panelVisible ? 'opacity-100' : 'opacity-0',
           )}
         >
