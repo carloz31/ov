@@ -43,7 +43,6 @@ function orientadora(fixture = fixtureApoderado) {
   })
   return app
 }
-const modelo = (estudiante, extra = {}) => ({ estudiante, irADestino() {}, ...extra })
 
 test('las palabras del perfil salen de lo que llega: ingreso, tramo, zonas agrupadas y ecos', async () => {
   const a = await importarAislado('src/lib/servidor/adaptadoresPanelEstudiante.ts')

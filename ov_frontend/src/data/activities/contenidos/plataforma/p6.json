@@ -29,7 +29,7 @@
         },
         {
           "tipo": "parrafo",
-          "texto": "Usted va a ser Julio. Su hija Andrea tiene diecisiete años y está en quinto de secundaria. Es de noche, están terminando de cenar y ella le dice: «Papá, creo que quiero estudiar Turismo»."
+          "texto": "Usted va a ser Julio. Su hija Andrea tiene diecisiete años y está en quinto de secundaria. Es de noche, están terminando de cenar y ella le dice: “Papá, creo que quiero estudiar Turismo”."
         }
       ]
     },
@@ -42,49 +42,49 @@
       "opciones": [
         {
           "id": "p6-02a",
-          "texto": "«¿Turismo? ¿Y eso en qué vas a trabajar?»",
+          "texto": "“¿Turismo? ¿Y eso en qué vas a trabajar?”",
           "reaccion": [
             {
               "id": "p6-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «No sé… en hoteles, supongo», y vuelve a mirar su celular. La pregunta es válida, pero llegó como un examen: ella sintió que tenía que defender algo que recién está pensando."
+              "texto": "Andrea responde: “No sé… en hoteles, supongo”, y vuelve a mirar su celular. La pregunta es válida, pero llegó como un examen: ella sintió que tenía que defender algo que recién está pensando."
             }
           ]
         },
         {
           "id": "p6-02b",
-          "texto": "«¿Estás segura? El mes pasado querías Derecho.»",
+          "texto": "“¿Estás segura? El mes pasado querías Derecho.”",
           "reaccion": [
             {
               "id": "p6-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Ya, olvídalo». Usted recordó bien, y cambiar de idea a esta edad es lo esperable. Pero ella escuchó que no la toman en serio."
+              "texto": "Andrea responde: “Ya, olvídalo”. Usted recordó bien, y cambiar de idea a esta edad es lo esperable. Pero ella escuchó que no la toman en serio."
             }
           ]
         },
         {
           "id": "p6-02c",
-          "texto": "«¿Qué te llamó la atención de Turismo?»",
+          "texto": "“¿Qué te llamó la atención de Turismo?”",
           "reaccion": [
             {
               "id": "p6-02cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Fue en el viaje de promoción. Me gustó cómo la guía tenía todo organizado y cómo la gente la escuchaba». Con una sola pregunta, usted ya sabe algo que no sabía."
+              "texto": "Andrea responde: “Fue en el viaje de promoción. Me gustó cómo la guía tenía todo organizado y cómo la gente la escuchaba”. Con una sola pregunta, usted ya sabe algo que no sabía."
             }
           ]
         },
         {
           "id": "p6-02d",
-          "texto": "«Qué bien, hija. Lo que tú quieras está bien.»",
+          "texto": "“Qué bien, hija. Lo que tú quieras está bien.”",
           "reaccion": [
             {
               "id": "p6-02dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Ya», y la conversación termina ahí. La frase es cariñosa y le da su apoyo, pero no le pregunta nada: ella se queda sin contar por qué."
+              "texto": "Andrea responde: “Ya”, y la conversación termina ahí. La frase es cariñosa y le da su apoyo, pero no le pregunta nada: ella se queda sin contar por qué."
             }
           ]
         }
@@ -141,43 +141,43 @@
       "opciones": [
         {
           "id": "p6-04a",
-          "texto": "«¿Y cuánto gana una guía de turismo?»",
+          "texto": "“¿Y cuánto gana una guía de turismo?”",
           "reaccion": [
             {
               "id": "p6-04ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «No sé». Es un dato que hay que mirar, y ya va a llegar ese momento. Hecha ahora, la pregunta corta lo que ella estaba contando."
+              "texto": "Andrea responde: “No sé”. Es un dato que hay que mirar, y ya va a llegar ese momento. Hecha ahora, la pregunta corta lo que ella estaba contando."
             }
           ]
         },
         {
           "id": "p6-04b",
-          "texto": "«O sea que te gustó cómo organizaba todo. ¿Qué más hacía?»",
+          "texto": "“O sea que te gustó cómo organizaba todo. ¿Qué más hacía?”",
           "reaccion": [
             {
               "id": "p6-04br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Sí. Y resolvía todo: se malogró el bus y en diez minutos ya había otro. Yo quiero hacer eso». Usted le devolvió lo que entendió y pidió un ejemplo. Ahora sabe que le atrae organizar y resolver, que es más que «Turismo»."
+              "texto": "Andrea responde: “Sí. Y resolvía todo: se malogró el bus y en diez minutos ya había otro. Yo quiero hacer eso”. Usted le devolvió lo que entendió y pidió un ejemplo. Ahora sabe que le atrae organizar y resolver, que es más que «Turismo»."
             }
           ]
         },
         {
           "id": "p6-04c",
-          "texto": "«Entonces tienes que averiguar dónde se estudia.»",
+          "texto": "“Entonces tienes que averiguar dónde se estudia.”",
           "reaccion": [
             {
               "id": "p6-04cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Sí, ya veré». Es un buen paso, y sirve para cerrar la conversación. Dicho tan pronto, la convierte en una tarea antes de que ella termine de contar."
+              "texto": "Andrea responde: “Sí, ya veré”. Es un buen paso, y sirve para cerrar la conversación. Dicho tan pronto, la convierte en una tarea antes de que ella termine de contar."
             }
           ]
         },
         {
           "id": "p6-04d",
-          "texto": "«A mí eso me suena más a un pasatiempo que a una carrera.»",
+          "texto": "“A mí eso me suena más a un pasatiempo que a una carrera.”",
           "reaccion": [
             {
               "id": "p6-04dr",
@@ -198,25 +198,25 @@
       "opciones": [
         {
           "id": "p6-05a",
-          "texto": "«Turismo no da plata, hija.»",
+          "texto": "“Turismo no da plata, hija.”",
           "reaccion": [
             {
               "id": "p6-05ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Ya sabía que ibas a decir eso». La preocupación es legítima, pero llegó como un veredicto, y sin un dato detrás."
+              "texto": "Andrea responde: “Ya sabía que ibas a decir eso”. La preocupación es legítima, pero llegó como un veredicto, y sin un dato detrás."
             }
           ]
         },
         {
           "id": "p6-05b",
-          "texto": "«A mí me preocupa si hay trabajo estable. ¿Lo vemos juntos?»",
+          "texto": "“A mí me preocupa si hay trabajo estable. ¿Lo vemos juntos?”",
           "reaccion": [
             {
               "id": "p6-05br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Bueno. En la plataforma sale cuánto ganan». Usted dijo lo que piensa, como algo suyo, y la conversación sigue. Su opinión entró, y entró después de escuchar."
+              "texto": "Andrea responde: “Bueno. En la plataforma sale cuánto ganan”. Usted dijo lo que piensa, como algo suyo, y la conversación sigue. Su opinión entró, y entró después de escuchar."
             }
           ]
         },
@@ -234,13 +234,13 @@
         },
         {
           "id": "p6-05d",
-          "texto": "«¿Y por qué no Administración, que también sirve para eso?»",
+          "texto": "“¿Y por qué no Administración, que también sirve para eso?”",
           "reaccion": [
             {
               "id": "p6-05dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Andrea responde: «Es que no es lo mismo». La idea es sensata y vale la pena ponerla sobre la mesa. Dicha así, ella escucha «eso no»; dicha después de mirar los datos juntos, es una opción más."
+              "texto": "Andrea responde: “Es que no es lo mismo”. La idea es sensata y vale la pena ponerla sobre la mesa. Dicha así, ella escucha “eso no”; dicha después de mirar los datos juntos, es una opción más."
             }
           ]
         }
@@ -261,7 +261,7 @@
           "pasos": [
             {
               "titulo": "Pregunte algo que no sabe",
-              "texto": "«¿Qué te llamó la atención de eso?»"
+              "texto": "“¿Qué te llamó la atención de eso?”"
             },
             {
               "titulo": "Escuche hasta el final",
@@ -269,15 +269,15 @@
             },
             {
               "titulo": "Devuelva lo que entendió",
-              "texto": "«O sea que te gustó cómo organizaba todo». Si entendió mal, se lo va a decir."
+              "texto": "“O sea que te gustó cómo organizaba todo”. Si entendió mal, se lo va a decir."
             },
             {
               "titulo": "Pida un ejemplo",
-              "texto": "«¿Qué más hacía?», «¿cómo fue esa vez?»."
+              "texto": "“¿Qué más hacía?”, “¿cómo fue esa vez?”."
             },
             {
               "titulo": "Diga lo que usted piensa",
-              "texto": "Como algo suyo y con una propuesta: «a mí me preocupa… ¿lo vemos juntos?»."
+              "texto": "Como algo suyo y con una propuesta: “a mí me preocupa… ¿lo vemos juntos?”."
             }
           ]
         },
@@ -295,7 +295,7 @@
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
       "transicion": "No todas las conversaciones salen como la de Andrea.",
-      "enunciado": "Hay hijos que a todo responden «no sé». Usted pregunta «¿qué te gustaría estudiar?» y la respuesta es esa, una y otra vez. ¿Qué ayuda más?",
+      "enunciado": "Hay hijos que a todo responden “no sé”. Usted pregunta “¿qué te gustaría estudiar?” y la respuesta es esa, una y otra vez. ¿Qué ayuda más?",
       "opciones": [
         {
           "id": "a",
@@ -313,7 +313,7 @@
           "id": "c",
           "texto": "Preguntar por algo más pequeño y concreto, que sí pueda responder.",
           "correcta": true,
-          "retroalimentacion": "Sí. «¿Qué curso se te pasa más rápido?», «¿qué video viste entero esta semana?». De respuestas pequeñas se arma la grande."
+          "retroalimentacion": "Sí. “¿Qué curso se te pasa más rápido?”, “¿qué video viste entero esta semana?”. De respuestas pequeñas se arma la grande."
         },
         {
           "id": "d",

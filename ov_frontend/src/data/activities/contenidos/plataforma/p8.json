@@ -103,7 +103,7 @@
         {
           "tipo": "destacado",
           "variante": "dato",
-          "texto": "«Hijo: eres un buen chico y sé que vas a llegar lejos. Yo solo quiero lo mejor para ti. Estudia algo que te dé de comer, no como tu primo, que dejó la carrera a medias. Yo te voy a apoyar en todo.»"
+          "texto": "“Hijo: eres un buen chico y sé que vas a llegar lejos. Yo solo quiero lo mejor para ti. Estudia algo que te dé de comer, no como tu primo, que dejó la carrera a medias. Yo te voy a apoyar en todo.”"
         },
         {
           "tipo": "parrafo",
@@ -118,7 +118,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Rosa escribió: «Eres un buen chico y sé que vas a llegar lejos». ¿Qué le falta a esa frase para que Sebastián la sienta suya?",
+      "enunciado": "Rosa escribió: “Eres un buen chico y sé que vas a llegar lejos”. ¿Qué le falta a esa frase para que Sebastián la sienta suya?",
       "opciones": [
         {
           "id": "a",
@@ -130,7 +130,7 @@
           "id": "b",
           "texto": "Más fuerza: decirle que es el mejor de toda la familia.",
           "correcta": false,
-          "retroalimentacion": "La intención es que se sienta querido. Pero «el mejor de la familia» lo compara con otros y le deja una vara que cuidar."
+          "retroalimentacion": "La intención es que se sienta querido. Pero “el mejor de la familia” lo compara con otros y le deja una vara que cuidar."
         },
         {
           "id": "c",
@@ -145,7 +145,7 @@
           "retroalimentacion": "Lo saben, y es cierto que sale del cariño. Pero una frase que serviría para cualquier hijo se lee rápido y se olvida."
         }
       ],
-      "explicacion": "«Eres un buen chico» se le puede decir a cualquiera. «Cuando tu abuela estuvo enferma, tú le cocinabas sin que nadie te lo pidiera» solo se lo puede decir Rosa a Sebastián. Una cualidad con su ejemplo es lo que se queda.",
+      "explicacion": "“Eres un buen chico” se le puede decir a cualquiera. “Cuando tu abuela estuvo enferma, tú le cocinabas sin que nadie te lo pidiera” solo se lo puede decir Rosa a Sebastián. Una cualidad con su ejemplo es lo que se queda.",
       "pistas": [
         {
           "id": "p8-04p1",
@@ -166,19 +166,19 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«Estudia algo que te dé de comer, no como tu primo.»",
+          "texto": "“Estudia algo que te dé de comer, no como tu primo.”",
           "correcta": false,
           "retroalimentacion": "Es lo que escribió. La preocupación es válida; dicha así, llega como una orden y con una comparación."
         },
         {
           "id": "b",
-          "texto": "«Te voy a apoyar siempre que elijas algo con trabajo.»",
+          "texto": "“Te voy a apoyar siempre que elijas algo con trabajo.”",
           "correcta": false,
           "retroalimentacion": "Dice lo que le preocupa, pero lo vuelve condición: Sebastián lee que el apoyo depende de lo que elija."
         },
         {
           "id": "c",
-          "texto": "«A veces me da miedo que no te alcance. Es miedo mío.»",
+          "texto": "“A veces me da miedo que no te alcance. Es miedo mío.”",
           "correcta": true,
           "retroalimentacion": "Sí. Dice lo que siente como suyo y no le pide nada. Lo que haya que ver sobre trabajo y sueldos queda para una conversación."
         },
@@ -218,7 +218,7 @@
             },
             {
               "titulo": "Algo que usted hará",
-              "texto": "En lugar de «te apoyo en todo», algo que se pueda cumplir: acompañarle a averiguar, sentarse a ver cuánto cuesta, presentarle a alguien que trabaje en lo que le interesa."
+              "texto": "En lugar de “te apoyo en todo”, algo que se pueda cumplir: acompañarle a averiguar, sentarse a ver cuánto cuesta, presentarle a alguien que trabaje en lo que le interesa."
             }
           ]
         },
@@ -251,11 +251,11 @@
           "tipo": "comparacion",
           "izquierda": {
             "titulo": "La primera",
-            "texto": "«Hijo: eres un buen chico y sé que vas a llegar lejos. Yo solo quiero lo mejor para ti. Estudia algo que te dé de comer, no como tu primo, que dejó la carrera a medias. Yo te voy a apoyar en todo.»"
+            "texto": "“Hijo: eres un buen chico y sé que vas a llegar lejos. Yo solo quiero lo mejor para ti. Estudia algo que te dé de comer, no como tu primo, que dejó la carrera a medias. Yo te voy a apoyar en todo.”"
           },
           "derecha": {
             "titulo": "La segunda",
-            "texto": "«Sebastián: cuando tu abuela estuvo enferma, tú le cocinabas sin que nadie te lo pidiera. Ahí vi cómo cuidas a la gente. A veces me da miedo que no te alcance para vivir. Es miedo mío, porque a mí me ha costado. El sábado te acompaño a averiguar donde tú quieras. Elijas lo que elijas, cuentas conmigo.»"
+            "texto": "“Sebastián: cuando tu abuela estuvo enferma, tú le cocinabas sin que nadie te lo pidiera. Ahí vi cómo cuidas a la gente. A veces me da miedo que no te alcance para vivir. Es miedo mío, porque a mí me ha costado. El sábado te acompaño a averiguar donde tú quieras. Elijas lo que elijas, cuentas conmigo.”"
           }
         },
         {

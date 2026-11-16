@@ -129,7 +129,7 @@
               "id": "p2-03br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Detrás suelen estar el dinero y el tiempo que la familia va a poner. Decirlo así, «me preocupa lo que nos va a costar», es más claro que «tienes que estar seguro»."
+              "texto": "Detrás suelen estar el dinero y el tiempo que la familia va a poner. Decirlo así, “me preocupa lo que nos va a costar”, es más claro que “tienes que estar seguro”."
             }
           ]
         },
@@ -141,7 +141,7 @@
               "id": "p2-03cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Puede pasar, y se nota preguntando «¿qué te atrae de eso?». Si la respuesta es corta, lo que toca es ayudarle a averiguar más antes de opinar."
+              "texto": "Puede pasar, y se nota preguntando “¿qué te atrae de eso?”. Si la respuesta es corta, lo que toca es ayudarle a averiguar más antes de opinar."
             }
           ]
         },
@@ -191,22 +191,22 @@
           "filas": [
             [
               "Lo que usted no pudo hacer",
-              "«Yo quería estudiar y no pude; él sí va a poder»",
+              "“Yo quería estudiar y no pude; él sí va a poder”",
               "Si el sueño es de su hijo o hija, o es el suyo"
             ],
             [
               "Lo que a usted le costó",
-              "«Que estudie algo que dé plata, que no pase lo que pasamos»",
+              "“Que estudie algo que dé plata, que no pase lo que pasamos”",
               "Si el temor se apoya en datos de hoy o en lo que vivió entonces"
             ],
             [
               "Lo que a usted le funcionó",
-              "«A mí me fue bien con esto; a ti también te va a ir bien»",
+              "“A mí me fue bien con esto; a ti también te va a ir bien”",
               "Si lo que a usted le gusta también va con él o ella"
             ],
             [
               "Lo que se dice alrededor",
-              "«En esta familia todos son…», «eso no es carrera»",
+              "“En esta familia todos son…”, “eso no es carrera”",
               "Si es algo que usted averiguó o algo que escuchó"
             ]
           ]
@@ -231,7 +231,7 @@
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
       "transicion": "Ahora le presentamos a tres padres, cada uno con una frase. El primero.",
-      "enunciado": "Jorge maneja un taxi desde los diecinueve. Dice: «Yo quería ser ingeniero y tuve que ponerme a trabajar. Mi hija sí va a ser ingeniera, para eso me rompo el lomo». A ella le va bien en matemática y nunca ha dicho que no. ¿Qué convendría que Jorge se pregunte?",
+      "enunciado": "Jorge maneja un taxi desde los diecinueve. Dice: “Yo quería ser ingeniero y tuve que ponerme a trabajar. Mi hija sí va a ser ingeniera, para eso me rompo el lomo”. A ella le va bien en matemática y nunca ha dicho que no. ¿Qué convendría que Jorge se pregunte?",
       "opciones": [
         {
           "id": "a",
@@ -243,7 +243,7 @@
           "id": "b",
           "texto": "Si ingeniería es lo que ella quiere, o lo que él quiso y no pudo.",
           "correcta": true,
-          "retroalimentacion": "Esa es la pregunta. Puede que coincidan, y sería una buena noticia. Pero «nunca ha dicho que no» no es lo mismo que haber dicho que sí."
+          "retroalimentacion": "Esa es la pregunta. Puede que coincidan, y sería una buena noticia. Pero “nunca ha dicho que no” no es lo mismo que haber dicho que sí."
         },
         {
           "id": "c",
@@ -258,7 +258,7 @@
           "retroalimentacion": "Su esfuerzo merece reconocimiento, y ella seguramente lo sabe. Justamente por eso puede costarle decirle que quiere otra cosa."
         }
       ],
-      "explicacion": "Querer que un hijo llegue más lejos que uno es de lo más valioso que hay. Se vuelve un peso cuando el destino ya viene elegido. Jorge puede conservar la expectativa («quiero que estudies y que te vaya mejor que a mí») y soltar la carrera. Lo mismo puede hacer usted.",
+      "explicacion": "Querer que un hijo llegue más lejos que uno es de lo más valioso que hay. Se vuelve un peso cuando el destino ya viene elegido. Jorge puede conservar la expectativa (“quiero que estudies y que te vaya mejor que a mí”) y soltar la carrera. Lo mismo puede hacer usted.",
       "pistas": [
         {
           "id": "p2-05p1",
@@ -276,7 +276,7 @@
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
       "transicion": "La segunda es Carmen.",
-      "enunciado": "Carmen es enfermera hace veinticinco años y le ha ido bien. Dice: «Mi hijo debería estudiar algo de salud. Siempre hay trabajo y yo le puedo ayudar a entrar». Él dibuja todo el día y habla de animación. ¿De dónde viene la expectativa de Carmen?",
+      "enunciado": "Carmen es enfermera hace veinticinco años y le ha ido bien. Dice: “Mi hijo debería estudiar algo de salud. Siempre hay trabajo y yo le puedo ayudar a entrar”. Él dibuja todo el día y habla de animación. ¿De dónde viene la expectativa de Carmen?",
       "opciones": [
         {
           "id": "a",
@@ -331,16 +331,16 @@
           ],
           "filas": [
             [
-              "«Quiero que estudies y que te vaya mejor que a mí»",
-              "«Tienes que ser ingeniera»"
+              "“Quiero que estudies y que te vaya mejor que a mí”",
+              "“Tienes que ser ingeniera”"
             ],
             [
-              "«Espero que termines lo que empieces»",
-              "«En esta casa nadie deja una carrera»"
+              "“Espero que termines lo que empieces”",
+              "“En esta casa nadie deja una carrera”"
             ],
             [
-              "«Quiero que puedas vivir de tu trabajo»",
-              "«Eso no da plata, ni lo pienses»"
+              "“Quiero que puedas vivir de tu trabajo”",
+              "“Eso no da plata, ni lo pienses”"
             ]
           ]
         },
@@ -374,16 +374,16 @@
           ],
           "filas": [
             [
-              "«Esa carrera no sirve»",
-              "«Me preocupa que te cueste encontrar trabajo. ¿Vemos cómo les va a los que egresan?»"
+              "“Esa carrera no sirve”",
+              "“Me preocupa que te cueste encontrar trabajo. ¿Vemos cómo les va a los que egresan?”"
             ],
             [
-              "«No vas a poder con eso»",
-              "«Me da miedo que se te haga muy pesado. ¿Qué cursos lleva?»"
+              "“No vas a poder con eso”",
+              "“Me da miedo que se te haga muy pesado. ¿Qué cursos lleva?”"
             ],
             [
-              "«Eso está muy lejos, ni hablar»",
-              "«Me cuesta pensar que te vayas. Cuéntame por qué allá»"
+              "“Eso está muy lejos, ni hablar”",
+              "“Me cuesta pensar que te vayas. Cuéntame por qué allá”"
             ]
           ]
         },
@@ -409,25 +409,25 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«El diseño es bonito como pasatiempo. Estudia algo que te dé de comer y dibuja los domingos.»",
+          "texto": "“El diseño es bonito como pasatiempo. Estudia algo que te dé de comer y dibuja los domingos.”",
           "correcta": false,
           "retroalimentacion": "Es un veredicto con buena intención: ya decidió que de eso no se vive."
         },
         {
           "id": "b",
-          "texto": "«Yo no te voy a decir nada, hija. Solo acuérdate de cómo le fue a tu tío con el arte.»",
+          "texto": "“Yo no te voy a decir nada, hija. Solo acuérdate de cómo le fue a tu tío con el arte.”",
           "correcta": false,
           "retroalimentacion": "Dice que no opina, pero el tío hace de veredicto. La hija recibe el temor sin poder conversarlo."
         },
         {
           "id": "c",
-          "texto": "«Me da miedo que te pase lo que a tu tío. ¿Vemos de qué trabaja hoy alguien que estudió eso?»",
+          "texto": "“Me da miedo que te pase lo que a tu tío. ¿Vemos de qué trabaja hoy alguien que estudió eso?”",
           "correcta": true,
           "retroalimentacion": "Sí. Nombra el temor como suyo, dice de dónde viene y propone contrastarlo con datos de hoy."
         },
         {
           "id": "d",
-          "texto": "«Si a ti te gusta, seguro te va a ir bien. No pienses en lo que le pasó a tu tío.»",
+          "texto": "“Si a ti te gusta, seguro te va a ir bien. No pienses en lo que le pasó a tu tío.”",
           "correcta": false,
           "retroalimentacion": "Suena a apoyo, pero esconde un temor que sigue ahí. La hija lo va a notar igual, sin que nadie lo haya dicho."
         }
@@ -471,7 +471,7 @@
             },
             {
               "titulo": "Elija una y dígala en casa",
-              "texto": "Como deseo o como preocupación suya, no como regla. Y pregunte: «¿tú cómo lo ves?»."
+              "texto": "Como deseo o como preocupación suya, no como regla. Y pregunte: “¿tú cómo lo ves?”."
             }
           ]
         },

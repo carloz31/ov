@@ -1,5 +1,8 @@
 import type { NodoPregunta } from '@/types/activities'
 
+// Una opción que es un dicho (“…”) se cita con sus comillas, que la pintan en cursiva; las demás, entre «».
+const citar = (texto: string) => (texto.startsWith('“') && texto.endsWith('”') ? texto : `«${texto}»`)
+
 export function evaluateStudentCheck(node: NodoPregunta, selected: string[], previousAttempts: number) {
   const correctIds = node.opciones.filter((o) => o.correcta).map((o) => o.id)
   const wrongIds = selected.filter((id) => !correctIds.includes(id))
@@ -11,7 +14,7 @@ export function evaluateStudentCheck(node: NodoPregunta, selected: string[], pre
       ? '¡Bien visto!'
       : multiple
         ? 'Estas eran las respuestas clave.'
-        : `La respuesta clave era «${node.opciones.find((o) => o.correcta)?.texto}».`
+        : `La respuesta clave era ${citar(node.opciones.find((o) => o.correcta)?.texto ?? '')}.`
     : multiple && selected.some((id) => correctIds.includes(id))
       ? wrongIds.length
         ? 'Vas por buen camino. Algunas frases no corresponden.'

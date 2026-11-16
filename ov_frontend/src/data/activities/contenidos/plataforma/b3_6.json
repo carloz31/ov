@@ -89,14 +89,14 @@
         {
           "tipo": "lista",
           "items": [
-            "«Acreditación internacional.»",
-            "«Licenciamiento en proceso.»",
-            "«Ingreso directo, sin examen.»",
-            "«Bolsa de trabajo garantizada.»",
-            "«Pensión desde S/ 450.»",
-            "«¡Quedan tres vacantes!»",
-            "«Clases de lunes a viernes.»",
-            "«Prospecto y calendario en nuestra web.»"
+            "“Acreditación internacional.”",
+            "“Licenciamiento en proceso.”",
+            "“Ingreso directo, sin examen.”",
+            "“Bolsa de trabajo garantizada.”",
+            "“Pensión desde S/ 450.”",
+            "“¡Quedan tres vacantes!”",
+            "“Clases de lunes a viernes.”",
+            "“Prospecto y calendario en nuestra web.”"
           ]
         }
       ]
@@ -131,7 +131,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "El folleto dice «licenciamiento en proceso» y «acreditación internacional». ¿Qué te dice eso?",
+      "enunciado": "El folleto dice “licenciamiento en proceso” y “acreditación internacional”. ¿Qué te dice eso?",
       "opciones": [
         {
           "id": "a",
@@ -173,37 +173,37 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«Bolsa de trabajo garantizada.»",
+          "texto": "“Bolsa de trabajo garantizada.”",
           "correcta": true,
           "retroalimentacion": "Promete empleo sin nombrar una sola empresa."
         },
         {
           "id": "b",
-          "texto": "«Clases de lunes a viernes.»",
+          "texto": "“Clases de lunes a viernes.”",
           "correcta": false,
           "retroalimentacion": "Es un dato, y se puede comprobar."
         },
         {
           "id": "c",
-          "texto": "«Ingreso directo, sin examen.»",
+          "texto": "“Ingreso directo, sin examen.”",
           "correcta": true,
           "retroalimentacion": "No dice con qué evaluación se ingresa."
         },
         {
           "id": "d",
-          "texto": "«Pensión desde S/ 450.»",
+          "texto": "“Pensión desde S/ 450.”",
           "correcta": true,
           "retroalimentacion": "«Desde» esconde el total: la matrícula, otros pagos y las pensiones más altas."
         },
         {
           "id": "e",
-          "texto": "«Prospecto y calendario en nuestra web.»",
+          "texto": "“Prospecto y calendario en nuestra web.”",
           "correcta": false,
           "retroalimentacion": "Eso es justo lo que hay que pedir. Falta entrar y ver si es cierto."
         },
         {
           "id": "f",
-          "texto": "«¡Quedan tres vacantes!»",
+          "texto": "“¡Quedan tres vacantes!”",
           "correcta": true,
           "retroalimentacion": "Apuro para que firmes sin comprobar nada."
         }

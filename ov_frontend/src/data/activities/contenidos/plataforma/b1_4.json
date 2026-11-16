@@ -35,7 +35,7 @@
       "id": "b1-4-03",
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "texto": "…Ay, disculpen. Soy Aurelio, pregonero de la caravana. Llevo años repitiendo lo que escucho en los mercados de la isla. Pero ayer una chica me preguntó «¿y eso quién lo comprobó?»… y no supe qué decirle."
+      "texto": "…Ay, disculpen. Soy Aurelio, pregonero de la caravana. Llevo años repitiendo lo que escucho en los mercados de la isla. Pero ayer una chica me preguntó “¿y eso quién lo comprobó?”… y no supe qué decirle."
     },
     {
       "id": "b1-4-04",
@@ -80,7 +80,7 @@
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "texto": "Empiezo por uno que me enseñó un comerciante: «Mi primo estudió Turismo en 2006 y nunca encontró trabajo, así que Turismo no tiene futuro»."
+      "texto": "Empiezo por uno que me enseñó un comerciante: “Mi primo estudió Turismo en 2006 y nunca encontró trabajo, así que Turismo no tiene futuro”."
     },
     {
       "id": "b1-4-07",
@@ -110,7 +110,7 @@
           "retroalimentacion": "No cambia nada: la frase habla de encontrar trabajo, y de hace veinte años."
         }
       ],
-      "explicacion": "Lo que le pasó al primo es verdad, pero es una sola experiencia y de otra época. Convertida en «Turismo no tiene futuro», ya es otra cosa.",
+      "explicacion": "Lo que le pasó al primo es verdad, pero es una sola experiencia y de otra época. Convertida en “Turismo no tiene futuro”, ya es otra cosa.",
       "pistas": [
         {
           "id": "b1-4-07p1",
@@ -165,7 +165,7 @@
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "texto": "Estos dos los grito juntos: «¡Tus padres saben qué te conviene estudiar!» y «¡El test te dirá qué estudiar!». La gente asiente siempre."
+      "texto": "Estos dos los grito juntos: “¡Tus padres saben qué te conviene estudiar!” y “¡El test te dirá qué estudiar!”. La gente asiente siempre."
     },
     {
       "id": "b1-4-11",
@@ -174,7 +174,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Del primero, «Tus padres saben qué te conviene estudiar», ¿qué parte sí se sostiene?",
+      "enunciado": "Del primero, “Tus padres saben qué te conviene estudiar”, ¿qué parte sí se sostiene?",
       "opciones": [
         {
           "id": "a",
@@ -221,12 +221,12 @@
           ],
           "filas": [
             [
-              "«Mis padres saben qué me conviene estudiar»",
+              "“Mis padres saben qué me conviene estudiar”",
               "Tu familia te conoce, y su experiencia de trabajo vale",
               "Lo que saben de carreras y sueldos suele ser de cuando ellos eligieron. Les toca acompañar, informar y respetar; la decisión es tuya"
             ],
             [
-              "«El test me dirá qué estudiar»",
+              "“El test me dirá qué estudiar”",
               "Un buen test ordena lo que ya sabes de ti y te muestra áreas que no habías mirado",
               "Sale de tus respuestas de hoy y no conoce tu contexto. Sugiere áreas para explorar: no decide ni descarta nada"
             ]
@@ -244,7 +244,7 @@
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "texto": "Ahora sí, el cuaderno. Aquí anotan cuánto gana cada quien. A ver qué dice de «¡El que no va a la universidad no llega a nada!»."
+      "texto": "Ahora sí, el cuaderno. Aquí anotan cuánto gana cada quien. A ver qué dice de “¡El que no va a la universidad no llega a nada!”."
     },
     {
       "id": "b1-4-14",
@@ -305,7 +305,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Con el cuaderno delante, ¿qué pasa con «Solo la universidad da futuro»?",
+      "enunciado": "Con el cuaderno delante, ¿qué pasa con “Solo la universidad da futuro”?",
       "opciones": [
         {
           "id": "a",
@@ -343,23 +343,23 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un comerciante de la caravana dice: «Mi hijo quería ser diseñador, pero lo mandé a Administración. Ahí está, aburrido pero seguro». ¿Qué pregón hay detrás?",
+      "enunciado": "Un comerciante de la caravana dice: “Mi hijo quería ser diseñador, pero lo mandé a Administración. Ahí está, aburrido pero seguro”. ¿Qué pregón hay detrás?",
       "opciones": [
         {
           "id": "a",
-          "texto": "«Solo la universidad da futuro.»",
+          "texto": "“Solo la universidad da futuro.”",
           "correcta": false,
           "retroalimentacion": "Las dos carreras que nombra se estudian en la universidad. El pregón es otro."
         },
         {
           "id": "b",
-          "texto": "«Lo que te gusta no da de comer.»",
+          "texto": "“Lo que te gusta no da de comer.”",
           "correcta": true,
           "retroalimentacion": "Ese. Y fíjate en la palabra «aburrido»: elegir sin interés también tiene un costo."
         },
         {
           "id": "c",
-          "texto": "«La carrera decide toda tu vida.»",
+          "texto": "“La carrera decide toda tu vida.”",
           "correcta": false,
           "retroalimentacion": "Puede que el padre lo piense, pero no es lo que dice: él opone gusto y seguridad."
         }
@@ -379,12 +379,12 @@
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "texto": "Yo iba a ser herrero, como mi padre. Y mírenme, con una campana. Igual pregono que «la carrera decide toda tu vida»."
+      "texto": "Yo iba a ser herrero, como mi padre. Y mírenme, con una campana. Igual pregono que “la carrera decide toda tu vida”."
     },
     {
       "id": "b1-4-18",
       "tipo": "eleccion",
-      "enunciado": "Aurelio te pregunta: «¿Conoces a alguien que trabaje en algo distinto de lo que estudió?»",
+      "enunciado": "Aurelio te pregunta: “¿Conoces a alguien que trabaje en algo distinto de lo que estudió?”",
       "registrar": false,
       "nota": "No se guarda.",
       "opciones": [
@@ -442,7 +442,7 @@
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "aurelio",
-      "texto": "Me queda el pregón que más grito y que más gente aplaude: «hay trabajos de hombres y trabajos de mujeres». Ese sí es verdad, ¿no? Basta mirar quién hace qué."
+      "texto": "Me queda el pregón que más grito y que más gente aplaude: “hay trabajos de hombres y trabajos de mujeres”. Ese sí es verdad, ¿no? Basta mirar quién hace qué."
     },
     {
       "id": "b1-4-21",
@@ -536,7 +536,7 @@
           "id": "b",
           "texto": "Lo técnico siempre paga más que lo universitario.",
           "correcta": false,
-          "retroalimentacion": "Mito, y de los nuevos: es «solo la universidad da futuro» dado vuelta. Depende de la carrera."
+          "retroalimentacion": "Mito, y de los nuevos: es “solo la universidad da futuro” dado vuelta. Depende de la carrera."
         },
         {
           "id": "c",

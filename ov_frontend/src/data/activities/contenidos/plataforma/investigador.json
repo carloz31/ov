@@ -36,7 +36,7 @@
       "id": "investigador-03",
       "tipo": "dialogo",
       "hablanteId": "investigador",
-      "texto": "Pedí apoyo para el centro y me dijeron: «muéstranos una entrevista y vemos». No tengo ninguna. Sé cómo se hacen; lo que no tengo es a quién preguntarle. Tú conoces gente de fuera de la isla."
+      "texto": "Pedí apoyo para el centro y me dijeron: “muéstranos una entrevista y vemos”. No tengo ninguna. Sé cómo se hacen; lo que no tengo es a quién preguntarle. Tú conoces gente de fuera de la isla."
     },
     {
       "id": "investigador-04",
@@ -178,19 +178,19 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«Necesito ayuda con una tarea. ¿Puede atenderme hoy?»",
+          "texto": "“Necesito ayuda con una tarea. ¿Puede atenderme hoy?”",
           "correcta": false,
           "retroalimentacion": "No dice qué pides ni cuánto tiempo, y lo apura."
         },
         {
           "id": "b",
-          "texto": "«¿Me podría conseguir prácticas en donde usted trabaja?»",
+          "texto": "“¿Me podría conseguir prácticas en donde usted trabaja?”",
           "correcta": false,
           "retroalimentacion": "Eso es pedir un puesto. Una entrevista pide información."
         },
         {
           "id": "c",
-          "texto": "«Quiero conocer su trabajo. ¿Me daría quince minutos?»",
+          "texto": "“Quiero conocer su trabajo. ¿Me daría quince minutos?”",
           "correcta": true,
           "retroalimentacion": "Eso. Dice qué pides y cuánto tiempo. Es fácil decir que sí."
         }

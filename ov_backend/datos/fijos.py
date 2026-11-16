@@ -218,7 +218,7 @@ LISTAS_COMUNES = (
 RESPALDOS_PASOS = (
     ('PREGUNTAS_CONOCIMIENTO', 'DIA_NORMAL', 'conversar',
      'Preguntar en mi familia y entre conocidos si alguien estudió o trabaja en {carrera}, para preguntarle: '
-     '«¿Cómo es un día normal tuyo?»'),
+     '“¿Cómo es un día normal tuyo?”'),
     ('PREGUNTAS_CONOCIMIENTO', 'DONDE_TRABAJAR', 'investigar',
      'Revisar en el catálogo de la plataforma la ficha de {carrera} y anotar las ocupaciones y lugares donde trabaja '
      'quien la estudia.'),
@@ -233,8 +233,8 @@ RESPALDOS_PASOS = (
      'Revisar en la página de admisión de {institucion} si publica cuántos postularon y cuántos ingresaron a '
      '{carrera}, y anotar los números.'),
     ('DUDAS_SUGERIDAS', 'CURSOS_DIFICILES', 'conversar',
-     'Conseguir, por mi familia o mi orientadora, a alguien que estudie {carrera} y preguntarle: «¿Qué curso te costó '
-     'más al empezar?»'),
+     'Conseguir, por mi familia o mi orientadora, a alguien que estudie {carrera} y preguntarle: “¿Qué curso te costó '
+     'más al empezar?”'),
     ('DUDAS_SUGERIDAS', 'SUELDO_INICIAL', 'investigar',
      'Revisar en el catálogo de la plataforma los ingresos de quienes recién terminan {carrera} y anotar el rango.'),
     ('DIFICULTADES', 'ECONOMICAS', 'conversar',
@@ -353,7 +353,7 @@ TEXTOS_INSTRUMENTOS = {
         'Muestra en qué formas de pensar y aprender se siente más cómodo hoy {nombre}, según cómo se ve. No es una '
         'medida de coeficiente intelectual ni de rendimiento escolar, y no conviene compararlo con las notas ni con '
         'hermanos o compañeros. Un puntaje bajo no es un defecto: todas se desarrollan con práctica. Sirve para '
-        'entender cómo estudia mejor y acompañarle en casa; evite usarlo como etiqueta («no es de números»).',
+        'entender cómo estudia mejor y acompañarle en casa; evite usarlo como etiqueta (“no es de números”).',
         'Autopercepción de preferencias de aprendizaje; sin valor diagnóstico.',
         'Autopercepción basada en las inteligencias múltiples de Gardner. Las destacadas indican formas de aprender '
         'preferidas, no aptitudes medidas. Útil para sugerir estrategias de estudio y para contrastar con el test '
@@ -633,13 +633,13 @@ HABILIDADES = DefinicionInstrumento(
     opciones=(('Casi nunca', 0), ('Casi siempre', 1)),
     dimensiones=(
         ('HS-ASE', 'Asertividad',
-         'Defiendes tus derechos y dices lo que piensas sin ofender: puedes decir «no», expresar una queja con calma '
+         'Defiendes tus derechos y dices lo que piensas sin ofender: puedes decir “no”, expresar una queja con calma '
          'y escuchar cuando toca.',
          'pides que te expliquen una nota que te parece injusta, dices que no a un plan sin inventar excusas, pones '
          'un límite cuando alguien se pasa contigo o escuchas una crítica sin ponerte a la defensiva.',
-         ('decir lo que piensas sin ofender', 'decir «no» cuando no estás de acuerdo',
+         ('decir lo que piensas sin ofender', 'decir “no” cuando no estás de acuerdo',
           'reclamar con calma cuando algo es injusto', 'hacerte respetar sin pasar sobre nadie'),
-         ('practica decir «no» en cosas pequeñas', 'habla en primera persona: «yo pienso», «a mí me molesta»',
+         ('practica decir “no” en cosas pequeñas', 'habla en primera persona: “yo pienso”, “a mí me molesta”',
           'antes de reclamar, respira y di solo el hecho y lo que pides')),
         ('HS-EMP', 'Empatía',
          'Te pones en el lugar del otro y comprendes lo que siente, tanto con la emoción como con la cabeza.',
@@ -647,11 +647,11 @@ HABILIDADES = DefinicionInstrumento(
          'aunque no estés de acuerdo, te afecta lo que les pasa a otros o te quedas a acompañar a quien lo necesita.',
          ('notar cuando alguien está triste o preocupado', 'comprender antes de juzgar',
           'inspirar confianza: la gente te cuenta sus cosas', 'ayudar sin que te lo pidan'),
-         ('pregunta «¿cómo te sientes?» y escucha sin interrumpir',
+         ('pregunta “¿cómo te sientes?” y escucha sin interrumpir',
           'intenta explicar la postura del otro con tus palabras', 'fíjate en lo no verbal: gestos, silencios')),
         ('HS-EXP', 'Expresión de sentimientos',
          'Reconoces lo que sientes, identificas de dónde viene y eliges el momento para decirlo a la persona indicada.',
-         'puedes decir «estoy molesto» sin estallar, sabes explicar qué te puso así, eliges el momento para hablar en '
+         'puedes decir “estoy molesto” sin estallar, sabes explicar qué te puso así, eliges el momento para hablar en '
          'vez de soltarlo en caliente o la gente sabe cómo estás sin tener que adivinarlo.',
          ('reconocer qué emoción sientes', 'identificar de dónde viene', 'elegir el momento y la persona para decirlo',
           'ser honesto con lo que sientes'),

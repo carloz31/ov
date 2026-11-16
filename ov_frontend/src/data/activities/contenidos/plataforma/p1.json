@@ -27,7 +27,7 @@
         },
         {
           "tipo": "parrafo",
-          "texto": "Elena vende abarrotes en el mercado desde hace veinte años. Su hijo Diego está en quinto de secundaria. Una noche, mientras ella cuadra la caja, él le dice casi de pasada: «Mamá, creo que quiero estudiar Psicología»."
+          "texto": "Elena vende abarrotes en el mercado desde hace veinte años. Su hijo Diego está en quinto de secundaria. Una noche, mientras ella cuadra la caja, él le dice casi de pasada: “Mamá, creo que quiero estudiar Psicología”."
         },
         {
           "tipo": "parrafo",
@@ -44,31 +44,31 @@
       "opciones": [
         {
           "id": "p1-02a",
-          "texto": "«¿Psicología? ¿Y de eso se puede vivir?»",
+          "texto": "“¿Psicología? ¿Y de eso se puede vivir?”",
           "reaccion": [
             {
               "id": "p1-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "La pregunta es válida, y en algún momento hay que hacerla. Como primera respuesta, lo que Diego suele escuchar es «a mi mamá no le gustó», y la próxima vez quizá lo piense dos veces antes de contarle. Guardarla para después de escucharlo cambia cómo le llega."
+              "texto": "La pregunta es válida, y en algún momento hay que hacerla. Como primera respuesta, lo que Diego suele escuchar es “a mi mamá no le gustó”, y la próxima vez quizá lo piense dos veces antes de contarle. Guardarla para después de escucharlo cambia cómo le llega."
             }
           ]
         },
         {
           "id": "p1-02b",
-          "texto": "«Tú verás, hijo. Es tu vida.»",
+          "texto": "“Tú verás, hijo. Es tu vida.”",
           "reaccion": [
             {
               "id": "p1-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Suena a respeto, y la intención lo es. Lo que Diego puede escuchar es «en esto estás solo». Él no vino a pedir permiso: vino a ver si podía hablarlo con su mamá."
+              "texto": "Suena a respeto, y la intención lo es. Lo que Diego puede escuchar es “en esto estás solo”. Él no vino a pedir permiso: vino a ver si podía hablarlo con su mamá."
             }
           ]
         },
         {
           "id": "p1-02c",
-          "texto": "«¿Y eso? Cuéntame qué te llamó la atención.»",
+          "texto": "“¿Y eso? Cuéntame qué te llamó la atención.”",
           "reaccion": [
             {
               "id": "p1-02cr",
@@ -86,7 +86,7 @@
               "id": "p1-02dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Es una reacción cuidadosa. Solo que Diego también lee el silencio, y suele leerlo como desaprobación. Decir «me tomaste por sorpresa, cuéntame más» es más claro que callar."
+              "texto": "Es una reacción cuidadosa. Solo que Diego también lee el silencio, y suele leerlo como desaprobación. Decir “me tomaste por sorpresa, cuéntame más” es más claro que callar."
             }
           ]
         }
@@ -114,7 +114,7 @@
               "Le cuesta más decidir por su cuenta"
             ],
             [
-              "Se hace a un lado «para que decida solo»",
+              "Se hace a un lado “para que decida solo”",
               "También le cuesta más decidir"
             ],
             [
@@ -156,7 +156,7 @@
             [
               "Conocerse",
               "Repasa su historia y responde cuestionarios sobre sus intereses, sus habilidades sociales y sus inteligencias",
-              "Preguntas sobre su niñez o sobre el trabajo de usted; comentarios del tipo «me salió que…»"
+              "Preguntas sobre su niñez o sobre el trabajo de usted; comentarios del tipo “me salió que…”"
             ],
             [
               "Explorar",
@@ -185,7 +185,7 @@
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
       "transicion": "Volvamos con Elena y Diego.",
-      "enunciado": "Unos días después, Diego le enseña a Elena el resultado de un cuestionario de intereses: lo que más le atrae son las actividades de ayudar a otros y las de investigar. Elena pregunta: «¿Y ahí dice qué carrera te toca?». ¿Qué conviene que Elena sepa de un resultado así?",
+      "enunciado": "Unos días después, Diego le enseña a Elena el resultado de un cuestionario de intereses: lo que más le atrae son las actividades de ayudar a otros y las de investigar. Elena pregunta: “¿Y ahí dice qué carrera te toca?”. ¿Qué conviene que Elena sepa de un resultado así?",
       "opciones": [
         {
           "id": "a",
@@ -212,7 +212,7 @@
           "retroalimentacion": "Las sugerencias sirven para empezar a mirar, no como lista cerrada. Una carrera que no aparece ahí no queda descartada."
         }
       ],
-      "explicacion": "Un resultado de intereses es un punto de partida para conversar, no un veredicto. La mejor pregunta de Elena no es «¿qué te toca?», sino «¿te reconoces en eso?». Cuando su hijo o hija le muestre un resultado, esa misma pregunta le va a servir a usted.",
+      "explicacion": "Un resultado de intereses es un punto de partida para conversar, no un veredicto. La mejor pregunta de Elena no es “¿qué te toca?”, sino “¿te reconoces en eso?”. Cuando su hijo o hija le muestre un resultado, esa misma pregunta le va a servir a usted.",
       "pistas": [
         {
           "id": "p1-05p1",
@@ -229,7 +229,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Esa noche Elena se queda pensando: «Yo no pasé por la universidad. ¿Qué le voy a decir yo de carreras?». ¿Qué es lo más valioso que puede aportar?",
+      "enunciado": "Esa noche Elena se queda pensando: “Yo no pasé por la universidad. ¿Qué le voy a decir yo de carreras?”. ¿Qué es lo más valioso que puede aportar?",
       "opciones": [
         {
           "id": "a",
@@ -285,7 +285,7 @@
             "Decirle que espera mucho de él o ella. Esperar algo bueno no es presionar; presionar es exigir una carrera en particular.",
             "Dejar que tome sus propias decisiones, también las pequeñas.",
             "Decirle que siente orgullo por él o ella, con un ejemplo concreto.",
-            "Ayudarle a entender los resultados de sus cuestionarios cuando se los muestre: preguntar «¿te reconoces en eso?»."
+            "Ayudarle a entender los resultados de sus cuestionarios cuando se los muestre: preguntar “¿te reconoces en eso?”."
           ]
         },
         {
@@ -293,7 +293,7 @@
           "titulo": "Tres aportes que no dependen de haber estudiado",
           "items": [
             "Contar su propia historia de trabajo: cómo empezó, qué cambió en el camino y qué habría querido saber a esa edad.",
-            "Abrir su red: «¿a quién conocemos que trabaje en eso?». Una conversación con alguien que ejerce vale más que muchas opiniones.",
+            "Abrir su red: “¿a quién conocemos que trabaje en eso?”. Una conversación con alguien que ejerce vale más que muchas opiniones.",
             "Decir con claridad qué puede aportar la familia en dinero y en tiempo, y mirar los costos juntos antes de descartar o de prometer."
           ]
         },
@@ -455,7 +455,7 @@
           "pasos": [
             {
               "titulo": "Una pregunta",
-              "texto": "Pregúntele «¿qué has estado pensando para después del colegio?» y escuche hasta el final antes de opinar."
+              "texto": "Pregúntele “¿qué has estado pensando para después del colegio?” y escuche hasta el final antes de opinar."
             },
             {
               "titulo": "Una historia",

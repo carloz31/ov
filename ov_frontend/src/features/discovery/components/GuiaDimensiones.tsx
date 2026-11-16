@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ArrowRight, X } from 'lucide-react'
 import { posicionDimension } from '../lib/resultadoIntereses'
 import type { DimensionPagina, ResumenResultado } from '../types'
+import { conDichos } from '@/components/common/ConDichos'
 
 // Ajuste resultados-intereses (api): la guía de dimensiones común a los tres tests. Cerrada es una fila con las
 // letras; abierta, una grilla de tarjetas con las cuatro piezas, sin pintar las vacías. Pulsar una letra del
@@ -42,11 +43,15 @@ function TarjetaDimension({
           </p>
         </div>
       </header>
-      <p className="sx-r-guia-que">{dimension.description}</p>
+      <p className="sx-r-guia-que">
+        {conDichos(dimension.description)}
+      </p>
       {dimension.ejemplos && (
         <section>
           <h4>Suele notarse cuando</h4>
-          <p>{dimension.ejemplos}</p>
+          <p>
+            {conDichos(dimension.ejemplos)}
+          </p>
         </section>
       )}
       {!!dimension.fortalezas?.length && (
@@ -54,7 +59,9 @@ function TarjetaDimension({
           <h4>Suele venir con</h4>
           <ul>
             {dimension.fortalezas.map((f) => (
-              <li key={f}>{f}</li>
+              <li key={f}>
+                {conDichos(f)}
+              </li>
             ))}
           </ul>
         </section>

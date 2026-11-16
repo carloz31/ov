@@ -203,7 +203,7 @@ def test_hu109_hu110_dudas_de_conocimiento_y_sugerencias_de_respaldo(cliente, re
     assert [(s['numero'], s['origen']['duda'], s['tipo'], s['texto'], s['generada_por']) for s in
             psicologia['sugerencias']] == [
         (1, 1, 'conversar', 'Preguntar en mi familia y entre conocidos si alguien estudió o trabaja en Psicología, '
-         'para preguntarle: «¿Cómo es un día normal tuyo?»', 'RESPALDO'),
+         'para preguntarle: “¿Cómo es un día normal tuyo?”', 'RESPALDO'),
         (2, 2, 'investigar', 'Revisar en la página de las instituciones que me interesan el plan de estudios de '
          'Psicología y anotar los cursos del primer año.', 'RESPALDO'),
         (3, 3, 'investigar', 'Revisar en la página de admisión de las instituciones que me interesan si publica '

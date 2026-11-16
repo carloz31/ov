@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import type { Actividad, IntentoPregunta, NodoPregunta } from '@/types/activities'
 
 import { PreviousButton } from '@/features/parent/components/PreviousButton'
+import { conDichos } from '@/components/common/ConDichos'
 type PracticeAttempt = Pick<IntentoPregunta, 'opcionIds' | 'correcta' | 'revelada' | 'numeroIntento'>
 export function ParentQuestion({
   activity,
@@ -81,7 +82,9 @@ export function ParentQuestion({
                   )
                 ) : null}
               </span>
-              <span className="parent-option-text">{option.texto}</span>
+              <span className="parent-option-text">
+                {conDichos(option.texto)}
+              </span>
               {correct ? (
                 <span className="parent-option-tag">
                   {chosen ? 'Su respuesta · Correcta' : 'Respuesta correcta'}
@@ -101,7 +104,7 @@ export function ParentQuestion({
             aria-atomic="true"
           >
             <h3 ref={feedbackTitle} tabIndex={-1}>
-              {feedback.title}
+              {conDichos(feedback.title)}
             </h3>
             {feedback.explanations.map((text, i) => (
               <p key={i}>{text}</p>
@@ -110,7 +113,9 @@ export function ParentQuestion({
           {feedback.canContinue && (
             <aside className="parent-remember">
               <h3>Para recordar</h3>
-              <p>{node.explicacion}</p>
+              <p>
+                {conDichos(node.explicacion)}
+              </p>
             </aside>
           )}
         </>

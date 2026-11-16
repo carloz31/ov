@@ -2,6 +2,7 @@ import { Check, LockKeyhole } from 'lucide-react'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { useChallengePlayer } from '@/features/activities/hooks/useChallengePlayer'
 import { ChipsFicha } from './ChipsFicha'
+import { conDichos } from '@/components/common/ConDichos'
 
 // Presentación del desafío antes de la batalla. En api, vidas y destellos vienen del servidor: mientras no
 // llegan, un estado de carga en lugar de las reglas y la acción; si la lectura falla, solo el aviso de error
@@ -24,7 +25,9 @@ export function IntroDesafio({ model }: { model: ReturnType<typeof useChallengeP
       <h1 ref={title} tabIndex={-1}>
         {c.titulo}
       </h1>
-      <p>{c.presentacionEnemigo}</p>
+      <p>
+        {conDichos(c.presentacionEnemigo)}
+      </p>
       {estadoBatalla === 'cargando' ? (
         <p className="sx-challenge-loading" role="status">
           Preparando la batalla…

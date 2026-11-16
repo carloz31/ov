@@ -5,6 +5,7 @@ import { AvatarItem } from './AvatarItem'
 import { LEYENDA_ITEM } from '../../lib/presentacionItem'
 import { BOTONES, TU_RESPUESTA, VER_COMPLETA } from '../../lib/textosRegistro'
 import '../../styles/registro-guiado.css'
+import { conDichos } from '@/components/common/ConDichos'
 
 export type EstadoLumi =
   | { tipo: 'esperando' }
@@ -73,7 +74,9 @@ export function PantallaLumi({
               </span>
             </div>
           ) : (
-            <p className="sx-item-globo">{estado.texto}</p>
+            <p className="sx-item-globo">
+              {conDichos(estado.texto)}
+            </p>
           )}
         </div>
       </div>

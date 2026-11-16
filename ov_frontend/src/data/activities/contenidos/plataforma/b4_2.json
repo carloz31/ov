@@ -25,7 +25,7 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "pensativo",
-      "texto": "Acércate al borde, pero no mucho. ¿Oyes? El viento devuelve frases: «Estudia lo que da plata». «Tus amigos van a estar ahí». Son cosas que cada viajero trajo de su casa. Aquí rebotan."
+      "texto": "Acércate al borde, pero no mucho. ¿Oyes? El viento devuelve frases: “Estudia lo que da plata”. “Tus amigos van a estar ahí”. Son cosas que cada viajero trajo de su casa. Aquí rebotan."
     },
     {
       "id": "b4-2-02",
@@ -76,19 +76,19 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«Yo siempre decido rápido, así soy.»",
+          "texto": "“Yo siempre decido rápido, así soy.”",
           "correcta": false,
           "retroalimentacion": "Dice cómo es, pero no cuenta ninguna vez."
         },
         {
           "id": "b",
-          "texto": "«Ese viaje me salió bastante mal al final.»",
+          "texto": "“Ese viaje me salió bastante mal al final.”",
           "correcta": false,
           "retroalimentacion": "Cuenta cómo le fue, no cómo decidió."
         },
         {
           "id": "c",
-          "texto": "«Compré el primer pasaje sin preguntar el destino.»",
+          "texto": "“Compré el primer pasaje sin preguntar el destino.”",
           "correcta": true,
           "retroalimentacion": "Eso: qué tenía que decidir y qué hizo."
         }

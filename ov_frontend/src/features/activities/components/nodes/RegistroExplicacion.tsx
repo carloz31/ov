@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { conDichos } from '@/components/common/ConDichos'
 
 // Bloque de texto de un ítem de registro (ajuste vista del ítem): numeral (solo con dos bloques), la pregunta
 // como `label` del campo, el campo con la entrada como placeholder y, si corresponde, la ayuda, un aviso y el
@@ -32,7 +33,7 @@ export function RegistroExplicacion({
   const cabeza = pregunta && (
     <span className="sx-item-pregunta">
       {numeral && <span className="sx-item-numeral">{numeral}</span>}
-      {pregunta}
+      {conDichos(pregunta)}
     </span>
   )
   return (

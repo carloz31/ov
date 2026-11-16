@@ -5,6 +5,7 @@ import { RewardCard } from '@/features/activities/components/RewardCard'
 import { CheckOption } from '@/features/activities/components/CheckOption'
 import { CierreBatalla } from './CierreBatalla'
 import { IntroDesafio } from './IntroDesafio'
+import { conDichos } from '@/components/common/ConDichos'
 export function ChallengeStage({
   model,
   onClose,
@@ -110,7 +111,7 @@ export function ChallengeStage({
             </div>
           </div>
           <h2 ref={!battle.selected ? title : undefined} tabIndex={-1}>
-            {question.enunciado}
+            {conDichos(question.enunciado)}
           </h2>
           <div className="sx-player-options">
             {question.opciones.map((o, i) => (
@@ -150,7 +151,9 @@ export function ChallengeStage({
                 <h3 ref={title} tabIndex={-1}>
                   {responseTitle}
                 </h3>
-                <p>{question.explicacion}</p>
+                <p>
+                  {conDichos(question.explicacion)}
+                </p>
               </div>
             </div>
           )}

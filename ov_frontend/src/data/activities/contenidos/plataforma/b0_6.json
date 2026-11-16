@@ -60,7 +60,7 @@
               "tipo": "dialogo",
               "hablanteId": "nico",
               "expresion": "dudoso",
-              "texto": "Es que todos dicen «ya deberías saber». Entonces siento que no puedo avanzar hasta tener la respuesta. Y mientras más lo pienso, más me cansa."
+              "texto": "Es que todos dicen “ya deberías saber”. Entonces siento que no puedo avanzar hasta tener la respuesta. Y mientras más lo pienso, más me cansa."
             }
           ]
         }
@@ -90,9 +90,9 @@
         {
           "tipo": "lista",
           "items": [
-            "«Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.»",
-            "«Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.»",
-            "«Capaz si espero lo suficiente, algo me va a decir qué estudiar.»"
+            "“Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.”",
+            "“Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.”",
+            "“Capaz si espero lo suficiente, algo me va a decir qué estudiar.”"
           ]
         },
         {
@@ -109,7 +109,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Empecemos por la primera: «Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.» ¿Qué le falta a Nico para resolverla?",
+      "enunciado": "Empecemos por la primera: “Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.” ¿Qué le falta a Nico para resolverla?",
       "opciones": [
         {
           "id": "a",
@@ -136,7 +136,7 @@
           "id": "b0-6-07p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Fíjate en cuántas veces dice «no tengo idea». ¿Qué le falta: ganas, datos o acuerdo?"
+          "texto": "Fíjate en cuántas veces dice “no tengo idea”. ¿Qué le falta: ganas, datos o acuerdo?"
         }
       ]
     },
@@ -147,7 +147,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Ahora la segunda: «Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.» ¿Qué conviene hacer con esta?",
+      "enunciado": "Ahora la segunda: “Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.” ¿Qué conviene hacer con esta?",
       "opciones": [
         {
           "id": "a",
@@ -194,17 +194,17 @@
           "filas": [
             [
               "Falta de preparación",
-              "«Si espero lo suficiente, algo me lo va a decir»",
+              "“Si espero lo suficiente, algo me lo va a decir”",
               "Entender cómo se decide y soltar la idea de que la respuesta llega sola"
             ],
             [
               "Falta de información",
-              "«No sé qué hace un veterinario ni si hay trabajo»",
+              "“No sé qué hace un veterinario ni si hay trabajo”",
               "Averiguar datos concretos"
             ],
             [
               "Voces que chocan",
-              "«Mi papá dice Derecho y no sé cómo decirle que no»",
+              "“Mi papá dice Derecho y no sé cómo decirle que no”",
               "Ver qué pesa para cada uno y conversar"
             ]
           ]
@@ -227,19 +227,19 @@
       "hablanteId": "nico",
       "expresion": "dudoso",
       "nuevoMomento": true,
-      "texto": "O sea que llevo siete meses pensando algo que se resuelve preguntándole a un veterinario. Es que todos dicen «ya deberías saber», y mientras más lo pienso, más me cansa."
+      "texto": "O sea que llevo siete meses pensando algo que se resuelve preguntándole a un veterinario. Es que todos dicen “ya deberías saber”, y mientras más lo pienso, más me cansa."
     },
     {
       "id": "b0-6-11",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "No saber todavía es lo normal a tu edad: es la parte en la que uno explora. Un poco de presión hasta ayuda, te hace averiguar. Pero cuando se vuelve «ya deberías saber», pensar cansa, lo evitas, y la duda crece sola."
+      "texto": "No saber todavía es lo normal a tu edad: es la parte en la que uno explora. Un poco de presión hasta ayuda, te hace averiguar. Pero cuando se vuelve “ya deberías saber”, pensar cansa, lo evitas, y la duda crece sola."
     },
     {
       "id": "b0-6-12",
       "tipo": "eleccion",
       "registrar": false,
-      "enunciado": "Nico te mira: «¿Y tú? ¿De dónde viene la duda que más traes?»",
+      "enunciado": "Nico te mira: “¿Y tú? ¿De dónde viene la duda que más traes?”",
       "nota": "No se guarda. Es solo para que la ubiques.",
       "opciones": [
         {

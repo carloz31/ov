@@ -1,6 +1,7 @@
 import { catalog } from '@/data/activities/content'
 import { getCharacterVisual } from '@/data/content/characters'
 import { AvatarItem } from './AvatarItem'
+import { conDichos } from '@/components/common/ConDichos'
 
 // Ajuste vista del ítem de registro: el personaje de la actividad. Arriba, con avatar de 40 px y su nombre
 // encima del globo, dice lo fijo del ítem (`dialogo`); como reacción, bajo las opciones, con avatar de 28 px y
@@ -23,7 +24,9 @@ export function RegistroPersonaje({
         {texto && (
           <div className="sx-item-personaje is-reaccion">
             {avatar}
-            <p className="sx-item-globo">{texto}</p>
+            <p className="sx-item-globo">
+              {conDichos(texto)}
+            </p>
           </div>
         )}
       </div>
@@ -34,7 +37,9 @@ export function RegistroPersonaje({
       {avatar}
       <div className="sx-item-dice">
         {!narrador && <span className="sx-item-nombre">{visual.name}</span>}
-        <p className="sx-item-globo">{texto}</p>
+        <p className="sx-item-globo">
+              {conDichos(texto)}
+            </p>
       </div>
     </div>
   )

@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import type { NodoDialogo, NodoEleccion } from '@/types/activities'
 import { DialogueBox } from '../DialogueBox'
 import { PasoAnterior } from '../PasoAnterior'
+import { conDichos } from '@/components/common/ConDichos'
 
 export function ChoiceNode({
   node,
@@ -19,7 +20,9 @@ export function ChoiceNode({
       <div className="sx-scene-space">
         <section className="sx-glass-dark sx-scene-panel">
           <p className="sx-player-eyebrow">Tu voz también cuenta</p>
-          <h2>{node.enunciado ?? previous?.texto ?? '¿Qué le dirías?'}</h2>
+          <h2>
+            {conDichos(node.enunciado ?? previous?.texto ?? '¿Qué le dirías?')}
+          </h2>
           {node.nota && <p className="sx-player-response-instruction">{node.nota}</p>}
           <p className="sx-player-response-instruction">Selecciona una respuesta.</p>
           <div className="sx-player-options">
@@ -30,7 +33,7 @@ export function ChoiceNode({
                 key={option.id}
                 onClick={() => onChoose(option)}
               >
-                {option.texto}
+                {conDichos(option.texto)}
                 <ArrowRight size={18} />
               </button>
             ))}

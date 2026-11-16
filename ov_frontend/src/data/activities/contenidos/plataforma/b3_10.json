@@ -123,7 +123,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un pasajero me dijo: «Yo dejé Ingeniería en tercer año, abrí una pollería y hoy tengo tres locales. Deja de estudiar y emprende». ¿Qué hago con eso?",
+      "enunciado": "Un pasajero me dijo: “Yo dejé Ingeniería en tercer año, abrí una pollería y hoy tengo tres locales. Deja de estudiar y emprende”. ¿Qué hago con eso?",
       "opciones": [
         {
           "id": "a",
@@ -161,7 +161,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una pasajera, en segundo ciclo de Derecho, me dijo: «Creo que no es lo mío, pero ya llevo un año. Voy a aguantar hasta terminar». ¿Qué le dirías?",
+      "enunciado": "Una pasajera, en segundo ciclo de Derecho, me dijo: “Creo que no es lo mío, pero ya llevo un año. Voy a aguantar hasta terminar”. ¿Qué le dirías?",
       "opciones": [
         {
           "id": "a",

@@ -83,8 +83,8 @@
           "tipo": "lista",
           "items": [
             "Paola estudia en otra ciudad. Su cuenta del primer año: pensión de S/ 900 por 10 meses, S/ 9 000.",
-            "Renzo pidió S/ 60 000 para una carrera de cinco años. Su cuenta: «De adulto voy a ganar S/ 5 000; la cuota la pago fácil». Los egresados jóvenes de su familia de carreras ganan S/ 1 900 en promedio.",
-            "Milagros tiene 17 años, está en el tercio superior en 4.° y 5.° y su hogar figura en situación de pobreza. Quiere una universidad privada. Su cuenta: «Sin préstamo no puedo estudiar»."
+            "Renzo pidió S/ 60 000 para una carrera de cinco años. Su cuenta: “De adulto voy a ganar S/ 5 000; la cuota la pago fácil”. Los egresados jóvenes de su familia de carreras ganan S/ 1 900 en promedio.",
+            "Milagros tiene 17 años, está en el tercio superior en 4.° y 5.° y su hogar figura en situación de pobreza. Quiere una universidad privada. Su cuenta: “Sin préstamo no puedo estudiar”."
           ]
         }
       ]
@@ -217,7 +217,7 @@
       "formato": "opcion_multiple",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Clotilde dice: «Y si entras a una pública, ahí sí que no gastas nada». ¿Qué se paga igual en una universidad pública? Marca todas las que correspondan.",
+      "enunciado": "Clotilde dice: “Y si entras a una pública, ahí sí que no gastas nada”. ¿Qué se paga igual en una universidad pública? Marca todas las que correspondan.",
       "opciones": [
         {
           "id": "a",

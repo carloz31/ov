@@ -39,10 +39,10 @@
         {
           "tipo": "lista",
           "items": [
-            "«Vengo a descubrir mi vocación. Dicen que un pergamino la revela.»",
-            "«Quiero saber qué carrera es la mía antes de que termine el año.»",
-            "«Mis papás ya saben lo que debo estudiar. Yo vine a confirmarlo.»",
-            "«No tengo idea de nada. Alguien me dijo que aquí se entiende.»"
+            "“Vengo a descubrir mi vocación. Dicen que un pergamino la revela.”",
+            "“Quiero saber qué carrera es la mía antes de que termine el año.”",
+            "“Mis papás ya saben lo que debo estudiar. Yo vine a confirmarlo.”",
+            "“No tengo idea de nada. Alguien me dijo que aquí se entiende.”"
           ]
         },
         {
@@ -143,7 +143,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un viajero escribió: «Quiero ayudar a que la gente se sienta mejor. Por eso voy a estudiar Enfermería y trabajar como enfermero de emergencias». ¿Qué parte de la frase es su vocación?",
+      "enunciado": "Un viajero escribió: “Quiero ayudar a que la gente se sienta mejor. Por eso voy a estudiar Enfermería y trabajar como enfermero de emergencias”. ¿Qué parte de la frase es su vocación?",
       "opciones": [
         {
           "id": "a",
@@ -208,7 +208,7 @@
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Una misma vocación cabe en varias carreras, y una carrera lleva a muchas ocupaciones. Por eso «¿qué quiero estudiar?» viene después de «¿qué quiero hacer y por qué?»."
+          "texto": "Una misma vocación cabe en varias carreras, y una carrera lleva a muchas ocupaciones. Por eso “¿qué quiero estudiar?” viene después de “¿qué quiero hacer y por qué?”."
         }
       ]
     },
@@ -225,7 +225,7 @@
       "formato": "verdadero_falso",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Otro viajero escribió: «Cuando encuentre mi vocación, la voy a reconocer de inmediato, porque uno nace con ella». ¿Es cierto?",
+      "enunciado": "Otro viajero escribió: “Cuando encuentre mi vocación, la voy a reconocer de inmediato, porque uno nace con ella”. ¿Es cierto?",
       "opciones": [
         {
           "id": "v",

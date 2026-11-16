@@ -5,9 +5,11 @@ import type { Actividad, NodoPregunta } from '@/types/activities'
 type ParentActivityOptions = { disponible?: boolean; servidor?: boolean }
 
 // Ajuste coherencia-apoderado: la opción va entre comillas una sola vez y sin su punto final, que pone la frase
-// («…a nadie».), aunque la opción ya traiga sus propias comillas.
+// («…a nadie».), aunque la opción ya traiga sus propias comillas. Una opción que es un dicho (“…”) se cita con sus
+// comillas, que la pintan en cursiva.
 function citarOpcion(texto: string) {
   const limpio = texto.trim()
+  if (limpio.startsWith('“') && limpio.endsWith('”')) return `“${limpio.slice(1, -1).replace(/\.$/, '')}”`
   const interior = limpio.startsWith('«') && limpio.endsWith('»') ? limpio.slice(1, -1) : limpio
   return `«${interior.replace(/\.$/, '')}»`
 }

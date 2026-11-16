@@ -9,6 +9,7 @@ import { FinishExtrasSection } from './FinishExtrasSection'
 import { FinishMedalsSection } from './FinishMedalsSection'
 import { VolverAlMapa } from './VolverAlMapa'
 import '../styles/finish.css'
+import { conDichos } from '@/components/common/ConDichos'
 
 export function FinishScreen({
   activity,
@@ -64,7 +65,11 @@ export function FinishScreen({
             <h2>{salida?.titulo ?? resumen.titulo}</h2>
             <p className="sx-finish-subtitle">{resumen.subtitulo}</p>
             {!activity.recompensa?.mensajeFin?.startsWith('Obtuviste:') &&
-              activity.recompensa?.mensajeFin && <p>{activity.recompensa.mensajeFin}</p>}
+              activity.recompensa?.mensajeFin && (
+                <p>
+                  {conDichos(activity.recompensa.mensajeFin)}
+                </p>
+              )}
             {activity.id === 'act-tip-01' && (
               <p className="sx-finish-note">
                 Has recorrido 1 de 14 encuentros. Las próximas voces de la aldea estarán disponibles cuando

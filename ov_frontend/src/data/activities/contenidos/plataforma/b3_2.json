@@ -128,7 +128,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Un viajero lee en la hoja de una carrera: jóvenes, promedio S/ 2 800, mínimo S/ 1 100, máximo S/ 6 500. Dice: «Al salir voy a ganar 2 800». ¿Qué le dices?",
+      "enunciado": "Un viajero lee en la hoja de una carrera: jóvenes, promedio S/ 2 800, mínimo S/ 1 100, máximo S/ 6 500. Dice: “Al salir voy a ganar 2 800”. ¿Qué le dices?",
       "opciones": [
         {
           "id": "a",

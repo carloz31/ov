@@ -33,7 +33,7 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "«La brigada del volcán busca una persona con liderazgo, iniciativa, capacidad para tomar decisiones, resolver conflictos y trabajar en equipo. No se exige experiencia previa en volcanes.»"
+          "texto": "“La brigada del volcán busca una persona con liderazgo, iniciativa, capacidad para tomar decisiones, resolver conflictos y trabajar en equipo. No se exige experiencia previa en volcanes.”"
         }
       ]
     },
@@ -80,13 +80,13 @@
       "id": "b2-1-05",
       "tipo": "dialogo",
       "hablanteId": "rosa",
-      "texto": "Cuando llegué a la brigada me dieron una hoja con frases. Una decía «Puedo dirigir a un grupo». Marqué «casi nunca». Era la más callada de mi promoción."
+      "texto": "Cuando llegué a la brigada me dieron una hoja con frases. Una decía “Puedo dirigir a un grupo”. Marqué «casi nunca». Era la más callada de mi promoción."
     },
     {
       "id": "b2-1-06",
       "tipo": "dialogo",
       "hablanteId": "rosa",
-      "texto": "La jefa de entonces leyó mi hoja y me dijo: «Esto es cómo te ves hoy». Y me puso a coordinar el turno más chico. Al año, la hoja me salía distinta."
+      "texto": "La jefa de entonces leyó mi hoja y me dijo: “Esto es cómo te ves hoy”. Y me puso a coordinar el turno más chico. Al año, la hoja me salía distinta."
     },
     {
       "id": "b2-1-07",
@@ -150,7 +150,7 @@
         },
         {
           "id": "b",
-          "texto": "Decir con calma: «No subo sin radio: es la regla».",
+          "texto": "Decir con calma: “No subo sin radio: es la regla”.",
           "correcta": true,
           "retroalimentacion": "Sí. Dijo que no, sin ofender, aunque el otro tenía más rango."
         },
@@ -161,7 +161,7 @@
           "retroalimentacion": "Eso es agredir: quizá tenga razón, pero el otro solo va a defenderse."
         }
       ],
-      "explicacion": "Ser asertivo es decir lo que piensas o decir «no» sin callarte y sin agredir. Callar y atacar son las dos salidas fáciles; la del medio es la que se practica.",
+      "explicacion": "Ser asertivo es decir lo que piensas o decir “no” sin callarte y sin agredir. Callar y atacar son las dos salidas fáciles; la del medio es la que se practica.",
       "pistas": [
         {
           "id": "b2-1-09p1",
@@ -272,7 +272,7 @@
           "id": "c",
           "texto": "Decírselo después, a solas, a quien lo cambió.",
           "correcta": true,
-          "retroalimentacion": "Eso hice. «Me molestó enterarme así», a la persona indicada y con calma."
+          "retroalimentacion": "Eso hice. “Me molestó enterarme así”, a la persona indicada y con calma."
         }
       ],
       "explicacion": "Expresar sentimientos no es soltarlos ni tragárselos: es reconocer lo que sientes y decírselo a la persona indicada, en un buen momento.",
@@ -302,7 +302,7 @@
             [
               "Asertividad",
               "Defender tus derechos y opiniones sin ofender; poder decir «no»",
-              "Alguien dice «no subo sin radio» aunque el jefe apure"
+              "Alguien dice “no subo sin radio” aunque el jefe apure"
             ],
             [
               "Empatía",
@@ -312,7 +312,7 @@
             [
               "Expresión de sentimientos",
               "Decir cómo te sientes, a la persona indicada y en el momento adecuado",
-              "Puedes decir «eso me molestó» en vez de guardarlo para el próximo turno"
+              "Puedes decir “eso me molestó” en vez de guardarlo para el próximo turno"
             ],
             [
               "Resolución de problemas",

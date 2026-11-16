@@ -1,6 +1,7 @@
 import type { BloqueContenido } from '@/types/activities'
 import { Check } from 'lucide-react'
 import '../styles/parent-activities.css'
+import { conDichos } from '@/components/common/ConDichos'
 
 export function ParentContent({ blocks, summary = false }: { blocks: BloqueContenido[]; summary?: boolean }) {
   return (
@@ -8,7 +9,11 @@ export function ParentContent({ blocks, summary = false }: { blocks: BloqueConte
       {blocks.map((block, index) => {
         switch (block.tipo) {
           case 'parrafo':
-            return <p key={index}>{block.texto}</p>
+            return (
+              <p key={index}>
+                {conDichos(block.texto)}
+              </p>
+            )
           case 'lista': {
             const List = block.ordenada ? 'ol' : 'ul'
             return (
@@ -32,7 +37,7 @@ export function ParentContent({ blocks, summary = false }: { blocks: BloqueConte
           case 'destacado':
             return (
               <aside key={index} className={`parent-highlight ${block.variante}`}>
-                {block.texto}
+                {conDichos(block.texto)}
               </aside>
             )
           case 'comparacion':
@@ -41,7 +46,9 @@ export function ParentContent({ blocks, summary = false }: { blocks: BloqueConte
                 {[block.izquierda, block.derecha].map((side, i) => (
                   <section className="rounded-xl border p-4" key={i}>
                     <h3>{side.titulo}</h3>
-                    <p>{side.texto}</p>
+                    <p>
+                      {conDichos(side.texto)}
+                    </p>
                   </section>
                 ))}
               </div>
@@ -56,7 +63,9 @@ export function ParentContent({ blocks, summary = false }: { blocks: BloqueConte
                       <span>{i + 1}</span>
                       <div>
                         <h3>{step.titulo}</h3>
-                        <p>{step.texto}</p>
+                        <p>
+                          {conDichos(step.texto)}
+                        </p>
                       </div>
                     </li>
                   ))}
@@ -64,7 +73,11 @@ export function ParentContent({ blocks, summary = false }: { blocks: BloqueConte
               </section>
             )
           case 'reflexion':
-            return <blockquote key={index}>{block.texto}</blockquote>
+            return (
+              <blockquote key={index}>
+                {conDichos(block.texto)}
+              </blockquote>
+            )
           case 'fuente':
             return (
               <p className="text-xs text-muted-foreground" key={index}>

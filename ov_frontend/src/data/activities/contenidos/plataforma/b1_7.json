@@ -86,7 +86,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Uno imaginó su día perfecto y no quiso pensar en qué podía frenarlo, «para no atraer la mala suerte». La otra imaginó el suyo y además nombró su freno. ¿A quién le sirvió más?",
+      "enunciado": "Uno imaginó su día perfecto y no quiso pensar en qué podía frenarlo, “para no atraer la mala suerte”. La otra imaginó el suyo y además nombró su freno. ¿A quién le sirvió más?",
       "opciones": [
         {
           "id": "a",

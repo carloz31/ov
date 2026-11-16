@@ -97,19 +97,19 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«Me siento segura, nomás.»",
+          "texto": "“Me siento segura, nomás.”",
           "correcta": false,
           "retroalimentacion": "No nombra nada: ni qué hizo, ni qué tiene, ni quién la apoya."
         },
         {
           "id": "b",
-          "texto": "«Ya pasé dos inviernos aquí.»",
+          "texto": "“Ya pasé dos inviernos aquí.”",
           "correcta": true,
           "retroalimentacion": "Eso: algo que ya había hecho."
         },
         {
           "id": "c",
-          "texto": "«Voy a esforzarme mucho.»",
+          "texto": "“Voy a esforzarme mucho.”",
           "correcta": false,
           "retroalimentacion": "Dice lo que hará, no lo que hoy le da o le quita seguridad."
         }

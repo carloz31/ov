@@ -15,6 +15,7 @@ import { ParentQuestion } from '@/features/parent/components/ParentQuestion'
 import { PreviousButton } from '@/features/parent/components/PreviousButton'
 import { ConfirmarSalidaActividad } from '@/features/parent/components/ConfirmarSalidaActividad'
 import { useState, type ReactNode } from 'react'
+import { conDichos } from '@/components/common/ConDichos'
 
 // F08: `onAbrirFicha` abre una ficha obtenida desde el cierre (api); la vista de ruta pasa el modal (`modalFicha`).
 export function ParentActivitySession({
@@ -123,16 +124,18 @@ export function ParentActivitySession({
               tabIndex={-1}
               className={`parent-step-title ${node.tipo === 'pregunta' ? 'parent-question-title' : ''}`}
             >
-              {node.tipo === 'diapositiva'
-                ? node.titulo
-                : node.tipo === 'pregunta'
-                  ? node.enunciado
-                  : node.tipo === 'eleccion'
-                    ? node.enunciado
-                    : 'Para continuar'}
+              {conDichos((node.tipo === 'diapositiva'
+                    ? node.titulo
+                    : node.tipo === 'pregunta'
+                      ? node.enunciado
+                      : node.tipo === 'eleccion'
+                        ? node.enunciado
+                        : 'Para continuar') ?? '')}
             </h2>
             {node.tipo === 'diapositiva' && <ParentActivitySlide model={model} />}
-            {node.tipo === 'dialogo' && <p className="mt-5 leading-8">{node.texto}</p>}
+            {node.tipo === 'dialogo' && <p className="mt-5 leading-8">
+                {conDichos(node.texto)}
+              </p>}
             {node.tipo === 'pregunta' && (
               <ParentQuestion
                 key={node.id}
@@ -175,13 +178,15 @@ export function ParentActivitySession({
                       aria-pressed={optionId === option.id}
                       onClick={() => setOptionId(option.id)}
                     >
-                      {option.texto}
+                      {conDichos(option.texto)}
                     </Button>
                   ))}
                 </div>
                 {selected && (
                   <div role="status" className="parent-transition">
-                    {selected.reaccion?.map((reaction) => <p key={reaction.id}>{reaction.texto}</p>) ?? (
+                    {selected.reaccion?.map((reaction) => <p key={reaction.id}>
+                        {conDichos(reaction.texto)}
+                      </p>) ?? (
                       <p>Puede continuar.</p>
                     )}
                   </div>

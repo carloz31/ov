@@ -34,7 +34,7 @@
       "bloques": [
         {
           "tipo": "parrafo",
-          "texto": "«Quien llega hasta mí ya trae lo que vino a buscar.»"
+          "texto": "“Quien llega hasta mí ya trae lo que vino a buscar.”"
         }
       ]
     },
@@ -102,7 +102,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Una viajera leyó la frase y dijo: «Entonces no sirve: no me dice qué estudiar». ¿Qué le responderías?",
+      "enunciado": "Una viajera leyó la frase y dijo: “Entonces no sirve: no me dice qué estudiar”. ¿Qué le responderías?",
       "opciones": [
         {
           "id": "a",

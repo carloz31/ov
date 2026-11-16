@@ -98,7 +98,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Uno dijo: «Me gustaba el deporte». La otra: «Organizaba los partidos del barrio y armaba los equipos». ¿Cuál te deja conocer mejor a quien lo dijo?",
+      "enunciado": "Uno dijo: “Me gustaba el deporte”. La otra: “Organizaba los partidos del barrio y armaba los equipos”. ¿Cuál te deja conocer mejor a quien lo dijo?",
       "opciones": [
         {
           "id": "a",
@@ -119,7 +119,7 @@
           "retroalimentacion": "A los dos les gustaba el deporte, sí. Pero solo en una se ve qué hacía."
         }
       ],
-      "explicacion": "Un ejemplo concreto dice más que una palabra general. «Me gusta el deporte» lo puede decir cualquiera; «armaba los equipos» ya habla de una persona.",
+      "explicacion": "Un ejemplo concreto dice más que una palabra general. “Me gusta el deporte” lo puede decir cualquiera; “armaba los equipos” ya habla de una persona.",
       "pistas": [
         {
           "id": "b1-1-06p1",

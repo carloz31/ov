@@ -30,13 +30,13 @@
       "tipo": "dialogo",
       "hablanteId": "eco",
       "expresion": "neutral",
-      "texto": "«Es muy difícil entrar.» «No va a alcanzar la plata.» «Con eso no se consigue trabajo.» «No es para ti.» «En tu casa esperan otra cosa.»"
+      "texto": "“Es muy difícil entrar.” “No va a alcanzar la plata.” “Con eso no se consigue trabajo.” “No es para ti.” “En tu casa esperan otra cosa.”"
     },
     {
       "id": "ma8-03",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Son las que se oyen cuando uno ya tiene un plan. A Vera, una viajera que quería ser arquitecta, le repetía una sola: «No va a alcanzar la plata». No le gritó de vuelta. Bajó al puerto a averiguar."
+      "texto": "Son las que se oyen cuando uno ya tiene un plan. A Vera, una viajera que quería ser arquitecta, le repetía una sola: “No va a alcanzar la plata”. No le gritó de vuelta. Bajó al puerto a averiguar."
     },
     {
       "id": "ma8-04",
@@ -49,19 +49,19 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«Sí va a alcanzar. Ya se verá cómo más adelante.»",
+          "texto": "“Sí va a alcanzar. Ya se verá cómo más adelante.”",
           "correcta": false,
           "retroalimentacion": "Eso es desearlo. El Eco lo repite igual al día siguiente."
         },
         {
           "id": "b",
-          "texto": "«La plata no importa si una quiere de verdad.»",
+          "texto": "“La plata no importa si una quiere de verdad.”",
           "correcta": false,
           "retroalimentacion": "Importa. Negar la objeción no la responde."
         },
         {
           "id": "c",
-          "texto": "«En la pública no hay pensión. Lo demás lo sumé.»",
+          "texto": "“En la pública no hay pensión. Lo demás lo sumé.”",
           "correcta": true,
           "retroalimentacion": "Eso. Volvió con algo que averiguó, no con ganas de tener razón."
         }
@@ -80,7 +80,7 @@
       "id": "ma8-05",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Después el Eco probó con otra: «Es muy difícil entrar». A esa, Vera le dijo que todavía no sabía qué responder, porque no había visto cuántos ingresan cada año. También vale: ya sabía qué le faltaba averiguar."
+      "texto": "Después el Eco probó con otra: “Es muy difícil entrar”. A esa, Vera le dijo que todavía no sabía qué responder, porque no había visto cuántos ingresan cada año. También vale: ya sabía qué le faltaba averiguar."
     },
     {
       "id": "ma8-06",

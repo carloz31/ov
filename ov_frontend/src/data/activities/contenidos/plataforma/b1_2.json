@@ -117,7 +117,7 @@
           "retroalimentacion": "Bajó con miedo. No se le pasó esperando: se le fue pasando mientras miraba."
         }
       ],
-      "explicacion": "El miedo de Nadia no se fue porque encontrara una respuesta, sino porque encontró preguntas chicas. Una pregunta chica se puede responder; «¿qué voy a hacer con mi vida?» no se responde de un tirón.",
+      "explicacion": "El miedo de Nadia no se fue porque encontrara una respuesta, sino porque encontró preguntas chicas. Una pregunta chica se puede responder; “¿qué voy a hacer con mi vida?” no se responde de un tirón.",
       "pistas": [
         {
           "id": "b1-2-06p1",
@@ -199,11 +199,11 @@
           "tipo": "comparacion",
           "izquierda": {
             "titulo": "Mirar todo de golpe",
-            "texto": "«¿Qué voy a hacer con mi vida?» Una pregunta tan grande que paraliza."
+            "texto": "“¿Qué voy a hacer con mi vida?” Una pregunta tan grande que paraliza."
           },
           "derecha": {
             "titulo": "Mirar lo que sigue",
-            "texto": "«¿Qué quiero averiguar ahora?» Una pregunta que se puede responder esta semana."
+            "texto": "“¿Qué quiero averiguar ahora?” Una pregunta que se puede responder esta semana."
           }
         },
         {

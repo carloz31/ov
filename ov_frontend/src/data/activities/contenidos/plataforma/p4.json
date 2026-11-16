@@ -84,7 +84,7 @@
               "id": "p4-02dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "También pasa, y mucho. No todo silencio es un secreto: a veces todavía no hay nada decidido. Téngalo presente cuando su hijo o hija le responda «no sé»."
+              "texto": "También pasa, y mucho. No todo silencio es un secreto: a veces todavía no hay nada decidido. Téngalo presente cuando su hijo o hija le responda “no sé”."
             }
           ]
         }
@@ -105,11 +105,11 @@
           "pasos": [
             {
               "titulo": "A los trece",
-              "texto": "Mateo pasa la tarde desarmando la moto de su tío y llega a casa feliz, con las manos negras. Silvia le dice: «Qué bien, hijo. Ahora lávate, que mañana tienes examen»."
+              "texto": "Mateo pasa la tarde desarmando la moto de su tío y llega a casa feliz, con las manos negras. Silvia le dice: “Qué bien, hijo. Ahora lávate, que mañana tienes examen”."
             },
             {
               "titulo": "A los quince",
-              "texto": "Pide pasar las vacaciones ayudando en el taller del tío. Silvia acepta: «Está bien para distraerte. Pero acuérdate de que tú vas a ir a la universidad»."
+              "texto": "Pide pasar las vacaciones ayudando en el taller del tío. Silvia acepta: “Está bien para distraerte. Pero acuérdate de que tú vas a ir a la universidad”."
             },
             {
               "titulo": "A los diecisiete",
@@ -186,19 +186,19 @@
           "filas": [
             [
               "Se interesa y pregunta más",
-              "«Vale la pena contarle»"
+              "“Vale la pena contarle”"
             ],
             [
-              "Lo minimiza: «eso es un pasatiempo»",
-              "«Mejor me lo guardo»"
+              "Lo minimiza: “eso es un pasatiempo”",
+              "“Mejor me lo guardo”"
             ],
             [
               "Se alarma o da un sermón",
-              "«Mejor se lo digo cuando ya esté decidido»"
+              "“Mejor se lo digo cuando ya esté decidido”"
             ],
             [
               "Lo usa después en una discusión",
-              "«No vuelvo a contarle»"
+              "“No vuelvo a contarle”"
             ]
           ]
         },
@@ -223,7 +223,7 @@
         {
           "tipo": "lista",
           "items": [
-            "Porque ya imaginan la respuesta: «eso no es carrera», «eso es un pasatiempo», «eso no es para ti».",
+            "Porque ya imaginan la respuesta: “eso no es carrera”, “eso es un pasatiempo”, “eso no es para ti”.",
             "Porque no quieren decepcionar, sobre todo si sienten que la familia ya puso su ilusión en otra cosa.",
             "Porque todavía no lo tienen claro, y creen que solo se puede contar lo que ya está decidido.",
             "Porque nunca hubo un momento: nadie preguntó y no supieron cómo empezar."
@@ -283,7 +283,7 @@
               "id": "p4-07cr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Preocuparse es parte de querer. Lo que ayuda es decirlo: «esto me preocupa un poco, pero quiero entenderlo». Así su hijo o hija no tiene que adivinar qué significa su cara."
+              "texto": "Preocuparse es parte de querer. Lo que ayuda es decirlo: “esto me preocupa un poco, pero quiero entenderlo”. Así su hijo o hija no tiene que adivinar qué significa su cara."
             }
           ]
         },
@@ -356,9 +356,9 @@
           "tipo": "lista",
           "titulo": "Frases que abren",
           "items": [
-            "«Si algún día quisieras algo distinto de lo que hemos hablado, me gustaría saberlo.»",
-            "«No tienes que tenerlo claro para contármelo.»",
-            "«Prometo escuchar primero y opinar después.»"
+            "“Si algún día quisieras algo distinto de lo que hemos hablado, me gustaría saberlo.”",
+            "“No tienes que tenerlo claro para contármelo.”",
+            "“Prometo escuchar primero y opinar después.”"
           ]
         },
         {

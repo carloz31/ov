@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { Fragment } from 'react'
+import { conDichos } from '@/components/common/ConDichos'
 
 // Markdown de lectura sin HTML crudo: subtítulos (`##`, `###`), tablas, listas, citas, **negrita** y
 // [enlaces](https://…) (ajuste mochila: el contenido de las fichas llega así del servidor).
@@ -82,7 +84,12 @@ const sinEscapes = (texto: string) => texto.replace(/\\([\\`*_{}[\]()#+\-.!|>~])
 function enLinea(texto: string): ReactNode[] {
   return texto.split(/(\*\*.*?\*\*|\[[^\]]+\]\([^)\s]+\))/g).map((fragmento, index) => {
     const negrita = /^\*\*(.*)\*\*$/.exec(fragmento)
-    if (negrita) return <strong key={index}>{sinEscapes(negrita[1])}</strong>
+    if (negrita)
+      return (
+        <strong key={index}>
+          {conDichos(sinEscapes(negrita[1]))}
+        </strong>
+      )
     const enlace = /^\[([^\]]+)\]\(([^)\s]+)\)$/.exec(fragmento)
     if (enlace && enlace[2].startsWith('https://'))
       return (
@@ -90,6 +97,6 @@ function enLinea(texto: string): ReactNode[] {
           {sinEscapes(enlace[1])}
         </a>
       )
-    return sinEscapes(enlace ? enlace[1] : fragmento)
+    return <Fragment key={index}>{conDichos(sinEscapes(enlace ? enlace[1] : fragmento))}</Fragment>
   })
 }

@@ -9,6 +9,7 @@ import { CheckOption, type CheckOptionState } from '../CheckOption'
 import { evaluateStudentCheck } from '../../lib/checks'
 import { LumiMedallion } from '@/components/student/LumiMedallion'
 import { PasoAnterior } from '../PasoAnterior'
+import { conDichos } from '@/components/common/ConDichos'
 
 export function QuestionNode({
   activity,
@@ -78,7 +79,9 @@ export function QuestionNode({
     <div className="sx-player-scene">
       <div className="sx-scene-space">
         <section className="sx-scene-panel sx-check-panel">
-          <h2>{node.enunciado}</h2>
+          <h2>
+            {conDichos(node.enunciado)}
+          </h2>
           <p className="sx-player-response-instruction">
             {multiple ? 'Marca todas las que correspondan.' : 'Selecciona una respuesta.'}
           </p>
@@ -144,9 +147,11 @@ export function QuestionNode({
               <LumiMedallion />
               <div>
                 <h3 ref={titleRef} tabIndex={-1}>
-                  {feedback.title}
+                  {conDichos(feedback.title)}
                 </h3>
-                <p>{feedback.explanation}</p>
+                <p>
+                  {conDichos(feedback.explanation)}
+                </p>
               </div>
             </div>
           )}

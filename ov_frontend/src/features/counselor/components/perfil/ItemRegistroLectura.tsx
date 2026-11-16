@@ -3,6 +3,7 @@ import { lineaEcoPanel, type PiezaEco } from '@/lib/servidor/adaptadoresPanelEst
 import { cn } from '@/lib/utils'
 import type { ItemLectura } from '@/types/servidor'
 import { MarcaRespuesta } from './MarcaRespuesta'
+import { conDichos } from '@/components/common/ConDichos'
 
 function Piezas({ piezas }: { piezas: PiezaEco[] }) {
   return piezas.map((p, i) =>
@@ -122,9 +123,15 @@ export function ItemRegistroLectura({ item, enCurso = false }: { item: ItemLectu
           </p>
         )}
         <Ecos item={item} />
-        {item.pregunta_eleccion && <p className="text-muted-foreground">{item.pregunta_eleccion}</p>}
+        {item.pregunta_eleccion && (
+          <p className="text-muted-foreground">
+            {conDichos(item.pregunta_eleccion)}
+          </p>
+        )}
         <Eleccion item={item} />
-        <p className="pt-1 text-muted-foreground">{item.pregunta_texto}</p>
+        <p className="pt-1 text-muted-foreground">
+          {conDichos(item.pregunta_texto)}
+        </p>
         <Respuesta item={item} enCurso={enCurso} />
       </div>
     </article>

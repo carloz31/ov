@@ -42,31 +42,31 @@
       "opciones": [
         {
           "id": "p3-02a",
-          "texto": "«¿Ya sabes qué vas a estudiar?»",
+          "texto": "“¿Ya sabes qué vas a estudiar?”",
           "reaccion": [
             {
               "id": "p3-02ar",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Preguntarlo muestra que le importa. Lo que cambia es la frecuencia: una vez es interés; cada semana, su hijo o hija empieza a oírla como «todavía no cumples»."
+              "texto": "Preguntarlo muestra que le importa. Lo que cambia es la frecuencia: una vez es interés; cada semana, su hijo o hija empieza a oírla como “todavía no cumples”."
             }
           ]
         },
         {
           "id": "p3-02b",
-          "texto": "«Mira a tu primo, él ya sabe lo que quiere.»",
+          "texto": "“Mira a tu primo, él ya sabe lo que quiere.”",
           "reaccion": [
             {
               "id": "p3-02br",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Suele decirse para animar. Del otro lado casi siempre llega como «vas tarde», y cada persona llega a esta decisión a su ritmo."
+              "texto": "Suele decirse para animar. Del otro lado casi siempre llega como “vas tarde”, y cada persona llega a esta decisión a su ritmo."
             }
           ]
         },
         {
           "id": "p3-02c",
-          "texto": "«Tú eres para los números, eso ya está claro.»",
+          "texto": "“Tú eres para los números, eso ya está claro.”",
           "reaccion": [
             {
               "id": "p3-02cr",
@@ -78,13 +78,13 @@
         },
         {
           "id": "p3-02d",
-          "texto": "«Yo no me meto, tú decide.»",
+          "texto": "“Yo no me meto, tú decide.”",
           "reaccion": [
             {
               "id": "p3-02dr",
               "tipo": "dialogo",
               "hablanteId": "orientacion",
-              "texto": "Nace del respeto. Dicha una vez y con interés, lo es. Si después nadie vuelve a preguntar, puede oírse como «a mí no me cuentes»."
+              "texto": "Nace del respeto. Dicha una vez y con interés, lo es. Si después nadie vuelve a preguntar, puede oírse como “a mí no me cuentes”."
             }
           ]
         },
@@ -116,11 +116,11 @@
           "tipo": "comparacion",
           "izquierda": {
             "titulo": "Lo que cuenta Rubén",
-            "texto": "«Le pregunto casi todos los días si ya decidió, para que no se le pase el tiempo. Le cuento de su primo, que ya está en la academia, a ver si se anima. Y le dije que si es Medicina, yo saco la plata de donde sea. Quiero que sepa que la apoyo.»"
+            "texto": "“Le pregunto casi todos los días si ya decidió, para que no se le pase el tiempo. Le cuento de su primo, que ya está en la academia, a ver si se anima. Y le dije que si es Medicina, yo saco la plata de donde sea. Quiero que sepa que la apoyo.”"
           },
           "derecha": {
             "titulo": "Lo que cuenta Camila",
-            "texto": "«Entro a la cocina y ya sé qué me va a preguntar, así que digo “todavía” y me voy. Lo de mi primo me hace sentir que voy tarde. Y con lo de Medicina entendí que para otra cosa no hay plata. Me gusta Arquitectura, pero eso no lo he dicho.»"
+            "texto": "“Entro a la cocina y ya sé qué me va a preguntar, así que digo ‘todavía’ y me voy. Lo de mi primo me hace sentir que voy tarde. Y con lo de Medicina entendí que para otra cosa no hay plata. Me gusta Arquitectura, pero eso no lo he dicho.”"
           }
         }
       ]
@@ -195,7 +195,7 @@
             ],
             [
               "Falta de involucramiento",
-              "No pregunta ni opina; deja el tema «para que decida solo»",
+              "No pregunta ni opina; deja el tema “para que decida solo”",
               "Más dificultades para decidir"
             ]
           ]
@@ -207,7 +207,7 @@
         },
         {
           "tipo": "parrafo",
-          "texto": "Las tres pueden convivir en la misma casa, y también en la misma persona: Rubén apoya mucho y, a la vez, insiste. Por eso no le proponemos preguntarse «¿soy un padre que presiona?», sino «¿qué parte de lo que hago llega como apoyo?»."
+          "texto": "Las tres pueden convivir en la misma casa, y también en la misma persona: Rubén apoya mucho y, a la vez, insiste. Por eso no le proponemos preguntarse “¿soy un padre que presiona?”, sino “¿qué parte de lo que hago llega como apoyo?”."
         },
         {
           "tipo": "fuente",
@@ -224,7 +224,7 @@
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
       "transicion": "El otro extremo.",
-      "enunciado": "A Marisol sus padres le impusieron una carrera, y se prometió no hacer lo mismo. Cuando su hijo empezó quinto le dijo: «Yo no me meto, es tu vida». Desde entonces no ha vuelto a tocar el tema. ¿Cómo es más probable que lo esté viviendo él?",
+      "enunciado": "A Marisol sus padres le impusieron una carrera, y se prometió no hacer lo mismo. Cuando su hijo empezó quinto le dijo: “Yo no me meto, es tu vida”. Desde entonces no ha vuelto a tocar el tema. ¿Cómo es más probable que lo esté viviendo él?",
       "opciones": [
         {
           "id": "a",
@@ -251,7 +251,7 @@
           "retroalimentacion": "Nada de lo que hace Marisol apura. Lo que su hijo recibe es silencio, y el silencio suele leerse como desinterés."
         }
       ],
-      "explicacion": "Marisol evita un error real, el de sus padres, y cae en el opuesto. Entre imponer y desaparecer hay un lugar: «decides tú, y yo quiero enterarme de lo que vas pensando». Hay quien se hace a un lado por respeto, como ella, y quien lo hace por falta de tiempo o por no saber por dónde entrar. En cualquier caso alcanza con poco: una pregunta a la semana y ganas de escuchar la respuesta.",
+      "explicacion": "Marisol evita un error real, el de sus padres, y cae en el opuesto. Entre imponer y desaparecer hay un lugar: “decides tú, y yo quiero enterarme de lo que vas pensando”. Hay quien se hace a un lado por respeto, como ella, y quien lo hace por falta de tiempo o por no saber por dónde entrar. En cualquier caso alcanza con poco: una pregunta a la semana y ganas de escuchar la respuesta.",
       "pistas": [
         {
           "id": "p3-06p1",
@@ -280,34 +280,34 @@
           ],
           "filas": [
             [
-              "«¿Ya sabes qué vas a estudiar?», cada semana",
+              "“¿Ya sabes qué vas a estudiar?”, cada semana",
               "Que no se le pase el tiempo",
-              "«¿Qué has averiguado estos días? ¿Te ayudo con algo?»"
+              "“¿Qué has averiguado estos días? ¿Te ayudo con algo?”"
             ],
             [
-              "«Mira a tu primo, él ya sabe»",
+              "“Mira a tu primo, él ya sabe”",
               "Animar",
-              "«¿Qué te falta saber para tenerlo más claro?»"
+              "“¿Qué te falta saber para tenerlo más claro?”"
             ],
             [
-              "«Tú eres para los números, ya está claro»",
+              "“Tú eres para los números, ya está claro”",
               "Reconocer un talento",
-              "«Los números se te dan bien. ¿Qué te gustaría hacer con eso? ¿Y qué más te gusta?»"
+              "“Los números se te dan bien. ¿Qué te gustaría hacer con eso? ¿Y qué más te gusta?”"
             ],
             [
-              "«Si estudias eso, cuenta conmigo»",
+              "“Si estudias eso, cuenta conmigo”",
               "Cuidar el esfuerzo de la familia",
-              "«Cuenta conmigo. Veamos juntos cuánto puede aportar la familia»"
+              "“Cuenta conmigo. Veamos juntos cuánto puede aportar la familia”"
             ],
             [
-              "«Yo sé lo que te conviene»",
+              "“Yo sé lo que te conviene”",
               "Evitarle un error",
-              "«Yo lo veo así, por esto. ¿Tú cómo lo ves?»"
+              "“Yo lo veo así, por esto. ¿Tú cómo lo ves?”"
             ],
             [
-              "«Yo no me meto, tú decide»",
+              "“Yo no me meto, tú decide”",
               "Respetar",
-              "«Decides tú, y yo quiero enterarme de lo que vas pensando»"
+              "“Decides tú, y yo quiero enterarme de lo que vas pensando”"
             ]
           ]
         },
@@ -373,7 +373,7 @@
           "pasos": [
             {
               "titulo": "Recordar una fecha real no es presionar",
-              "texto": "Las inscripciones, los exámenes y las becas tienen plazos. Decir «la inscripción cierra pronto, ¿vemos qué necesitas?» es información. Presión es exigir la decisión antes de que esté lista."
+              "texto": "Las inscripciones, los exámenes y las becas tienen plazos. Decir “la inscripción cierra pronto, ¿vemos qué necesitas?” es información. Presión es exigir la decisión antes de que esté lista."
             },
             {
               "titulo": "Decir cuánto puede aportar la familia tampoco",
@@ -381,7 +381,7 @@
             },
             {
               "titulo": "La presión también llega de afuera",
-              "texto": "Abuelos, tíos y vecinos preguntan «¿y tú qué vas a estudiar?» en cada reunión. Usted puede bajar ese peso con una frase: «todavía lo está viendo, y va bien»."
+              "texto": "Abuelos, tíos y vecinos preguntan “¿y tú qué vas a estudiar?” en cada reunión. Usted puede bajar ese peso con una frase: “todavía lo está viendo, y va bien”."
             }
           ]
         }
@@ -425,7 +425,7 @@
             },
             {
               "titulo": "Si cree que ha insistido de más",
-              "texto": "Puede decirlo: «creo que te he estado insistiendo; quiero saber qué estás pensando tú». Repara más que dejar de hablar del tema."
+              "texto": "Puede decirlo: “creo que te he estado insistiendo; quiero saber qué estás pensando tú”. Repara más que dejar de hablar del tema."
             }
           ]
         },

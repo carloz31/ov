@@ -1,12 +1,17 @@
 import { ExternalLink } from 'lucide-react'
 import type { BloqueContenido } from '@/types/activities'
+import { conDichos } from '@/components/common/ConDichos'
 export function ContentBlocks({ blocks }: { blocks: BloqueContenido[] }) {
   return (
     <div className="sx-content-reading">
       {blocks.map((block, i) => {
         switch (block.tipo) {
           case 'parrafo':
-            return <p key={i}>{block.texto}</p>
+            return (
+              <p key={i}>
+                {conDichos(block.texto)}
+              </p>
+            )
           case 'lista': {
             const List = block.ordenada ? 'ol' : 'ul'
             return (
@@ -23,7 +28,7 @@ export function ContentBlocks({ blocks }: { blocks: BloqueContenido[] }) {
           case 'destacado':
             return (
               <aside key={i} className={`sx-content-highlight ${block.variante}`}>
-                {block.texto}
+                {conDichos(block.texto)}
               </aside>
             )
           case 'comparacion':
@@ -32,7 +37,9 @@ export function ContentBlocks({ blocks }: { blocks: BloqueContenido[] }) {
                 {[block.izquierda, block.derecha].map((side) => (
                   <section key={side.titulo}>
                     <h3>{side.titulo}</h3>
-                    <p>{side.texto}</p>
+                    <p>
+                      {conDichos(side.texto)}
+                    </p>
                   </section>
                 ))}
               </div>
@@ -47,7 +54,9 @@ export function ContentBlocks({ blocks }: { blocks: BloqueContenido[] }) {
                       <span>{index + 1}</span>
                       <div>
                         <h3>{step.titulo}</h3>
-                        <p>{step.texto}</p>
+                        <p>
+                          {conDichos(step.texto)}
+                        </p>
                       </div>
                     </li>
                   ))}
@@ -55,7 +64,11 @@ export function ContentBlocks({ blocks }: { blocks: BloqueContenido[] }) {
               </section>
             )
           case 'reflexion':
-            return <blockquote key={i}>{block.texto}</blockquote>
+            return (
+              <blockquote key={i}>
+                {conDichos(block.texto)}
+              </blockquote>
+            )
           case 'tabla':
             return (
               <section key={i}>

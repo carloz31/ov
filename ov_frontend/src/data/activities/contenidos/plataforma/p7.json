@@ -15,7 +15,7 @@
   "personajeIds": [
     "orientacion"
   ],
-  "objetivoAprendizaje": "Al terminar, el apoderado reconoce lo que él siente y lo que siente su hijo o hija ante un cambio de opinión, sabe buscar lo que se mantiene entre opciones que cambian, distingue de dónde viene una duda para responder a ella, tiene una forma de acompañar «quiero esperar un año» y «no ingresé», y sabe cuándo pedir ayuda.",
+  "objetivoAprendizaje": "Al terminar, el apoderado reconoce lo que él siente y lo que siente su hijo o hija ante un cambio de opinión, sabe buscar lo que se mantiene entre opciones que cambian, distingue de dónde viene una duda para responder a ella, tiene una forma de acompañar “quiero esperar un año” y “no ingresé”, y sabe cuándo pedir ayuda.",
   "nodos": [
     {
       "id": "p7-01",
@@ -104,7 +104,7 @@
               "Miedo a decepcionar"
             ],
             [
-              "Fastidio: «ya habíamos quedado en…»",
+              "Fastidio: “ya habíamos quedado en…”",
               "Vergüenza por cambiar"
             ],
             [
@@ -146,14 +146,14 @@
               "texto": "Acompañó a su tía un sábado al hospital. Lo que más le gustó no fueron las curaciones: fue conversar con los pacientes."
             },
             {
-              "titulo": "En setiembre: «No sé. Quizá Trabajo Social. O nada»",
+              "titulo": "En setiembre: “No sé. Quizá Trabajo Social. O nada”",
               "texto": "Averiguó cuánto cuesta Psicología en la universidad que conoce. Óscar le dijo que tal vez convenía algo más corto."
             }
           ]
         },
         {
           "tipo": "parrafo",
-          "texto": "Óscar piensa: «Cada tres meses es otra cosa. Esta chica no sabe lo que quiere»."
+          "texto": "Óscar piensa: “Cada tres meses es otra cosa. Esta chica no sabe lo que quiere”."
         }
       ]
     },
@@ -221,17 +221,17 @@
           "filas": [
             [
               "Le falta información",
-              "«No sé qué se hace en eso», «no sé cuánto cuesta»",
+              "“No sé qué se hace en eso”, “no sé cuánto cuesta”",
               "Averiguar juntos: un dato, una visita, una conversación con alguien que trabaje en eso"
             ],
             [
               "Hay voces que chocan",
-              "«Me gusta, pero es caro», «me gusta, pero ustedes prefieren otra cosa»",
+              "“Me gusta, pero es caro”, “me gusta, pero ustedes prefieren otra cosa”",
               "Conversar qué pesa para cada uno y mirar los caminos que hay"
             ],
             [
               "Todavía no quiere pensarlo",
-              "«Ya veré», «falta mucho»",
+              "“Ya veré”, “falta mucho”",
               "Un paso pequeño con fecha, sin pedirle la decisión"
             ]
           ]
@@ -239,7 +239,7 @@
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Un cambio con información es un avance. Por eso, antes de «¿por qué?», sirve más preguntar «¿qué viste?»."
+          "texto": "Un cambio con información es un avance. Por eso, antes de “¿por qué?”, sirve más preguntar “¿qué viste?”."
         },
         {
           "tipo": "fuente",
@@ -256,7 +256,7 @@
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
       "transicion": "Dos frases que cuestan más.",
-      "enunciado": "Su hijo o hija le dice: «No quiero postular este año. Quiero esperar». ¿Qué conviene hacer primero?",
+      "enunciado": "Su hijo o hija le dice: “No quiero postular este año. Quiero esperar”. ¿Qué conviene hacer primero?",
       "opciones": [
         {
           "id": "a",
@@ -283,7 +283,7 @@
           "retroalimentacion": "Es una salida frecuente, y a veces funciona. El riesgo es que postule a algo que no eligió y, si ingresa, empiece una carrera sin haberla querido."
         }
       ],
-      "explicacion": "«Quiero esperar» puede querer decir muchas cosas: no me siento listo, no sé qué elegir, tengo miedo de no ingresar. La pregunta «¿qué te gustaría hacer con ese año?» le ayuda a usted a saber cuál es, y a los dos a ponerle fechas.",
+      "explicacion": "“Quiero esperar” puede querer decir muchas cosas: no me siento listo, no sé qué elegir, tengo miedo de no ingresar. La pregunta “¿qué te gustaría hacer con ese año?” le ayuda a usted a saber cuál es, y a los dos a ponerle fechas.",
       "pistas": [
         {
           "id": "p7-07p1",
@@ -304,25 +304,25 @@
       "opciones": [
         {
           "id": "a",
-          "texto": "«No te preocupes, no pasa nada. Ya vas a ingresar.»",
+          "texto": "“No te preocupes, no pasa nada. Ya vas a ingresar.”",
           "correcta": false,
           "retroalimentacion": "La intención es consolar. Pero para él o ella sí pasó algo, y oír que no es nada puede hacerle sentir que no se entiende lo que le duele."
         },
         {
           "id": "b",
-          "texto": "«Vamos a ver en qué fallaste, para corregirlo de una vez.»",
+          "texto": "“Vamos a ver en qué fallaste, para corregirlo de una vez.”",
           "correcta": false,
           "retroalimentacion": "Revisar qué mejorar va a servir, y mucho. Esa misma tarde suena a balance de errores, justo cuando más le duele."
         },
         {
           "id": "c",
-          "texto": "«Entonces busquemos ya otra carrera donde sí ingreses.»",
+          "texto": "“Entonces busquemos ya otra carrera donde sí ingreses.”",
           "correcta": false,
           "retroalimentacion": "Tener otra opción puede ser parte del plan. Dicho hoy, le dice que su primera elección ya no cuenta, por un solo intento."
         },
         {
           "id": "d",
-          "texto": "«Sé que duele. Hoy descansa; mañana vemos qué sigue.»",
+          "texto": "“Sé que duele. Hoy descansa; mañana vemos qué sigue.”",
           "correcta": true,
           "retroalimentacion": "Sí. Primero el golpe, después el plan. Le dice que lo entiende y que no está solo para lo que viene."
         }
@@ -392,7 +392,7 @@
             },
             {
               "titulo": "Dígaselo",
-              "texto": "«Me he dado cuenta de que en todo lo que te ha gustado hay…». Puede que acierte o que no; en los dos casos, van a tener de qué conversar."
+              "texto": "“Me he dado cuenta de que en todo lo que te ha gustado hay…”. Puede que acierte o que no; en los dos casos, van a tener de qué conversar."
             }
           ]
         },

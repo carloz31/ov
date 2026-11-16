@@ -129,7 +129,7 @@ def test_si_el_llm_falla_solo_las_de_lista_reciben_respaldo_y_la_seccion_se_guar
         (1, 'investigar', 'Revisar en la página de admisión de las instituciones que me interesan las modalidades de '
          'ingreso a Ingeniería Ambiental y anotar cuál me corresponde.', 'RESPALDO'),
         (2, 'conversar', 'Conseguir, por mi familia o mi orientadora, a alguien que estudie Ingeniería Ambiental y '
-         'preguntarle: «¿Qué curso te costó más al empezar?»', 'RESPALDO')]
+         'preguntarle: “¿Qué curso te costó más al empezar?”', 'RESPALDO')]
     assert [d['texto'] for d in plan(cliente, ING_AMBIENTAL)['dudas']][-1] == 'Propia'
     _, mensaje = llamadas_pasos(llm)[-1]
     assert '<institucion>sin elegir</institucion>\n<camino>sin elegir</camino>' in mensaje

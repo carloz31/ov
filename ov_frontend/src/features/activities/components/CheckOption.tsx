@@ -1,4 +1,5 @@
 import { Check, X } from 'lucide-react'
+import { conDichos } from '@/components/common/ConDichos'
 export type CheckOptionState = 'idle' | 'selected' | 'correct' | 'incorrect' | 'missing' | 'muted'
 export function CheckOption({
   text,
@@ -37,9 +38,9 @@ export function CheckOption({
         )}
       </span>
       <span className="sx-check-option-content">
-        <span>{text}</span>
+        <span>{conDichos(text)}</span>
         {label && <small className="sx-check-label">{label}</small>}
-        {explanation && <span className="sx-check-explanation">{explanation}</span>}
+        {explanation && <span className="sx-check-explanation">{conDichos(explanation)}</span>}
       </span>
     </button>
   )

@@ -915,6 +915,6 @@ test('el título de la retroalimentación cita la respuesta sin punto doble ni c
   )
   assert.equal(
     logic.evaluateParentQuestion(pregunta('p8', 'p8-05'), ['c'], 0).title,
-    '¡Bien! La respuesta es «A veces me da miedo que no te alcance. Es miedo mío».',
+    '¡Bien! La respuesta es “A veces me da miedo que no te alcance. Es miedo mío”.',
   )
 })

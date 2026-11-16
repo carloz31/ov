@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react'
 import { CharacterAvatar } from '@/components/student/CharacterAvatar'
 import { useTypewriter } from '@/hooks/useTypewriter'
 import { AccionesConAnterior } from './AccionesConAnterior'
+import { conDichos } from '@/components/common/ConDichos'
 
 export type DialogueBoxProps = {
   speakerId: string
@@ -72,8 +73,8 @@ export function DialogueBox({
       <div className="sx-dialogue-copy">
         {label && <p className="sx-player-eyebrow">{label}</p>}
         <p className="sx-dialogue-text">
-          <span aria-hidden="true">{visible}</span>
-          <span className="sr-only">{text}</span>
+          <span aria-hidden="true">{conDichos(visible)}</span>
+          <span className="sr-only">{conDichos(text)}</span>
         </p>
       </div>
       <footer>
