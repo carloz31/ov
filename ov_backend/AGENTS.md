@@ -97,6 +97,7 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 - El colegio del piloto es `col-piloto`, «Technology School - Sede Palao» (`COLEGIOS` en `ruta.py`, que `contenido` reutiliza). La migración 0047 pone en él los salones que ya existían; en una base sin salones no inserta nada. No hay ruta para crear colegios ni para mover salones entre ellos.
 - `POST /desarrollo/reiniciar`, solo con `ENTORNO=desarrollo`, borra el estado de las cuentas y conserva el catálogo.
 - Los datos inventados se marcan con `DATO DE PRUEBA`.
+- Comillas en los textos de `datos/` (fichas, preguntas de batallas, ítems de registro, pasos sugeridos, textos de instrumentos): lo que alguien dice, dijo, piensa o se pregunta va entre “…” (una cita dentro, con ‘…’), y el front lo pinta en cursiva; nombres de actividades, secciones, botones, opciones y títulos, términos sueltos e ironías van con «». En los textos que arma el panel (texto plano), los nombres de tramo, registro y dimensión van sin comillas y lo que marcó el estudiante, entre “…”.
 
 ## Convenciones
 
