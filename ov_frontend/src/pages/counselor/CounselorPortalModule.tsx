@@ -1,4 +1,4 @@
-import { BookOpenCheck, Compass, LayoutDashboard, Megaphone, Users } from 'lucide-react'
+import { Compass, LayoutDashboard, Megaphone, Settings, Users } from 'lucide-react'
 import { useMemo } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { AppShell, type AppNavigationGroup } from '@/components/layout/AppShell'
@@ -56,7 +56,7 @@ function CounselorPortalModule() {
           },
           {
             id: 'priorities',
-            icon: BookOpenCheck,
+            icon: Settings,
             label: etiquetaConfiguracion,
             onSelect: () => navigate(appPaths.counselor.priorities),
           },

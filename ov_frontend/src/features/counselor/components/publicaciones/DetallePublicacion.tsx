@@ -170,10 +170,6 @@ export function DetallePublicacion({
             <FichaPublicacion datos={d} nombreSalon={nombreSalon} nombresTipos={nombresTipos} />
             <ReaccionesModeradas m={m} nombreSalon={nombreSalon} nombresTipos={nombresTipos} />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Destacar y ocultar se pueden revertir. Eliminar un comentario pide confirmación; los autores no
-            ven quién reportó.
-          </p>
         </>
       )}
       <Confirmar

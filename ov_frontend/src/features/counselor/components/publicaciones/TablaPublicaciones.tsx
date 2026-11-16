@@ -22,11 +22,11 @@ const ESTADOS: [EstadoPublicacion | 'todos', string][] = [
   ['LEYENDA', 'Leyenda'],
   ['OCULTA', 'Ocultas'],
 ]
-const ANCHOS = ['w-[17%]', 'w-[10%]', 'w-[15%]', 'w-[12%]', 'w-[10%]', 'w-[9%]', 'w-[15%]', 'w-[12%]']
+const ANCHOS = ['w-[19%]', 'w-[11%]', 'w-[15%]', 'w-[12%]', 'w-[10%]', 'w-[9%]', 'w-[12%]', 'w-[12%]']
 const COLUMNAS = [
   'Autores',
   'Salón',
-  'Familia y a qué se dedica',
+  'Familia',
   'Fecha de publicación',
   'Reacciones',
   'Favoritos',
@@ -34,15 +34,7 @@ const COLUMNAS = [
   'Acciones',
 ]
 
-function Fila({
-  fila,
-  m,
-  favoritosLeyenda,
-}: {
-  fila: FilaPublicacion
-  m: ModeloPublicaciones
-  favoritosLeyenda: number
-}) {
+function Fila({ fila, m }: { fila: FilaPublicacion; m: ModeloPublicaciones }) {
   const salones = [...new Set(fila.autores.map((a) => m.nombreSalonAutor(a.salon)))]
   return (
     <TableRow className="hover:bg-transparent">
@@ -51,23 +43,17 @@ function Fila({
       </TableCell>
       <TableCell className="px-2.5 py-3 whitespace-normal">{salones.join(', ')}</TableCell>
       <TableCell className="px-2.5 py-3 whitespace-normal break-words">
-        <strong>{fila.familia.nombre}</strong>
-        <br />
-        {fila.dedicacion}
+        {fila.familia.nombre}
       </TableCell>
       <TableCell className="px-2.5 py-3">{fechaNumerica(fila.fecha_hora)}</TableCell>
       <TableCell className="px-2.5 py-3 text-center">{fila.reacciones}</TableCell>
-      <TableCell className="px-2.5 py-3 text-center">
-        {fila.favoritos}
-        {fila.estado !== 'LEYENDA' && (
-          <span className="text-sm text-muted-foreground"> / {favoritosLeyenda}</span>
-        )}
-      </TableCell>
+      <TableCell className="px-2.5 py-3 text-center">{fila.favoritos}</TableCell>
       <TableCell className="px-2.5 py-3">
         <EstadoPublicacionBadges
           estado={fila.estado}
           reportes={fila.reportes_pendientes}
           comentarios={fila.comentarios_reportados}
+          compacto
         />
       </TableCell>
       <TableCell className="px-2.5 py-3 text-center">
@@ -190,7 +176,7 @@ export function TablaPublicaciones({ m }: { m: ModeloPublicaciones }) {
                     </TableRow>
                   ))
                 : lista?.items.map((fila) => (
-                    <Fila key={fila.codigo} fila={fila} m={m} favoritosLeyenda={lista.favoritosLeyenda} />
+                    <Fila key={fila.codigo} fila={fila} m={m} />
                   ))}
             </TableBody>
           </Table>

@@ -22,9 +22,8 @@ export function ReaccionesModeradas({
   const ahora = new Date()
   return (
     <Card className="overflow-hidden rounded-xl p-0">
-      <div className="flex items-center justify-between gap-3 px-4 py-3">
+      <div className="px-4 py-3">
         <h2 className="font-semibold">Reacciones y comentarios · {datos.reacciones.length}</h2>
-        <span className="text-sm text-muted-foreground">Los reportados van primero</span>
       </div>
       {datos.reacciones.length === 0 && (
         <p className="border-t px-4 py-4 text-sm text-muted-foreground">
@@ -133,7 +132,7 @@ export function ReaccionesModeradas({
             <Textarea
               value={m.comentario}
               disabled={m.ocupado === 'comentar' || m.oculta}
-              placeholder="Lo verán los autores y el salón, con la etiqueta «Orientadora»."
+              placeholder="Lo verán los autores y el salón, con la etiqueta Orientadora."
               onChange={(e) => m.setComentario(e.target.value)}
             />
           </label>

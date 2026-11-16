@@ -127,7 +127,7 @@ test('el detalle de una oculta: aviso, «Volver a mostrar» y destacar y comenta
   assert.doesNotMatch(plano, /Ocultar entrevista|Eliminar entrevista/)
   assert.match(marcado, /<button[^>]*disabled=""[^>]*>(<svg[^>]*>.*?<\/svg>)?\s*Destacar/)
   assert.match(marcado, /<textarea[^>]*disabled=""/)
-  assert.match(plano, /Destacar y ocultar se pueden revertir\. Eliminar un comentario pide confirmación/)
+  assert.doesNotMatch(plano, /Destacar y ocultar se pueden revertir/)
 })
 
 test('el detalle de una publicada ofrece «Ocultar entrevista» y no «Volver a mostrar»', () => {
