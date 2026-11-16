@@ -33,3 +33,8 @@
 - Se retiraron `TONO_ZONA`, `TONO_CAMBIO`, `TONO_CAMBIO_AFIRMACION`, `textosCambio`, `textosCambioAfirmacion` y `textoConteo`, sin uso tras el cambio; la vista del estudiante usa los suyos (`features/discovery/lib/partidaLlegada.ts`) y no cambia.
 - Frase del conteo con todas en un grupo: «Las N dimensiones subieron / bajaron / siguen por trabajar / siguen igual / están por trabajar / están en camino / son fuertes». Con llegada, «igual» se dice «sigue igual».
 - El boceto 20 llegó en `.webp` y se guardó así.
+
+## Perfiles de ejemplo y revisión de legibilidad (pedido del usuario)
+
+- La siembra de ejemplo suma tres estudiantes en 5A (DATO DE PRUEBA): 9 con habilidades e inteligencias reveladas y misiones de la ciudad (una sin contenido y otra a medias); 10 que cambió el orden de sus planes después de responder (ecos con «hoy») y con una respuesta sensible y fuera de tema a la vez en un registro no destacado; 11 sin apoderado y con «Las voces y la mía» a medias. Las pruebas que cuentan los estudiantes de ejemplo pasan de 8 a 11.
+- Revisión en el navegador con una base aparte: una pregunta sin responder ya no trae «Respondió viendo…» (el servidor no manda ecos sin respuesta); en un registro en curso dice «Aún no lo responde»; el eco de un resultado de test se lee «Tu test de habilidades: Asertividad.» y el de un plan, «Hoy su Plan A es …»; el origen de una pieza va aparte («(de: ¿Qué te cuesta?)»), sin pasarlo a minúsculas; «Por dónde va el salón» usa casillas de ancho mínimo para que los nombres largos no se partan en tres líneas.

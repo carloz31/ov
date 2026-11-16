@@ -255,7 +255,10 @@ function piezasHoy(eco: EcoLinea): PiezaEco[] {
     ])
   if (hoy.cita) return [{ texto: ` Hoy dice: “${hoy.cita}”.` }]
   if (hoy.opciones?.length) return [{ texto: ` Hoy eligió: ${hoy.opciones.join(', ')}.` }]
-  if (hoy.texto) return [{ texto: ' Hoy: ' }, { texto: hoy.texto, estilo: 'fuerte' }, { texto: '.' }]
+  if (hoy.texto) {
+    const plan = typeof eco.eco?.nombre === 'string' ? eco.eco.nombre.match(/Plan [ABC]/)?.[0] : null
+    return [{ texto: plan ? ` Hoy su ${plan} es ` : ' Hoy: ' }, { texto: hoy.texto, estilo: 'fuerte' }, { texto: '.' }]
+  }
   return []
 }
 export function lineaEcoPanel(eco: EcoLinea): LineaEcoPanel | null {
@@ -292,9 +295,12 @@ export function lineaEcoPanel(eco: EcoLinea): LineaEcoPanel | null {
         : null
     default: {
       const linea = eco.eco ? lineaEco(eco.eco) : null
-      if (!linea || !linea.texto) return null
-      const extra = linea.chips.length ? ` (${linea.chips.join(', ')})` : ''
-      return { piezas: [{ texto: `Respondió viendo: ${linea.texto}${extra}.` }], hoy }
+      if (!linea || !linea.texto.trim()) return null
+      // «Tu test de habilidades: Asertividad.» (el nombre sin valor propio toma las opciones) o «Tu Plan A: X (a, b).»
+      const texto = linea.texto.trim()
+      const opciones = linea.chips.join(', ')
+      const valor = !opciones ? texto : texto.endsWith(':') ? `${texto} ${opciones}` : `${texto} (${opciones})`
+      return { piezas: [{ texto: `Respondió viendo: ${valor}.` }], hoy }
     }
   }
 }

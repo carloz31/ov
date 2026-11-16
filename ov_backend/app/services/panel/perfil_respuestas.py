@@ -155,7 +155,9 @@ def _item(sesion: Session, lectura: LecturaContexto, actividad: Actividad, numer
            else None)
     marcadores = valores.get("marcadores") if guardados else (dict(hoy.marcadores) if hoy else {})
     ecos_hoy = [dict(e) for e in hoy.ecos_mostrar] if hoy else []
-    if guardados:
+    if respuesta is None:
+        ecos = []  # sin responder, no «respondió viendo» nada
+    elif guardados:
         ecos = _lineas_eco(sesion, actividad, numeros, mostrados_guardados, ecos_hoy if hoy else None)
     else:
         ecos = _lineas_eco(sesion, actividad, numeros, ecos_hoy, None)

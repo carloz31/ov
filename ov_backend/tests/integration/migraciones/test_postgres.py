@@ -82,7 +82,7 @@ def test_postgresql_carga_contenido_con_los_estudiantes_de_ejemplo(monkeypatch):
         try:
             with Session(motor) as sesion:
                 assert sesion.scalar(select(func.count()).select_from(m.Cuenta).where(
-                    m.Cuenta.codigo.like('est-panel-%'))) == 8
+                    m.Cuenta.codigo.like('est-panel-%'))) == 11
         finally:
             motor.dispose()
     finally:

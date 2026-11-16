@@ -1,17 +1,17 @@
 {
   "accesos": [
     {
-      "cantidad": 13,
+      "cantidad": 16,
       "codigo": "todos",
       "nombre": null
     },
     {
-      "cantidad": 11,
+      "cantidad": 14,
       "codigo": "con_avisos",
       "nombre": null
     },
     {
-      "cantidad": 2,
+      "cantidad": 3,
       "codigo": "conversar",
       "nombre": "Conversar pronto"
     },
@@ -69,6 +69,26 @@
       }
     },
     {
+      "aviso": "Escribió algo que conviene leer",
+      "avisos_mas": 1,
+      "codigo": "est-panel-10",
+      "dias_sin_ingreso": 1,
+      "nombre": "Valeria Ccori Mamani",
+      "plan_a": "Ciencias de la Comunicación",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "LISTO",
+      "tramo": {
+        "codigo": "B5",
+        "nombre": "Mi decisión",
+        "numero": 6,
+        "total": 6
+      }
+    },
+    {
       "aviso": "Poca seguridad en sus últimas señales",
       "avisos_mas": 0,
       "codigo": "est-panel-5",
@@ -90,10 +110,110 @@
     },
     {
       "aviso": "No ingresa hace 7 días o más",
-      "avisos_mas": 1,
+      "avisos_mas": 2,
       "codigo": "est-ana",
       "dias_sin_ingreso": null,
       "nombre": "Ana",
+      "plan_a": null,
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 2,
+      "codigo": "est-panel-1",
+      "dias_sin_ingreso": null,
+      "nombre": "Elena Espinoza León",
+      "plan_a": null,
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 2,
+      "codigo": "est-luis",
+      "dias_sin_ingreso": null,
+      "nombre": "Luis",
+      "plan_a": null,
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 2,
+      "codigo": "est-mia",
+      "dias_sin_ingreso": null,
+      "nombre": "Mía",
+      "plan_a": null,
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 2,
+      "codigo": "est-sol",
+      "dias_sin_ingreso": null,
+      "nombre": "Sol",
+      "plan_a": null,
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "SIN_EMPEZAR",
+        "nombre": null,
+        "numero": 0,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "No ingresa hace 7 días o más",
+      "avisos_mas": 2,
+      "codigo": "est-teo",
+      "dias_sin_ingreso": null,
+      "nombre": "Teo",
       "plan_a": null,
       "salon": {
         "codigo": "5A",
@@ -125,106 +245,6 @@
         "codigo": "B0",
         "nombre": "Inicio",
         "numero": 1,
-        "total": 6
-      }
-    },
-    {
-      "aviso": "No ingresa hace 7 días o más",
-      "avisos_mas": 1,
-      "codigo": "est-panel-1",
-      "dias_sin_ingreso": null,
-      "nombre": "Elena Espinoza León",
-      "plan_a": null,
-      "salon": {
-        "codigo": "5A",
-        "promocion": 2026,
-        "seccion": "A"
-      },
-      "test": "SIN_EMPEZAR",
-      "tramo": {
-        "codigo": "SIN_EMPEZAR",
-        "nombre": null,
-        "numero": 0,
-        "total": 6
-      }
-    },
-    {
-      "aviso": "No ingresa hace 7 días o más",
-      "avisos_mas": 1,
-      "codigo": "est-luis",
-      "dias_sin_ingreso": null,
-      "nombre": "Luis",
-      "plan_a": null,
-      "salon": {
-        "codigo": "5A",
-        "promocion": 2026,
-        "seccion": "A"
-      },
-      "test": "SIN_EMPEZAR",
-      "tramo": {
-        "codigo": "SIN_EMPEZAR",
-        "nombre": null,
-        "numero": 0,
-        "total": 6
-      }
-    },
-    {
-      "aviso": "No ingresa hace 7 días o más",
-      "avisos_mas": 1,
-      "codigo": "est-mia",
-      "dias_sin_ingreso": null,
-      "nombre": "Mía",
-      "plan_a": null,
-      "salon": {
-        "codigo": "5A",
-        "promocion": 2026,
-        "seccion": "A"
-      },
-      "test": "SIN_EMPEZAR",
-      "tramo": {
-        "codigo": "SIN_EMPEZAR",
-        "nombre": null,
-        "numero": 0,
-        "total": 6
-      }
-    },
-    {
-      "aviso": "No ingresa hace 7 días o más",
-      "avisos_mas": 1,
-      "codigo": "est-sol",
-      "dias_sin_ingreso": null,
-      "nombre": "Sol",
-      "plan_a": null,
-      "salon": {
-        "codigo": "5A",
-        "promocion": 2026,
-        "seccion": "A"
-      },
-      "test": "SIN_EMPEZAR",
-      "tramo": {
-        "codigo": "SIN_EMPEZAR",
-        "nombre": null,
-        "numero": 0,
-        "total": 6
-      }
-    },
-    {
-      "aviso": "No ingresa hace 7 días o más",
-      "avisos_mas": 1,
-      "codigo": "est-teo",
-      "dias_sin_ingreso": null,
-      "nombre": "Teo",
-      "plan_a": null,
-      "salon": {
-        "codigo": "5A",
-        "promocion": 2026,
-        "seccion": "A"
-      },
-      "test": "SIN_EMPEZAR",
-      "tramo": {
-        "codigo": "SIN_EMPEZAR",
-        "nombre": null,
-        "numero": 0,
         "total": 6
       }
     },
@@ -265,6 +285,46 @@
         "codigo": "B3",
         "nombre": "Exploro el mundo profesional",
         "numero": 4,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "Su apoderado aún no inicia sesión",
+      "avisos_mas": 0,
+      "codigo": "est-panel-11",
+      "dias_sin_ingreso": 6,
+      "nombre": "Mateo Rivas Paz",
+      "plan_a": null,
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "SIN_EMPEZAR",
+      "tramo": {
+        "codigo": "B1",
+        "nombre": "Mi historia y mis aspiraciones",
+        "numero": 2,
+        "total": 6
+      }
+    },
+    {
+      "aviso": "Su apoderado aún no inicia sesión",
+      "avisos_mas": 0,
+      "codigo": "est-panel-9",
+      "dias_sin_ingreso": 3,
+      "nombre": "Tomás Quispe Huamán",
+      "plan_a": "Psicología",
+      "salon": {
+        "codigo": "5A",
+        "promocion": 2026,
+        "seccion": "A"
+      },
+      "test": "LISTO",
+      "tramo": {
+        "codigo": "B4",
+        "nombre": "Mis opciones",
+        "numero": 5,
         "total": 6
       }
     },
@@ -314,6 +374,6 @@
     "promocion": 2026,
     "seccion": "A"
   },
-  "total": 13,
-  "total_estudiantes": 13
+  "total": 16,
+  "total_estudiantes": 16
 }

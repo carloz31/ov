@@ -10,6 +10,13 @@
           "respuesta": null
         },
         {
+          "codigo": "avance-bajo",
+          "descripcion": "Va en Sin empezar; la mayoría del salón va en Mi historia y mis aspiraciones.",
+          "destino": "AVANCE",
+          "nombre": "Va muy por detrás de su salón",
+          "respuesta": null
+        },
+        {
           "codigo": "familia-pendiente",
           "descripcion": "Su apoderado aún no ha iniciado sesión en la plataforma.",
           "destino": "AVANCE",

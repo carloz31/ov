@@ -63,17 +63,36 @@ test('la línea de eco: mismo registro, otra actividad, planes, otra forma y lo 
     { letra: 'B', carrera: 'Obstetricia', institucion: null },
   ]
   assert.equal(
-    linea({ fuente: 'PLANES', planes, hoy: { planes: [{ letra: 'B', carrera: 'Psicología', institucion: null }] } }),
+    linea({
+      fuente: 'PLANES',
+      planes,
+      hoy: { planes: [{ letra: 'B', carrera: 'Psicología', institucion: null }] },
+    }),
     'Respondió viendo: Plan A Enfermería · Plan B Obstetricia. Hoy su Plan B es Psicología.',
   )
-  assert.equal(linea({ fuente: 'PLANES', planes: planes.slice(0, 1) }), 'Respondió viendo: Plan A Enfermería · UNMSM.')
+  assert.equal(
+    linea({ fuente: 'PLANES', planes: planes.slice(0, 1) }),
+    'Respondió viendo: Plan A Enfermería · UNMSM.',
+  )
   assert.equal(
     linea({ fuente: 'TEXTO', actividad: 'X', cita: 'antes', hoy: { cita: 'después' } }),
     'Respondió viendo lo que escribió en X: “antes”. Hoy dice: “después”.',
   )
   assert.equal(
-    linea({ fuente: 'OTRO', eco: { forma: 'carrera', nombre: 'Tu Plan A', carrera: 'Derecho' }, hoy: { texto: 'Arte' } }),
-    'Respondió viendo: Tu Plan A: Derecho. Hoy: Arte.',
+    linea({
+      fuente: 'OTRO',
+      eco: { forma: 'carrera', nombre: 'Tu Plan A', carrera: 'Derecho' },
+      hoy: { texto: 'Arte' },
+    }),
+    'Respondió viendo: Tu Plan A: Derecho. Hoy su Plan A es Arte.',
+  )
+  // Un resultado de test sin valor propio toma sus opciones, sin «: (…)» colgando.
+  assert.equal(
+    linea({
+      fuente: 'OTRO',
+      eco: { nombre: 'Tu test de habilidades', tipo: 'RESULTADO', opciones: ['Asertividad'] },
+    }),
+    'Respondió viendo: Tu test de habilidades: Asertividad.',
   )
   assert.equal(linea({ fuente: 'MISMO_REGISTRO', numeros: [] }), null)
 })
@@ -114,7 +133,10 @@ test('la entrada desde un aviso abre su registro y muestra la pregunta marcada',
 test('cada pregunta: marcas, elección en negrita, aún no lo sabe, sin encabezado ni diálogo', async () => {
   const app = orientadora()
   const { ItemRegistroLectura } = app.load('src/features/counselor/components/perfil/ItemRegistroLectura.tsx')
-  const pintar = (nombre) => fx(nombre).items.map((item) => html(ItemRegistroLectura, { item })).join(' ')
+  const pintar = (nombre) =>
+    fx(nombre)
+      .items.map((item) => html(ItemRegistroLectura, { item }))
+      .join(' ')
   const futuro = pintar('5-registro-b1-7')
   assert.match(texto(futuro), /Sin contenido · No responde a la pregunta\./)
   assert.match(futuro, /border-dashed/)
@@ -129,4 +151,40 @@ test('cada pregunta: marcas, elección en negrita, aún no lo sabe, sin encabeza
   const planes = texto(pintar('7-registro-b4-5'))
   assert.match(planes, /Respondió viendo: Plan A .* · Plan B .*\. Hoy su Plan [AB] es /)
   assert.doesNotMatch(texto(pintar('5-registro-b4-5')), /Hoy su Plan/)
+})
+
+test('una pregunta sin responder: «Aún no lo responde» en un registro en curso y sin línea de eco', async () => {
+  const app = orientadora()
+  const { ItemRegistroLectura } = app.load('src/features/counselor/components/perfil/ItemRegistroLectura.tsx')
+  const item = {
+    numero: 3,
+    codigo: 'b1-3-contraste',
+    marca: null,
+    aun_no_lo_sabe: false,
+    ecos: [],
+    pregunta_eleccion: '¿Coinciden?',
+    eleccion: 'LISTA',
+    elegidas: [],
+    pregunta_texto: '¿En qué punto?',
+    primera_respuesta: null,
+    repregunta: null,
+    segunda_respuesta: null,
+    respondido: false,
+  }
+  assert.match(texto(html(ItemRegistroLectura, { item, enCurso: true })), /Aún no lo responde/)
+  assert.match(texto(html(ItemRegistroLectura, { item })), /No lo respondió/)
+  // El origen de una pieza va aparte y con su mayúscula.
+  const pieza = {
+    ...item,
+    respondido: true,
+    eleccion: 'PIEZAS',
+    primera_respuesta: 'Texto',
+    elegidas: [
+      { texto: 'Ayudar a otras personas', otra: false, origen: 'Social', grupo: 'INTERESES' },
+      { texto: 'Matemática', otra: false, origen: '¿Qué te cuesta?', grupo: 'CUESTA' },
+    ],
+  }
+  const piezas = texto(html(ItemRegistroLectura, { item: pieza }))
+  assert.match(piezas, /Ayudar a otras personas \(de sus intereses: Social\)/)
+  assert.match(piezas, /Matemática \(de: ¿Qué te cuesta\?\)/)
 })

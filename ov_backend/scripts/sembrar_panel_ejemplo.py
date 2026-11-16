@@ -1,7 +1,7 @@
 """Estudiantes de ejemplo para revisar la lista y el perfil del estudiante de la orientadora (ajuste
 panel-estudiantes §12).
 
-DATO DE PRUEBA: ocho estudiantes inventados (`est-panel-1` … `est-panel-8`) en 5A de ori-carmen, sobre una base con
+DATO DE PRUEBA: once estudiantes inventados (`est-panel-1` … `est-panel-11`) en 5A de ori-carmen, sobre una base con
 el conjunto `contenido`. Usa las acciones reales (camino, cuestionarios, registros, planes) con el cliente de prueba del
 LLM (nunca la red); lo que hoy decide el LLM (`tipo_final`, `sensible`, repregunta), los check-ins, los ingresos y la
 familia se escriben directo. No es parte de ningún conjunto ni se despliega. Si un estudiante ya existe, no se toca.
@@ -54,13 +54,17 @@ ESTUDIANTES = (
     ('est-panel-6', 'Camila Cárdenas Ruiz', 'Respuesta sensible'),
     ('est-panel-7', 'Ana Lucía Álvarez Rojas', 'Terminó el camino'),
     ('est-panel-8', 'Fabio Flores Vega', 'Avanzado y sin avisos'),
+    # Ajuste respuestas-orientadora (pedido del usuario): casos que los ocho anteriores no muestran.
+    ('est-panel-9', 'Tomás Quispe Huamán', 'Cuestionarios opcionales y misiones de la ciudad'),
+    ('est-panel-10', 'Valeria Ccori Mamani', 'Cambió sus planes después de responder'),
+    ('est-panel-11', 'Mateo Rivas Paz', 'Sin apoderado y con un registro a medias'),
 )
-# DATO DE PRUEBA: apoderados de los casos 3 a 8 (código, nombre, estudiante, parentesco). Ajuste desbloqueos: b1-4 pide
-# la carta del estudiante, que exige un vínculo, así que los casos que pasan b1-4 (3 a 8) tienen apoderado.
+# DATO DE PRUEBA: apoderados de los casos 3 a 10 (código, nombre, estudiante, parentesco). Ajuste desbloqueos: b1-4 pide
+# la carta del estudiante, que exige un vínculo, así que los casos que pasan b1-4 (3 a 10) tienen apoderado; el 11 no.
 # DATO DE PRUEBA: (cuenta, correo, contraseña) para ingresar como cada estudiante y apoderado de ejemplo.
 CREDENCIALES = (
-    *((f'est-panel-{n}', f'panel{n}.estudiante@example.com', f'Panel{n}-2026!') for n in range(1, 9)),
-    *((f'apo-panel-{n}', f'panel{n}.apoderado@example.com', f'ApoPanel{n}-2026!') for n in (3, 4, 5, 6, 7, 8)),
+    *((f'est-panel-{n}', f'panel{n}.estudiante@example.com', f'Panel{n}-2026!') for n in range(1, 12)),
+    *((f'apo-panel-{n}', f'panel{n}.apoderado@example.com', f'ApoPanel{n}-2026!') for n in (3, 4, 5, 6, 7, 8, 9, 10)),
 )
 
 APODERADOS = (('apo-panel-3', 'Gloria Vega', 'est-panel-3', 'madre'),
@@ -68,7 +72,9 @@ APODERADOS = (('apo-panel-3', 'Gloria Vega', 'est-panel-3', 'madre'),
               ('apo-panel-5', 'José Paredes', 'est-panel-5', 'padre'),
               ('apo-panel-6', 'Marta Ruiz', 'est-panel-6', 'madre'),
               ('apo-panel-7', 'Rocío Rojas', 'est-panel-7', 'madre'),
-              ('apo-panel-8', 'Luis Flores', 'est-panel-8', 'padre'))
+              ('apo-panel-8', 'Luis Flores', 'est-panel-8', 'padre'),
+              ('apo-panel-9', 'Rosa Huamán', 'est-panel-9', 'madre'),
+              ('apo-panel-10', 'Pedro Ccori', 'est-panel-10', 'padre'))
 TEXTO = 'DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.'
 
 
@@ -366,6 +372,7 @@ def sembrar_casos(s: Sembrador) -> list[str]:
                 s.completar('est-panel-8', f'{prefijo}-{parte}', _alterna)
             s.pedir('POST', '/acciones/revelar-resultado', {'cuenta': 'est-panel-8', 'instrumento': instrumento})
         s.senales('est-panel-8', 4, 4, 5)
+    _casos_nuevos(s, hecho)
     s.sesion.commit()
     sembrar_entrevistas(s, hecho)
     return nuevos
@@ -482,6 +489,59 @@ def sembrar_entrevistas(s: Sembrador, hecho: set[str]) -> None:
             _leyenda_directa(s, datos)
         else:
             _con_acciones(s, datos)
+
+
+def _opcionales_reveladas(s: Sembrador, codigo):
+    """Las páginas de habilidades e inteligencias abiertas (b2-1 y b2-2) y sus cuestionarios respondidos y revelados."""
+    for opcional in ('b2-1', 'b2-2'):
+        s.completar(codigo, opcional)
+    for instrumento, prefijo, partes in (('TEST-HABILIDADES', 'h-habilidades', 4),
+                                         ('TEST-INTELIGENCIAS', 'h-inteligencias', 5)):
+        for parte in range(1, partes + 1):
+            s.completar(codigo, f'{prefijo}-{parte}', _alterna)
+        s.pedir('POST', '/acciones/revelar-resultado', {'cuenta': codigo, 'instrumento': instrumento})
+
+
+def _a_medias(s: Sembrador, codigo, actividad):
+    """Solo la primera pregunta de un registro respondida: queda en curso."""
+    from soporte_ruta import eleccion_minima, item_de, leer_registro, responder_item
+    s.sesion.commit()
+    registro = leer_registro(s.cliente, actividad, codigo)
+    item = item_de(registro, registro['item_actual'])
+    responder_item(s.cliente, actividad, item['codigo'], eleccion_minima(item), TEXTO, codigo)
+
+
+def _casos_nuevos(s: Sembrador, hecho):
+    """Ajuste respuestas-orientadora, a pedido del usuario: perfiles que los ocho primeros no muestran."""
+    from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA
+    from soporte_contenido import REQUERIDAS
+    if 'est-panel-9' in hecho:  # 9 · Cuestionarios opcionales revelados y misiones de la ciudad (una a medias).
+        s.ingreso('est-panel-9', 3)
+        s.avanzar('est-panel-9', 'b3-10', partida=s.autopercepcion(lambda d: {'AUTO-A': 1, 'AUTO-C': 4}.get(d, 3)))
+        _opcionales_reveladas(s, 'est-panel-9')
+        for mision in ('h1', 'h3'):
+            s.completar('est-panel-9', mision)
+        _a_medias(s, 'est-panel-9', 'h2')
+        s.respuestas('est-panel-9', 'h1')[0].tipo_final = 'vacio'
+        s.senales('est-panel-9', 3, 2, 3, 4)
+        s.diario('est-panel-9', 2)
+    if 'est-panel-10' in hecho:  # 10 · Respondió con un orden de planes y después lo cambió; apoderado activo.
+        s.ingreso('est-panel-10', 1)
+        s.ingreso('apo-panel-10', 2)
+        s.avanzar('est-panel-10', 'b4-5', partida=s.autopercepcion(lambda d: 2))
+        s.pedir('POST', '/acciones/planes/ordenar', {'cuenta': 'est-panel-10', 'carreras': [PERIODISMO, PSICOLOGIA]})
+        # Una misma respuesta sensible y sin contenido (prima «Requiere atención»), en un registro no destacado.
+        primera = s.respuestas('est-panel-10', 'b1-1')[0]
+        primera.sensible, primera.tipo_final = True, 'fuera_de_tema'
+        s.pedir('POST', '/acciones/planes/medidores', {'cuenta': 'est-panel-10', 'carrera': PERIODISMO,
+                                                       'entusiasmo': 2, 'capacidad': 3, 'recursos': 1})
+        s.senales('est-panel-10', 2, 2, 1)
+    if 'est-panel-11' in hecho:  # 11 · Sin apoderado; «Las voces y la mía» a medias.
+        s.ingreso('est-panel-11', 6)
+        s.avanzar('est-panel-11', REQUERIDAS[REQUERIDAS.index('b1-3') - 1],
+                  partida=s.autopercepcion(lambda d: {'AUTO-E': 1, 'AUTO-D': 1}.get(d, 2)), planes=False)
+        _a_medias(s, 'est-panel-11', 'b1-3')
+        s.senales('est-panel-11', 3)
 
 
 def _alterna(item):

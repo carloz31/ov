@@ -19,7 +19,7 @@ export function PorDondeVa({
       titulo="Por dónde va el salón"
       subtitulo="Cuántos estudiantes están hoy en cada tramo del camino."
     >
-      <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(9.5rem,1fr))] gap-2">
         {datos.tramos.map((tramo) => {
           const intenso = maximo > 0 && tramo.cantidad * 3 >= maximo * 2
           return (

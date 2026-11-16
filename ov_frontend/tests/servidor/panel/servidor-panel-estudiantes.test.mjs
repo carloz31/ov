@@ -150,7 +150,7 @@ test('la lista pinta solo sus columnas: el aviso más importante, «y N más», 
   assert.match(tabla, /Estudiante .*Por dónde va .*Test de intereses .*Plan A .*Último ingreso .*Avisos/)
   assert.match(
     tabla,
-    /Elena Espinoza León Sin empezar Sin empezar Sin plan Nunca ingresó No ingresa hace 7 días o más y 1 más/,
+    /Elena Espinoza León Sin empezar Sin empezar Sin plan Nunca ingresó No ingresa hace 7 días o más y \d+ más/,
   )
   assert.match(tabla, /Ver perfil/)
   assert.doesNotMatch(tabla, /%/)

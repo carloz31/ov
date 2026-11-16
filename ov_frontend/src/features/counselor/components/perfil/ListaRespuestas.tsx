@@ -65,7 +65,7 @@ function Registro({
       {abierto && (
         <div className="space-y-1 px-2 pb-4 sm:px-3">
           {items ? (
-            items.map((i) => <ItemRegistroLectura key={i.codigo} item={i} />)
+            items.map((i) => <ItemRegistroLectura key={i.codigo} item={i} enCurso={fila.estado === 'EN_CURSO'} />)
           ) : (
             <EsperaBloque carga={carga} onReintentar={reintentar} filas={2} />
           )}

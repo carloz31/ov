@@ -43,7 +43,7 @@ def test_contenido_siembra_los_ejemplos_por_defecto(base, monkeypatch, entorno):
     monkeypatch.setenv('JWT_SECRETO', SECRETO)
     assert carga.main(['contenido']) == 0
     panel, actividades = ejemplos(base)
-    assert panel == 8 and actividades > 0
+    assert panel == 11 and actividades > 0
 
 
 def test_sin_ejemplos_y_con_ruta_no_siembra(base, monkeypatch):

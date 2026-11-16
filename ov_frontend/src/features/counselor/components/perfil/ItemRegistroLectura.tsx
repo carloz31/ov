@@ -55,7 +55,11 @@ function Eleccion({ item }: { item: ItemLectura }) {
             {e.otra ? (
               <span className="text-muted-foreground"> (lo escribió el estudiante)</span>
             ) : (
-              e.origen && <span className="text-muted-foreground"> {e.origen.toLocaleLowerCase('es')}</span>
+              e.origen && (
+                <span className="text-muted-foreground">
+                  {e.grupo === 'INTERESES' ? ` (de sus intereses: ${e.origen})` : ` (de: ${e.origen})`}
+                </span>
+              )
             )}
           </li>
         ))}
@@ -74,8 +78,9 @@ function Eleccion({ item }: { item: ItemLectura }) {
   )
 }
 
-function Respuesta({ item }: { item: ItemLectura }) {
-  if (!item.respondido) return <p className="italic text-muted-foreground">No lo respondió</p>
+function Respuesta({ item, enCurso }: { item: ItemLectura; enCurso: boolean }) {
+  if (!item.respondido)
+    return <p className="italic text-muted-foreground">{enCurso ? 'Aún no lo responde' : 'No lo respondió'}</p>
   if (item.aun_no_lo_sabe && !item.primera_respuesta)
     return <p className="italic text-muted-foreground">Aún no lo sabe</p>
   return (
@@ -97,7 +102,7 @@ function Respuesta({ item }: { item: ItemLectura }) {
 // Ajuste respuestas-orientadora §3.2 y §3.3 (boceto 18): una pregunta en lectura, con el número en una columna
 // estrecha y, si tiene marca, en un recuadro (crema con borde ámbar o blanco con borde ámbar punteado). Es propio del
 // portal: no reutiliza el reproductor del estudiante.
-export function ItemRegistroLectura({ item }: { item: ItemLectura }) {
+export function ItemRegistroLectura({ item, enCurso = false }: { item: ItemLectura; enCurso?: boolean }) {
   const marca = item.marca ? MARCAS_ITEM[item.marca] : null
   return (
     <article
@@ -120,7 +125,7 @@ export function ItemRegistroLectura({ item }: { item: ItemLectura }) {
         {item.pregunta_eleccion && <p className="text-muted-foreground">{item.pregunta_eleccion}</p>}
         <Eleccion item={item} />
         <p className="pt-1 text-muted-foreground">{item.pregunta_texto}</p>
-        <Respuesta item={item} />
+        <Respuesta item={item} enCurso={enCurso} />
       </div>
     </article>
   )
