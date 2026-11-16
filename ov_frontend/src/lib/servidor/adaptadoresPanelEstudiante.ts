@@ -1,6 +1,6 @@
 import type {
-  CambioAfirmacion,
-  CambioPerfil,
+  ClaseDimension,
+  ConteoDetalle,
   DestinoPerfil,
   DimensionPartida,
   EstadoTestPanel,
@@ -26,26 +26,44 @@ export const textosZona: Record<ZonaPerfil, string> = {
   EN_CAMINO: 'En camino',
   POR_TRABAJAR: 'Por trabajar',
 }
-export const textosCambio: Record<CambioPerfil, string> = { SUBIO: 'Subió', IGUAL: 'Igual', BAJO: 'Bajó' }
-// Ajuste color-partida-llegada: el cambio de una afirmación en el detalle por dimensión.
-export const textosCambioAfirmacion: Record<CambioAfirmacion, string> = {
-  BAJO: 'Bajó',
-  SIGUE_BAJA: 'Sigue baja',
-  MEJORO: 'Mejoró',
-  IGUAL: 'Igual',
+// Ajuste partida-llegada-liviano §4.1: el conteo del detalle como una frase, en piezas con su tono («aviso» o «exito»):
+// «1 dimensión bajó, 1 sigue por trabajar y 3 subieron.», «2 dimensiones por trabajar, 2 en camino y 1 fuerte.» o, si
+// todas van en el mismo grupo, «Las 5 dimensiones subieron.». Los ceros no llegan del servidor.
+export type PiezaConteo = { texto: string; tono?: 'aviso' | 'exito' }
+const VERBOS_CONTEO: Record<ZonaPerfil | ClaseDimension, [string, string]> = {
+  BAJO: ['bajó', 'bajaron'],
+  SIGUE_POR_TRABAJAR: ['sigue por trabajar', 'siguen por trabajar'],
+  SUBIO: ['subió', 'subieron'],
+  IGUAL: ['sigue igual', 'siguen igual'],
+  POR_TRABAJAR: ['por trabajar', 'por trabajar'],
+  EN_CAMINO: ['en camino', 'en camino'],
+  FUERTE: ['fuerte', 'fuertes'],
 }
-// «3 por trabajar», «1 bajó», «4 subieron».
-export function textoConteo(codigo: ZonaPerfil | CambioPerfil, cantidad: number) {
-  const uno = cantidad === 1
-  const textos: Record<ZonaPerfil | CambioPerfil, string> = {
-    POR_TRABAJAR: 'por trabajar',
-    EN_CAMINO: 'en camino',
-    FUERTE: uno ? 'fuerte' : 'fuertes',
-    BAJO: uno ? 'bajó' : 'bajaron',
-    SUBIO: uno ? 'subió' : 'subieron',
-    IGUAL: uno ? 'igual' : 'iguales',
+const TONO_CONTEO: Partial<Record<ZonaPerfil | ClaseDimension, 'aviso' | 'exito'>> = {
+  BAJO: 'aviso',
+  SIGUE_POR_TRABAJAR: 'aviso',
+  SUBIO: 'exito',
+  POR_TRABAJAR: 'aviso',
+}
+export function fraseConteo(conteo: ConteoDetalle[]): PiezaConteo[] {
+  const total = conteo.reduce((suma, c) => suma + c.cantidad, 0)
+  if (!total) return []
+  if (conteo.length === 1 && total > 1) {
+    const { codigo } = conteo[0]
+    const zona = codigo === 'POR_TRABAJAR' || codigo === 'EN_CAMINO' || codigo === 'FUERTE'
+    const verbo = codigo === 'FUERTE' ? 'son fuertes' : zona ? `están ${VERBOS_CONTEO[codigo][1]}` : VERBOS_CONTEO[codigo][1]
+    return [{ texto: `Las ${total} dimensiones ${verbo}`, tono: TONO_CONTEO[codigo] }, { texto: '.' }]
   }
-  return `${cantidad} ${textos[codigo]}`
+  return conteo.flatMap((c, i) => {
+    const uno = c.cantidad === 1
+    const sustantivo = i === 0 ? (uno ? ' dimensión' : ' dimensiones') : ''
+    const union = i === 0 ? '' : i === conteo.length - 1 ? ' y ' : ', '
+    return [
+      ...(union ? [{ texto: union }] : []),
+      { texto: `${c.cantidad}${sustantivo} ${VERBOS_CONTEO[c.codigo][uno ? 0 : 1]}`, tono: TONO_CONTEO[c.codigo] },
+      ...(i === conteo.length - 1 ? [{ texto: '.' }] : []),
+    ]
+  })
 }
 // «Partida respondida el 28 oct. Aún no responde la llegada.» o «… y llegada el 4 dic.»
 export function lineaFechasPartida(partida: string, llegada: string | null) {
@@ -120,14 +138,11 @@ export function gruposComoEmpezo(partida: PartidaResumen): GrupoDimensiones[] {
   const grupos: [string, (d: DimensionPartida) => boolean][] =
     partida.estado === 'CON_LLEGADA'
       ? [
-          ['Bajó', (d) => d.cambio === 'BAJO'],
-          [
-            'Sigue por trabajar',
-            (d) =>
-              d.cambio === 'IGUAL' && d.zona_partida === 'POR_TRABAJAR' && d.zona_llegada === 'POR_TRABAJAR',
-          ],
-          ['Subió', (d) => d.cambio === 'SUBIO'],
-          ['Se mantiene', (d) => d.cambio === 'IGUAL' && d.zona_partida !== 'POR_TRABAJAR'],
+          // Ajuste partida-llegada-liviano: por la clase que manda el servidor.
+          ['Bajó', (d) => d.clase === 'BAJO'],
+          ['Sigue por trabajar', (d) => d.clase === 'SIGUE_POR_TRABAJAR'],
+          ['Subió', (d) => d.clase === 'SUBIO'],
+          ['Se mantiene', (d) => d.clase === 'IGUAL'],
         ]
       : [
           ['Por trabajar', (d) => d.zona_partida === 'POR_TRABAJAR'],

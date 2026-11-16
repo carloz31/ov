@@ -233,17 +233,33 @@ test('Tests: barras de intereses, partida y llegada en palabras con sus grupos y
   const { PartidaLlegadaPerfil } = app.load(
     'src/features/counselor/components/perfil/PartidaLlegadaPerfil.tsx',
   )
-  const llegada = html(PartidaLlegadaPerfil, { datos: fx('7-tests').partida_llegada, onVerTodas() {} })
-  assert.match(texto(llegada), /Cambio .*Bajó/)
+  // Ajuste partida-llegada-liviano §3: zonas y respuestas en texto; solo el cambio o lo que pide atención con marcador.
+  const datosLlegada = fx('7-tests').partida_llegada
+  const llegada = html(PartidaLlegadaPerfil, { datos: datosLlegada, onVerTodas() {} })
+  assert.match(texto(llegada), /Dimensión Partida · .* Llegada · .* Cambio/)
   assert.match(texto(llegada), /Bajaron .*→/)
-  assert.doesNotMatch(llegada, /puntaje/i)
-  const partida = texto(html(PartidaLlegadaPerfil, { datos: tests.partida_llegada, onVerTodas() {} }))
-  assert.match(partida, /Aún no responde/)
+  assert.doesNotMatch(llegada, /puntaje|rounded-md px-2 py-0\.5/i) // sin chips
+  assert.match(llegada, /data-clase="(BAJO|SUBIO|IGUAL|SIGUE_POR_TRABAJAR)"/)
+  assert.match(llegada, /text-warning-text">Bajaron</)
+  // Las dimensiones en el orden del servidor (por atención).
+  const filas = datosLlegada.resumen.dimensiones.map((d) => llegada.indexOf(`>${d.nombre}<`))
+  assert.deepEqual(filas, [...filas].sort((x, y) => x - y))
+  const partidaHtml = html(PartidaLlegadaPerfil, { datos: tests.partida_llegada, onVerTodas() {} })
+  const partida = texto(partidaHtml)
+  assert.doesNotMatch(partida, /Llegada|Aún no responde$|Aún no responde (?!la llegada)/)
+  assert.match(partida, /su valor está en el cambio\. Partida respondida el \d+ \w+; aún no responde la llegada\./)
   assert.match(partida, /Cuando responda la llegada, aquí irán primero las que bajaron/)
   assert.match(partida, /Ver detalle por dimensión/)
+  if (tests.partida_llegada.grupos.length) {
+    assert.match(partidaHtml, /text-warning-text">Respuestas bajas</)
+    assert.match(partidaHtml, /data-clase="BAJA"/)
+  }
+  // Sin respuestas bajas.
+  const sinBajas = { ...tests.partida_llegada, grupos: [] }
+  assert.match(texto(html(PartidaLlegadaPerfil, { datos: sinBajas, onVerTodas() {} })), /No tiene respuestas bajas en la partida\./)
 })
 
-test('detalle por dimensión: sin partida, solo partida y con llegada, en el orden y con los tonos del servidor', () => {
+test('detalle por dimensión: sin partida, solo partida y con llegada, en el orden y con las marcas del servidor', () => {
   // Ajuste color-partida-llegada §2.
   const app = orientadora()
   const { DetallePartidaLlegada } = app.load(
@@ -258,29 +274,33 @@ test('detalle por dimensión: sin partida, solo partida y con llegada, en el ord
   const partida = texto(partidaHtml)
   assert.match(partida, /Partida respondida el \d+ \w+\. Aún no responde la llegada\./)
   assert.ok(partida.includes(datosPartida.lectura.slice(0, 40)))
-  assert.match(partida, /Respuesta baja es una de las dos opciones menos favorables/)
-  for (const c of datosPartida.conteo) assert.match(partida, new RegExp(`${c.cantidad} (por trabajar|en camino|fuertes?)`))
+  // Ajuste partida-llegada-liviano §4.1: el conteo como frase y la línea de «respuesta baja» solo si hay alguna.
+  assert.match(partida, /Respuesta baja: una de las dos opciones menos favorables/)
+  assert.match(partida, /(\d+ dimensi(ón|ones) .*\.|Las \d+ dimensiones .*\.)/)
+  assert.doesNotMatch(partidaHtml, /Bajó Sigue baja Mejoró Igual/)
   // Los bloques salen en el orden del servidor, con la rejilla de dos columnas.
   const posiciones = datosPartida.dimensiones.map((d) => partidaHtml.indexOf(`>${d.nombre}<`))
   assert.deepEqual(posiciones, [...posiciones].sort((a, b) => a - b))
   assert.match(partidaHtml, /xl:grid-cols-2/)
   const baja = datosPartida.dimensiones.flatMap((d) => d.afirmaciones).find((a) => a.partida_baja)
   assert.ok(baja, 'el caso 5 tiene alguna respuesta baja')
-  assert.match(partidaHtml, new RegExp(`bg-warning-soft text-warning-text">${baja.partida}<`))
+  assert.match(partidaHtml, new RegExp(`data-clase="BAJA"><span aria-hidden="true">•</span><span>${baja.partida}<`))
   assert.doesNotMatch(partidaHtml, /puntaje|Cambio</i)
 
   const datosLlegada = fx('7-partida-llegada')
   const llegadaHtml = html(DetallePartidaLlegada, { datos: datosLlegada })
   const llegada = texto(llegadaHtml)
   assert.match(llegada, /Partida respondida el \d+ \w+ y llegada el \d+ \w+\./)
-  assert.match(llegada, /\d+ bajó|\d+ bajaron/)
-  assert.match(llegada, /Bajó Sigue baja Mejoró Igual/)
+  assert.match(llegada, /\d+ dimensi(ón|ones) bajó|\d+ dimensi(ón|ones) bajaron|Las \d+ dimensiones/)
+  assert.doesNotMatch(llegada, /Bajó Sigue baja Mejoró Igual/)
+  assert.match(llegada, /Sigue baja: subió, pero sigue entre las respuestas más bajas\./)
   assert.match(llegada, /Afirmación Partida · .* Llegada · .* Cambio/)
   assert.doesNotMatch(llegadaHtml, /xl:grid-cols-2/)
   const sigue = datosLlegada.dimensiones.flatMap((d) => d.afirmaciones).find((a) => a.cambio === 'SIGUE_BAJA')
   assert.ok(sigue, 'el caso 7 tiene una afirmación que sube y sigue baja')
-  assert.match(llegadaHtml, /bg-warning-soft text-warning-text">Sigue baja</)
-  assert.match(llegadaHtml, /bg-success-soft text-success-text">Mejoró</)
+  assert.match(llegadaHtml, /data-clase="SIGUE_BAJA"><span aria-hidden="true">•<\/span><span>Sigue baja</)
+  assert.match(llegadaHtml, /data-clase="MEJORO"><span aria-hidden="true">↑<\/span><span>Mejoró</)
+  assert.doesNotMatch(llegadaHtml, /bg-warning-soft|bg-success-soft/)
   assert.match(llegada, new RegExp(`${datosLlegada.dimensiones[0].nombre} .*→`))
   assert.doesNotMatch(llegadaHtml, /puntaje/i)
 })

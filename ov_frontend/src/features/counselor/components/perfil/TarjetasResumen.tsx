@@ -9,16 +9,14 @@ import {
   textosZona,
 } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import type { DestinoPerfil, PerfilEstudiante } from '@/types/servidor'
-import { ChipPerfil, type TonoChip } from './ChipPerfil'
+import { ChipPerfil } from './ChipPerfil'
 import { textoInstitucionPerfil } from '@/features/counselor/lib/perfilEstudiante'
-const TONO_GRUPO: Record<string, TonoChip> = {
-  'Por trabajar': 'aviso',
-  'En camino': 'neutro',
-  Fuerte: 'exito',
-  Bajó: 'aviso',
-  'Sigue por trabajar': 'aviso',
-  Subió: 'exito',
-  'Se mantiene': 'neutro',
+// Ajuste partida-llegada-liviano §5: el título del grupo lleva el color del cambio (o ámbar solo en Por trabajar).
+const COLOR_GRUPO: Record<string, string> = {
+  'Por trabajar': 'text-warning-text',
+  Bajó: 'text-warning-text',
+  'Sigue por trabajar': 'text-warning-text',
+  Subió: 'text-success-text',
 }
 
 function Ir({ etiqueta, onClick }: { etiqueta: string; onClick: () => void }) {
@@ -133,17 +131,23 @@ function ComoEmpezo({ datos, onIr }: { datos: PerfilEstudiante; onIr: (d: Destin
       ) : (
         gruposComoEmpezo(p).map((g) => (
           <div key={g.titulo} className="space-y-1">
-            <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{g.titulo}</h3>
-            <div className="flex flex-wrap gap-1.5">
+            <h3
+              className={`text-xs font-bold uppercase tracking-wide ${COLOR_GRUPO[g.titulo] ?? 'text-muted-foreground'}`}
+            >
+              {g.titulo}
+            </h3>
+            <ul className="text-sm">
               {g.dimensiones.map((d) => (
-                <ChipPerfil key={d.codigo} tono={TONO_GRUPO[g.titulo] ?? 'neutro'}>
+                <li key={d.codigo}>
                   {d.nombre}
-                  {conLlegada && d.zona_partida && d.zona_llegada
-                    ? ` · ${textosZona[d.zona_partida]} → ${textosZona[d.zona_llegada]}`
-                    : ''}
-                </ChipPerfil>
+                  {conLlegada && d.zona_partida && d.zona_llegada && (
+                    <span className="text-muted-foreground">
+                      : {textosZona[d.zona_partida]} → {textosZona[d.zona_llegada]}
+                    </span>
+                  )}
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ))
       )}

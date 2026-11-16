@@ -1,30 +1,14 @@
 import { textoInstitucion } from '@/lib/servidor/adaptadoresPanel'
 import type {
-  CambioAfirmacion,
-  CambioPerfil,
   GestionPanel,
   InstitucionPlanPerfil,
   MarcaItem,
   RegistroFila,
   TipoFormacion,
-  ZonaPerfil,
 } from '@/types/servidor'
-import type { TonoChip } from '../components/perfil/ChipPerfil'
 
-// Ajuste panel-estudiantes · Tonos y textos que comparten los bloques del perfil del estudiante.
-export const TONO_ZONA: Record<ZonaPerfil, TonoChip> = {
-  FUERTE: 'exito',
-  EN_CAMINO: 'neutro',
-  POR_TRABAJAR: 'aviso',
-}
-export const TONO_CAMBIO: Record<CambioPerfil, TonoChip> = { SUBIO: 'exito', IGUAL: 'neutro', BAJO: 'aviso' }
-// Ajuste color-partida-llegada: bajó y sigue baja en ámbar; mejoró en verde; igual, neutro.
-export const TONO_CAMBIO_AFIRMACION: Record<CambioAfirmacion, TonoChip> = {
-  BAJO: 'aviso',
-  SIGUE_BAJA: 'aviso',
-  MEJORO: 'exito',
-  IGUAL: 'neutro',
-}
+// Ajuste panel-estudiantes · Textos que comparten los bloques del perfil del estudiante (los tonos de zona y cambio se
+// retiraron en el ajuste partida-llegada-liviano: ahora son `MarcaTexto`).
 
 // «UNMSM · universidad pública».
 export function textoInstitucionPerfil(institucion: InstitucionPlanPerfil) {

@@ -22,3 +22,14 @@
 - No se agregó un tono `aviso-suave` a `ChipPerfil`: las marcas ya no son chips y la intensidad vive en `MarcaRespuesta`.
 - Citas y nombres de actividad en la línea de eco con “…” y cursiva, según el ajuste anterior, en lugar de las «» del texto de observaciones.
 - Siembra de ejemplo: el caso 5 tiene una respuesta fuera de tema en b1-7 (no destacado) y el caso 6 una sensible en b1-1 (no destacado).
+
+## Ajuste partida-llegada-liviano
+
+- Se corre en la misma rama, a pedido del usuario, al terminar respuestas-orientadora (con su suite completa en verde), y se agrega como sección de la spec en curso.
+- `DimensionPartida` y `DimensionDetalle` ganan `clase` (bajó, sigue por trabajar, subió, igual) y el conteo con llegada separa «sigue por trabajar» de «igual»: el front ya no deduce «sigue por trabajar» de las zonas (también `gruposComoEmpezo`, del Resumen).
+- El bloque de la pestaña Tests llega ordenado por atención, como el detalle (`ordenar_dimensiones`). Mismas consultas que antes (detalle 7/8/8; perfil y Tests sin cambios en sus presupuestos).
+- `EtiquetaPanel` pasa a texto gris en todos los `BloquePanel`: el bloque y el detalle de partida y llegada y «Cuestionarios» del Inicio del panel.
+- Los tonos de texto del portal (`--warning-text` #5a3b00 y `--success-text` #256b4c en el tema del portal) ya cumplen 4.5:1 sobre blanco: no se oscurecieron.
+- Se retiraron `TONO_ZONA`, `TONO_CAMBIO`, `TONO_CAMBIO_AFIRMACION`, `textosCambio`, `textosCambioAfirmacion` y `textoConteo`, sin uso tras el cambio; la vista del estudiante usa los suyos (`features/discovery/lib/partidaLlegada.ts`) y no cambia.
+- Frase del conteo con todas en un grupo: «Las N dimensiones subieron / bajaron / siguen por trabajar / siguen igual / están por trabajar / están en camino / son fuertes». Con llegada, «igual» se dice «sigue igual».
+- El boceto 20 llegó en `.webp` y se guardó así.

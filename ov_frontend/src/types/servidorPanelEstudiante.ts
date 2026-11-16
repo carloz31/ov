@@ -7,6 +7,7 @@ export type EstadoTestPanel = 'LISTO' | 'POR_REVISAR' | 'EN_CURSO' | 'SIN_EMPEZA
 export type DestinoPerfil = 'TESTS' | 'PLANES' | 'RESPUESTAS' | 'AVANCE'
 export type ZonaPerfil = 'FUERTE' | 'EN_CAMINO' | 'POR_TRABAJAR'
 export type CambioPerfil = 'SUBIO' | 'IGUAL' | 'BAJO'
+export type ClaseDimension = 'BAJO' | 'SIGUE_POR_TRABAJAR' | 'SUBIO' | 'IGUAL'
 export type MotivoRevision = 'PLANO' | 'PRISA'
 
 export type TramoEstudiante = { codigo: string; numero: number; total: number; nombre: string | null }
@@ -89,6 +90,7 @@ export type DimensionPartida = {
   zona_partida: ZonaPerfil | null
   zona_llegada: ZonaPerfil | null
   cambio: CambioPerfil | null
+  clase?: ClaseDimension | null
 }
 export type PartidaResumen = {
   estado: 'SIN_PARTIDA' | 'SOLO_PARTIDA' | 'CON_LLEGADA'
@@ -176,9 +178,10 @@ export type DimensionDetalle = {
   zona_partida: ZonaPerfil | null
   zona_llegada: ZonaPerfil | null
   cambio: CambioPerfil | null
+  clase?: ClaseDimension | null
   afirmaciones: AfirmacionDetalle[]
 }
-export type ConteoDetalle = { codigo: ZonaPerfil | CambioPerfil; cantidad: number }
+export type ConteoDetalle = { codigo: ZonaPerfil | ClaseDimension; cantidad: number }
 export type DetallePartidaLlegada = {
   instrumento: string
   nombre: string

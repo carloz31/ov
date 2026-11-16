@@ -35,7 +35,7 @@ export function BloquePanel({
 
 export function EtiquetaPanel({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex rounded-md bg-track px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+    <span className="text-sm font-medium text-muted-foreground">
       {children}
     </span>
   )
