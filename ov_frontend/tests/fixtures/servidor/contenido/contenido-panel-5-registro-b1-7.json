@@ -1,0 +1,57 @@
+{
+  "actividad": "b1-7",
+  "items": [
+    {
+      "aun_no_lo_sabe": true,
+      "codigo": "b1-7-dia",
+      "ecos": [],
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Lo veo bastante claro"
+        }
+      ],
+      "marca": null,
+      "numero": 1,
+      "pregunta_eleccion": "¿Qué tan fácil te resulta imaginarlo?",
+      "pregunta_texto": "Cuéntalo como una escena: ¿dónde estás, qué haces o qué eres?",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-7-hito",
+      "ecos": [],
+      "eleccion": null,
+      "elegidas": [],
+      "marca": "FUERA_DE_TEMA",
+      "numero": 2,
+      "pregunta_eleccion": null,
+      "pregunta_texto": "¿Qué estarás haciendo dentro de un año para acercarte a ese día? Por ejemplo: en una academia, estudiando algo, trabajando o postulando.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-7-freno",
+      "ecos": [],
+      "eleccion": null,
+      "elegidas": [],
+      "marca": null,
+      "numero": 3,
+      "pregunta_eleccion": null,
+      "pregunta_texto": "¿Qué podría frenarte en el camino a ese día? Puede ser algo de dinero, de tu familia, de los estudios o algo que no depende de ti.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "actividad": "b4-5",
+  "items": [
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b4-5-moneda",
+      "ecos": [
+        {
+          "actividad": null,
+          "cita": null,
+          "eco": null,
+          "fuente": "PLANES",
+          "hoy": {
+            "cita": null,
+            "opciones": null,
+            "planes": [
+              {
+                "carrera": "Ingeniería de Petroleo y Gas Natural",
+                "institucion": null,
+                "letra": "A"
+              }
+            ],
+            "texto": null
+          },
+          "numeros": [],
+          "opciones": [],
+          "planes": [
+            {
+              "carrera": "Psicología",
+              "institucion": "Universidad Nacional Federico Villarreal",
+              "letra": "A"
+            },
+            {
+              "carrera": "Ciencias de la Comunicación",
+              "institucion": "Universidad Nacional Federico Villarreal",
+              "letra": "B"
+            }
+          ]
+        }
+      ],
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Me desanimé"
+        }
+      ],
+      "marca": null,
+      "numero": 1,
+      "pregunta_eleccion": "Salió Ciencias de la Comunicación. ¿Qué sentiste primero?",
+      "pregunta_texto": "Piensa en Psicología. ¿Hay algo de ella que te haría falta?",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    }
+  ]
+}

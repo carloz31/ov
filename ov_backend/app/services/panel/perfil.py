@@ -13,7 +13,8 @@ from app.models import (
 from app.schemas.cuentas import SalonDatos
 from app.schemas.panel_estudiante import (
     ApoderadoCabecera, AvisoPerfil, CabeceraEstudiante, DimensionInteres, DimensionPartida, GrupoAvisosPerfil,
-    InstitucionPlan, InteresesResumen, PartidaResumen, PerfilEstudiante, PlanResumen, TemaPerfil, TramoEstudiante,
+    InstitucionPlan, InteresesResumen, PartidaResumen, PerfilEstudiante, PlanResumen, RespuestaDestino, TemaPerfil,
+    TramoEstudiante,
 )
 from app.services.familia import rutas_completas
 from app.services.instrumentos.consultas import avance_aplicacion
@@ -79,6 +80,13 @@ def _cabecera(acceso: Acceso, lecturas: Lecturas) -> CabeceraEstudiante:
                               tramo=tramo_de(lecturas, estudiante.id))
 
 
+def _respuesta(datos: dict) -> RespuestaDestino | None:
+    """El registro y la pregunta a los que lleva el aviso o tema, si su evaluador los da (`actividad`, `item`)."""
+    if datos.get("actividad") and datos.get("item"):
+        return RespuestaDestino(actividad=datos["actividad"], item=datos["item"])
+    return None
+
+
 def _avisos(alertas: list[AlertaCalculada], cuenta_id: int) -> list[GrupoAvisosPerfil]:
     grupos: dict[str, GrupoAvisosPerfil] = {}
     for calculada in alertas:
@@ -87,14 +95,15 @@ def _avisos(alertas: list[AlertaCalculada], cuenta_id: int) -> list[GrupoAvisosP
                 codigo=calculada.grupo.codigo, nombre=calculada.grupo.nombre, avisos=[]))
             grupo.avisos.append(AvisoPerfil(codigo=calculada.alerta.codigo, nombre=calculada.nombre_perfil(cuenta_id),
                                             descripcion=calculada.descripcion_perfil(cuenta_id),
-                                            destino=calculada.alerta.destino))
+                                            destino=calculada.alerta.destino,
+                                            respuesta=_respuesta(calculada.datos[cuenta_id])))
     return list(grupos.values())
 
 
 def _temas(lecturas: Lecturas, cuenta_id: int) -> list[TemaPerfil]:
     """Todos los temas que cumple, en el orden de la base; el front corta en `temas_visibles`."""
     return [TemaPerfil(codigo=c.alerta.codigo, texto=c.descripcion_perfil(cuenta_id) or c.nombre_perfil(cuenta_id),
-                       destino=c.alerta.destino)
+                       destino=c.alerta.destino, respuesta=_respuesta(c.datos[cuenta_id]))
             for c in calcular_alertas(lecturas, en_inicio=False) if cuenta_id in c.datos]
 
 

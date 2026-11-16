@@ -61,3 +61,278 @@ Los archivos de los puntos 1–9; pruebas de `tests/servidor/panel` que comparen
 ## Preguntas resueltas
 1. Punto 3: sin monto por rubro; basta «Incluye: …» con los rubros del presupuesto.
 2. Punto 8: solo cambia la alerta; cabecera y «Avance y familia» quedan igual.
+
+## Ajuste · respuestas-orientadora
+
+
+### Contexto
+La pestaña «Respuestas» del perfil del estudiante (ajuste panel-estudiantes §9) se ve cargada: chips de colores, leyenda, encabezados internos, diálogos de Lumi y ecos que repiten lo de arriba. El texto de observaciones (`ajuste-respuestas-orientadora.md`, bocetos 17 y 18) pide que se vea de un vistazo qué registros tienen algo por revisar y, al abrir uno, qué pregunta. No cambia qué se guarda ni cómo decide el LLM.
+
+- Spec en curso: `ajuste-panel-orientadora-observaciones.md` (sin integrar a `main`). Este ajuste se agrega como sección `## Ajuste · respuestas-orientadora`.
+- Rama `ajuste/respuestas-orientadora`, creada desde la punta de `ajuste/panel-orientadora-observaciones` (no desde `main`), porque esa rama ya tiene cambios en `PestanaRespuestas.tsx` y la spec en curso. `ajuste/pendientes-orientadora` ya está en `main`.
+- Bocetos guardados en `ov_backend/docs/specs/bocetos/respuestas-orientadora/` (17 y 18).
+
+### Cómo funciona hoy
+- **Backend** (`app/services/panel/perfil_respuestas.py`): ya son dos lecturas, la lista `GET …/panel/estudiantes/{e}/respuestas` (`respuestas()`: filas `RegistroFila` con `etiquetas` por conteo y `cambio_despues`, más `leer_primero` con el detalle de los registros sensibles) y el detalle `GET …/respuestas/{actividad}` (`registro()`). Cada `ItemLectura` trae `nombre`, `etiquetas`, `dialogo`, `ecos` y `ecos_hoy` en bruto y `ecos_de_hoy`. Las etiquetas salen de `etiquetas()` en `respuestas_resumen.py`.
+- **Front:** `PestanaRespuestas.tsx` filtra por destacados, separa «Para leer primero», camino y ciudad, y cada registro es una `Card` con chips y botón «Ver respuestas». `ItemRegistroLectura.tsx` pinta encabezado en mayúsculas, chips, diálogo, ecos con `lineaEco` (`adaptadoresPanelEstudiante.ts`) y respuestas en caja gris.
+- **Enlaces:** el aviso `respuesta-sensible` y «Ver respuesta» de «Para conversar» solo llevan a la pestaña (`irADestino('RESPUESTAS')` → `?tab=respuestas`). El aviso no sabe qué registro ni qué ítem.
+
+### §9.3 Causa del error («hoy: lo que escribió antes en …»)
+Son dos fallas que se suman:
+1. **Qué se considera cambiado.** `cambio` del ítem usa `eco_cambiado()` (`registro/contexto.py`), que compara los **marcadores y las líneas que fueron al LLM** (`ecos_llm`), no lo que se mostró. En b1-3, la pregunta 3 tiene como ecos las preguntas 1 y 2 del mismo registro. Si la 1 queda `sensible` después de responder la 3 (la siembra de ejemplo la marca a mano en `est-panel-6`, línea 324; en uso real pasa si la evaluación llega tarde), hoy ya no se cita (`referenciable()`), las líneas al LLM difieren y el ítem se marca cambiado, aunque el estudiante no cambió nada.
+2. **Qué se muestra como «hoy».** El front pinta `lineaEco(eco_hoy).texto`, que es el descriptor («lo que escribió antes en …»), no el valor.
+
+**Corrección:** para el panel, el «cambió» se decide **por eco mostrado y por valor**: se compara cada eco guardado con el de hoy del mismo `codigo` (cita, elección, carrera de cada plan). Los ecos del mismo registro nunca se marcan cambiados (su contenido está arriba). Un eco que hoy ya no se puede mostrar no cuenta como cambio. El «hoy» lo arma el servidor con el valor que cambió. `eco_cambiado()` del estudiante no cambia. Prueba nueva con este caso.
+
+### Modelo de datos
+Sin cambios.
+
+### Backend (contrato nuevo)
+Decisión §9.1: se queda la forma actual, **lista liviana + detalle al abrir**, y se conserva `leer_primero` (detalle ya incluido de los registros que requieren atención) para que se abran solos sin otra petición. Se miden las consultas y el tamaño de las dos rutas antes y después, con los ejemplos de `contenido` (casos 5, 6 y 7), y se informan al cerrar.
+
+`RespuestasEstudiante`: `hay_destacados`, `total_destacados` (filas visibles en Destacados), `por_revisar_destacados`, `por_revisar_todos`, `registros`, `leer_primero`.
+
+`RegistroFila` (reemplaza `etiquetas` y `cambio_despues`):
+- `actividad`, `titulo`, `tramo`, `tramo_numero` (nulo en la ciudad), `ciudad`, `destacado`, `en_destacados` (destacado **o** con alguna sensible, §2.4, en el servidor), `estado`, `fecha`.
+- `grupo`: `TRAMO` | `OPCIONALES` | `AUN_NO_LLEGA`; `marca`: `REQUIERE_ATENCION` | `SIN_CONTENIDO` | nulo; `sin_contenido`: cantidad.
+- **Orden ya armado por el servidor (§9.2 de la agrupación):** tramos por número, luego opcionales iniciadas, luego «Aún no llega» (requeridos y opcionales no iniciados); dentro de cada grupo, requiere atención → sin contenido → resto, y en cada grupo de esos el orden del camino. El front solo agrupa filas seguidas con el mismo `grupo` + `tramo_numero`, sin contar ni clasificar.
+
+`ItemLectura` (quita `nombre`, `etiquetas`, `dialogo`, `ecos`, `ecos_hoy`, `ecos_de_hoy`):
+- `numero`, `codigo`, `marca`: `REQUIERE_ATENCION` | `VACIA` | `FUERA_DE_TEMA` | nulo (prima la sensible), `aun_no_lo_sabe`, y lo de hoy: preguntas con `valores_contexto`, `eleccion`, `elegidas`, `primera_respuesta`, `repregunta`, `segunda_respuesta`, `respondido`.
+- `ecos: list[EcoLinea]` resueltos por el servidor (§9.2: se decide en `perfil_respuestas.py`; un eco `ITEM` es del **mismo registro** si su ítem pertenece a la misma actividad, por la caché de definiciones, sin consultas):
+  - `MISMO_REGISTRO` → `numeros` (todos los del mismo registro en una sola línea).
+  - `TEXTO` / `ELECCION` de otra actividad → `actividad` (título), `cita` u `opciones`.
+  - `PLANES` (formas `plan_a_b` y `hoy`) → `planes: [{letra, carrera, institucion}]`.
+  - `OTRO` (pasos, proyecto, señal, carrera y demás) → `eco` en bruto, como hoy, y el front reusa `lineaEco`.
+  - `hoy`: el valor que cambió (`cita`, `opciones` o `planes` con solo los que cambiaron), o nulo. Sin valores guardados: los de hoy y `hoy` nulo.
+- Ni motivos del LLM ni intentos anteriores (prueba de contrato).
+
+`AvisoPerfil` y `TemaPerfil` (§9.4): campo nuevo `respuesta: {actividad, item} | null`. Lo llenan los evaluadores con destino RESPUESTAS: `respuesta_sensible` (la sensible más reciente, que ya busca) y `eleccion_registro` (su `item`). Sin consultas nuevas: la de `respuesta_sensible` agrega dos columnas.
+
+`RespuestasResumen` («Sus respuestas» del Resumen) no cambia de forma.
+
+Pruebas: adaptar `test_panel_respuestas.py` y el contrato (autorizado por las observaciones); nuevas por cada caso de §7 (marcas, agrupación, orden, `por_revisar` singular/plural/cero, sensible no destacado en Destacados, sin contenido no destacado fuera, ecos de cada tipo, eco no cambiado sin «hoy», eco sin valor guardado, enlace con `respuesta`). Presupuesto: `test_panel_presupuestos.py` para lista, detalle y perfil, sin recalibrar a la baja.
+
+### Datos
+- `scripts/sembrar_panel_ejemplo.py`: agregar lo que falte a los casos 5, 6 y 7 para cubrir §7: una respuesta `fuera_de_tema` y una sensible en un registro **no destacado** (`DATO DE PRUEBA`).
+- Exportador de fixtures: agregar `contenido-panel-6-respuestas` y `-6-registro`; regenerar.
+
+### Frontend
+- `types/servidorPanelEstudiante.ts`: tipos nuevos copiados del esquema.
+- `features/counselor/components/perfil/MarcaRespuesta.tsx` (nuevo): punto relleno o anillo (`aria-hidden`) + texto, intensidad fuerte o suave. `ChipPerfil` gana el tono `aviso-suave` para el texto suave. Lo usan la fila, el recuadro de la pregunta y «Sus respuestas».
+- `PestanaRespuestas.tsx`: selector como hoy; sin leyenda; línea «N registros con algo por revisar» (texto del front, número del servidor); tarjetas por grupo con encabezado «Tramo N · nombre» en versalitas grises, «Misiones opcionales» y «Aún no llega» (filas grises que no se abren, con su tramo o «Misión opcional»). Cada fila es un `<button aria-expanded>` de al menos 44 px: marca, título, «Requiere atención» o «N sin contenido», fecha o «En curso», flecha › / ⌄. Sin «Para leer primero» como sección: las que requieren atención abren solas con el detalle de `leer_primero`.
+- `ItemRegistroLectura.tsx`: número en columna gris; pregunta gris; elección en negrita separada por « · »; podio numerado; pieza en negrita con su origen en gris; «Otra» con «(lo escribió el estudiante)»; texto sin caja; repregunta «Lumi le preguntó: …»; aún no lo sabe y «No lo respondió» en gris cursiva. Sin encabezado en mayúsculas, sin chips, sin diálogo. Recuadro: crema y borde ámbar (los de la tarjeta de Avisos) para requiere atención; blanco con borde ámbar punteado para sin contenido; primera línea con la marca y el texto fijo (§9.5: constantes del front junto a la marca, «Lumi la derivó a usted en lugar de seguir preguntando.», «La dejó vacía.», «No responde a la pregunta.»; el texto de la alerta lleva `{registro}` y otra redacción, así que no se reutiliza).
+- Línea de eco (`adaptadoresPanelEstudiante.ts`, función nueva que arma las piezas): «Respondió viendo sus respuestas 1 y 2.», «… lo que escribió en {actividad}: “cita”.», «… lo que eligió en {actividad}: …», «Respondió viendo: Plan A **carrera** · …», y al final, en gris más oscuro, «Hoy su Plan B es **X**.» / «Hoy dice: “…”.». Actividades en cursiva y citas con “…” (criterio del ajuste anterior, en lugar de las «» del texto de observaciones).
+- Enlace (§3.1): `irADestino` acepta `respuesta`; la URL lleva `?tab=respuestas&registro=b1-3&item=b1-3-voz`. La pestaña abre ese registro (pide su detalle si no está en `leer_primero`) y desplaza hasta el ítem (`id` por código y `scrollIntoView`).
+- «Sus respuestas» (`RespuestasYNotas.tsx`): las filas de requiere atención y sin contenido con la marca fuerte y la suave; aún no lo sabe en gris.
+- Estilos del recuadro y de la línea de eco con clases del portal (sin estilos en línea).
+- Pruebas de render con los fixtures de los casos 5, 6 y 7; `textosEtiqueta` y lo que quede sin uso se quita.
+
+### Qué no cambia
+Qué marca el LLM y sus motivos, el histórico de intentos, la configuración de destacados, el `eco_cambiado()` y lo que ve el estudiante, el control de acceso, el modo local.
+
+### Fases
+- **F1 · Backend:** esquemas, `perfil_respuestas.py`, `respuesta` en avisos y temas, pruebas, presupuestos con números antes y después, siembra y fixtures, `panel.md`.
+- **F2 · Front:** tipos, marca, lista, ítem, eco, enlace y «Sus respuestas»; pruebas de render. Pruebas de impacto + `test:servidor`.
+- **Cierre:** suite completa, `decisiones.md`, `origen-de-datos.md` y `AGENTS.md` del front; revisión en el navegador si hay backend levantado.
+
+### Preguntas abiertas
+Ninguna: las cinco del texto se resuelven arriba (lectura §Backend, tipo de eco §Backend, causa §9.3, enlace §Frontend, textos fijos §Frontend).
+
+### Anexo: texto de observaciones
+
+### Ajuste respuestas-orientadora · Pestaña «Respuestas» del perfil, más liviana
+
+Texto de observaciones para `/ajuste respuestas-orientadora`, sobre `main` con panel-estudiantes integrado. Solo modo api. Si la rama `ajuste/pendientes-orientadora` aún no está en `main` y toca los mismos archivos del perfil, avisa antes de empezar.
+
+Rediseña la presentación de la pestaña «Respuestas» del perfil del estudiante (§9 de panel-estudiantes). Hoy la vista se ve cargada: cada dato es una etiqueta de color, hay leyenda, encabezados internos, diálogos de Lumi y ecos que repiten lo que está justo arriba. La orientadora debe ver de un vistazo **qué registros tienen algo por revisar** y, al abrir uno, **qué pregunta**.
+
+No cambia qué se guarda ni cómo decide el LLM. Cambia qué se muestra y cómo. Este documento es autosuficiente; si el repo difiere de lo que aquí se describe, se reporta y no se corrige en silencio.
+
+Bocetos: `ov_backend/docs/specs/bocetos/respuestas-orientadora/`
+
+| Archivo | Pantalla |
+|---|---|
+| `17-respuestas-lista.png` | Lista (Destacados), todo plegado |
+| `18-respuestas-registros.png` | Registros abiertos: uno sensible, uno con «sin contenido», uno con eco que cambió |
+
+Los datos de los bocetos son de ejemplo. Donde este texto y un boceto difieran, manda este texto.
+
+#### 1. Principio: un solo color con dos intensidades
+
+El color solo dice **«revise esto»**. Todo lo demás va en texto gris o negro, sin chip.
+
+| Marca | Cuándo | Cómo se ve |
+|---|---|---|
+| **Requiere atención** | `sensible` | Ámbar fuerte: punto relleno y texto en negrita. Es el tono `aviso` de `ChipPerfil` |
+| **Sin contenido** | `tipo_final` es `vacio` o `fuera_de_tema` | Ámbar suave: anillo vacío y texto en peso normal. Es menos grave: el estudiante puede responder cualquier cosa y no se le fuerza |
+| Aún no lo sabe | estado ABIERTO | Sin color: texto gris en cursiva |
+| Completado, fecha, en curso, aún no llega, cambió después | — | Sin color: texto gris |
+
+- Las dos intensidades se distinguen también por forma (relleno frente a anillo) y por peso del texto, no solo por tono.
+- Si `ChipPerfil` no tiene un tono suave, se agrega como variante (`aviso-suave` o similar). No van colores en línea.
+- Se quita el verde de «Completado».
+
+#### 2. Lista (`17…`)
+
+##### 2.1 Encima de la lista
+
+- Selector «Destacados · N» y «Todos · M», como hoy. Si el salón no tiene destacados, no hay selector.
+- **Se quita la leyenda «Etiquetas: …».**
+- Si hay registros con alguna marca en la vista elegida, una línea en ámbar fuerte: «N registros con algo por revisar» (singular: «1 registro con algo por revisar»). Si no hay ninguno, no se muestra nada.
+- **Se quita «Para leer primero»** como sección aparte. Lo reemplazan el orden de §2.3 y la apertura automática de §3.1.
+
+##### 2.2 Agrupación
+
+Una tarjeta por tramo, en el orden del camino. El encabezado es «Tramo N · {nombre}», en mayúsculas pequeñas y gris. El tramo **ya no se repite** en cada registro.
+
+Después de los tramos van dos tarjetas más:
+
+- **«Misiones opcionales»**, con las de la ciudad ya iniciadas o completadas.
+- **«Aún no llega»**, con todos los registros no disponibles o no iniciados (requeridos y opcionales). Van en gris y no se abren. A la derecha llevan su tramo («Tramo 6 · Mi proyecto») o «Misión opcional».
+
+Una tarjeta sin filas no se muestra.
+
+##### 2.3 Cada registro: una fila
+
+La fila completa es un botón que se abre y se pliega (`aria-expanded`). **No hay botón «Ver respuestas».** De izquierda a derecha:
+
+1. La marca: punto relleno, anillo o nada.
+2. El título.
+3. Si tiene alguna marca, un texto corto: «Requiere atención» (si tiene al menos una sensible) o «N sin contenido» (si solo tiene de esas). Si tiene de los dos tipos, va «Requiere atención» y la de sin contenido se ve al abrir.
+4. La fecha de completado («30 oct.») o «En curso».
+5. Una flecha (› plegado, ⌄ abierto).
+
+Lo que **ya no va en la fila**: «Completado», «Aún no lo sabe» y «Lo que tenía a la vista cambió después». Todo eso se ve dentro del registro.
+
+**Orden dentro de cada tarjeta:** primero los que requieren atención, luego los de sin contenido, luego el resto. Dentro de cada grupo, el orden del camino.
+
+##### 2.4 Destacados y respuestas sensibles
+
+En la vista «Destacados», un registro con una respuesta sensible **aparece aunque no sea destacado**, en su tramo y con su marca. Una respuesta sensible nunca queda oculta por la configuración. «Sin contenido» no tiene esta excepción.
+
+#### 3. Registro abierto (`18…`)
+
+##### 3.1 Apertura
+
+- Los registros que requieren atención **se muestran abiertos** al entrar a la pestaña. Los demás, plegados.
+- Al entrar desde un enlace (el aviso `respuesta-sensible` del Resumen, o «Ver respuesta» de «Para conversar»), la pestaña abre ese registro y **se desplaza hasta la pregunta marcada**. Indica en el plan cómo llega hoy ese destino; si solo llega a la pestaña, se agrega el registro (y el ítem) en la URL.
+- Se muestran **todas las preguntas** del registro, con la marcada resaltada (§3.3).
+
+##### 3.2 Cada pregunta
+
+Una columna estrecha con el número («1», «2», gris) y, al lado, el contenido:
+
+| Pieza | Cómo se muestra |
+|---|---|
+| Pregunta | Texto gris, peso normal |
+| Respuesta de elección | Texto oscuro en **negrita**, sin chip. Varias opciones: separadas por « · » |
+| Podio (`eleccion_ordenada`) | Lista numerada 1, 2, 3, texto oscuro |
+| Piezas | La pieza en negrita y, en gris, de dónde sale («de lo que dijo que se le da bien») |
+| «Otra» | Su texto en negrita y, en gris, «(lo escribió el estudiante)» |
+| Respuesta de texto | Texto oscuro, peso normal, **sin caja gris** |
+| Repregunta | Debajo, una línea gris «Lumi le preguntó: {repregunta}» y la segunda respuesta en texto oscuro |
+| Aún no lo sabe | Si hay texto: el texto y, debajo, en gris «Marcó que aún no lo sabe». Si no hay texto: «Aún no lo sabe» en gris cursiva como respuesta |
+| No obligatoria sin responder | «No lo respondió», en gris cursiva |
+
+**Lo que se quita:**
+
+- El encabezado «PREGUNTA N · {NOMBRE DEL ÍTEM}» en mayúsculas. Queda solo el número.
+- La etiqueta al lado del encabezado. Se reemplaza por el resaltado de §3.3.
+- El `dialogo` de contexto en cursiva («Ahora tu voz.», «Pongamos las dos voces juntas.»).
+- Las cajas grises de las respuestas y los chips de las elecciones.
+
+Las preguntas siguen mostrándose con los valores con que el estudiante respondió (`valores_contexto`), como hoy.
+
+##### 3.3 Pregunta con marca
+
+Todo el bloque de la pregunta (número, pregunta y respuestas) va en un recuadro:
+
+| Marca | Recuadro | Primera línea del recuadro |
+|---|---|---|
+| Requiere atención | Fondo crema y borde ámbar, los mismos de la tarjeta de avisos del Resumen | Punto relleno · **Requiere atención** · «Lumi la derivó a usted en lugar de seguir preguntando.» |
+| Sin contenido | Fondo blanco y borde ámbar punteado | Anillo · Sin contenido · «La dejó vacía.» (`vacio`) o «No responde a la pregunta.» (`fuera_de_tema`) |
+
+Esas explicaciones son **textos fijos por tipo de marca**. No se muestran los motivos del LLM (sigue valiendo lo de panel-estudiantes). Si el repo ya guarda esos textos en algún lado (p. ej. junto a la alerta `respuesta-sensible`), se toman de ahí. Si no, van como constantes del front junto a la definición de las marcas.
+
+Si una pregunta tiene los dos tipos de marca, prima «Requiere atención».
+
+##### 3.4 Ecos: una línea, y solo cuando aportan
+
+El eco pasa a ser **una línea gris encima de la pregunta**, con lo que la orientadora necesita para entender la respuesta:
+
+| Qué tenía a la vista | Línea |
+|---|---|
+| Respuestas del **mismo registro** | «Respondió viendo sus respuestas 1 y 2.» (o «su respuesta 1.»). No se repite el contenido: está arriba |
+| Texto de **otra actividad** | «Respondió viendo lo que escribió en «{actividad}»: «{cita}».» |
+| Elección de otra actividad | «Respondió viendo lo que eligió en «{actividad}»: {opciones}.» |
+| Un plan | «Respondió viendo: Plan A **{carrera}** · {institución}.» |
+| Dos planes | «Respondió viendo: Plan A **{carrera}** · Plan B **{carrera}**.» |
+| Pasos, proyecto o señal | Una línea con lo mismo que vio el estudiante, como hoy |
+
+**Si lo que tenía a la vista cambió después**, se agrega al final de la misma línea, en un gris más oscuro, solo el dato que cambió: «Hoy su Plan B es **Psicología**.» o «Hoy dice: «{texto de hoy}».» La etiqueta «Lo que tenía a la vista cambió después» **desaparece de la cabecera del registro**.
+
+Si un eco mostrado no se guardó con su valor de entonces, se muestra con el de hoy y no se dice que cambió (sigue valiendo lo de panel-estudiantes).
+
+**Error a corregir.** Hoy, en «Las voces y la mía», la pregunta 3 muestra «(cuando respondió; hoy: lo que escribió antes en «Lo que tú quieres»)». Repite la descripción del eco en lugar del valor de hoy y, además, marca como cambiado un eco que no cambió. Revisa en el plan:
+
+1. cómo se decide que un eco cambió, que debe comparar valores y no descriptores;
+2. qué se muestra como valor de hoy.
+
+Agrega una prueba para este caso.
+
+#### 4. Pestaña Resumen (ajuste menor)
+
+En la tarjeta «Sus respuestas», las filas de conteo usan la misma marca e intensidad: «1 requiere atención» en ámbar fuerte y «1 respuesta sin contenido» en ámbar suave. Su botón abre la pestaña Respuestas.
+
+#### 5. Backend y rendimiento (criterios de la auditoría)
+
+- La lista de §2 necesita, por registro: tramo, estado, fecha, si es destacado, si tiene alguna respuesta sensible y cuántas sin contenido. Si la lectura actual de la pestaña ya trae todos los ítems de todos los registros, indica en el plan si conviene:
+  - **(a)** dejarla así, o
+  - **(b)** separar una lectura liviana de la lista y otra del detalle de un registro al abrirlo.
+
+  Con pocos registros, (a) puede bastar. Se informan las consultas y el tamaño de la respuesta, antes y después.
+- Los conteos y marcas se calculan en el servidor. El front no cuenta ni clasifica.
+- La regla de §2.4 (sensibles visibles en Destacados) vive en el servidor.
+- El orden de §2.3 y la agrupación de §2.2 los devuelve el servidor ya armados, o el front los arma solo a partir de campos que el servidor entrega. Se dice cuál en el plan.
+- El tipo de eco (mismo registro, otra actividad, plan, etc.), su texto de cita y el «hoy» del cambio los resuelve el servidor. El front solo pinta la línea.
+- Ninguna ruta suma consultas por registro ni por ítem: nada de N+1 al armar marcas, ecos o el «hoy». Se actualizan las pruebas de presupuesto de las rutas tocadas (`tests/integration/panel/test_panel_presupuestos.py`).
+- Mismo control de acceso de hoy.
+
+#### 6. Front
+
+- Se toca el componente de la pestaña Respuestas en `features/counselor/components/perfil/` y el ítem de registro en lectura del portal. No se reutiliza el reproductor del estudiante.
+- Las marcas son un componente pequeño reutilizable (punto o anillo con su texto), usado en la lista, en el recuadro de la pregunta y en la tarjeta del Resumen.
+- El recuadro de pregunta con marca y la línea de eco son estilos del portal, no estilos en línea.
+- Accesibilidad: cada fila es un `<button>` con `aria-expanded`. El punto y el anillo son decorativos (`aria-hidden`), porque la marca siempre va acompañada de su texto. Las áreas de toque miden al menos 44 px de alto.
+- Tipos, adaptadores, fixtures y pruebas de render actualizados.
+
+#### 7. Pruebas
+
+- **Marcas:** sensible; `vacio`; `fuera_de_tema`; un registro con los dos tipos (prima «Requiere atención» en la fila y en el ítem); ABIERTO con texto y sin texto; ítem no obligatorio sin responder.
+- **Lista:**
+  - agrupación por tramo, «Misiones opcionales» y «Aún no llega»;
+  - orden dentro del tramo;
+  - línea «N registros con algo por revisar» en singular, en plural y ausente;
+  - un registro sensible no destacado que aparece en «Destacados»;
+  - un registro con «sin contenido» no destacado que no aparece.
+- **Apertura:** los sensibles abiertos al entrar; la entrada por enlace abre el registro y se desplaza al ítem.
+- **Ecos:** cada tipo de §3.4; eco del mismo registro sin repetir el contenido; eco cambiado con su «hoy»; eco no cambiado sin «hoy» (el error de §3.4); eco sin valor guardado.
+- **Contrato:** no viajan motivos del LLM ni histórico de intentos.
+- **Presupuesto:** §5.
+- **Front:** render de la lista y de un registro de cada caso, con los casos 5, 6 y 7 de `scripts/sembrar_panel_ejemplo.py`. Si a algún caso le falta algo de §7 (p. ej. un sensible fuera de destacados o un `fuera_de_tema`), se agrega al script.
+
+#### 8. Fuera de este ajuste
+
+- Qué marca el LLM como sensible o sin contenido, y sus motivos.
+- El histórico de intentos.
+- La configuración de destacados.
+- Imprimir la ficha.
+
+#### 9. Para decidir en el plan
+
+1. Lectura única o lista liviana más detalle al abrir (§5), con sus números.
+2. Dónde se decide el tipo de eco y cómo se detecta que una respuesta del mismo registro es la fuente.
+3. Causa del error de §3.4 y su corrección.
+4. Cómo llega hoy el destino del aviso `respuesta-sensible` y de «Ver respuesta», y qué se agrega a la URL.
+5. De dónde salen los textos fijos de §3.3.

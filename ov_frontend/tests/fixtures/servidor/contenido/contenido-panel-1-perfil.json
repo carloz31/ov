@@ -6,13 +6,15 @@
           "codigo": "sin-ingreso",
           "descripcion": "Último ingreso: nunca.",
           "destino": null,
-          "nombre": "No ingresa hace 7 días o más"
+          "nombre": "No ingresa hace 7 días o más",
+          "respuesta": null
         },
         {
           "codigo": "familia-pendiente",
           "descripcion": "Su apoderado aún no ha iniciado sesión en la plataforma.",
           "destino": "AVANCE",
-          "nombre": "Su apoderado aún no inicia sesión"
+          "nombre": "Su apoderado aún no inicia sesión",
+          "respuesta": null
         }
       ],
       "codigo": "atras",

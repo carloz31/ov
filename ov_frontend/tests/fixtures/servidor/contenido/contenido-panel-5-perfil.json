@@ -6,7 +6,8 @@
           "codigo": "seguridad-baja",
           "descripcion": "Marcó 2, 2 y 1 de 5 (el 7, 9 y 11 de noviembre).",
           "destino": "AVANCE",
-          "nombre": "Poca seguridad en sus últimas señales"
+          "nombre": "Poca seguridad en sus últimas señales",
+          "respuesta": null
         }
       ],
       "codigo": "conversar",
@@ -140,26 +141,37 @@
     {
       "codigo": "voces-chocan",
       "destino": "RESPUESTAS",
+      "respuesta": {
+        "actividad": "b1-3",
+        "item": "b1-3-contraste"
+      },
       "texto": "Marcó que lo que se espera en su entorno y lo que quiere hacer al terminar el colegio chocan. La voz que eligió: Mamá."
     },
     {
       "codigo": "valores-fuera-del-plan",
       "destino": "PLANES",
+      "respuesta": null,
       "texto": "Lo que más valora en un trabajo (Estabilidad, Ingresos y Ayudar a otros) no aparece entre los motivos de su Plan A (Crear y Aprender)."
     },
     {
       "codigo": "plan-se-ve-lejos",
       "destino": "PLANES",
+      "respuesta": null,
       "texto": "Marcó “Poco” en “Tengo cómo lograrlo” frente a su Plan A (Psicología). Ve como posibles complicaciones: económicas y DATO DE PRUEBA: queda lejos de mi casa."
     },
     {
       "codigo": "plan-conoce-poco",
       "destino": "PLANES",
+      "respuesta": null,
       "texto": "Dice conocer poco su Plan A: respondió “No” a 3 de 5 preguntas. Tiene 7 dudas abiertas."
     },
     {
       "codigo": "plan-b-desanima",
       "destino": "RESPUESTAS",
+      "respuesta": {
+        "actividad": "b4-5",
+        "item": "b4-5-moneda"
+      },
       "texto": "Al imaginar que le tocaba su Plan B (Ciencias de la Comunicación), marcó “Me desanimé”."
     }
   ],

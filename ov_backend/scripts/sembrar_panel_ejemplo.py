@@ -308,6 +308,8 @@ def sembrar_casos(s: Sembrador) -> list[str]:
         _elegir(s, 'est-panel-5', 'b1-3-contraste', ('CHOCAN', 'Chocan'))
         s.respuestas('est-panel-5', 'b1-3')[-1].tipo_final = 'vacio'  # b1-3 es el destacado de 5A
         s.respuestas('est-panel-5', 'b1-7')[0].estado = m.EstadoRespuestaRegistro.ABIERTO
+        # Ajuste respuestas-orientadora: una respuesta fuera de tema en un registro no destacado.
+        s.respuestas('est-panel-5', 'b1-7')[1].tipo_final = 'fuera_de_tema'
         otra = next((r for r in s.respuestas('est-panel-5', 'b4-1') if r.opciones_elegidas), None)
         if otra is not None:
             otra.opciones_elegidas = [*otra.opciones_elegidas[:1],
@@ -323,6 +325,8 @@ def sembrar_casos(s: Sembrador) -> list[str]:
         s.avanzar('est-panel-6', 'b1-3', partida=s.autopercepcion(lambda d: 3), planes=False)
         sensible = s.respuestas('est-panel-6', 'b1-3')[0]
         sensible.sensible = True
+        # Ajuste respuestas-orientadora: otra sensible, en un registro no destacado (se ve igual en «Destacados»).
+        s.respuestas('est-panel-6', 'b1-1')[0].sensible = True
         for actividad in sorted(c for c, b, *_ in contenido.ACTIVIDADES if b == 'FAMILIA'):
             s.completar('apo-panel-6', actividad)
         vinculo = s.sesion.scalar(select(m.VinculoFamiliar).where(m.VinculoFamiliar.codigo == 'VIN-est-panel-6'))

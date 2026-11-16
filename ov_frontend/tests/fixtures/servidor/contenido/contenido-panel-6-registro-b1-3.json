@@ -1,0 +1,85 @@
+{
+  "actividad": "b1-3",
+  "items": [
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-3-voz",
+      "ecos": [],
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Mamá"
+        }
+      ],
+      "marca": "REQUIERE_ATENCION",
+      "numero": 1,
+      "pregunta_eleccion": "¿Quién te lo ha dicho con más fuerza?",
+      "pregunta_texto": "¿Qué espera que hagas? Aunque sea una frase.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-3-mia",
+      "ecos": [],
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Universidad"
+        }
+      ],
+      "marca": null,
+      "numero": 2,
+      "pregunta_eleccion": "Y tú, ¿qué quieres hacer al terminar?",
+      "pregunta_texto": "¿Por qué eso? Algo tuyo: lo que te pasa, lo que te gusta.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-3-contraste",
+      "ecos": [
+        {
+          "actividad": null,
+          "cita": null,
+          "eco": null,
+          "fuente": "MISMO_REGISTRO",
+          "hoy": null,
+          "numeros": [
+            1,
+            2
+          ],
+          "opciones": [],
+          "planes": []
+        }
+      ],
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Coinciden"
+        }
+      ],
+      "marca": null,
+      "numero": 3,
+      "pregunta_eleccion": "¿Coinciden, coinciden en parte o chocan?",
+      "pregunta_texto": "¿En qué punto: la carrera, el lugar, el momento, el dinero?",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    }
+  ]
+}

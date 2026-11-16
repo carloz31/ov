@@ -18,8 +18,9 @@ from dataclasses import dataclass, field
 
 from sqlalchemy import select
 
+from app.core.contexto import contexto
 from app.core.parametros import INSTRUMENTO_INTERESES
-from app.models import Actividad, Alerta, GrupoAlerta, ProgresoActividad, RespuestaRegistro
+from app.models import Actividad, Alerta, GrupoAlerta, ItemRegistro, ProgresoActividad, RespuestaRegistro
 from app.services.panel.comun import (
     SIN_EMPEZAR, TERMINO, Lecturas, aplicaciones_de, muy_atras,
 )
@@ -39,16 +40,20 @@ class EvaluadorAlerta:
 
 def _respuesta_sensible(lecturas: Lecturas, _parametros) -> dict[int, dict]:
     """Al menos una respuesta de registro vigente que Lumi derivó a la orientadora (`sensible`). `registro`: el título
-    de la actividad de la más reciente."""
+    de la actividad de la más reciente; `actividad` e `item`: sus códigos, para el enlace del perfil (ajuste
+    respuestas-orientadora §3.1)."""
     if not lecturas.alcance.ids:
         return {}
+    definiciones = contexto(lecturas.sesion).definiciones
     datos = {}
-    for cuenta_id, titulo in lecturas.sesion.execute(select(ProgresoActividad.cuenta_id, Actividad.titulo).join(
+    for cuenta_id, titulo, codigo, item_id in lecturas.sesion.execute(select(
+            ProgresoActividad.cuenta_id, Actividad.titulo, Actividad.codigo, RespuestaRegistro.item_registro_id).join(
             RespuestaRegistro, RespuestaRegistro.progreso_id == ProgresoActividad.id).join(
             Actividad, Actividad.id == ProgresoActividad.actividad_id).where(
             ProgresoActividad.cuenta_id.in_(lecturas.alcance.ids), RespuestaRegistro.vigente,
             RespuestaRegistro.sensible).order_by(RespuestaRegistro.id.desc())):
-        datos.setdefault(cuenta_id, {"registro": titulo})
+        item = definiciones.obtener(ItemRegistro, item_id)
+        datos.setdefault(cuenta_id, {"registro": titulo, "actividad": codigo, "item": item.codigo if item else None})
     return datos
 
 

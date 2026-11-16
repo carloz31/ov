@@ -770,6 +770,9 @@ def _recorrer_registros_piezas():
 
 # Ajuste panel-estudiantes: los casos 1, 5 y 7 de `sembrar_panel_ejemplo.py` (lista y perfil de ori-carmen).
 CASOS_PANEL = ('est-panel-1', 'est-panel-5', 'est-panel-7')
+# Ajuste respuestas-orientadora: los registros de la pestaña Respuestas con cada marca y cada eco (el caso 6, sensible,
+# solo con su perfil, su pestaña y sus registros).
+REGISTROS_PANEL = {'est-panel-5': ('b1-3', 'b1-7', 'b4-5'), 'est-panel-6': ('b1-1', 'b1-3'), 'est-panel-7': ('b4-5',)}
 AHORA_PANEL = '2026-11-12T10:00:00'  # DATO DE PRUEBA: hora de Lima fija de la siembra y de las lecturas
 
 
@@ -814,10 +817,16 @@ def _recorrer_panel_estudiantes():
                             cliente, 'GET', f"{perfil}/tests/{f[f'{caso}-tests']['intereses']['aplicacion']}/resultado")
                     if f[f'{caso}-planes']['planes']:
                         f[f'{caso}-plan-a'] = _pedir(cliente, 'GET', f'{perfil}/planes/1')
-                    destacado = next((r['actividad'] for r in f[f'{caso}-respuestas']['registros']
-                                      if r['estado'] == 'COMPLETADO'), None)
-                    if destacado:
-                        f[f'{caso}-registro'] = _pedir(cliente, 'GET', f'{perfil}/respuestas/{destacado}')
+                    if any(r['actividad'] == 'b1-1' and r['estado'] == 'COMPLETADO'
+                           for r in f[f'{caso}-respuestas']['registros']):
+                        f[f'{caso}-registro'] = _pedir(cliente, 'GET', f'{perfil}/respuestas/b1-1')
+                f['panel-6-perfil'] = _pedir(cliente, 'GET', f'{base}/estudiantes/est-panel-6')
+                f['panel-6-respuestas'] = _pedir(cliente, 'GET', f'{base}/estudiantes/est-panel-6/respuestas')
+                for estudiante, actividades in REGISTROS_PANEL.items():
+                    caso = estudiante.removeprefix('est-')
+                    for actividad in actividades:
+                        f[f'{caso}-registro-{actividad}'] = _pedir(
+                            cliente, 'GET', f'{base}/estudiantes/{estudiante}/respuestas/{actividad}')
         finally:
             aplicacion.state.motor_bd.dispose()
     return f

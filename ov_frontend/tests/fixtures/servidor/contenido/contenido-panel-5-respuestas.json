@@ -1,225 +1,275 @@
 {
   "hay_destacados": true,
   "leer_primero": [],
+  "por_revisar_destacados": 1,
+  "por_revisar_todos": 2,
   "registros": [
     {
-      "actividad": "b1-1",
-      "cambio_despues": false,
-      "ciudad": false,
-      "destacado": false,
-      "estado": "COMPLETADO",
-      "etiquetas": [],
-      "fecha": "2026-10-07",
-      "titulo": "Mi historia personal",
-      "tramo": "Mi historia y mis aspiraciones"
-    },
-    {
       "actividad": "b1-3",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": true,
+      "en_destacados": true,
       "estado": "COMPLETADO",
-      "etiquetas": [
-        {
-          "cantidad": 1,
-          "etiqueta": "SIN_CONTENIDO"
-        }
-      ],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": "SIN_CONTENIDO",
+      "sin_contenido": 1,
       "titulo": "Las voces y la mía",
-      "tramo": "Mi historia y mis aspiraciones"
-    },
-    {
-      "actividad": "b1-6",
-      "cambio_despues": false,
-      "ciudad": false,
-      "destacado": false,
-      "estado": "COMPLETADO",
-      "etiquetas": [],
-      "fecha": "2026-10-07",
-      "titulo": "El mito que traje de casa",
-      "tramo": "Mi historia y mis aspiraciones"
+      "tramo": "Mi historia y mis aspiraciones",
+      "tramo_numero": 2
     },
     {
       "actividad": "b1-7",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [
-        {
-          "cantidad": 1,
-          "etiqueta": "AUN_NO_LO_SABE"
-        }
-      ],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": "SIN_CONTENIDO",
+      "sin_contenido": 1,
       "titulo": "Mi futuro",
-      "tramo": "Mi historia y mis aspiraciones"
+      "tramo": "Mi historia y mis aspiraciones",
+      "tramo_numero": 2
     },
     {
-      "actividad": "ma3",
-      "cambio_despues": false,
+      "actividad": "b1-1",
       "ciudad": false,
       "destacado": false,
-      "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
-      "fecha": null,
-      "titulo": "Lo que ya tengo de ese día",
-      "tramo": "Mi historia y mis aspiraciones"
+      "en_destacados": false,
+      "estado": "COMPLETADO",
+      "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
+      "titulo": "Mi historia personal",
+      "tramo": "Mi historia y mis aspiraciones",
+      "tramo_numero": 2
+    },
+    {
+      "actividad": "b1-6",
+      "ciudad": false,
+      "destacado": false,
+      "en_destacados": false,
+      "estado": "COMPLETADO",
+      "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
+      "titulo": "El mito que traje de casa",
+      "tramo": "Mi historia y mis aspiraciones",
+      "tramo_numero": 2
     },
     {
       "actividad": "b2-3",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Lo que valoro en un trabajo",
-      "tramo": "Me conozco"
+      "tramo": "Me conozco",
+      "tramo_numero": 3
     },
     {
       "actividad": "b2-4",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Lo que se me da bien y lo que me cuesta",
-      "tramo": "Me conozco"
+      "tramo": "Me conozco",
+      "tramo_numero": 3
     },
     {
       "actividad": "b3-4",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Lo que necesito saber",
-      "tramo": "Exploro el mundo profesional"
-    },
-    {
-      "actividad": "b3-a",
-      "cambio_despues": false,
-      "ciudad": false,
-      "destacado": false,
-      "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
-      "fecha": null,
-      "titulo": "Lo que aprendí de una trayectoria",
-      "tramo": "Exploro el mundo profesional"
+      "tramo": "Exploro el mundo profesional",
+      "tramo_numero": 4
     },
     {
       "actividad": "b4-1",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Mi perfil frente a mi Plan A",
-      "tramo": "Mis opciones"
+      "tramo": "Mis opciones",
+      "tramo_numero": 5
     },
     {
       "actividad": "b4-2",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Cómo decido",
-      "tramo": "Mis opciones"
+      "tramo": "Mis opciones",
+      "tramo_numero": 5
     },
     {
       "actividad": "b4-5",
-      "cambio_despues": true,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "COMPLETADO",
-      "etiquetas": [],
       "fecha": "2026-10-07",
+      "grupo": "TRAMO",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Pongo a prueba mi orden",
-      "tramo": "Mis opciones"
+      "tramo": "Mis opciones",
+      "tramo_numero": 5
+    },
+    {
+      "actividad": "ma3",
+      "ciudad": false,
+      "destacado": false,
+      "en_destacados": false,
+      "estado": "AUN_NO_LLEGA",
+      "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
+      "titulo": "Lo que ya tengo de ese día",
+      "tramo": "Mi historia y mis aspiraciones",
+      "tramo_numero": 2
+    },
+    {
+      "actividad": "b3-a",
+      "ciudad": false,
+      "destacado": false,
+      "en_destacados": false,
+      "estado": "AUN_NO_LLEGA",
+      "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
+      "titulo": "Lo que aprendí de una trayectoria",
+      "tramo": "Exploro el mundo profesional",
+      "tramo_numero": 4
     },
     {
       "actividad": "ma8",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "El abogado del diablo",
-      "tramo": "Mis opciones"
+      "tramo": "Mis opciones",
+      "tramo_numero": 5
     },
     {
       "actividad": "b5-1",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Mi proyecto",
-      "tramo": "Mi decisión"
+      "tramo": "Mi decisión",
+      "tramo_numero": 6
     },
     {
       "actividad": "b5-3",
-      "cambio_despues": false,
       "ciudad": false,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Mirar el camino",
-      "tramo": "Mi decisión"
+      "tramo": "Mi decisión",
+      "tramo_numero": 6
     },
     {
       "actividad": "h1",
-      "cambio_despues": false,
       "ciudad": true,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Una habilidad para practicar",
-      "tramo": "La ciudad"
+      "tramo": "La ciudad",
+      "tramo_numero": null
     },
     {
       "actividad": "h2",
-      "cambio_despues": false,
       "ciudad": true,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "¿Me reconozco?",
-      "tramo": "La ciudad"
+      "tramo": "La ciudad",
+      "tramo_numero": null
     },
     {
       "actividad": "h3",
-      "cambio_despues": false,
       "ciudad": true,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "La familia de carreras que me llama",
-      "tramo": "La ciudad"
+      "tramo": "La ciudad",
+      "tramo_numero": null
     },
     {
       "actividad": "ma4",
-      "cambio_despues": false,
       "ciudad": true,
       "destacado": false,
+      "en_destacados": false,
       "estado": "AUN_NO_LLEGA",
-      "etiquetas": [],
       "fecha": null,
+      "grupo": "AUN_NO_LLEGA",
+      "marca": null,
+      "sin_contenido": 0,
       "titulo": "Alguien que ya lo hace",
-      "tramo": "La ciudad"
+      "tramo": "La ciudad",
+      "tramo_numero": null
     }
-  ]
+  ],
+  "total_destacados": 1
 }

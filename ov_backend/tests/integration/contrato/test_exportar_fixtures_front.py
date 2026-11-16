@@ -127,7 +127,12 @@ NOMBRES_CONTENIDO = {f'contenido-{nombre}.json' for nombre in (
     'contenido-panel-lista.json', 'contenido-panel-lista-conversar.json'} | {
     f'contenido-panel-{caso}-{parte}.json' for caso in (1, 5, 7)
     for parte in ('perfil', 'tests', 'planes', 'respuestas', 'avance', 'partida-llegada')} | {
-    f'contenido-panel-{caso}-{parte}.json' for caso in (5, 7) for parte in ('resultado', 'plan-a', 'registro')}
+    f'contenido-panel-{caso}-{parte}.json' for caso in (5, 7) for parte in ('resultado', 'plan-a', 'registro')} | {
+    # Ajuste respuestas-orientadora: el caso 6 (sensible) y los registros con cada marca y cada eco.
+    'contenido-panel-6-perfil.json', 'contenido-panel-6-respuestas.json', 'contenido-panel-5-registro-b1-3.json',
+    'contenido-panel-5-registro-b1-7.json', 'contenido-panel-5-registro-b4-5.json',
+    'contenido-panel-6-registro-b1-1.json', 'contenido-panel-6-registro-b1-3.json',
+    'contenido-panel-7-registro-b4-5.json'}
 
 
 def leer(archivos):

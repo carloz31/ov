@@ -1,5 +1,7 @@
-"""Ajuste panel-estudiantes §9: pestaña Respuestas del perfil (lista de registros, «Para leer primero», ítems en
-lectura con los valores con que respondió) y el origen de las piezas guardado al responder."""
+"""Ajuste panel-estudiantes §9 y ajuste respuestas-orientadora: pestaña Respuestas del perfil (lista agrupada y
+ordenada con sus marcas, los que requieren atención ya leídos, ítems en lectura con los valores con que respondió y
+ecos resueltos) y el origen de las piezas guardado al responder. Los casos de los ejemplos del panel están en
+`test_panel_respuestas_ejemplos.py`."""
 
 import pytest
 from sqlalchemy import select, update
@@ -33,7 +35,7 @@ def _respuestas_de(sesion, actividad):
         m.Actividad.codigo == actividad, m.RespuestaRegistro.vigente).order_by(m.RespuestaRegistro.id)).all()
 
 
-def test_lista_de_registros_etiquetas_y_para_leer_primero(aplicacion, cliente, sesion):
+def test_lista_con_marcas_y_los_que_requieren_atencion_ya_leidos(aplicacion, cliente, sesion):
     fijar_ahora(aplicacion)
     avanzar_ruta(cliente)  # responde t-expectativas (destacado de 5A)
     primera, *_ = _respuestas_de(sesion, 't-expectativas')
@@ -44,13 +46,16 @@ def test_lista_de_registros_etiquetas_y_para_leer_primero(aplicacion, cliente, s
     assert datos['hay_destacados'] is True
     fila = next(r for r in datos['registros'] if r['actividad'] == 't-expectativas')
     assert fila['destacado'] and fila['estado'] == 'COMPLETADO' and fila['fecha'] is not None
-    assert fila['etiquetas'] == [{'etiqueta': 'REQUIERE_ATENCION', 'cantidad': 1},
-                                 {'etiqueta': 'SIN_CONTENIDO', 'cantidad': 1}]
-    assert any(r['estado'] == 'AUN_NO_LLEGA' for r in datos['registros'])
+    # Con los dos tipos de marca, prima «Requiere atención» en la fila y en el ítem.
+    assert (fila['marca'], fila['sin_contenido'], fila['grupo'], fila['en_destacados']) == (
+        'REQUIERE_ATENCION', 1, 'TRAMO', True)
+    assert datos['registros'][0] == fila  # va primero en su tramo, y su tramo es el primero con filas
+    assert any(r['grupo'] == 'AUN_NO_LLEGA' and r['estado'] == 'AUN_NO_LLEGA' for r in datos['registros'])
+    assert (datos['por_revisar_todos'], datos['por_revisar_destacados']) == (1, 1)
     leer, = datos['leer_primero']
     assert leer['actividad'] == 't-expectativas'
     item = leer['items'][0]
-    assert item['numero'] == 1 and item['etiquetas'] == ['REQUIERE_ATENCION', 'SIN_CONTENIDO'] and item['respondido']
+    assert item['numero'] == 1 and item['marca'] == 'REQUIERE_ATENCION' and item['respondido']
     assert not claves(datos) & PROHIBIDOS
     # El perfil (Resumen) cuenta las mismas etiquetas sobre los destacados.
     resumen = cliente.get('/cuentas/ori-carmen/panel/estudiantes/est-ana').json()['respuestas']
@@ -65,7 +70,7 @@ def test_registro_desplegado_con_aun_no_lo_sabe_y_404(aplicacion, cliente, sesio
     sesion.commit()
     registro = pestana(cliente, '/t-expectativas')
     assert registro['actividad'] == 't-expectativas'
-    assert registro['items'][0]['etiquetas'] == ['AUN_NO_LO_SABE']
+    assert registro['items'][0]['aun_no_lo_sabe'] is True and registro['items'][0]['marca'] is None
     assert registro['items'][0]['pregunta_texto'] and registro['items'][0]['primera_respuesta']
     assert pestana(cliente)['leer_primero'] == []
     pestana(cliente, '/no-existe', esperado=404)
@@ -92,9 +97,7 @@ def test_pieza_guarda_su_origen_sin_cambiar_lo_que_lee_el_estudiante(aplicacion_
     assert all(set(e) == {'codigo', 'texto'} for e in leido)
     item = next(i for i in pestana(cliente, '/b4-1')['items'] if i['codigo'] == 'b4-1-respalda')
     assert item['eleccion'] == 'PIEZAS' and item['elegidas'][0]['origen'] == piezas[0]['origen']
-    assert item['ecos'] and item['ecos_hoy'] is None and item['ecos_de_hoy'] is False
-    fila = next(r for r in pestana(cliente)['registros'] if r['actividad'] == 'b4-1')
-    assert fila['cambio_despues'] is False
+    assert item['ecos'] and all(e['hoy'] is None for e in item['ecos'])
 
 
 def test_valores_con_que_respondio_frente_a_los_de_hoy(aplicacion_contenido, cliente_contenido, llm):
@@ -106,10 +109,11 @@ def test_valores_con_que_respondio_frente_a_los_de_hoy(aplicacion_contenido, cli
     pedir(cliente, 'POST', '/acciones/planes/ordenar', {'cuenta': 'est-ana', 'carreras': [PERIODISMO, PSICOLOGIA],
                                                         'fecha_hora': FECHA})
     despues = next(i for i in pestana(cliente, '/b4-1')['items'] if i['codigo'] == 'b4-1-respalda')
-    # Se muestra con los valores de entonces y, aparte, los de hoy.
-    assert despues['ecos'] == antes['ecos'] and despues['pregunta_texto'] == antes['pregunta_texto']
-    assert despues['ecos_hoy'] is not None and despues['ecos_hoy'] != despues['ecos']
-    assert next(r for r in pestana(cliente)['registros'] if r['actividad'] == 'b4-1')['cambio_despues'] is True
+    # Se muestra con los valores de entonces y, al final de la línea, solo el dato de hoy que cambió.
+    sin_hoy = lambda ecos: [{**e, 'hoy': None} for e in ecos]  # noqa: E731
+    assert sin_hoy(despues['ecos']) == sin_hoy(antes['ecos']) and despues['pregunta_texto'] == antes['pregunta_texto']
+    cambiado, = [e for e in despues['ecos'] if e['hoy']]
+    assert cambiado['fuente'] == 'OTRO' and cambiado['hoy']['texto'] not in (None, cambiado['eco']['carrera'])
 
 
 def test_sin_valores_guardados_se_muestran_los_de_hoy_sin_afirmar_que_eran_los_de_entonces(
@@ -121,4 +125,5 @@ def test_sin_valores_guardados_se_muestran_los_de_hoy_sin_afirmar_que_eran_los_d
     sesion_contenido.execute(update(m.RespuestaRegistro).values(valores_contexto=None))
     sesion_contenido.commit()
     item = next(i for i in pestana(cliente, '/b4-1')['items'] if i['codigo'] == 'b4-1-respalda')
-    assert item['ecos_de_hoy'] is True and item['ecos']
+    # Se muestran los de hoy y no se dice que cambiaron.
+    assert item['ecos'] and all(e['hoy'] is None for e in item['ecos'])

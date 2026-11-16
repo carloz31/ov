@@ -133,31 +133,46 @@
     {
       "codigo": "voces-chocan",
       "destino": "RESPUESTAS",
+      "respuesta": {
+        "actividad": "b1-3",
+        "item": "b1-3-contraste"
+      },
       "texto": "Marcó que lo que se espera en su entorno y lo que quiere hacer al terminar el colegio chocan. La voz que eligió: Mamá."
     },
     {
       "codigo": "plan-poco-entusiasmo",
       "destino": "PLANES",
+      "respuesta": null,
       "texto": "Marcó “Poco” en “Me entusiasma” frente a su Plan A (Ingeniería de Petroleo y Gas Natural). La idea de estudiarla vino de su familia."
     },
     {
       "codigo": "plan-fuera-areas",
       "destino": "PLANES",
+      "respuesta": null,
       "texto": "Su Plan A (Ingeniería de Petroleo y Gas Natural) no está entre sus áreas sugeridas."
     },
     {
       "codigo": "forma-de-decidir",
       "destino": "RESPUESTAS",
+      "respuesta": {
+        "actividad": "b4-2",
+        "item": "b4-2-estilo"
+      },
       "texto": "Sobre cómo decide las cosas importantes, marcó: “Termino haciendo lo que otros esperan”."
     },
     {
       "codigo": "proyecto-poco-seguro",
       "destino": "RESPUESTAS",
+      "respuesta": {
+        "actividad": "b5-1",
+        "item": "b5-1-seguridad"
+      },
       "texto": "Frente a su proyecto, marcó “Poco seguro/a”."
     },
     {
       "codigo": "llegada-sin-avance",
       "destino": "TESTS",
+      "respuesta": null,
       "texto": "Entre la partida y la llegada: Decisión propia bajó."
     }
   ],

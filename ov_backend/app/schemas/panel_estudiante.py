@@ -77,11 +77,19 @@ class CabeceraEstudiante(BaseModel):
     tramo: TramoEstudiante
 
 
+class RespuestaDestino(BaseModel):
+    """El registro y la pregunta a los que lleva un aviso o tema con destino RESPUESTAS (ajuste
+    respuestas-orientadora §3.1)."""
+    actividad: str
+    item: str
+
+
 class AvisoPerfil(BaseModel):
     codigo: str
     nombre: str
     descripcion: str | None
     destino: Destino | None
+    respuesta: RespuestaDestino | None = None
 
 
 class GrupoAvisosPerfil(BaseModel):
@@ -94,6 +102,7 @@ class TemaPerfil(BaseModel):
     codigo: str
     texto: str
     destino: Destino | None
+    respuesta: RespuestaDestino | None = None
 
 
 class DimensionInteres(BaseModel):
@@ -477,12 +486,8 @@ class AvanceEstudiantePerfil(BaseModel):
 
 # --- Pestaña Respuestas --------------------------------------------------------------------------
 
-EtiquetaRespuesta = Literal["REQUIERE_ATENCION", "SIN_CONTENIDO", "AUN_NO_LO_SABE"]
-
-
-class ConteoEtiqueta(BaseModel):
-    etiqueta: EtiquetaRespuesta
-    cantidad: int
+MarcaRegistro = Literal["REQUIERE_ATENCION", "SIN_CONTENIDO"]
+MarcaItem = Literal["REQUIERE_ATENCION", "VACIA", "FUERA_DE_TEMA"]
 
 
 class OpcionElegidaLectura(BaseModel):
@@ -494,18 +499,45 @@ class OpcionElegidaLectura(BaseModel):
     grupo: str | None
 
 
+class PlanEco(BaseModel):
+    letra: str
+    carrera: str | None
+    institucion: str | None
+
+
+class HoyEco(BaseModel):
+    """Solo el valor que cambió desde que respondió: la cita, la elección, los planes que cambiaron o, en un eco de
+    otra forma, su dato principal (`texto`: la carrera o el texto)."""
+    cita: str | None = None
+    texto: str | None = None
+    opciones: list[str] | None = None
+    planes: list[PlanEco] | None = None
+
+
+class EcoLinea(BaseModel):
+    """Lo que el estudiante tenía a la vista, ya resuelto (ajuste respuestas-orientadora §3.4). `MISMO_REGISTRO`:
+    `numeros` de las preguntas de este registro; `TEXTO` y `ELECCION`: de otra actividad (`actividad`, `cita`,
+    `opciones`); `PLANES`: `planes`; `OTRO`: `eco` tal como se mostró (pasos, proyecto, señal…). `hoy`: el valor que
+    cambió, o nulo."""
+    fuente: Literal["MISMO_REGISTRO", "TEXTO", "ELECCION", "PLANES", "OTRO"]
+    numeros: list[int] = []
+    actividad: str | None = None
+    cita: str | None = None
+    opciones: list[str] = []
+    planes: list[PlanEco] = []
+    eco: dict | None = None
+    hoy: HoyEco | None = None
+
+
 class ItemLectura(BaseModel):
-    """Un ítem con el intento vigente, con las preguntas y ecos con los valores con que respondió. `ecos` son los
-    ecos mostrados tal como se guardaron (mismas formas que ve el estudiante); `ecos_hoy`, los de hoy cuando lo que
-    tenía a la vista cambió; `ecos_de_hoy`: la respuesta no guardó sus ecos y se muestran los de hoy."""
+    """Un ítem con el intento vigente, con las preguntas con los valores con que respondió. `marca`: requiere
+    atención (`sensible`, prima) o sin contenido por tipo (`VACIA`, `FUERA_DE_TEMA`); nunca el tipo ni el motivo del
+    LLM. `aun_no_lo_sabe`: quedó abierto. `ecos`: lo que tenía a la vista, ya resuelto."""
     numero: int
     codigo: str
-    nombre: str
-    etiquetas: list[EtiquetaRespuesta]
-    dialogo: str | None
-    ecos: list[dict]
-    ecos_hoy: list[dict] | None
-    ecos_de_hoy: bool
+    marca: MarcaItem | None
+    aun_no_lo_sabe: bool
+    ecos: list[EcoLinea]
     pregunta_eleccion: str | None
     eleccion: Literal["LISTA", "ORDENADA", "PIEZAS"] | None
     elegidas: list[OpcionElegidaLectura]
@@ -517,15 +549,21 @@ class ItemLectura(BaseModel):
 
 
 class RegistroFila(BaseModel):
+    """Una fila de la pestaña, ya en su lugar: el servidor la ordena por `grupo` (tramos por número, misiones
+    opcionales iniciadas, «Aún no llega») y, dentro de cada grupo, por marca y por el orden del camino.
+    `en_destacados`: se ve en «Destacados» (destacada o con una respuesta sensible)."""
     actividad: str
     titulo: str
     tramo: str
+    tramo_numero: int | None
     ciudad: bool
     destacado: bool
+    en_destacados: bool
     estado: Literal["COMPLETADO", "EN_CURSO", "AUN_NO_LLEGA"]
     fecha: date | None
-    etiquetas: list[ConteoEtiqueta]
-    cambio_despues: bool = Field(description="Lo que tenía a la vista cambió después.")
+    grupo: Literal["TRAMO", "OPCIONALES", "AUN_NO_LLEGA"]
+    marca: MarcaRegistro | None
+    sin_contenido: int
 
 
 class RegistroLectura(BaseModel):
@@ -534,6 +572,11 @@ class RegistroLectura(BaseModel):
 
 
 class RespuestasEstudiante(BaseModel):
+    """`total_destacados`: filas que se ven en «Destacados»; `por_revisar_*`: filas con alguna marca en cada vista.
+    `leer_primero`: el detalle de los registros que requieren atención, que se abren solos."""
     hay_destacados: bool
+    total_destacados: int
+    por_revisar_destacados: int
+    por_revisar_todos: int
     registros: list[RegistroFila]
     leer_primero: list[RegistroLectura]

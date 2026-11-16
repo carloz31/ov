@@ -371,3 +371,29 @@ def test_los_estudiantes_y_apoderados_de_ejemplo_pueden_ingresar(ejemplos):
         respuesta = cliente.post('/sesion/ingresar', json={'usuario': correo, 'contrasena': contrasena})
         assert respuesta.status_code == 200, respuesta.text
         assert respuesta.json()['cuenta']['codigo'] == codigo
+
+
+# --- Pestaña Respuestas (ajuste respuestas-orientadora) ---------------------------------------------------------------
+# Consultas medidas sobre los ejemplos de `contenido` antes del ajuste: la lista 33 (casos 5 y 7) y 22 (caso 6, con
+# «Para leer primero»); el detalle de b1-3, 7, y el de b4-5 (con ecos de planes), 13. La lista ya no arma el contexto
+# de hoy de cada ítem (antes lo pedía `cambio_despues`): solo el de los que requieren atención (`leer_primero`).
+PRESUPUESTO_RESPUESTAS = {
+    f'{BASE}/estudiantes/est-panel-5/respuestas': 10,
+    f'{BASE}/estudiantes/est-panel-6/respuestas': 11,
+    f'{BASE}/estudiantes/est-panel-7/respuestas': 10,
+    f'{BASE}/estudiantes/est-panel-5/respuestas/b1-3': 7,
+    f'{BASE}/estudiantes/est-panel-6/respuestas/b1-3': 7,
+    f'{BASE}/estudiantes/est-panel-7/respuestas/b4-5': 13,  # igual que antes: lee planes y referencias de sus ecos
+}
+
+
+def test_presupuesto_de_la_pestana_respuestas(ejemplos):
+    aplicacion, cliente = ejemplos
+    medidas = {}
+    for ruta in PRESUPUESTO_RESPUESTAS:
+        cliente.get(ruta)  # la caché de definiciones ya cargada
+        with ContadorConsultas(aplicacion.state.motor_bd) as contador:
+            respuesta = cliente.get(ruta)
+        assert respuesta.status_code == 200, respuesta.text
+        medidas[ruta] = contador.cantidad
+    assert medidas == PRESUPUESTO_RESPUESTAS

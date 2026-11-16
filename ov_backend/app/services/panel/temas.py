@@ -17,8 +17,8 @@ from sqlalchemy import func, select
 
 from app.core.contexto import contexto
 from app.models import (
-    ComplicacionTarjeta, ConocimientoTarjeta, DudaTarjeta, EstadoDuda, ItemRegistro, MomentoAplicacion, MotivoTarjeta,
-    OpcionLista, ProgresoActividad, RespuestaConocimiento, RespuestaRegistro,
+    Actividad, ComplicacionTarjeta, ConocimientoTarjeta, DudaTarjeta, EstadoDuda, ItemRegistro, MomentoAplicacion,
+    MotivoTarjeta, OpcionLista, ProgresoActividad, RespuestaConocimiento, RespuestaRegistro,
 )
 from app.services.panel.autopercepcion import comparar, dimensiones_de, instrumento_autopercepcion, mediciones_del_alcance
 from app.services.panel.comun import Lecturas, areas_de_planes, planes_del_perfil
@@ -197,7 +197,9 @@ def _eleccion_registro(lecturas: Lecturas, parametros) -> dict[int, dict]:
         marcadas = [e for e in _elegida_vigente(respuesta) if e["codigo"] in opciones]
         if not marcadas or _plan_cambio(lecturas, cuenta_id, respuesta, parametros):
             continue
-        datos = {"opcion": unir(e["texto"] for e in marcadas)}
+        item_marcado = definiciones.por_codigo(ItemRegistro, parametros["item"])
+        datos = {"opcion": unir(e["texto"] for e in marcadas), "item": parametros["item"],
+                 "actividad": definiciones.obtener(Actividad, item_marcado.actividad_id).codigo}
         for plan in ("plan_a", "plan_b"):
             datos[plan] = carrera_guardada(respuesta, plan) or ""
         otros = {}

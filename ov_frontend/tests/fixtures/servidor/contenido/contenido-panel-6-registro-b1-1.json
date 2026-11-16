@@ -1,0 +1,57 @@
+{
+  "actividad": "b1-1",
+  "items": [
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-1-gustos",
+      "ecos": [],
+      "eleccion": null,
+      "elegidas": [],
+      "marca": "REQUIERE_ATENCION",
+      "numero": 1,
+      "pregunta_eleccion": null,
+      "pregunta_texto": "¿Qué te encantaba hacer de niño o niña? Puede ser un juego, algo que armabas o algo que hacías con alguien.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-1-logro",
+      "ecos": [],
+      "eleccion": "LISTA",
+      "elegidas": [
+        {
+          "grupo": null,
+          "origen": null,
+          "otra": false,
+          "texto": "Organizar"
+        }
+      ],
+      "marca": null,
+      "numero": 2,
+      "pregunta_eleccion": "Piensa en un logro tuyo, aunque sea pequeño. ¿Qué habilidades tuyas se notaron ahí?",
+      "pregunta_texto": "Ahora cuéntame cuál fue ese logro: algo que pasó, no algo que eres.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    },
+    {
+      "aun_no_lo_sabe": false,
+      "codigo": "b1-1-dificultad",
+      "ecos": [],
+      "eleccion": null,
+      "elegidas": [],
+      "marca": null,
+      "numero": 3,
+      "pregunta_eleccion": null,
+      "pregunta_texto": "Cuenta algo que te costó y cómo lo fuiste superando: lo que hiciste o quién te ayudó.",
+      "primera_respuesta": "DATO DE PRUEBA: lo cuento con un ejemplo de mi casa.",
+      "repregunta": null,
+      "respondido": true,
+      "segunda_respuesta": null
+    }
+  ]
+}
