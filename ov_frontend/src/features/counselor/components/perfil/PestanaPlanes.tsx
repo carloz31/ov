@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/Button'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import type { ModeloPerfilEstudiante } from '@/features/counselor/hooks/usePerfilEstudiante'
+import { SELECTOR_RESALTADO } from '@/features/counselor/lib/perfilEstudiante'
 import { letraPlan } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import { usePlanesPerfil, usePlanPerfil } from '@/store/servidor/panelEstudiante'
 import { EsperaBloque } from './EsperaBloque'
@@ -21,13 +22,14 @@ function PlanAbierto({
   const planes = carga?.datos?.planes ?? []
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col items-start gap-2">
         <Button variant="link" className="min-h-11 px-0 font-semibold" onClick={() => modelo.abrirPlan(null)}>
           ← Resumen de planes
         </Button>
         {planes.length > 1 && (
           <SegmentedControl
             etiqueta="Elegir plan"
+            className={SELECTOR_RESALTADO}
             valor={prioridad}
             onCambiar={modelo.abrirPlan}
             opciones={planes.map((p) => ({ valor: p, texto: letraPlan(p) }))}

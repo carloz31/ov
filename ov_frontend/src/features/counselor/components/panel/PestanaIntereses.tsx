@@ -37,7 +37,7 @@ export function PestanaIntereses({ modelo }: { modelo: ModeloPanelSalon }) {
       <p className="text-sm text-muted-foreground">
         Lo que el salón está considerando hoy:{' '}
         <strong>{datos.con_planes} estudiantes ya tienen planes</strong> y {datos.con_favoritos} guardaron
-        favoritos. Todos los números cuentan estudiantes, no planes. «Solo en favoritos» son estudiantes que
+        favoritos. Todos los números cuentan estudiantes, no planes. <em>Solo en favoritos</em> son estudiantes que
         la guardaron pero todavía no la tienen en un plan.
       </p>
       <div className="grid min-w-0 items-start gap-6 lg:grid-cols-2">

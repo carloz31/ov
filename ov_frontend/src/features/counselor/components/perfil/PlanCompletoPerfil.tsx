@@ -127,7 +127,7 @@ export function PlanCompletoPerfil({ plan, nombre }: { plan: PlanCompleto; nombr
               {plan.por_que.relato && (
                 <>
                   <Rotulo>En sus palabras</Rotulo>
-                  <p className="rounded-lg bg-muted p-3">«{plan.por_que.relato}»</p>
+                  <p className="rounded-lg bg-muted p-3">“{plan.por_que.relato}”</p>
                 </>
               )}
             </>
@@ -158,53 +158,59 @@ export function PlanCompletoPerfil({ plan, nombre }: { plan: PlanCompleto; nombr
       {realidad && (
         <Seccion numero={3} s={realidad}>
           {r && (
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <Rotulo>Dónde estudiaría</Rotulo>
-                <p>
-                  {r.institucion
-                    ? `${textoInstitucionPerfil(r.institucion)}${r.ciclos ? ` · ${r.ciclos} ciclos` : ''}`
-                    : 'Sin elegir'}
-                </p>
+            <div className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+              <div className="space-y-4">
+                <div>
+                  <Rotulo>Dónde estudiaría</Rotulo>
+                  <p>
+                    {r.institucion
+                      ? `${textoInstitucionPerfil(r.institucion)}${r.ciclos ? ` · ${r.ciclos} ciclos` : ''}`
+                      : 'Sin elegir'}
+                  </p>
+                </div>
+                <div>
+                  <Rotulo>Cómo llegaría</Rotulo>
+                  <p>{r.camino ?? 'Sin registrar'}</p>
+                </div>
+                <div>
+                  <Rotulo>Cómo lo pagaría</Rotulo>
+                  <p>{r.financiamiento.length ? r.financiamiento.join(' · ') : 'Sin registrar'}</p>
+                </div>
               </div>
-              <div>
-                <Rotulo>Cómo llegaría</Rotulo>
-                <p>{r.camino ?? 'Sin registrar'}</p>
-              </div>
-              <div>
-                <Rotulo>Costos que registró</Rotulo>
-                {r.costo_primer_anio === null ? (
-                  <p>Sin registrar</p>
-                ) : (
-                  <>
-                    <p>
-                      <strong>{textoSoles(r.costo_primer_anio)}</strong> el primer año
-                      {r.costo_carrera !== null && (
-                        <>
-                          {' '}
-                          · <strong>{textoSoles(r.costo_carrera)}</strong> toda la carrera
-                        </>
-                      )}
-                    </p>
-                    <p className="text-sm text-muted-foreground">{r.rubros.join(', ')}.</p>
-                  </>
-                )}
-              </div>
-              <div className="sm:col-span-3">
-                <Rotulo>Cómo lo pagaría</Rotulo>
-                <p>{r.financiamiento.length ? r.financiamiento.join(' · ') : 'Sin registrar'}</p>
-              </div>
-              <div className="flex flex-wrap gap-1.5 sm:col-span-3">
-                <Rotulo>Lo que podría complicarlo</Rotulo>
-                {r.complicaciones.length ? (
-                  r.complicaciones.map((c) => (
-                    <ChipPerfil key={c} tono="aviso">
-                      {c}
-                    </ChipPerfil>
-                  ))
-                ) : (
-                  <p className="w-full">Sin registrar</p>
-                )}
+              <div className="space-y-4">
+                <div>
+                  <Rotulo>Cuánto costaría</Rotulo>
+                  {r.costo_primer_anio === null ? (
+                    <p>Sin registrar</p>
+                  ) : (
+                    <>
+                      <p>
+                        <strong>{textoSoles(r.costo_primer_anio)}</strong> el primer año
+                        {r.costo_carrera !== null && (
+                          <>
+                            {' '}
+                            · <strong>{textoSoles(r.costo_carrera)}</strong> toda la carrera
+                          </>
+                        )}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Incluye: {r.rubros.join(', ')}.</p>
+                    </>
+                  )}
+                </div>
+                <div>
+                  <Rotulo>Lo que podría complicarlo</Rotulo>
+                  {r.complicaciones.length ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {r.complicaciones.map((c) => (
+                        <ChipPerfil key={c} tono="aviso">
+                          {c}
+                        </ChipPerfil>
+                      ))}
+                    </div>
+                  ) : (
+                    <p>Sin registrar</p>
+                  )}
+                </div>
               </div>
             </div>
           )}

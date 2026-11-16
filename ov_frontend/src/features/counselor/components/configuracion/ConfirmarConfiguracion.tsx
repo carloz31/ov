@@ -11,7 +11,7 @@ const lista = (nombres: string[]) =>
 // Ajuste panel-entrevistas-configuracion §2.5: confirmar antes de guardar; si un cuestionario pasa a ser visible para
 // los apoderados, lo dice.
 export function ConfirmarConfiguracion({ m }: { m: ModeloConfiguracion }) {
-  const nuevos = m.nuevosVisibles.map((c) => `«${c.nombre}»`)
+  const nuevos = m.nuevosVisibles.map((c) => c.nombre)
   return (
     <Dialog open={m.confirmando} onOpenChange={(abierto) => !abierto && m.cerrarConfirmacion()}>
       <DialogContent>

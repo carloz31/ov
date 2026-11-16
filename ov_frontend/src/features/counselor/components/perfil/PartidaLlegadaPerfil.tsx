@@ -22,7 +22,7 @@ const TONO_GRUPO: Record<GrupoAfirmaciones['codigo'], TonoChip> = {
 function FilaAfirmacion({ a, tono }: { a: Afirmacion; tono: TonoChip }) {
   return (
     <li className="flex flex-wrap items-center justify-between gap-2 py-2">
-      <span className="min-w-0 flex-1">«{a.enunciado}»</span>
+      <span className="min-w-0 flex-1">{a.enunciado}</span>
       <span className="flex items-center gap-2">
         {a.llegada !== null && <ChipPerfil>{a.partida ?? '—'}</ChipPerfil>}
         {a.llegada !== null && <span aria-hidden="true">→</span>}

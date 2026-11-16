@@ -124,7 +124,7 @@ test('Seguimiento pinta lo que llega del servidor: indicadores, avisos, test, ca
   assert.match(texto(html(camino.PorDondeVa, { datos: SEGUIMIENTO, onVer })), /3 Sin empezar/)
   const detenidos = { actividad: 't-llegada', titulo: 'Punto de llegada', cantidad: 2, dias: 7 }
   const tramos = texto(html(camino.PorDondeVa, { datos: { ...SEGUIMIENTO, detenidos }, onVer }))
-  assert.match(tramos, /Donde más se detienen: «Punto de llegada»\. 2 estudiantes llevan más de 7 días ahí/)
+  assert.match(tramos, /Donde más se detienen: Punto de llegada ?\. 2 estudiantes llevan más de 7 días ahí/)
   const seguridad = texto(html(camino.ComoSeSienten, { datos: SEGUIMIENTO, onVer }))
   assert.match(seguridad, /Poco seguros \(1 o 2\)/)
   assert.match(seguridad, /Intermedio \(3\)/)

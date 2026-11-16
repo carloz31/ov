@@ -93,10 +93,14 @@ function PerfilEstudianteView() {
         <TabsList
           appearance="segmented"
           aria-label="Secciones del perfil"
-          className="w-full overflow-x-auto sm:w-fit"
+          className="w-full overflow-x-auto border border-border sm:w-fit"
         >
           {PESTANAS.map(([valor, texto]) => (
-            <TabsTrigger key={valor} value={valor} className="min-h-11 flex-1 sm:flex-none">
+            <TabsTrigger
+              key={valor}
+              value={valor}
+              className="min-h-11 flex-1 text-foreground/75 hover:text-foreground data-[state=active]:bg-primary data-[state=active]:font-semibold data-[state=active]:text-primary-foreground sm:flex-none"
+            >
               {texto}
             </TabsTrigger>
           ))}

@@ -19,7 +19,7 @@ export function PorDondeVa({
       titulo="Por dónde va el salón"
       subtitulo="Cuántos estudiantes están hoy en cada tramo del camino."
     >
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="grid auto-rows-fr grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
         {datos.tramos.map((tramo) => {
           const intenso = maximo > 0 && tramo.cantidad * 3 >= maximo * 2
           return (
@@ -27,7 +27,7 @@ export function PorDondeVa({
               <button
                 type="button"
                 className={cn(
-                  'flex min-h-20 w-full flex-col items-center justify-center rounded-lg p-2 text-center',
+                  'flex h-full min-h-20 w-full flex-col items-center justify-center rounded-lg p-2 text-center',
                   intenso ? 'bg-primary-soft text-primary' : 'bg-track text-muted-foreground',
                 )}
                 onClick={() => onVer({ titulo: tramo.nombre, conjunto: 'tramo', valor: tramo.codigo })}
@@ -43,12 +43,12 @@ export function PorDondeVa({
       {detenidos && (
         <div className="flex items-center gap-3 border-t border-border pt-3">
           <p className="min-w-0 flex-1 text-sm">
-            <strong>Donde más se detienen:</strong> «{detenidos.titulo}». {detenidos.cantidad} estudiantes
+            <strong>Donde más se detienen:</strong> <em>{detenidos.titulo}</em>. {detenidos.cantidad} estudiantes
             llevan más de {detenidos.dias} días ahí.
           </p>
           <BotonVer
             descripcion="Donde más se detienen"
-            onClick={() => onVer({ titulo: `Detenidos en «${detenidos.titulo}»`, conjunto: 'detenidos' })}
+            onClick={() => onVer({ titulo: `Detenidos en ${detenidos.titulo}`, conjunto: 'detenidos' })}
           />
         </div>
       )}

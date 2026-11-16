@@ -178,7 +178,7 @@ test('el Resumen: avisos con su texto de perfil, temas para conversar, las tres 
   assert.match(avisos, /La voz que eligió: Mamá\. Ver respuesta /)
   assert.match(
     avisos,
-    /Dice conocer poco su Plan A: respondió «No» a 3 de 5 preguntas\. Tiene \d+ dudas abiertas\. Ver plan/,
+    /Dice conocer poco su Plan A: respondió “No” a 3 de 5 preguntas\. Tiene \d+ dudas abiertas\. Ver plan/,
   )
   // Ajuste pendientes-orientadora: el tope. El caso 5 tiene cinco temas; se ven cuatro y el enlace.
   assert.equal(perfil.temas.length, 5)

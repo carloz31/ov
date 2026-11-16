@@ -40,7 +40,7 @@ export function ListaInteresCompleta({ tabla }: { tabla: Tabla }) {
   const lista = l.lista
   const pie =
     tabla === 'areas'
-      ? `${lista?.total ?? 0} áreas con al menos un estudiante interesado. «Total interesados» suma los que la tienen en un plan y los que solo la guardaron en favoritos.`
+      ? `${lista?.total ?? 0} áreas con al menos un estudiante interesado. Total interesados suma los que la tienen en un plan y los que solo la guardaron en favoritos.`
       : `${lista?.total ?? 0} instituciones con al menos un estudiante interesado. ${lista?.planASinInstitucion ?? 0} estudiantes con Plan A aún no eligen institución.`
   return (
     <main className="min-w-0 space-y-6 p-4 sm:p-6 lg:p-7">

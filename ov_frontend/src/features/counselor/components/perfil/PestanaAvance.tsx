@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { BloquePanel } from '@/features/counselor/components/panel/PanelComun'
 import type { ModeloPerfilEstudiante } from '@/features/counselor/hooks/usePerfilEstudiante'
 import { fechaCorta, textoOpcionales } from '@/lib/servidor/adaptadoresPanelEstudiante'
@@ -19,7 +20,7 @@ const FONDO_BANDA: Record<Senal['banda'], string> = {
 }
 const misiones = (n: number) => `${n} ${n === 1 ? 'misión' : 'misiones'}`
 
-function Fila({ titulo, detalle, chip }: { titulo: string; detalle?: string; chip: [string, TonoChip] }) {
+function Fila({ titulo, detalle, chip }: { titulo: string; detalle?: ReactNode; chip: [string, TonoChip] }) {
   return (
     <li className="flex items-center justify-between gap-3 py-3">
       <div className="min-w-0">
@@ -97,7 +98,17 @@ export function PestanaAvance({ modelo, nombre }: { modelo: ModeloPerfilEstudian
               detalle={
                 t.estado === 'POR_ABRIR'
                   ? misiones(t.total)
-                  : `${t.hechas} de ${misiones(t.total)}${t.siguiente ? ` · sigue: «${t.siguiente}»` : ''}`
+                  : (
+                      <>
+                        {t.hechas} de {misiones(t.total)}
+                        {t.siguiente && (
+                          <>
+                            {' · sigue: '}
+                            <em>{t.siguiente}</em>
+                          </>
+                        )}
+                      </>
+                    )
               }
               chip={ESTADO_TRAMO[t.estado]}
             />

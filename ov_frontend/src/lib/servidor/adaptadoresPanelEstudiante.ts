@@ -145,7 +145,7 @@ export function gruposComoEmpezo(partida: PartidaResumen): GrupoDimensiones[] {
 }
 
 // «Respondió «Sí» a N de M preguntas» y «N abiertas · M resueltas».
-export const textoConoce = (si: number, total: number) => `Respondió «Sí» a ${si} de ${total} preguntas`
+export const textoConoce = (si: number, total: number) => `Respondió “Sí” a ${si} de ${total} preguntas`
 export function textoDudas(abiertas: number, resueltas: number) {
   const partes = [
     abiertas ? `${abiertas} ${abiertas === 1 ? 'abierta' : 'abiertas'}` : null,
@@ -179,7 +179,7 @@ export function lineaEco(eco: Record<string, unknown>): EcoLectura | null {
   if (eco.origen === 'ITEM') {
     const texto = lista(eco.texto)
     return {
-      texto: `lo que ${texto.length ? 'escribió' : 'eligió'} antes en «${nombre ?? ''}»`,
+      texto: `lo que ${texto.length ? 'escribió' : 'eligió'} antes en ${nombre ?? ''}`,
       cita: texto.length ? texto.join(' / ') : null,
       chips: lista(eco.eleccion),
     }

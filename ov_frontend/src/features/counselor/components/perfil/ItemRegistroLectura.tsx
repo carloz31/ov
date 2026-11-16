@@ -20,7 +20,7 @@ function Ecos({ item }: { item: ItemLectura }) {
             )}
             {item.ecos_de_hoy && <span className="text-muted-foreground"> (lo que tiene hoy)</span>}
           </p>
-          {l.cita && <p className="italic text-muted-foreground">«{l.cita}»</p>}
+          {l.cita && <p className="italic text-muted-foreground">“{l.cita}”</p>}
           {l.chips.length > 0 && (
             <span className="flex flex-wrap gap-1">
               {l.chips.map((c) => (
@@ -53,7 +53,7 @@ function Eleccion({ item }: { item: ItemLectura }) {
     <ul className="flex flex-wrap items-center gap-2">
       {item.elegidas.map((e, i) => (
         <li key={i} className="flex flex-wrap items-center gap-2">
-          <ChipPerfil tono="primario">{e.otra ? `«${e.texto}»` : e.texto}</ChipPerfil>
+          <ChipPerfil tono="primario">{e.otra ? `“${e.texto}”` : e.texto}</ChipPerfil>
           {e.otra ? (
             <span className="text-sm text-muted-foreground">lo escribió el estudiante</span>
           ) : (

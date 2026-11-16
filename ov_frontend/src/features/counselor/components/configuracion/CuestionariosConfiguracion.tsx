@@ -9,7 +9,7 @@ function Tipo({ cuestionario }: { cuestionario: CuestionarioConfiguracion }) {
   return cuestionario.obligatorio ? <Badge>Obligatorio</Badge> : <Badge variant="outline">Opcional</Badge>
 }
 
-// Siempre y nunca son fijos; solo un cuestionario «según el colegio» se marca.
+// Siempre y nunca son fijos (la casilla marcada o vacía, sin editar); solo un cuestionario según el colegio se marca.
 function Visibilidad({
   m,
   cuestionario,
@@ -19,20 +19,28 @@ function Visibilidad({
   cuestionario: CuestionarioConfiguracion
   movil?: boolean
 }) {
-  if (cuestionario.visibilidad_apoderado === 'SIEMPRE') return <p className="py-2">Siempre</p>
-  if (cuestionario.visibilidad_apoderado === 'NUNCA')
-    return <p className="py-2 text-muted-foreground">No se comparte</p>
+  const fija = cuestionario.visibilidad_apoderado === 'SIEMPRE' || cuestionario.visibilidad_apoderado === 'NUNCA'
   const id = `visible-${movil ? 'movil-' : ''}${cuestionario.codigo}`
   return (
-    <label htmlFor={id} className="flex min-h-11 w-fit max-w-full cursor-pointer items-center gap-3">
+    <label
+      htmlFor={id}
+      className={`flex min-h-11 w-fit max-w-full items-center gap-3 ${fija ? '' : 'cursor-pointer'}`}
+    >
       <Checkbox
         id={id}
         aria-label={`Visible para el apoderado: ${cuestionario.nombre}`}
-        disabled={!m.editando || m.guardando}
-        checked={m.esVisible(cuestionario)}
+        disabled={fija || !m.editando || m.guardando}
+        checked={fija ? cuestionario.visibilidad_apoderado === 'SIEMPRE' : m.esVisible(cuestionario)}
         onCheckedChange={(marcado) => m.cambiarVisible(cuestionario.codigo, marcado === true)}
       />
-      <span>Visible para el apoderado</span>
+      <span>
+        Visible para el apoderado
+        {fija && (
+          <span className="text-muted-foreground">
+            {cuestionario.visibilidad_apoderado === 'SIEMPRE' ? ' (siempre)' : ' (nunca)'}
+          </span>
+        )}
+      </span>
     </label>
   )
 }

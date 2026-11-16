@@ -66,7 +66,7 @@ export function FichaPublicacion({
               .filter((a) => a.lo_que_pensaba)
               .map((a) => (
                 <span key={a.codigo} className="block text-sm">
-                  «{a.lo_que_pensaba!.dia} {a.lo_que_pensaba!.necesita} {a.lo_que_pensaba!.duda}»{' '}
+                  “{a.lo_que_pensaba!.dia} {a.lo_que_pensaba!.necesita} {a.lo_que_pensaba!.duda}”{' '}
                   <span className="text-muted-foreground">({a.nombre} · solo lo ve la orientadora)</span>
                 </span>
               ))

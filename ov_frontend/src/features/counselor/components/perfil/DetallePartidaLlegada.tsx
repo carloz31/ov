@@ -79,7 +79,7 @@ function TablaDimension({ d, datos }: { d: DimensionDetalle; datos: Detalle }) {
             const tono = a.cambio ? TONO_CAMBIO_AFIRMACION[a.cambio] : 'neutro'
             return (
               <tr key={a.item} className="border-t border-border">
-                <td className="px-3 py-2">«{a.enunciado}»</td>
+                <td className="px-3 py-2">{a.enunciado}</td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <ChipPerfil tono={!conLlegada && a.partida_baja ? 'aviso' : 'neutro'}>
                     {a.partida ?? 'Sin responder'}

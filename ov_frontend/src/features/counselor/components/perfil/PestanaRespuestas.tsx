@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { SegmentedControl } from '@/components/ui/SegmentedControl'
 import type { ModeloPerfilEstudiante } from '@/features/counselor/hooks/usePerfilEstudiante'
+import { SELECTOR_RESALTADO } from '@/features/counselor/lib/perfilEstudiante'
 import { fechaCorta, textosEtiqueta } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import { useRegistroPerfil, useRespuestasPerfil } from '@/store/servidor/panelEstudiante'
 import type { RegistroFila, RegistroLectura } from '@/types/servidor'
@@ -42,7 +43,7 @@ function Registro({
         <div className="min-w-0 space-y-1">
           <h3 className="text-lg font-bold">{fila.titulo}</h3>
           <p className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            Tramo «{fila.tramo}» · <Estado fila={fila} />
+            Tramo <em>{fila.tramo}</em> · <Estado fila={fila} />
             {fila.etiquetas.map((e) => (
               <ChipPerfil key={e.etiqueta} tono={e.etiqueta === 'AUN_NO_LO_SABE' ? 'neutro' : 'aviso'}>
                 {e.cantidad} {textosEtiqueta[e.etiqueta].toLocaleLowerCase('es')}
@@ -100,6 +101,7 @@ export function PestanaRespuestas({ modelo }: { modelo: ModeloPerfilEstudiante }
         {datos.hay_destacados && (
           <SegmentedControl
             etiqueta="Qué registros ver"
+            className={SELECTOR_RESALTADO}
             valor={soloDestacados ? 'destacados' : 'todos'}
             onCambiar={(v) => setSoloDestacados(v === 'destacados')}
             opciones={[

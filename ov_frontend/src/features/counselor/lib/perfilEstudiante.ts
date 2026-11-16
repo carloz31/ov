@@ -29,3 +29,8 @@ export function textoInstitucionPerfil(institucion: InstitucionPlanPerfil) {
   const tipo = textoInstitucion(institucion.tipo as TipoFormacion, institucion.gestion as GestionPanel | null)
   return `${institucion.nombre} · ${tipo.toLocaleLowerCase('es')}`
 }
+
+// Ajuste panel-orientadora-observaciones §2: la opción elegida de un selector del perfil, resaltada con el color
+// principal (el `SegmentedControl` común no pinta `aria-pressed`, y también lo usa el estudiante).
+export const SELECTOR_RESALTADO =
+  'flex-wrap gap-2 [&>button]:min-h-11 [&>button]:font-semibold [&>button[aria-pressed=true]]:border-primary [&>button[aria-pressed=true]]:bg-primary [&>button[aria-pressed=true]]:text-primary-foreground [&>button[aria-pressed=true]]:hover:bg-primary'
