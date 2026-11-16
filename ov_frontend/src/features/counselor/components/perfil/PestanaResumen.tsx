@@ -1,10 +1,11 @@
 import type { ModeloPerfilEstudiante } from '@/features/counselor/hooks/usePerfilEstudiante'
 import type { PerfilEstudiante } from '@/types/servidor'
 import { AvisosParaConversar } from './AvisosParaConversar'
-import { RespuestasYNotas } from './RespuestasYNotas'
+import { NotasPerfil } from './NotasPerfil'
 import { TarjetasResumen } from './TarjetasResumen'
 
-// Ajuste panel-estudiantes §6 (boceto 06): Avisos, Para conversar, las tres tarjetas, sus respuestas y mis notas.
+// Ajuste panel-estudiantes §6 (boceto 06), reordenado a pedido del usuario: Avisos y Para conversar; sus planes; lo
+// que le interesa, cómo empezó y sus respuestas; y mis notas, al final.
 // Llega con la cabecera, en la misma lectura.
 export function PestanaResumen({
   datos,
@@ -24,7 +25,7 @@ export function PestanaResumen({
         onIr={modelo.irADestino}
       />
       <TarjetasResumen datos={datos} onIr={modelo.irADestino} />
-      <RespuestasYNotas respuestas={datos.respuestas} notas={datos.notas} modelo={modelo} />
+      <NotasPerfil notas={datos.notas} estudiante={modelo.estudiante} />
     </div>
   )
 }

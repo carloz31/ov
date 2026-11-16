@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button'
-import { BloquePanel } from '@/features/counselor/components/panel/PanelComun'
+import { BloquePanel, FilaConteo } from '@/features/counselor/components/panel/PanelComun'
 import {
   fechaCorta,
   gruposComoEmpezo,
@@ -8,9 +8,10 @@ import {
   textosTest,
   textosZona,
 } from '@/lib/servidor/adaptadoresPanelEstudiante'
-import type { DestinoPerfil, PerfilEstudiante } from '@/types/servidor'
+import type { DestinoPerfil, PerfilEstudiante, RespuestasResumen } from '@/types/servidor'
 import { ChipPerfil } from './ChipPerfil'
-import { textoInstitucionPerfil } from '@/features/counselor/lib/perfilEstudiante'
+import { MarcaRespuesta } from './MarcaRespuesta'
+import { textoInstitucionPerfil, type IntensidadMarca } from '@/features/counselor/lib/perfilEstudiante'
 // Ajuste partida-llegada-liviano §5: el título del grupo lleva el color del cambio (o ámbar solo en Por trabajar).
 const COLOR_GRUPO: Record<string, string> = {
   'Por trabajar': 'text-warning-text',
@@ -86,9 +87,9 @@ function LoQueEstaPensando({ datos, onIr }: { datos: PerfilEstudiante; onIr: (d:
   return (
     <BloquePanel titulo="Lo que está pensando" subtitulo="Sus planes de carrera, en su orden.">
       {datos.planes.length ? (
-        <ul className="divide-y divide-border">
+        <ul className="grid gap-4 sm:grid-cols-3 sm:gap-6">
           {datos.planes.map((p) => (
-            <li key={p.prioridad} className="space-y-1 py-2">
+            <li key={p.prioridad} className="space-y-1 border-t border-border pt-3">
               <p className="font-bold">
                 {letraPlan(p.prioridad)} · {p.carrera}
               </p>
@@ -101,7 +102,7 @@ function LoQueEstaPensando({ datos, onIr }: { datos: PerfilEstudiante; onIr: (d:
             </li>
           ))}
           {faltan.map((p) => (
-            <li key={p} className="py-2 text-muted-foreground">
+            <li key={p} className="border-t border-border pt-3 text-muted-foreground">
               {letraPlan(p)} sin registrar
             </li>
           ))}
@@ -156,7 +157,60 @@ function ComoEmpezo({ datos, onIr }: { datos: PerfilEstudiante; onIr: (d: Destin
   )
 }
 
-// Ajuste panel-estudiantes §6: las tres tarjetas del Resumen, cada una con su botón a la pestaña.
+function SusRespuestas({ datos, onVer }: { datos: RespuestasResumen; onVer: () => void }) {
+  // Ajuste respuestas-orientadora §4: la misma marca e intensidad que la pestaña; «aún no lo sabe», sin color.
+  const etiquetas: [number, string, IntensidadMarca | null][] = [
+    [datos.requiere_atencion, datos.requiere_atencion === 1 ? 'requiere atención' : 'requieren atención', 'fuerte'],
+    [
+      datos.sin_contenido,
+      datos.sin_contenido === 1 ? 'respuesta sin contenido' : 'respuestas sin contenido',
+      'suave',
+    ],
+    [datos.aun_no_lo_sabe, datos.aun_no_lo_sabe === 1 ? 'aún no lo sabe' : 'aún no lo saben', null],
+  ]
+  return (
+    <BloquePanel
+      titulo="Sus respuestas"
+      subtitulo={
+        datos.destacados
+          ? 'Lo que escribió en los registros destacados del salón.'
+          : 'Lo que escribió en sus registros.'
+      }
+    >
+      <div>
+        <FilaConteo
+          cantidad={datos.completados}
+          tono="neutro"
+          titulo={`de ${datos.total} registros ${datos.destacados ? 'destacados ' : ''}completados`}
+        />
+        {etiquetas
+          .filter(([n]) => n > 0)
+          .map(([n, texto, intensidad]) => (
+            <FilaConteo
+              key={texto}
+              cantidad={n}
+              tono={intensidad ? 'aviso' : 'neutro'}
+              titulo={
+                intensidad ? (
+                  <MarcaRespuesta intensidad={intensidad} className="text-base">
+                    {texto}
+                  </MarcaRespuesta>
+                ) : (
+                  <span className="font-normal text-muted-foreground">{texto}</span>
+                )
+              }
+            />
+          ))}
+      </div>
+      <Button variant="outline" className="mt-auto min-h-11 w-fit" onClick={onVer}>
+        Ver respuestas
+      </Button>
+    </BloquePanel>
+  )
+}
+
+// Ajuste panel-estudiantes §6, reordenado a pedido del usuario: los planes en una fila, a lo ancho y con un plan por
+// columna; debajo, en tres columnas, lo que le interesa, cómo empezó (o de la partida a la llegada) y sus respuestas.
 export function TarjetasResumen({
   datos,
   onIr,
@@ -165,10 +219,13 @@ export function TarjetasResumen({
   onIr: (d: DestinoPerfil) => void
 }) {
   return (
-    <div className="grid min-w-0 items-start gap-4 lg:grid-cols-3">
-      <LoQueLeInteresa datos={datos} onIr={onIr} />
+    <>
       <LoQueEstaPensando datos={datos} onIr={onIr} />
-      <ComoEmpezo datos={datos} onIr={onIr} />
-    </div>
+      <div className="grid min-w-0 items-stretch gap-4 lg:grid-cols-3">
+        <LoQueLeInteresa datos={datos} onIr={onIr} />
+        <ComoEmpezo datos={datos} onIr={onIr} />
+        <SusRespuestas datos={datos.respuestas} onVer={() => onIr('RESPUESTAS')} />
+      </div>
+    </>
   )
 }

@@ -209,16 +209,17 @@ test('el Resumen: avisos con su texto de perfil, temas para conversar, las tres 
   const nada = texto(html(TarjetasResumen, { datos: fx('1-perfil'), onIr() {} }))
   assert.match(nada, /Todavía no registra planes/)
   assert.match(nada, /Aún no responde su punto de partida/)
-  const { RespuestasYNotas } = app.load('src/features/counselor/components/perfil/RespuestasYNotas.tsx')
-  const notas = texto(
-    html(RespuestasYNotas, {
-      respuestas: perfil.respuestas,
-      notas: [],
-      modelo: modelo('est-panel-5', { enviando: null }),
-    }),
-  )
-  assert.match(notas, /1 de 1 registros destacados completados/)
-  assert.match(notas, /1 respuesta sin contenido/)
+  // Reordenado a pedido del usuario: los planes arriba, a lo ancho; debajo, interés, cómo empezó y sus respuestas, en
+  // tres columnas del mismo alto; las notas, aparte.
+  const marcado = html(TarjetasResumen, { datos: perfil, onIr() {} })
+  assert.ok(marcado.indexOf('Lo que está pensando') < marcado.indexOf('Lo que le interesa'))
+  assert.ok(marcado.indexOf('Cómo empezó') < marcado.indexOf('Sus respuestas'))
+  assert.match(marcado, /grid min-w-0 items-stretch gap-4 lg:grid-cols-3/)
+  assert.match(marcado, /grid gap-4 sm:grid-cols-3/)
+  assert.match(tarjetas, /de \d+ registros destacados completados/)
+  assert.match(tarjetas, /1 respuesta sin contenido/)
+  const { NotasPerfil } = app.load('src/features/counselor/components/perfil/NotasPerfil.tsx')
+  const notas = texto(html(NotasPerfil, { notas: [], estudiante: 'est-panel-5' }))
   assert.match(notas, /Solo usted las ve\. Sirven para recordar lo conversado\..*Nueva nota.*Guardar nota/)
 })
 
@@ -312,7 +313,9 @@ test('Planes de un vistazo, plan completo y Avance sin cartas ni diario', async 
   assert.match(planes, /Sus planes, de un vistazo/)
   assert.match(planes, /No está entre sus áreas sugeridas/)
   assert.match(planes, /De mi familia/)
-  assert.match(planes, /Me entusiasma: Poco · Me siento capaz: \S+/)
+  // Cada medidor en su línea, con su nombre en negrita.
+  assert.match(planes, /Me entusiasma: Poco Me siento capaz: \S+/)
+  assert.match(html(VistazoPlanes, { datos: fx('7-planes'), onAbrir() {} }), /<li><strong class="font-semibold">Me entusiasma:<\/strong> Poco<\/li>/)
   assert.doesNotMatch(planes, /Entusiasmo (bajo|medio|alto)/)
   assert.match(planes, /Ver Plan A completo/)
   const { PlanCompletoPerfil } = app.load('src/features/counselor/components/perfil/PlanCompletoPerfil.tsx')

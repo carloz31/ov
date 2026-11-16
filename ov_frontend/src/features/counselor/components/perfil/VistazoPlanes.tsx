@@ -80,7 +80,15 @@ const FILAS: [string, (p: PlanVistazo) => ReactNode][] = [
   ],
   [
     'Cómo se ve frente al plan',
-    (p) => MEDIDORES.map((m) => `${m.nombre}: ${nivelMedidor(p.medidores[m.codigo])}`).join(' · '),
+    (p) => (
+      <ul className="space-y-0.5">
+        {MEDIDORES.map((m) => (
+          <li key={m.codigo}>
+            <strong className="font-semibold">{m.nombre}:</strong> {nivelMedidor(p.medidores[m.codigo])}
+          </li>
+        ))}
+      </ul>
+    ),
   ],
   ['Partes llenas', (p) => `${p.secciones_listas} de ${p.secciones_total}`],
 ]
