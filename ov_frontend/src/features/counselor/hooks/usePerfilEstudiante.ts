@@ -1,7 +1,7 @@
 import { useLocation, useParams, useSearchParams } from 'react-router'
 import { appPaths } from '@/routes/paths'
 import { usePerfilEstudiante as usePerfilServidor } from '@/store/servidor/panelEstudiante'
-import type { DestinoPerfil } from '@/types/servidor'
+import type { DestinoPerfil, RespuestaDestino } from '@/types/servidor'
 
 export const PESTANAS_PERFIL = ['resumen', 'tests', 'planes', 'respuestas', 'avance'] as const
 export type PestanaPerfil = (typeof PESTANAS_PERFIL)[number]
@@ -13,7 +13,8 @@ const DE_DESTINO: Record<DestinoPerfil, PestanaPerfil> = {
 }
 
 // Ajuste panel-estudiantes §5 (api): el perfil del estudiante. La pestaña (`?tab=`), el plan abierto (`?plan=`),
-// el resultado completo (`?resultado=`) y todas las respuestas de partida y llegada (`?todas=1`) van en la URL;
+// el resultado completo (`?resultado=`), todas las respuestas de partida y llegada (`?todas=1`) y el registro y la
+// pregunta a los que lleva un aviso (`?registro=`, `?item=`; ajuste respuestas-orientadora §3.1) van en la URL;
 // «Volver» regresa a la lista con sus filtros y orden.
 export function usePerfilEstudiante() {
   const { studentId = '' } = useParams()
@@ -41,9 +42,18 @@ export function usePerfilEstudiante() {
     reintentar,
     pestana,
     elegirPestana: (valor: string) =>
-      ir({ tab: valor === 'resumen' ? null : valor, plan: null, resultado: null, todas: null }),
-    irADestino: (destino: DestinoPerfil) =>
-      ir({ tab: DE_DESTINO[destino], plan: null, resultado: null, todas: null }),
+      ir({ tab: valor === 'resumen' ? null : valor, plan: null, resultado: null, todas: null, registro: null, item: null }),
+    irADestino: (destino: DestinoPerfil, respuesta?: RespuestaDestino | null) =>
+      ir({
+        tab: DE_DESTINO[destino],
+        plan: null,
+        resultado: null,
+        todas: null,
+        registro: respuesta?.actividad ?? null,
+        item: respuesta?.item ?? null,
+      }),
+    registroPedido: params.get('registro'),
+    itemPedido: params.get('item'),
     plan: Number(params.get('plan')) || null,
     abrirPlan: (prioridad: number | null) => ir({ plan: prioridad ? String(prioridad) : null }),
     resultado: params.get('resultado'),

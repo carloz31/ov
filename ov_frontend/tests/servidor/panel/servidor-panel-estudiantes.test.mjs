@@ -305,7 +305,7 @@ test('Planes de un vistazo, plan completo y Avance sin cartas ni diario', async 
   const { ItemRegistroLectura } = app.load('src/features/counselor/components/perfil/ItemRegistroLectura.tsx')
   const registro = fx('5-registro')
   const items = registro.items.map((item) => texto(html(ItemRegistroLectura, { item }))).join(' ')
-  assert.match(items, /Pregunta 1 · /)
+  assert.doesNotMatch(items, /Pregunta 1 · /) // ajuste respuestas-orientadora: solo el número
   assert.match(items, /DATO DE PRUEBA: lo cuento con un ejemplo/)
   for (const nombre of ['1-avance', '5-avance', '7-avance', '5-perfil', '5-respuestas']) {
     assert.doesNotMatch(JSON.stringify(fx(nombre)), /carta|entrada privada|puntaje/i, nombre)

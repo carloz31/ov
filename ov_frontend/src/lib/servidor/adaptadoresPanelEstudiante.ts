@@ -4,7 +4,7 @@ import type {
   DestinoPerfil,
   DimensionPartida,
   EstadoTestPanel,
-  EtiquetaRespuesta,
+  EcoLinea,
   ApoderadoCabecera,
   PartidaResumen,
   TramoEstudiante,
@@ -60,11 +60,6 @@ export function textoRespuestaBaja(opcionesBajas: number) {
       ? 'la opción menos favorable'
       : `una de las ${opcionesBajas === 2 ? 'dos' : opcionesBajas} opciones menos favorables`
   return `es ${cuantas}, con las afirmaciones en sentido contrario ya consideradas.`
-}
-export const textosEtiqueta: Record<EtiquetaRespuesta, string> = {
-  REQUIERE_ATENCION: 'Requiere atención',
-  SIN_CONTENIDO: 'Sin contenido',
-  AUN_NO_LO_SABE: 'Aún no lo sabe',
 }
 export const textosApoderado: Record<ApoderadoCabecera['estado'], string> = {
   AUN_NO_INGRESA: 'aún no ingresa',
@@ -215,6 +210,76 @@ export function lineaEco(eco: Record<string, unknown>): EcoLectura | null {
       const texto = [eco.texto, ...lista(eco.lineas)].filter(Boolean).map(String)
       if (!texto.length && !lista(eco.opciones).length) return null
       return { texto: conNombre(texto.join(' / ')), cita: null, chips: lista(eco.opciones) }
+    }
+  }
+}
+
+// Ajuste respuestas-orientadora §3.4: la línea gris de un eco, ya resuelto por el servidor, en piezas (`fuerte` para la
+// carrera, `cursiva` para la actividad) y, aparte, lo que cambió hoy. Si el eco no tiene nada que decir, `null`.
+export type PiezaEco = { texto: string; estilo?: 'fuerte' | 'cursiva' }
+export type LineaEcoPanel = { piezas: PiezaEco[]; hoy: PiezaEco[] }
+const enumerar = (valores: (string | number)[]) =>
+  valores.length < 2
+    ? valores.join('')
+    : `${valores.slice(0, -1).join(', ')} y ${valores[valores.length - 1]}`
+function piezasPlanes(planes: EcoLinea['planes']): PiezaEco[] {
+  return planes.flatMap((p, i) => [
+    { texto: `${i ? ' · ' : ''}Plan ${p.letra} ` },
+    { texto: p.carrera ?? '', estilo: 'fuerte' as const },
+    ...(planes.length === 1 && p.institucion ? [{ texto: ` · ${p.institucion}` }] : []),
+  ])
+}
+function piezasHoy(eco: EcoLinea): PiezaEco[] {
+  const hoy = eco.hoy
+  if (!hoy) return []
+  if (hoy.planes?.length)
+    return hoy.planes.flatMap((p) => [
+      { texto: ` Hoy su Plan ${p.letra} es ` },
+      { texto: p.carrera ?? '', estilo: 'fuerte' as const },
+      { texto: '.' },
+    ])
+  if (hoy.cita) return [{ texto: ` Hoy dice: “${hoy.cita}”.` }]
+  if (hoy.opciones?.length) return [{ texto: ` Hoy eligió: ${hoy.opciones.join(', ')}.` }]
+  if (hoy.texto) return [{ texto: ' Hoy: ' }, { texto: hoy.texto, estilo: 'fuerte' }, { texto: '.' }]
+  return []
+}
+export function lineaEcoPanel(eco: EcoLinea): LineaEcoPanel | null {
+  const hoy = piezasHoy(eco)
+  switch (eco.fuente) {
+    case 'MISMO_REGISTRO':
+      return eco.numeros.length
+        ? {
+            piezas: [
+              {
+                texto: `Respondió viendo ${eco.numeros.length === 1 ? 'su respuesta' : 'sus respuestas'} ${enumerar(eco.numeros)}.`,
+              },
+            ],
+            hoy: [],
+          }
+        : null
+    case 'TEXTO':
+    case 'ELECCION': {
+      const opciones = eco.opciones.length ? eco.opciones.join(', ') : null
+      const valor = [opciones, eco.cita ? `“${eco.cita}”` : null].filter(Boolean).join('. ')
+      if (!valor) return null
+      return {
+        piezas: [
+          { texto: `Respondió viendo lo que ${eco.cita ? 'escribió' : 'eligió'} en ` },
+          { texto: eco.actividad ?? '', estilo: 'cursiva' },
+          { texto: `: ${valor}.` },
+        ],
+        hoy,
+      }
+    }
+    case 'PLANES':
+      return eco.planes.length
+        ? { piezas: [{ texto: 'Respondió viendo: ' }, ...piezasPlanes(eco.planes), { texto: '.' }], hoy }
+        : null
+    default: {
+      const linea = eco.eco ? lineaEco(eco.eco) : null
+      if (!linea || !linea.texto) return null
+      const extra = linea.chips.length ? ` (${linea.chips.join(', ')})` : ''
+      return { piezas: [{ texto: `Respondió viendo: ${linea.texto}${extra}.` }], hoy }
     }
   }
 }

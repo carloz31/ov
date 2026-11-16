@@ -9,3 +9,16 @@
 - Tabla de Publicaciones: columna «Familia» sin «a qué se dedica», favoritos sin «/ N» (el umbral de Leyenda sigue llegando y no se pinta, por pedido del usuario), una sola insignia «Con reportes» y Leyenda con estrella.
 - Ícono de Configuración: ruedita (`Settings`) en ambos modos; cambio solo visual del menú, excepción al modo local congelado pedida por el usuario.
 - Visibilidad para el apoderado: siempre y nunca son la misma casilla, marcada o vacía y deshabilitada, con «(siempre)» o «(nunca)».
+
+## Ajuste respuestas-orientadora
+
+- Se agrega como fase de la spec en curso, en la rama `ajuste/respuestas-orientadora` creada desde `ajuste/panel-orientadora-observaciones` (que ya tocaba `PestanaRespuestas.tsx`).
+- Lectura: se queda la forma de dos rutas (lista liviana + detalle al abrir) y `leer_primero` trae el detalle de los registros que requieren atención, que se abren solos sin otra petición. La lista bajó de 33/22/33 a 10/11/10 consultas (casos 5/6/7) porque ya no arma el contexto de hoy de todos los ítems; el detalle quedó igual (7 en b1-3, 13 en b4-5). La lista pesa ~1 KB más (campos de grupo y marca); el detalle, ~0,5 KB menos.
+- El servidor devuelve las filas ya ordenadas (`grupo`, tramo, marca, camino) y `en_destacados`; el front solo agrupa filas seguidas, sin contar ni clasificar.
+- Causa del «hoy» falso de §3.4: el panel usaba `eco_cambiado()` (marcadores y líneas al LLM) y la pregunta 1 de b1-3 pasó a sensible después de responder la 3, así que dejó de citarse; además el front pintaba el descriptor del eco. Ahora el panel compara cada eco mostrado con el de hoy por valor; los del mismo registro nunca cambian y uno que hoy ya no se muestra no cuenta. Esto reemplaza, solo en el panel, la decisión anterior de no contar los ecos que solo se muestran.
+- El tipo de eco lo decide el servidor (`EcoLinea.fuente`; el campo no se llama `tipo` porque la prueba de contrato prohíbe esa clave). Pasos, proyecto, cabecera y referencias genéricas van como `OTRO` con el eco en bruto y el front reutiliza `lineaEco`; su «hoy» es su carrera o texto.
+- Textos fijos de las marcas (§3.3): constantes del front en `features/counselor/lib/perfilEstudiante.ts` (`MARCAS_ITEM`); el de la alerta `respuesta-sensible` tiene otra redacción y `{registro}`, así que no se reutiliza.
+- Enlace (§3.1): `AvisoPerfil` y `TemaPerfil` llevan `respuesta` (actividad e ítem) cuando el evaluador lo sabe (`respuesta_sensible`, `eleccion_registro`); la URL agrega `?registro=&item=` y, si el registro no es destacado, la pestaña abre en «Todos».
+- No se agregó un tono `aviso-suave` a `ChipPerfil`: las marcas ya no son chips y la intensidad vive en `MarcaRespuesta`.
+- Citas y nombres de actividad en la línea de eco con “…” y cursiva, según el ajuste anterior, en lugar de las «» del texto de observaciones.
+- Siembra de ejemplo: el caso 5 tiene una respuesta fuera de tema en b1-7 (no destacado) y el caso 6 una sensible en b1-1 (no destacado).

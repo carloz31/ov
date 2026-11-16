@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { BloquePanel } from '@/features/counselor/components/panel/PanelComun'
 import { enlaceDestino } from '@/lib/servidor/adaptadoresPanelEstudiante'
-import type { DestinoPerfil, GrupoAvisosPerfil, TemaPerfil } from '@/types/servidor'
+import type { DestinoPerfil, GrupoAvisosPerfil, RespuestaDestino, TemaPerfil } from '@/types/servidor'
 
 // Ajuste panel-estudiantes §6 (boceto 06): «Avisos» (tarjeta crema, solo si tiene) y «Para conversar».
 const BOTON_AVISO: Record<DestinoPerfil, string> = {
@@ -23,7 +23,7 @@ export function AvisosParaConversar({
   temas: TemaPerfil[]
   temasVisibles: number
   nombre: string
-  onIr: (destino: DestinoPerfil) => void
+  onIr: (destino: DestinoPerfil, respuesta?: RespuestaDestino | null) => void
 }) {
   // Ajuste pendientes-orientadora: los primeros `temasVisibles` y, si hay más, el resto en el mismo bloque (como las
   // dudas del plan completo). No se guarda en la URL.
@@ -52,7 +52,7 @@ export function AvisosParaConversar({
                     {a.descripcion && <p className="text-sm text-warning-text">{a.descripcion}</p>}
                   </div>
                   {a.destino && (
-                    <Button variant="outline" className="min-h-11 bg-card" onClick={() => onIr(a.destino!)}>
+                    <Button variant="outline" className="min-h-11 bg-card" onClick={() => onIr(a.destino!, a.respuesta)}>
                       {BOTON_AVISO[a.destino]}
                     </Button>
                   )}
@@ -76,7 +76,7 @@ export function AvisosParaConversar({
                     <Button
                       variant="link"
                       className="min-h-11 px-2 font-semibold"
-                      onClick={() => onIr(t.destino!)}
+                      onClick={() => onIr(t.destino!, t.respuesta)}
                     >
                       {enlaceDestino[t.destino]}
                     </Button>

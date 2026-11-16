@@ -50,14 +50,21 @@ export type CabeceraEstudiante = {
   apoderado: ApoderadoCabecera | null
   tramo: TramoEstudiante
 }
+export type RespuestaDestino = { actividad: string; item: string }
 export type AvisoPerfil = {
   codigo: string
   nombre: string
   descripcion: string | null
   destino: DestinoPerfil | null
+  respuesta?: RespuestaDestino | null
 }
 export type GrupoAvisosPerfil = { codigo: string; nombre: string; avisos: AvisoPerfil[] }
-export type TemaPerfil = { codigo: string; texto: string; destino: DestinoPerfil | null }
+export type TemaPerfil = {
+  codigo: string
+  texto: string
+  destino: DestinoPerfil | null
+  respuesta?: RespuestaDestino | null
+}
 export type DimensionInteres = { codigo: string; nombre: string }
 export type InteresesResumen = {
   instrumento: string
@@ -276,23 +283,37 @@ export type PlanCompleto = {
 
 // --- Respuestas ---
 
-export type EtiquetaRespuesta = 'REQUIERE_ATENCION' | 'SIN_CONTENIDO' | 'AUN_NO_LO_SABE'
-export type ConteoEtiqueta = { etiqueta: EtiquetaRespuesta; cantidad: number }
+export type MarcaRegistro = 'REQUIERE_ATENCION' | 'SIN_CONTENIDO'
+export type MarcaItem = 'REQUIERE_ATENCION' | 'VACIA' | 'FUERA_DE_TEMA'
 export type OpcionElegidaLectura = {
   texto: string
   otra: boolean
   origen: string | null
   grupo: string | null
 }
+export type PlanEco = { letra: string; carrera: string | null; institucion: string | null }
+export type HoyEco = {
+  cita?: string | null
+  texto?: string | null
+  opciones?: string[] | null
+  planes?: PlanEco[] | null
+}
+export type EcoLinea = {
+  fuente: 'MISMO_REGISTRO' | 'TEXTO' | 'ELECCION' | 'PLANES' | 'OTRO'
+  numeros: number[]
+  actividad: string | null
+  cita: string | null
+  opciones: string[]
+  planes: PlanEco[]
+  eco: Record<string, unknown> | null
+  hoy: HoyEco | null
+}
 export type ItemLectura = {
   numero: number
   codigo: string
-  nombre: string
-  etiquetas: EtiquetaRespuesta[]
-  dialogo: string | null
-  ecos: Record<string, unknown>[]
-  ecos_hoy: Record<string, unknown>[] | null
-  ecos_de_hoy: boolean
+  marca: MarcaItem | null
+  aun_no_lo_sabe: boolean
+  ecos: EcoLinea[]
   pregunta_eleccion: string | null
   eleccion: 'LISTA' | 'ORDENADA' | 'PIEZAS' | null
   elegidas: OpcionElegidaLectura[]
@@ -306,16 +327,22 @@ export type RegistroFila = {
   actividad: string
   titulo: string
   tramo: string
+  tramo_numero: number | null
   ciudad: boolean
   destacado: boolean
+  en_destacados: boolean
   estado: 'COMPLETADO' | 'EN_CURSO' | 'AUN_NO_LLEGA'
   fecha: string | null
-  etiquetas: ConteoEtiqueta[]
-  cambio_despues: boolean
+  grupo: 'TRAMO' | 'OPCIONALES' | 'AUN_NO_LLEGA'
+  marca: MarcaRegistro | null
+  sin_contenido: number
 }
 export type RegistroLectura = { actividad: string; items: ItemLectura[] }
 export type RespuestasEstudiante = {
   hay_destacados: boolean
+  total_destacados: number
+  por_revisar_destacados: number
+  por_revisar_todos: number
   registros: RegistroFila[]
   leer_primero: RegistroLectura[]
 }

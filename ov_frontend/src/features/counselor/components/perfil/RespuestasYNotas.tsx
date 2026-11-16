@@ -6,8 +6,10 @@ import { Textarea } from '@/components/ui/Textarea'
 import { BloquePanel, FilaConteo } from '@/features/counselor/components/panel/PanelComun'
 import { useNotasPerfil, type ModeloNotasPerfil } from '@/features/counselor/hooks/useNotasPerfil'
 import type { ModeloPerfilEstudiante } from '@/features/counselor/hooks/usePerfilEstudiante'
+import type { IntensidadMarca } from '@/features/counselor/lib/perfilEstudiante'
 import { fechaCorta } from '@/lib/servidor/adaptadoresPanelEstudiante'
 import type { NotaPerfil, RespuestasResumen } from '@/types/servidor'
+import { MarcaRespuesta } from './MarcaRespuesta'
 
 function Cargando({ activo }: { activo: boolean }) {
   return activo ? <Loader2 className="animate-spin" aria-hidden="true" /> : null
@@ -118,10 +120,15 @@ function MisNotas({ notas, estudiante }: { notas: NotaPerfil[]; estudiante: stri
 }
 
 function SusRespuestas({ datos, onVer }: { datos: RespuestasResumen; onVer: () => void }) {
-  const etiquetas: [number, string][] = [
-    [datos.requiere_atencion, datos.requiere_atencion === 1 ? 'requiere atención' : 'requieren atención'],
-    [datos.sin_contenido, datos.sin_contenido === 1 ? 'respuesta sin contenido' : 'respuestas sin contenido'],
-    [datos.aun_no_lo_sabe, datos.aun_no_lo_sabe === 1 ? 'aún no lo sabe' : 'aún no lo saben'],
+  // Ajuste respuestas-orientadora §4: la misma marca e intensidad que la pestaña; «aún no lo sabe», sin color.
+  const etiquetas: [number, string, IntensidadMarca | null][] = [
+    [datos.requiere_atencion, datos.requiere_atencion === 1 ? 'requiere atención' : 'requieren atención', 'fuerte'],
+    [
+      datos.sin_contenido,
+      datos.sin_contenido === 1 ? 'respuesta sin contenido' : 'respuestas sin contenido',
+      'suave',
+    ],
+    [datos.aun_no_lo_sabe, datos.aun_no_lo_sabe === 1 ? 'aún no lo sabe' : 'aún no lo saben', null],
   ]
   return (
     <BloquePanel
@@ -140,8 +147,21 @@ function SusRespuestas({ datos, onVer }: { datos: RespuestasResumen; onVer: () =
         />
         {etiquetas
           .filter(([n]) => n > 0)
-          .map(([n, texto]) => (
-            <FilaConteo key={texto} cantidad={n} tono="aviso" titulo={texto} />
+          .map(([n, texto, intensidad]) => (
+            <FilaConteo
+              key={texto}
+              cantidad={n}
+              tono={intensidad ? 'aviso' : 'neutro'}
+              titulo={
+                intensidad ? (
+                  <MarcaRespuesta intensidad={intensidad} className="text-base">
+                    {texto}
+                  </MarcaRespuesta>
+                ) : (
+                  <span className="font-normal text-muted-foreground">{texto}</span>
+                )
+              }
+            />
           ))}
       </div>
       <Button variant="outline" className="min-h-11 w-fit" onClick={onVer}>
