@@ -38,6 +38,10 @@ def test_solo_partida_por_atencion_con_respuestas_bajas_e_item_inverso(aplicacio
     assert [d['codigo'] for d in datos['dimensiones']] == ['AUTO-E', 'AUTO-A', 'AUTO-C', 'AUTO-D', 'AUTO-B']
     assert datos['conteo'] == [{'codigo': 'POR_TRABAJAR', 'cantidad': 1}, {'codigo': 'EN_CAMINO', 'cantidad': 3},
                                {'codigo': 'FUERTE', 'cantidad': 1}]
+    assert all(d['clase'] is None for d in datos['dimensiones'])
+    # Ajuste partida-llegada-liviano: el bloque de Tests llega ordenado, por trabajar primero.
+    bloque = cliente.get('/cuentas/ori-carmen/panel/estudiantes/est-ana/tests').json()['partida_llegada']['resumen']
+    assert [d['codigo'] for d in bloque['dimensiones']] == ['AUTO-E', 'AUTO-A', 'AUTO-C', 'AUTO-D', 'AUTO-B']
     afirmaciones = _afirmaciones(datos)
     # El ítem 4 es inverso: «Muy de acuerdo» es baja.
     assert {i for i, a in afirmaciones.items() if a['partida_baja']} == {'AUTO-01', 'AUTO-02', 'AUTO-04'}
@@ -74,8 +78,14 @@ def test_con_llegada_un_solo_cambio_por_afirmacion_y_orden_por_atencion(aplicaci
     assert [(d['zona_partida'], d['zona_llegada'], d['cambio']) for d in datos['dimensiones'][:3]] == [
         ('FUERTE', 'EN_CAMINO', 'BAJO'), ('POR_TRABAJAR', 'POR_TRABAJAR', 'IGUAL'),
         ('POR_TRABAJAR', 'FUERTE', 'SUBIO')]
-    assert datos['conteo'] == [{'codigo': 'BAJO', 'cantidad': 1}, {'codigo': 'SUBIO', 'cantidad': 1},
-                               {'codigo': 'IGUAL', 'cantidad': 3}]
+    # Ajuste partida-llegada-liviano: la clase de cada dimensión y «sigue por trabajar» aparte de «igual».
+    assert [d['clase'] for d in datos['dimensiones']] == ['BAJO', 'SIGUE_POR_TRABAJAR', 'SUBIO', 'IGUAL', 'IGUAL']
+    assert datos['conteo'] == [{'codigo': 'BAJO', 'cantidad': 1}, {'codigo': 'SIGUE_POR_TRABAJAR', 'cantidad': 1},
+                               {'codigo': 'SUBIO', 'cantidad': 1}, {'codigo': 'IGUAL', 'cantidad': 2}]
+    # El bloque de Tests llega en el mismo orden que el detalle.
+    bloque = cliente.get('/cuentas/ori-carmen/panel/estudiantes/est-luis/tests').json()['partida_llegada']['resumen']
+    assert [d['codigo'] for d in bloque['dimensiones']] == ['AUTO-D', 'AUTO-E', 'AUTO-A', 'AUTO-B', 'AUTO-C']
+    assert [d['clase'] for d in bloque['dimensiones']] == ['BAJO', 'SIGUE_POR_TRABAJAR', 'SUBIO', 'IGUAL', 'IGUAL']
     afirmaciones = _afirmaciones(datos)
     cambios = {i: a['cambio'] for i, a in afirmaciones.items()}
     assert {i: c for i, c in cambios.items() if c != 'IGUAL'} == {

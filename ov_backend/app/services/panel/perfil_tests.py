@@ -178,7 +178,8 @@ def _partida_llegada(sesion: Session, acceso: Acceso, parametros: dict) -> Parti
     return PartidaLlegada(instrumento=instrumento.codigo, nombre=instrumento.nombre,
                           etiqueta=_etiqueta(sesion, instrumento, aplicaciones, acceso),
                           mensaje=textos_instrumento(instrumento, "orientadora", acceso.estudiante.nombre)["mensaje"],
-                          resumen=resumen, grupos=grupos)
+                          resumen=resumen.model_copy(update={"dimensiones": ordenar_dimensiones(
+                              resumen.dimensiones, resumen.estado == "CON_LLEGADA")}), grupos=grupos)
 
 
 # --- Otros cuestionarios -------------------------------------------------------------------------
@@ -229,7 +230,7 @@ def tests(sesion: Session, codigo_cuenta: str, codigo_estudiante: str, ahora: da
 
 # Orden del detalle por dimensión (ajuste color-partida-llegada §2.2 y §2.3): primero lo que pide atención.
 ORDEN_ZONA_DETALLE = {"POR_TRABAJAR": 0, "EN_CAMINO": 1, "FUERTE": 2}
-ORDEN_CAMBIO_ZONA = ("BAJO", "SUBIO", "IGUAL")
+ORDEN_CLASE_DIMENSION = ("BAJO", "SIGUE_POR_TRABAJAR", "SUBIO", "IGUAL")
 ORDEN_CAMBIO_AFIRMACION = {"BAJO": 0, "SIGUE_BAJA": 1, "MEJORO": 2, "IGUAL": 3, None: 4}
 
 
@@ -237,11 +238,14 @@ def _prioridad_dimension(d, con_llegada: bool) -> int:
     """Solo partida: por trabajar, en camino, fuerte. Con llegada: bajó, sigue por trabajar, subió, igual."""
     if not con_llegada:
         return ORDEN_ZONA_DETALLE.get(d.zona_partida, 3)
-    if d.cambio == "BAJO":
-        return 0
-    if d.zona_partida == d.zona_llegada == "POR_TRABAJAR":
-        return 1
-    return 2 if d.cambio == "SUBIO" else 3
+    return ORDEN_CLASE_DIMENSION.index(d.clase) if d.clase in ORDEN_CLASE_DIMENSION else len(ORDEN_CLASE_DIMENSION)
+
+
+def ordenar_dimensiones(dimensiones: list, con_llegada: bool) -> list:
+    """Primero lo que pide atención; desempate por el orden del cuestionario (ajuste partida-llegada-liviano: también
+    el bloque de Tests)."""
+    return [d for _, d in sorted(enumerate(dimensiones), key=lambda par: (_prioridad_dimension(par[1], con_llegada),
+                                                                          par[0]))]
 
 
 def _afirmaciones_detalle(items: list[ItemInstrumento], partida: dict, llegada: dict | None) -> list[AfirmacionDetalle]:
@@ -289,15 +293,13 @@ def respuestas_partida_llegada(sesion: Session, codigo_cuenta: str, codigo_estud
         llegada = respuestas.get(MomentoAplicacion.SALIDA, {}) if con_llegada else None
         items = sorted(_items(sesion, instrumento).values(), key=lambda i: i.numero)
         ids_dimension = {d.codigo: d.id for d in dimensiones_de(sesion, instrumento)}
-        ordenadas = sorted(enumerate(resumen.dimensiones),
-                           key=lambda par: (_prioridad_dimension(par[1], con_llegada), par[0]))
         dimensiones = [DimensionDetalle(
             codigo=d.codigo, nombre=d.nombre, zona_partida=d.zona_partida, zona_llegada=d.zona_llegada,
-            cambio=d.cambio, afirmaciones=_afirmaciones_detalle(
+            cambio=d.cambio, clase=d.clase, afirmaciones=_afirmaciones_detalle(
                 [i for i in items if i.dimension_id == ids_dimension[d.codigo]], partida, llegada))
-            for _, d in ordenadas]
-        claves = [d.cambio if con_llegada else d.zona_partida for d in resumen.dimensiones]
-        orden = ORDEN_CAMBIO_ZONA if con_llegada else tuple(ORDEN_ZONA_DETALLE)
+            for d in ordenar_dimensiones(resumen.dimensiones, con_llegada)]
+        claves = [d.clase if con_llegada else d.zona_partida for d in resumen.dimensiones]
+        orden = ORDEN_CLASE_DIMENSION if con_llegada else tuple(ORDEN_ZONA_DETALLE)
         conteo = [ConteoDetalle(codigo=c, cantidad=claves.count(c)) for c in orden if claves.count(c)]
     return DetallePartidaLlegada(
         instrumento=instrumento.codigo, nombre=instrumento.nombre,

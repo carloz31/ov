@@ -148,7 +148,9 @@ def partida_resumen(sesion: Session, cuenta_id: int, lecturas: Lecturas | None =
     if instrumento is None or partida is None:
         return PartidaResumen(estado="SIN_PARTIDA", fecha_partida=None, fecha_llegada=None, dimensiones=[])
     dimensiones = [DimensionPartida(codigo=c.dimension.codigo, nombre=c.dimension.nombre, zona_partida=c.zona_partida,
-                                    zona_llegada=c.zona_llegada, cambio=c.cambio)
+                                    zona_llegada=c.zona_llegada, cambio=c.cambio,
+                                    clase=None if llegada is None else
+                                    "SIGUE_POR_TRABAJAR" if c.sigue_por_trabajar else c.cambio)
                    for c in comparar(dimensiones_de(sesion, instrumento), partida, llegada)]
     return PartidaResumen(estado="CON_LLEGADA" if llegada else "SOLO_PARTIDA", fecha_partida=partida.fecha.date(),
                           fecha_llegada=llegada.fecha.date() if llegada else None, dimensiones=dimensiones)

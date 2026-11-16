@@ -55,6 +55,7 @@
     "dimensiones": [
       {
         "cambio": "SUBIO",
+        "clase": "SUBIO",
         "codigo": "AUTO-A",
         "nombre": "Claridad",
         "zona_llegada": "FUERTE",
@@ -62,6 +63,7 @@
       },
       {
         "cambio": "SUBIO",
+        "clase": "SUBIO",
         "codigo": "AUTO-B",
         "nombre": "Conocimiento de mí",
         "zona_llegada": "FUERTE",
@@ -69,6 +71,7 @@
       },
       {
         "cambio": "SUBIO",
+        "clase": "SUBIO",
         "codigo": "AUTO-C",
         "nombre": "Conocimiento de las opciones",
         "zona_llegada": "FUERTE",
@@ -76,6 +79,7 @@
       },
       {
         "cambio": "BAJO",
+        "clase": "BAJO",
         "codigo": "AUTO-D",
         "nombre": "Decisión propia",
         "zona_llegada": "POR_TRABAJAR",
@@ -83,6 +87,7 @@
       },
       {
         "cambio": "SUBIO",
+        "clase": "SUBIO",
         "codigo": "AUTO-E",
         "nombre": "Confianza",
         "zona_llegada": "FUERTE",

@@ -69,6 +69,7 @@
     "dimensiones": [
       {
         "cambio": null,
+        "clase": null,
         "codigo": "AUTO-A",
         "nombre": "Claridad",
         "zona_llegada": null,
@@ -76,6 +77,7 @@
       },
       {
         "cambio": null,
+        "clase": null,
         "codigo": "AUTO-B",
         "nombre": "Conocimiento de mí",
         "zona_llegada": null,
@@ -83,6 +85,7 @@
       },
       {
         "cambio": null,
+        "clase": null,
         "codigo": "AUTO-C",
         "nombre": "Conocimiento de las opciones",
         "zona_llegada": null,
@@ -90,6 +93,7 @@
       },
       {
         "cambio": null,
+        "clase": null,
         "codigo": "AUTO-D",
         "nombre": "Decisión propia",
         "zona_llegada": null,
@@ -97,6 +101,7 @@
       },
       {
         "cambio": null,
+        "clase": null,
         "codigo": "AUTO-E",
         "nombre": "Confianza",
         "zona_llegada": null,

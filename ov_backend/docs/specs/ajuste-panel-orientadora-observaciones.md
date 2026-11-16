@@ -336,3 +336,203 @@ En la tarjeta «Sus respuestas», las filas de conteo usan la misma marca e inte
 3. Causa del error de §3.4 y su corrección.
 4. Cómo llega hoy el destino del aviso `respuesta-sensible` y de «Ver respuesta», y qué se agrega a la URL.
 5. De dónde salen los textos fijos de §3.3.
+
+## Ajuste · partida-llegada-liviano
+
+
+### Contexto
+En el perfil del estudiante de la orientadora, cada zona, respuesta y cambio de partida y llegada es un chip de color, y una fila llega a tener dos o tres chips que dicen lo mismo. El texto de observaciones (`ajuste-partida-llegada-liviano.md`, bocetos 19 a 22) pide el mismo principio de respuestas-orientadora: zonas y respuestas en texto plano y **solo el cambio o lo que pide atención con color**, como texto con un marcador (flecha o punto), sin chip; como máximo una marca por fila. La vista del estudiante y la del apoderado no se tocan.
+
+- Requisitos del texto: respuestas-orientadora terminado (sus fases y la suite completa están en verde en esta rama), color-partida-llegada y panel-estudiantes integrados (ya en `main`). Se sigue en la misma rama, `ajuste/respuestas-orientadora`, como sección `## Ajuste · partida-llegada-liviano` de la spec en curso, a pedido del usuario.
+- Bocetos guardados en `ov_backend/docs/specs/bocetos/partida-llegada-liviano/` (el 20 llegó como `.webp`).
+
+### Cómo funciona hoy
+- **Tests · bloque** (`perfil/PartidaLlegadaPerfil.tsx`): tabla con `ChipPerfil` por zona y cambio; con solo partida, la columna Llegada repite «Aún no responde»; filas de afirmaciones con chips «partida → llegada». Las dimensiones llegan en el orden del cuestionario (`perfil_tests.py`, `PartidaLlegada.resumen`): **no** vienen ordenadas por atención.
+- **Detalle** (`perfil/DetallePartidaLlegada.tsx`): conteo y leyenda como chips; cabecera de dimensión y celdas con chips. El servidor ya ordena dimensiones y filas (`_prioridad_dimension`, `_afirmaciones_detalle`) y clasifica las afirmaciones (`BAJO`, `SIGUE_BAJA`, `MEJORO`, `IGUAL`).
+- **Conteo:** con llegada, `ConteoDetalle` cuenta por `BAJO`, `SUBIO` e `IGUAL`; «Sigue por trabajar» queda dentro de `IGUAL`. Para la dimensión, «sigue por trabajar» no viaja: el front lo deduce de las zonas en `gruposComoEmpezo` (Resumen).
+- **Resumen** (`TarjetasResumen.tsx`, «Cómo empezó» / «De la partida a la llegada»): chips con el tono del grupo.
+- **Etiqueta del instrumento** («Requisito del salón»): `EtiquetaPanel` dentro de `BloquePanel` (`panel/PanelComun.tsx`), un chip gris.
+
+### Decisiones del texto (§10)
+1. **Etiqueta compartida:** `EtiquetaPanel` la usan todos los `BloquePanel` con `etiqueta`: el bloque y el detalle de partida y llegada y «Cuestionarios» del Inicio del panel (`CuestionariosPanel`). Pasa a texto gris sin fondo en todos ellos.
+2. **Resumen:** sí usa chips de zona; pasan a texto (§5 del texto).
+3. **Datos que faltan:** el conteo con llegada no separa «sigue por trabajar» y el bloque de Tests no llega ordenado. Se agregan en el servidor (abajo), sin consultas nuevas.
+
+### Backend
+- `DimensionPartida` y `DimensionDetalle` ganan `clase`: `BAJO` | `SIGUE_POR_TRABAJAR` | `SUBIO` | `IGUAL` con llegada, nulo con solo partida (ahí manda `zona_partida`). Se calcula donde se arma cada una (`perfil.py` con `ComparacionDimension.sigue_por_trabajar`, ya existente, y `perfil_tests.py`).
+- `ConteoDetalle.codigo` con llegada: `BAJO`, `SIGUE_POR_TRABAJAR`, `SUBIO`, `IGUAL` (este último ya sin los que siguen por trabajar), en ese orden; solo partida, igual que hoy.
+- El bloque de Tests (`PartidaLlegada.resumen.dimensiones`) sale ordenado como el detalle (`_prioridad_dimension`: con llegada Bajó → Sigue por trabajar → Subió → Igual; solo partida Por trabajar → En camino → Fuerte; desempate por el cuestionario). El Resumen del perfil no cambia de orden (agrupa).
+- Pruebas: `clase`, el conteo nuevo y el orden del bloque; presupuesto: `test_presupuesto_de_las_lecturas_de_partida_y_llegada` y el del perfil sin cambios (mismo número de consultas, se informan antes y después). Contrato: tipos, fixtures regenerados.
+
+### Frontend
+- **`perfil/MarcaTexto.tsx`** (nuevo, un componente con variantes por clase): `BAJO` «↓ Bajó» ámbar negrita; `SIGUE_BAJA` «• Sigue baja» y `SIGUE_POR_TRABAJAR` «• Sigue por trabajar» ámbar peso medio; `SUBIO` «↑ Subió» y `MEJORO` «↑ Mejoró» verde seminegrita; `IGUAL` «= Igual» gris; `POR_TRABAJAR` «• Por trabajar» y `BAJA` «• {etiqueta}» ámbar peso medio. Flecha o punto con `aria-hidden`; la palabra siempre va. Colores `text-warning-text` y `text-success-text` del tema del portal (#5a3b00 y #256b4c: ya pasan 4.5:1 sobre blanco, no hace falta oscurecerlos).
+- **Frase del conteo:** función pura `fraseConteo(estado, conteo)` en `adaptadoresPanelEstudiante.ts` que devuelve piezas con su clase: «1 dimensión bajó, 1 sigue por trabajar y 3 subieron.», «2 dimensiones por trabajar, 2 en camino y 1 fuerte.», «Las 5 dimensiones subieron.» / «… están en camino.»; ceros omitidos, singular y plural, comas e «y». El front no cuenta: usa `conteo` del servidor.
+- **`PartidaLlegadaPerfil.tsx`** (§3): con llegada, tabla Dimensión · Partida · Llegada · Cambio con zonas en texto y `MarcaTexto`; grupos de afirmaciones con título del color de su cambio y filas «partida → **llegada**» sin chips. Solo partida: sin columna Llegada; el subtítulo suma «Medida antes y después: su valor está en el cambio. Partida respondida el {fecha}; aún no responde la llegada.» (la primera frase es el `mensaje` del servidor; la segunda, del front); Por trabajar con marcador; grupo «Respuestas bajas» en ámbar con «• {etiqueta}»; sin bajas, «No tiene respuestas bajas en la partida.» sin título.
+- **`DetallePartidaLlegada.tsx`** (§4): frase del conteo en lugar de chips; sin leyenda de chips y, en su lugar, la línea gris solo si hace falta (con llegada, alguna `SIGUE_BAJA`; solo partida, alguna `partida_baja`, con «• Respuesta baja:» y `textoRespuestaBaja`). Cabecera de dimensión: «{zona} → {zona} · marcador» o la zona con marcador si es Por trabajar. Celdas en texto (partida gris oscuro, llegada oscuro peso medio), cambio con marcador, «Sin responder» en gris con Cambio vacío. Una columna con llegada; dos con solo partida (como hoy).
+- **`TarjetasResumen.tsx`** (§5): nombres en texto, título de grupo con el color del cambio (o ámbar solo en Por trabajar), «{nombre}: {zona} → {zona}» con llegada. `gruposComoEmpezo` agrupa por `clase` en lugar de deducirla de las zonas.
+- `EtiquetaPanel` (`PanelComun.tsx`) a texto gris. Se quitan de estas vistas los usos de `ChipPerfil` para zonas, respuestas y cambios, y las constantes de tono que queden sin uso (`TONO_ZONA`, `TONO_CAMBIO`, `TONO_CAMBIO_AFIRMACION`). `ChipPerfil` sigue para lo demás.
+- Tipos (`servidorPanelEstudiante.ts`), fixtures y pruebas de render.
+
+### Qué no cambia
+La vista del estudiante y la del apoderado (sus chips de zona), el cálculo de zonas, la clasificación y los umbrales, el orden del detalle, las vistas de intereses, habilidades e inteligencias, el modo local.
+
+### Pruebas (§8)
+`MarcaTexto` por clase (palabra, marcador oculto, estilo); `fraseConteo` en los dos estados (todas en un grupo, uno de cada uno, ceros, singular y plural); bloque de Tests con llegada (orden, grupos con título coloreado, filas sin chips) y solo partida (sin Llegada, frase en el subtítulo, Por trabajar primero con marcador, bajas con marcador y sin bajas); detalle (cabecera en los dos estados, línea presente y ausente, «Sin responder»); Resumen sin chips en los dos estados; la prueba existente de la vista del estudiante sin cambios; presupuesto igual.
+
+### Fases
+- **F1 · Backend:** `clase`, conteo, orden del bloque, pruebas, `panel.md`, fixtures.
+- **F2 · Front:** `MarcaTexto`, `fraseConteo`, bloque, detalle, Resumen y etiqueta; pruebas de render. Pruebas de impacto + `test:servidor`.
+- **Cierre:** suite completa de ambos, `decisiones.md` y documentos vigentes.
+
+### Anexo: texto de observaciones
+
+### Ajuste partida-llegada-liviano · Partida y llegada sin chips en el panel de la orientadora
+
+Texto de observaciones para `/ajuste partida-llegada-liviano`, para correr **cuando esté cerrada la spec de respuestas-orientadora**, sobre la misma rama o sobre `main` con ella integrada. También deben estar integrados color-partida-llegada (el detalle por dimensión y la clasificación del cambio) y panel-estudiantes. Si alguno falta, detente y avisa.
+
+Solo vistas de la **orientadora**, en modo api. **La vista del estudiante no se toca**: sus colores por zona se quedan como los dejó color-partida-llegada.
+
+Este documento es autosuficiente; si el repo difiere de lo que aquí se describe, se reporta y no se corrige en silencio.
+
+Bocetos: `ov_backend/docs/specs/bocetos/partida-llegada-liviano/`
+
+| Archivo | Pantalla |
+|---|---|
+| `19-tests-partida-llegada.png` | Pestaña Tests · bloque de partida y llegada, con llegada |
+| `20-detalle-por-dimension.png` | Detalle por dimensión, con llegada |
+| `21-tests-solo-partida.png` | Pestaña Tests · bloque de partida y llegada, solo partida |
+| `22-detalle-solo-partida.png` | Detalle por dimensión, solo partida |
+
+Los datos de los bocetos son de ejemplo. Los de detalle muestran parte de las dimensiones: en la vista real van todas. Donde este texto y un boceto difieran, manda este texto.
+
+#### 1. Problema y principio
+
+Hoy cada zona, cada respuesta y cada cambio es un chip de color. Por eso una fila lleva dos o tres chips que dicen lo mismo: «Fuerte → Por trabajar» más «Bajó», con la respuesta de llegada y el cambio en el mismo ámbar. La leyenda de chips, además, se confunde con los conteos.
+
+**Principio, el mismo de respuestas-orientadora:** zonas y respuestas van en **texto plano**. **Lo único con color es lo que pide atención o el cambio**, escrito como texto con un marcador (flecha o punto) y sin fondo ni chip. Como máximo, una marca de color por fila.
+
+#### 2. Marcadores
+
+| Qué | Texto | Estilo |
+|---|---|---|
+| Bajó (dimensión o afirmación) | ↓ Bajó | Ámbar, negrita |
+| Sigue baja (afirmación) | • Sigue baja | Ámbar, peso medio |
+| Sigue por trabajar (dimensión, por trabajar en ambas) | • Sigue por trabajar | Ámbar, peso medio |
+| Subió (dimensión) | ↑ Subió | Verde, seminegrita |
+| Mejoró (afirmación) | ↑ Mejoró | Verde, seminegrita |
+| Igual | = Igual | Gris |
+| **Solo partida:** respuesta baja | • {etiqueta que marcó} | Ámbar, peso medio |
+| **Solo partida:** zona Por trabajar | • Por trabajar | Ámbar, peso medio |
+
+- La flecha y el punto son decorativos (`aria-hidden`). La palabra siempre va, así que el color nunca es la única señal.
+- Ámbar y verde son los tonos de texto de `aviso` y `exito` del panel. Necesitan un contraste de 4.5:1 sobre blanco; si el tono actual no lo cumple como texto, se oscurece la variante de texto, no el chip.
+- Queda **un componente** para esto, p. ej. `MarcaTexto`, usado en todas las piezas de §3 a §5. Las clases (`BAJO`, `SIGUE_BAJA`, `MEJORO`, `IGUAL`, las de dimensión, la marca de baja y la zona) ya vienen del backend. El front no las calcula.
+- Lo demás va en texto plano oscuro, sin chip y sin color: las zonas En camino y Fuerte, y toda respuesta que no sea baja ni cambie.
+
+#### 3. Pestaña Tests · bloque de partida y llegada
+
+La etiqueta del instrumento («Requisito del salón») pasa de chip a texto gris al lado del título. Si el componente de etiqueta se comparte con los otros cuestionarios de la pestaña, el cambio aplica a todos y se dice en el plan.
+
+##### 3.1 Con llegada (`19…`)
+
+- **Tabla de dimensiones:** columnas Dimensión, Partida · fecha, Llegada · fecha y Cambio.
+  - Las zonas van en texto.
+  - Cambio va con su marcador.
+  - **Orden por atención**, el mismo del detalle: Bajó → Sigue por trabajar → Subió → Igual; desempate por el orden del cuestionario.
+- **Afirmaciones para conversar:**
+  - El título de cada grupo («Bajaron», «Siguen bajas», «Mejoraron») toma el color de su cambio: ámbar los dos primeros y verde el tercero.
+  - Cada fila lleva la afirmación y, a la derecha, «{partida} → **{llegada}**» en texto, con la llegada en negrita oscura. Sin chips y sin color en la fila.
+
+##### 3.2 Solo partida (`21…`)
+
+- **Sin columna Llegada.** Hoy la columna repite «Aún no responde» en cada fila. En su lugar, el subtítulo suma una frase: «Medida antes y después: su valor está en el cambio. Partida respondida el {fecha}; aún no responde la llegada.»
+- **Tabla de dimensiones:** columnas Dimensión y Partida · fecha.
+  - La zona va en texto; Por trabajar lleva su marcador (§2).
+  - Orden: Por trabajar → En camino → Fuerte; desempate por el orden del cuestionario.
+- **Afirmaciones para conversar:**
+  - El subtítulo de hoy se queda: «Sus respuestas más bajas en la partida. Cuando responda la llegada, aquí irán primero las que bajaron.»
+  - Un título de grupo «Respuestas bajas» en ámbar.
+  - Cada fila lleva la afirmación y, a la derecha, el marcador de respuesta baja («• Bastante de acuerdo»).
+  - Sin respuestas bajas: «No tiene respuestas bajas en la partida.» en gris, sin título de grupo.
+
+El botón «Ver detalle por dimensión» no cambia en ninguno de los dos estados.
+
+#### 4. Detalle por dimensión
+
+##### 4.1 Cabecera (los dos estados)
+
+- La etiqueta del instrumento va en texto gris, igual que en §3.
+- La línea de fechas y la caja con la lectura de la orientadora no cambian.
+- **El conteo pasa a una frase**, con los ceros omitidos y singular y plural correctos:
+  - con llegada: «1 dimensión bajó, 1 sigue por trabajar y 3 subieron.», con cada parte coloreada como su cambio;
+  - solo partida: «2 dimensiones por trabajar, 2 en camino y 1 fuerte.», con «por trabajar» en ámbar y lo demás en texto normal;
+  - si todas están en el mismo grupo: «Las 5 dimensiones están en camino.» o «Las 5 dimensiones subieron.»
+- **Se quita la leyenda de chips.** En su lugar va una sola línea gris, que aparece solo si hace falta:
+  - con llegada, si alguna afirmación es «Sigue baja»: «Sigue baja: subió, pero sigue entre las respuestas más bajas.»;
+  - solo partida, si hay alguna respuesta baja: «• Respuesta baja: una de las {N} opciones menos favorables, con las afirmaciones en sentido contrario ya consideradas.», con el marcador en ámbar y N tomado del parámetro (`PANEL_OPCIONES_BAJAS`).
+
+##### 4.2 Con llegada (`20…`)
+
+- **Cabecera de cada dimensión:** el nombre a la izquierda y, a la derecha, «{zona de partida} → {zona de llegada} · {marcador del cambio}».
+- **Tabla:** columnas Afirmación, Partida · fecha, Llegada · fecha y Cambio.
+  - Partida en texto gris oscuro y llegada en texto oscuro de peso medio, las dos sin chip.
+  - Cambio con su marcador.
+  - Sin respuesta: «Sin responder» en gris, con la columna Cambio vacía.
+- Una columna de bloques.
+
+##### 4.3 Solo partida (`22…`)
+
+- **Cabecera de cada dimensión:** el nombre a la izquierda y, a la derecha, la zona en texto, con marcador si es Por trabajar.
+- **Tabla:** columnas Afirmación y Partida. La respuesta baja va con su marcador («• Bastante de acuerdo»); las demás, en texto oscuro sin chip.
+- La rejilla de dos columnas se mantiene.
+
+El orden de dimensiones y filas no cambia en ninguno de los dos estados: es el de color-partida-llegada.
+
+#### 5. Resumen del perfil
+
+La tarjeta «Cómo empezó / De la partida a la llegada» del Resumen sigue el mismo principio:
+
+- los nombres de las dimensiones van en texto, agrupados como hoy;
+- cada grupo lleva su título con el color del cambio (con llegada) o de la zona (solo partida: ámbar solo Por trabajar);
+- cada dimensión con llegada va como «{nombre}: {zona de partida} → {zona de llegada}», en texto.
+
+Si hoy usa chips, se cambian a texto. Ya no van chips de zona en ninguna vista de la orientadora.
+
+#### 6. Backend
+
+No debería cambiar nada: clasificación, orden, marca de baja y conteos ya salen del servidor (color-partida-llegada). Revisa en el plan estos dos puntos:
+
+- Si a la frase del conteo le falta algún dato (p. ej. el conteo de «sigue por trabajar» en dimensiones), se agrega a la misma lectura sin consultas nuevas.
+- Si el bloque de la pestaña Tests ya recibe ordenadas las dimensiones de solo partida (Por trabajar primero), o si hay que agregar ese orden en el servidor.
+
+Se informa el número de consultas, antes y después: debe ser el mismo.
+
+#### 7. Front
+
+- Componente `MarcaTexto` (§2) en `features/counselor/components/perfil/`, con variantes por clase. Sin estilos en línea.
+- Se retiran de estas vistas los usos de `ChipPerfil` para zonas, respuestas y cambios. `ChipPerfil` sigue existiendo para lo que no es parte de este ajuste.
+- La frase del conteo se arma con una función pequeña y probada (singular, plural, ceros, «todas en el mismo grupo», unión con comas e «y»).
+- Tipos, fixtures y pruebas de render actualizados.
+
+#### 8. Pruebas
+
+- **`MarcaTexto`:** cada clase muestra su palabra, su marcador oculto al lector de pantalla y su estilo.
+- **Frase del conteo:** todo en un grupo («Las 5…»); uno de cada tipo; ceros omitidos; singular y plural; los dos estados.
+- **Tests, con llegada:** tabla ordenada por atención; grupos de afirmaciones con título coloreado y filas sin chips.
+- **Tests, solo partida:** sin columna Llegada y con la frase en el subtítulo; Por trabajar primero y con marcador; respuestas bajas con marcador; sin respuestas bajas.
+- **Detalle:** cabecera de dimensión en los dos estados; línea de explicación presente y ausente en cada estado; «Sin responder».
+- **Resumen:** la tarjeta sin chips en los dos estados.
+- **Que no se tocó:** la vista del estudiante sigue con sus chips de zona (prueba de render existente sin cambios).
+- **Presupuesto de consultas:** igual al de antes.
+
+#### 9. Fuera de este ajuste
+
+- La vista del estudiante y la del apoderado.
+- El cálculo de zonas, la clasificación del cambio y los umbrales.
+- Las vistas de resultado de intereses, habilidades sociales e inteligencias.
+
+#### 10. Para decidir en el plan
+
+1. Si la etiqueta del instrumento («Requisito del salón») es un componente compartido y a qué otras tarjetas alcanza el cambio a texto.
+2. Si la tarjeta del Resumen usa hoy chips de zona y qué se cambia.
+3. Si la frase del conteo o el orden de solo partida necesitan algún dato que hoy no llega.

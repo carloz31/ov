@@ -14,6 +14,8 @@ EstadoTest = Literal["LISTO", "POR_REVISAR", "EN_CURSO", "SIN_EMPEZAR"]
 Destino = Literal["TESTS", "PLANES", "RESPUESTAS", "AVANCE"]
 Zona = Literal["FUERTE", "EN_CAMINO", "POR_TRABAJAR"]
 Cambio = Literal["SUBIO", "IGUAL", "BAJO"]
+# Ajuste partida-llegada-liviano: la clase de una dimensión con llegada; «sigue por trabajar» sale de IGUAL.
+ClaseDimension = Literal["BAJO", "SIGUE_POR_TRABAJAR", "SUBIO", "IGUAL"]
 
 
 class TramoEstudiante(BaseModel):
@@ -136,11 +138,13 @@ class PlanResumen(BaseModel):
 
 
 class DimensionPartida(BaseModel):
+    """`clase`: con llegada, bajó, sigue por trabajar (por trabajar en las dos), subió o igual; nula sin llegada."""
     codigo: str
     nombre: str
     zona_partida: Zona | None
     zona_llegada: Zona | None
     cambio: Cambio | None
+    clase: ClaseDimension | None = None
 
 
 class PartidaResumen(BaseModel):
@@ -289,12 +293,14 @@ class DimensionDetalle(BaseModel):
     zona_partida: Zona | None
     zona_llegada: Zona | None
     cambio: Cambio | None
+    clase: ClaseDimension | None = None
     afirmaciones: list[AfirmacionDetalle]
 
 
 class ConteoDetalle(BaseModel):
-    """Cuántas dimensiones hay por zona (solo partida) o por cambio de zona (con llegada); sin ceros."""
-    codigo: Zona | Cambio
+    """Cuántas dimensiones hay por zona (solo partida) o por clase (con llegada: bajó, sigue por trabajar, subió e
+    igual, este sin las que siguen por trabajar); sin ceros."""
+    codigo: Zona | ClaseDimension
     cantidad: int
 
 
