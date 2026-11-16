@@ -228,7 +228,11 @@ class Sembrador:
         for carrera in ('PSICOLOGIA', 'PERIODISMO'):
             self.crear_plan(codigo, carrera)
             self.guardar(codigo, carrera, 'POR_QUE', por_que_lista())
-            self.guardar(codigo, carrera, 'REALIDAD', realidad_lista())
+            # DATO DE PRUEBA (ajuste panel-orientadora-observaciones): un presupuesto con varios rubros.
+            self.guardar(codigo, carrera, 'REALIDAD', realidad_lista(gastos=[
+                {'rubro': 'MATRICULA', 'monto': 600, 'frecuencia': 'POR_CICLO'},
+                {'rubro': 'MATERIALES', 'monto': 300, 'frecuencia': 'POR_CICLO'},
+                {'rubro': 'TRANSPORTE', 'monto': 150, 'frecuencia': 'MENSUAL'}]))
 
     def crear_plan(self, codigo, carrera):
         from soporte_catalogo_ruta import PERIODISMO, PSICOLOGIA

@@ -977,9 +977,9 @@ ALERTAS = (
      'instrumento_por_revisar', {'instrumento': INSTRUMENTO_INTERESES, 'avisos_velocidad': 2, 'textos_motivo': {
          'PLANO': 'Su resultado salió plano: todas las respuestas parecidas',
          'PRISA': 'Lo respondió muy rápido (estimado por tiempo)'}}),
-    ('familia-pendiente', 'atras', 'Su familia aún no se registra', None, 'familia_pendiente', {'textos_motivo': {
-        'SIN_VINCULO': 'No tiene un apoderado vinculado',
-        'SIN_INGRESO': 'Su apoderado tiene cuenta, pero no ha ingresado'}}),
+    ('familia-pendiente', 'atras', 'Su apoderado aún no inicia sesión', None, 'familia_pendiente', {'textos_motivo': {
+        'SIN_VINCULO': 'Su apoderado aún no ha iniciado sesión en la plataforma',
+        'SIN_INGRESO': 'Su apoderado aún no ha iniciado sesión en la plataforma'}}),
     # Temas «Para conversar» (ajuste panel-estudiantes; reglas definitivas del ajuste pendientes-orientadora). Las de
     # registro nombran ítems de `contenido` y están en `datos/contenido.py` (`ALERTAS`); su orden lo fija
     # `ORDEN_PARA_CONVERSAR`.
@@ -1003,18 +1003,18 @@ ALERTAS = (
 # fila y con los datos que el evaluador devuelve para ese estudiante. Sin nombre de perfil se usa `nombre`.
 TEXTOS_PERFIL_ALERTAS = {
     'respuesta-sensible': ('Escribió algo que conviene leer',
-                           'En «{registro}», Lumi lo derivó a usted en lugar de seguir preguntando.', 'RESPUESTAS'),
+                           'En {registro}, Lumi lo derivó a usted en lugar de seguir preguntando.', 'RESPUESTAS'),
     'seguridad-baja': ('Poca seguridad en sus últimas señales', 'Marcó {valores} de 5 ({fechas}).', 'AVANCE'),
     'sin-ingreso': ('No ingresa hace {dias} días o más', 'Último ingreso: {ultimo}.', None),
-    'avance-bajo': ('Va muy por detrás de su salón', 'Va en «{tramo}»; la mayoría del salón va en «{tramo_salon}».',
+    'avance-bajo': ('Va muy por detrás de su salón', 'Va en {tramo}; la mayoría del salón va en {tramo_salon}.',
                     'AVANCE'),
     'test-por-revisar': ('Test de intereses por revisar', '{motivo}.', 'TESTS'),
-    'familia-pendiente': ('Su familia aún no se registra', '{motivo}.', 'AVANCE'),
-    'plan-poco-entusiasmo': (None, 'Marcó «{nivel}» en «{medidor}» frente a su Plan A ({carrera}).{idea}', 'PLANES'),
+    'familia-pendiente': ('Su apoderado aún no inicia sesión', '{motivo}.', 'AVANCE'),
+    'plan-poco-entusiasmo': (None, 'Marcó “{nivel}” en “{medidor}” frente a su Plan A ({carrera}).{idea}', 'PLANES'),
     'plan-fuera-areas': (None, 'Su Plan A ({carrera}) no está entre sus áreas sugeridas.', 'PLANES'),
-    'plan-se-ve-lejos': (None, 'Marcó «{nivel}» en {medidores} frente a su Plan A ({carrera}).{complicaciones}',
+    'plan-se-ve-lejos': (None, 'Marcó “{nivel}” en {medidores} frente a su Plan A ({carrera}).{complicaciones}',
                          'PLANES'),
-    'plan-conoce-poco': (None, 'Dice conocer poco su Plan A: respondió «No» a {cantidad} de {total} preguntas.{dudas}',
+    'plan-conoce-poco': (None, 'Dice conocer poco su Plan A: respondió “No” a {cantidad} de {total} preguntas.{dudas}',
                          'PLANES'),
     'llegada-sin-avance': (None, 'Entre la partida y la llegada: {detalle}.', 'TESTS'),
 }

@@ -26,12 +26,12 @@ def test_textos_de_perfil_de_los_avisos_con_los_datos_del_estudiante(aplicacion,
     luis = alertas_de(sesion, 'est-luis')
     assert luis['seguridad-baja'] == ('Poca seguridad en sus últimas señales',
                                       'Marcó 1, 2 y 2 de 5 (el 17, 18 y 19 de octubre).')
-    assert luis['familia-pendiente'] == ('Su familia aún no se registra',
-                                         'Su apoderado tiene cuenta, pero no ha ingresado.')
+    assert luis['familia-pendiente'] == ('Su apoderado aún no inicia sesión',
+                                         'Su apoderado aún no ha iniciado sesión en la plataforma.')
     ana = alertas_de(sesion, 'est-ana')
     assert ana['sin-ingreso'] == ('No ingresa hace 7 días o más', 'Último ingreso: 11 de octubre.')
     assert alertas_de(sesion, 'est-sol')['sin-ingreso'][1] == 'Último ingreso: nunca.'
-    assert alertas_de(sesion, 'est-sol')['familia-pendiente'][1] == 'No tiene un apoderado vinculado.'
+    assert alertas_de(sesion, 'est-sol')['familia-pendiente'][1] == 'Su apoderado aún no ha iniciado sesión en la plataforma.'
     assert alertas_de(sesion, 'est-mia')['test-por-revisar'] == (
         'Test de intereses por revisar', 'Su resultado salió plano: todas las respuestas parecidas.')
     assert alertas_de(sesion, 'est-teo')['test-por-revisar'][1] == 'Lo respondió muy rápido (estimado por tiempo).'
@@ -60,9 +60,9 @@ def test_plan_medidor_poco_entusiasmo_con_y_sin_idea_de_la_familia(aplicacion, s
     secundario.entusiasmo = 1  # solo cuenta el Plan A; sin Plan A no hay tema
     sesion.commit()
     assert alertas_de(sesion, 'est-ana', en_inicio=False)['plan-poco-entusiasmo'][1] == (
-        'Marcó «Poco» en «Me entusiasma» frente a su Plan A (Enfermería). La idea de estudiarla vino de su familia.')
+        'Marcó “Poco” en “Me entusiasma” frente a su Plan A (Enfermería). La idea de estudiarla vino de su familia.')
     assert alertas_de(sesion, 'est-luis', en_inicio=False)['plan-poco-entusiasmo'][1] == (
-        'Marcó «Poco» en «Me entusiasma» frente a su Plan A (Psicología).')
+        'Marcó “Poco” en “Me entusiasma” frente a su Plan A (Psicología).')
     for codigo in ('est-mia', 'est-teo', 'est-sol'):
         assert 'plan-poco-entusiasmo' not in alertas_de(sesion, codigo, en_inicio=False)
 
@@ -76,10 +76,10 @@ def test_plan_se_ve_lejos_con_dos_medidores_y_complicaciones(aplicacion, sesion)
     luis.capacidad, luis.recursos = 3, 1
     sesion.commit()
     assert alertas_de(sesion, 'est-ana', en_inicio=False)['plan-se-ve-lejos'][1] == (
-        'Marcó «Poco» en «Me siento capaz» y «Tengo cómo lograrlo» frente a su Plan A (Enfermería). Ve como '
+        'Marcó “Poco” en “Me siento capaz” y “Tengo cómo lograrlo” frente a su Plan A (Enfermería). Ve como '
         'posibles complicaciones: económicas y DATO DE PRUEBA: el examen de admisión.')
     assert alertas_de(sesion, 'est-luis', en_inicio=False)['plan-se-ve-lejos'][1] == (
-        'Marcó «Poco» en «Tengo cómo lograrlo» frente a su Plan A (Psicología).')
+        'Marcó “Poco” en “Tengo cómo lograrlo” frente a su Plan A (Psicología).')
 
 
 def test_plan_conoce_poco_con_cero_una_y_varias_dudas(aplicacion, sesion):
@@ -93,7 +93,7 @@ def test_plan_conoce_poco_con_cero_una_y_varias_dudas(aplicacion, sesion):
     plan_teo = tarjeta(sesion, 'est-teo', PSICOLOGIA, 1)
     conocimiento(sesion, plan_teo, DIA_NORMAL='NO', CURSOS='NO', INGRESO='MAS_O_MENOS')  # dos «No»: no alcanza
     sesion.commit()
-    inicio = 'Dice conocer poco su Plan A: respondió «No» a 3 de 5 preguntas.'
+    inicio = 'Dice conocer poco su Plan A: respondió “No” a 3 de 5 preguntas.'
     assert alertas_de(sesion, 'est-ana', en_inicio=False)['plan-conoce-poco'][1] == inicio
     assert alertas_de(sesion, 'est-luis', en_inicio=False)['plan-conoce-poco'][1] == f'{inicio} Tiene 1 duda abierta.'
     assert alertas_de(sesion, 'est-mia', en_inicio=False)['plan-conoce-poco'][1] == f'{inicio} Tiene 3 dudas abiertas.'
@@ -116,8 +116,8 @@ def test_parametros_cambiados_en_la_base_y_tema_nuevo_con_evaluador_existente(ap
                         descripcion_perfil='{medidor}: {nivel}.', destino=m.DestinoPerfil.PLANES))
     sesion.commit()
     ana = alertas_de(sesion, 'est-ana', en_inicio=False)
-    assert ana['plan-conoce-poco'][1] == 'Dice conocer poco su Plan A: respondió «No» a 2 de 5 preguntas.'
-    assert ana['plan-poco-entusiasmo'][1] == 'Marcó «Algo» en «Me entusiasma» frente a su Plan A (Enfermería).'
+    assert ana['plan-conoce-poco'][1] == 'Dice conocer poco su Plan A: respondió “No” a 2 de 5 preguntas.'
+    assert ana['plan-poco-entusiasmo'][1] == 'Marcó “Algo” en “Me entusiasma” frente a su Plan A (Enfermería).'
     assert ana['t-recursos-altos'][1] == 'Tengo cómo lograrlo: Mucho.'
     assert list(ana)[0] == 't-recursos-altos'  # el `orden` de la base es el de la lista
     sesion.execute(update(m.Alerta).where(m.Alerta.codigo == 't-recursos-altos').values(activa=False))
@@ -144,11 +144,11 @@ def test_llegada_sin_avance_con_sus_bordes(aplicacion, sesion):
     sesion.commit()
     assert 'llegada-sin-avance' not in alertas_de(sesion, 'est-ana', en_inicio=False)
     assert alertas_de(sesion, 'est-luis', en_inicio=False)['llegada-sin-avance'][1] == (
-        'Entre la partida y la llegada: «Decisión propia» bajó.')
+        'Entre la partida y la llegada: Decisión propia bajó.')
     assert alertas_de(sesion, 'est-mia', en_inicio=False)['llegada-sin-avance'][1] == (
-        'Entre la partida y la llegada: «Confianza» sigue por trabajar.')
+        'Entre la partida y la llegada: Confianza sigue por trabajar.')
     assert alertas_de(sesion, 'est-teo', en_inicio=False)['llegada-sin-avance'][1] == (
-        'Entre la partida y la llegada: «Claridad» y «Decisión propia» bajó; «Confianza» sigue por trabajar.')
+        'Entre la partida y la llegada: Claridad y Decisión propia bajó; Confianza sigue por trabajar.')
     assert 'llegada-sin-avance' not in alertas_de(sesion, 'est-sol', en_inicio=False)
 
 
@@ -190,5 +190,5 @@ def test_avance_bajo_nombra_el_tramo_de_la_mediana_del_salon(aplicacion, cliente
     sesion.execute(update(m.Alerta).where(m.Alerta.codigo == 'avance-bajo').values(parametros={'tramos': 1}))
     sesion.commit()
     assert alertas_de(sesion, 'est-teo')['avance-bajo'] == (
-        'Va muy por detrás de su salón', 'Va en «Sin empezar»; la mayoría del salón va en «Inicio».')
+        'Va muy por detrás de su salón', 'Va en Sin empezar; la mayoría del salón va en Inicio.')
     assert 'avance-bajo' not in alertas_de(sesion, 'est-mia')

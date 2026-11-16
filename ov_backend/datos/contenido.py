@@ -838,9 +838,9 @@ TEXTOS_PERFIL_ALERTAS = {
                            'chocan.{voz}', 'RESPUESTAS'),
     'valores-fuera-del-plan': (None, 'Lo que más valora en un trabajo ({valores}) no aparece entre los motivos de su '
                                      'Plan A ({motivos}).', 'PLANES'),
-    'plan-b-desanima': (None, 'Al imaginar que le tocaba su Plan B ({plan_b}), marcó «{opcion}».', 'RESPUESTAS'),
-    'forma-de-decidir': (None, 'Sobre cómo decide las cosas importantes, marcó: «{opcion}».', 'RESPUESTAS'),
-    'proyecto-poco-seguro': (None, 'Frente a su proyecto, marcó «{opcion}».', 'RESPUESTAS'),
+    'plan-b-desanima': (None, 'Al imaginar que le tocaba su Plan B ({plan_b}), marcó “{opcion}”.', 'RESPUESTAS'),
+    'forma-de-decidir': (None, 'Sobre cómo decide las cosas importantes, marcó: “{opcion}”.', 'RESPUESTAS'),
+    'proyecto-poco-seguro': (None, 'Frente a su proyecto, marcó “{opcion}”.', 'RESPUESTAS'),
 }
 
 # (código, (tipo de dueño, dueño), tipo, fuente). Ajuste registros llm (lote 2): las que leen los ecos, los

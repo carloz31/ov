@@ -150,17 +150,17 @@
     {
       "codigo": "plan-se-ve-lejos",
       "destino": "PLANES",
-      "texto": "Marcó «Poco» en «Tengo cómo lograrlo» frente a su Plan A (Psicología). Ve como posibles complicaciones: económicas y DATO DE PRUEBA: queda lejos de mi casa."
+      "texto": "Marcó “Poco” en “Tengo cómo lograrlo” frente a su Plan A (Psicología). Ve como posibles complicaciones: económicas y DATO DE PRUEBA: queda lejos de mi casa."
     },
     {
       "codigo": "plan-conoce-poco",
       "destino": "PLANES",
-      "texto": "Dice conocer poco su Plan A: respondió «No» a 3 de 5 preguntas. Tiene 7 dudas abiertas."
+      "texto": "Dice conocer poco su Plan A: respondió “No” a 3 de 5 preguntas. Tiene 7 dudas abiertas."
     },
     {
       "codigo": "plan-b-desanima",
       "destino": "RESPUESTAS",
-      "texto": "Al imaginar que le tocaba su Plan B (Ciencias de la Comunicación), marcó «Me desanimé»."
+      "texto": "Al imaginar que le tocaba su Plan B (Ciencias de la Comunicación), marcó “Me desanimé”."
     }
   ],
   "temas_visibles": 4

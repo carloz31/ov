@@ -125,7 +125,7 @@ def test_perfil_cabecera_avisos_temas_y_tarjetas(aplicacion, cliente, sesion):
     # Ajuste pendientes-orientadora: las reglas definitivas (con solo la partida no hay tema) y el tope.
     assert [t['codigo'] for t in datos['temas']] == ['plan-poco-entusiasmo', 'plan-conoce-poco']
     assert datos['temas'][0] == {'codigo': 'plan-poco-entusiasmo', 'destino': 'PLANES', 'texto': (
-        'Marcó «Poco» en «Me entusiasma» frente a su Plan A (Enfermería). La idea de estudiarla vino de su familia.')}
+        'Marcó “Poco” en “Me entusiasma” frente a su Plan A (Enfermería). La idea de estudiarla vino de su familia.')}
     assert datos['temas_visibles'] == 4
     assert datos['intereses']['estado'] == 'SIN_EMPEZAR' and datos['intereses']['codigo'] == []
     assert [(p['prioridad'], p['carrera'], p['en_areas']) for p in datos['planes']] == [

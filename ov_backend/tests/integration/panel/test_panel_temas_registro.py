@@ -60,7 +60,7 @@ def test_eleccion_registro_con_otra_opcion_sensible_o_emocional_no_cumple(base):
 def test_eleccion_registro_usa_el_intento_vigente_tras_una_edicion(base):
     registro(base, 'est-tema', 'b4-2-estilo', [('MIEDO', 'Me da miedo equivocarme')])
     base.commit()
-    assert _temas(base)['forma-de-decidir'][1] == 'Sobre cómo decide las cosas importantes, marcó: «Me da miedo equivocarme».'
+    assert _temas(base)['forma-de-decidir'][1] == 'Sobre cómo decide las cosas importantes, marcó: “Me da miedo equivocarme”.'
     registro(base, 'est-tema', 'b4-2-estilo', [('CALMA', 'Lo pienso con calma y comparo')])
     base.commit()
     assert 'forma-de-decidir' not in _temas(base)
@@ -78,7 +78,7 @@ def test_plan_b_desanima_con_los_planes_con_que_respondio(base):
     _moneda(base, PSICOLOGIA, ENFERMERIA)
     base.commit()
     assert _temas(base)['plan-b-desanima'][1] == (
-        f'Al imaginar que le tocaba su Plan B ({_nombre(base, ENFERMERIA)}), marcó «Me desanimé».')
+        f'Al imaginar que le tocaba su Plan B ({_nombre(base, ENFERMERIA)}), marcó “Me desanimé”.')
 
 
 @pytest.mark.parametrize('caso', ['plan_b_cambiado', 'plan_b_eliminado', 'sin_valores'])
@@ -100,7 +100,7 @@ def test_proyecto_poco_seguro_se_omite_si_cambio_su_plan_a_y_sin_valor_guardado_
     registro(base, 'est-tema', 'b5-1-seguridad', [('POCO', 'Poco seguro/a')],
              valores={'marcadores': {}, 'ecos_mostrar': [{**eco, 'carrera': _nombre(base, PSICOLOGIA)}]})
     base.commit()
-    assert _temas(base)['proyecto-poco-seguro'][1] == 'Frente a su proyecto, marcó «Poco seguro/a».'
+    assert _temas(base)['proyecto-poco-seguro'][1] == 'Frente a su proyecto, marcó “Poco seguro/a”.'
     registro(base, 'est-tema', 'b5-1-seguridad', [('POCO', 'Poco seguro/a')],
              valores={'marcadores': {}, 'ecos_mostrar': [{**eco, 'carrera': _nombre(base, ENFERMERIA)}]})
     base.commit()
@@ -151,7 +151,7 @@ def test_cambiar_opciones_en_la_base_y_fila_nueva_sobre_otro_item(base):
                       destino=m.DestinoPerfil.RESPUESTAS))
     base.commit()
     temas = _temas(base)
-    assert temas['forma-de-decidir'][1].endswith('«Lo pienso con calma y comparo».')
+    assert temas['forma-de-decidir'][1].endswith('“Lo pienso con calma y comparo”.')
     assert temas['t-dia-cuesta'][1] == 'Sobre su día a los 23, marcó «Me cuesta imaginarlo».'
     base.execute(update(m.Alerta).where(m.Alerta.codigo == 't-dia-cuesta').values(activa=False))
     base.commit()

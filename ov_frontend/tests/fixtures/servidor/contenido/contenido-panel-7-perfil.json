@@ -138,7 +138,7 @@
     {
       "codigo": "plan-poco-entusiasmo",
       "destino": "PLANES",
-      "texto": "Marcó «Poco» en «Me entusiasma» frente a su Plan A (Ingeniería de Petroleo y Gas Natural). La idea de estudiarla vino de su familia."
+      "texto": "Marcó “Poco” en “Me entusiasma” frente a su Plan A (Ingeniería de Petroleo y Gas Natural). La idea de estudiarla vino de su familia."
     },
     {
       "codigo": "plan-fuera-areas",
@@ -148,17 +148,17 @@
     {
       "codigo": "forma-de-decidir",
       "destino": "RESPUESTAS",
-      "texto": "Sobre cómo decide las cosas importantes, marcó: «Termino haciendo lo que otros esperan»."
+      "texto": "Sobre cómo decide las cosas importantes, marcó: “Termino haciendo lo que otros esperan”."
     },
     {
       "codigo": "proyecto-poco-seguro",
       "destino": "RESPUESTAS",
-      "texto": "Frente a su proyecto, marcó «Poco seguro/a»."
+      "texto": "Frente a su proyecto, marcó “Poco seguro/a”."
     },
     {
       "codigo": "llegada-sin-avance",
       "destino": "TESTS",
-      "texto": "Entre la partida y la llegada: «Decisión propia» bajó."
+      "texto": "Entre la partida y la llegada: Decisión propia bajó."
     }
   ],
   "temas_visibles": 4

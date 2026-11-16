@@ -121,8 +121,8 @@ EVALUADORES_ALERTA: dict[str, EvaluadorAlerta] = {
         "textos_motivo": {"PLANO": "Su resultado salió plano: todas las respuestas parecidas",
                           "PRISA": "Lo respondió muy rápido (estimado por tiempo)"}}),
     "familia_pendiente": EvaluadorAlerta(_familia_pendiente, {
-        "textos_motivo": {"SIN_VINCULO": "No tiene un apoderado vinculado",
-                          "SIN_INGRESO": "Su apoderado tiene cuenta, pero no ha ingresado"}}),
+        "textos_motivo": {"SIN_VINCULO": "Su apoderado aún no ha iniciado sesión en la plataforma",
+                          "SIN_INGRESO": "Su apoderado aún no ha iniciado sesión en la plataforma"}}),
     # Temas «Para conversar» (ajuste panel-estudiantes; reglas del ajuste pendientes-orientadora).
     **{nombre: EvaluadorAlerta(funcion, defectos) for nombre, (funcion, defectos) in EVALUADORES_TEMAS.items()},
 }

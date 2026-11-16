@@ -238,7 +238,7 @@ def _valores_fuera_del_plan(lecturas: Lecturas, parametros) -> dict[int, dict]:
 
 def _plan_medidor(lecturas: Lecturas, parametros) -> dict[int, dict]:
     """Plan A activo con alguno de `medidores` fijado en `nivel_maximo` o menos (sin marcar no cuenta). `carrera`,
-    `medidor` (el primero que cumple), `medidores` (todos, entre «» y unidos con «y»), `nivel` (el texto de `niveles`
+    `medidor` (el primero que cumple), `medidores` (todos, entre comillas “” y unidos con «y»), `nivel` (el texto de `niveles`
     del primero) y las frases `idea` (con `origenes`) y `complicaciones` (con `con_complicaciones`)."""
     nombres, niveles = parametros["nombres_medidores"], parametros["niveles"]
     maximo = int(parametros["nivel_maximo"])
@@ -254,7 +254,7 @@ def _plan_medidor(lecturas: Lecturas, parametros) -> dict[int, dict]:
         if not bajos:
             continue
         datos = {"carrera": carrera.nombre, "medidor": nombres[bajos[0][0]], "nivel": niveles[bajos[0][1] - 1],
-                 "medidores": unir(f"«{nombres[m]}»" for m, _ in bajos), "idea": _con_idea(parametros, tarjeta),
+                 "medidores": unir(f"“{nombres[m]}”" for m, _ in bajos), "idea": _con_idea(parametros, tarjeta),
                  "complicaciones": ""}
         if parametros.get("con_complicaciones"):
             lista = _complicaciones(lecturas).get(tarjeta.id)
@@ -311,7 +311,7 @@ def _llegada_sin_avance(lecturas: Lecturas, parametros) -> dict[int, dict]:
         comparadas = comparar(dimensiones, partida, llegada)
         grupos = (("bajo", [c for c in comparadas if c.cambio == "BAJO"]),
                   ("sigue", [c for c in comparadas if c.sigue_por_trabajar]))
-        partes = [resolver_texto(textos[clave], {"dimensiones": unir(f"«{c.dimension.nombre}»" for c in cuales)})
+        partes = [resolver_texto(textos[clave], {"dimensiones": unir(c.dimension.nombre for c in cuales)})
                   for clave, cuales in grupos if cuales]
         if partes:
             resultado[cuenta_id] = {"detalle": "; ".join(partes)}

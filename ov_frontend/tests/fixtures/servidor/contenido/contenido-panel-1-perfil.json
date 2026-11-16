@@ -10,9 +10,9 @@
         },
         {
           "codigo": "familia-pendiente",
-          "descripcion": "No tiene un apoderado vinculado.",
+          "descripcion": "Su apoderado aún no ha iniciado sesión en la plataforma.",
           "destino": "AVANCE",
-          "nombre": "Su familia aún no se registra"
+          "nombre": "Su apoderado aún no inicia sesión"
         }
       ],
       "codigo": "atras",

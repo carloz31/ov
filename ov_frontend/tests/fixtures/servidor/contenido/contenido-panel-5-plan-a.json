@@ -138,8 +138,8 @@
       "Económicas",
       "DATO DE PRUEBA: queda lejos de mi casa"
     ],
-    "costo_carrera": 6000,
-    "costo_primer_anio": 1200,
+    "costo_carrera": 18000,
+    "costo_primer_anio": 3600,
     "financiamiento": [
       "Apoyo de mi familia"
     ],
@@ -149,7 +149,9 @@
       "tipo": "UNIVERSIDAD"
     },
     "rubros": [
-      "Matrícula"
+      "Matrícula",
+      "Materiales",
+      "Transporte"
     ]
   },
   "secciones": [
