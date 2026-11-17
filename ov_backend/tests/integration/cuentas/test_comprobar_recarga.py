@@ -40,7 +40,7 @@ def test_contenido_y_cuentas_de_prueba_del_piloto_no_bloquean(aplicacion_conteni
 
 
 def test_las_cuentas_ejemplo_del_panel_son_conocidas():
-    assert {'est-panel-1', 'apo-panel-3', 'est-ana', 'apo-rosa', 'ori-carmen', 'E99'} <= \
+    assert {'est-panel-1', 'apo-panel-3', 'est-2024a-1', 'est-ana', 'apo-rosa', 'ori-carmen', 'E99'} <= \
         comprobar_recarga.cuentas_conocidas()
 
 

@@ -33,14 +33,16 @@ MAXIMO_LISTADAS = 20
 
 
 def _cuentas_ejemplo_panel() -> set[str]:
-    """Los códigos de `CREDENCIALES` de la siembra de ejemplos (otro script; se carga por ruta, como en las pruebas)."""
+    """Las cuentas que crea la siembra de ejemplos (otro script; se carga por ruta, como en las pruebas): estudiantes y
+    apoderados del panel y la autora del salón egresado (`contenido.SALON_EGRESADO`)."""
     if str(RAIZ / 'scripts') not in sys.path:  # la siembra importa `prerrequisitos_contenido`, que vive en scripts/
         sys.path.insert(0, str(RAIZ / 'scripts'))
     especificacion = importlib.util.spec_from_file_location(
         'sembrar_panel_ejemplo', RAIZ / 'scripts' / 'sembrar_panel_ejemplo.py')
     modulo = importlib.util.module_from_spec(especificacion)
     especificacion.loader.exec_module(modulo)
-    return {codigo for codigo, _correo, _contrasena in modulo.CREDENCIALES}
+    return ({fila[0] for fila in (*modulo.CREDENCIALES, *modulo.ESTUDIANTES, *modulo.APODERADOS)}
+            | {contenido.SALON_EGRESADO[4]})
 
 
 def cuentas_conocidas() -> set[str]:
