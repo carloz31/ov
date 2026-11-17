@@ -87,7 +87,7 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "nuevoMomento": true,
-      "texto": "Desde hoy llevas dos cosas contigo: el catálogo de la isla y tus planes. Mira cómo se pasa de una idea a un plan."
+      "texto": "Desde hoy llevas dos cosas contigo: el **catálogo** de la isla y tus **planes**. Mira cómo se pasa de una idea a un plan."
     },
     {
       "id": "b0-4-04",
@@ -100,7 +100,7 @@
           "pasos": [
             {
               "titulo": "Búscala en el catálogo",
-              "texto": "Tiene carreras (lo que se estudia), ocupaciones (a lo que te dedicas) e instituciones (dónde se estudia). Abre la ficha de la carrera y léela."
+              "texto": "Tiene carreras, ocupaciones e instituciones. Abre la carrera y léela."
             },
             {
               "titulo": "Guárdala en favoritas",
@@ -161,13 +161,7 @@
       "id": "b0-4-06",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Un plan no es una promesa. Puedes cambiarlo, borrarlo, sumar un plan B y un C, y decidir cuál va primero."
-    },
-    {
-      "id": "b0-4-07",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Tu plan empieza con una sola parte: por qué la elegiste. Las demás se abren en el camino, cuando tengas con qué llenarlas: qué tanto la conoces, qué tan real es para ti y tus pasos."
+      "texto": "Un plan no es una promesa: puedes cambiarlo, borrarlo y sumar un plan B y un C. Empieza con una sola parte, por qué la elegiste; las demás se abren en el camino."
     },
     {
       "id": "b0-4-08",

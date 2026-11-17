@@ -12,7 +12,7 @@
     "b0-4"
   ],
   "ubicacion": "Molino, al borde del bosque",
-  "duracionEstimadaMin": 8,
+  "duracionEstimadaMin": 7,
   "personajeIds": [
     "mara",
     "companero"
@@ -23,14 +23,14 @@
       "id": "b0-5-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Ese es el molino de Mara. Conoce a todos los que pasan camino a la ciudad. Y hoy tiene mala cara."
+      "texto": "Ese es el molino de **Mara**. Conoce a todos los que pasan camino a la ciudad. Y hoy tiene mala cara."
     },
     {
       "id": "b0-5-02",
       "tipo": "dialogo",
       "hablanteId": "mara",
       "expresion": "neutral",
-      "texto": "Lumi, qué bueno verte, y con compañía. Perdonen la cara: me llegó carta de mi sobrina Alejandra. Entró a Contabilidad este año y ya quiere dejarlo. Y cabeza no le faltaba, ¿ah? Era de las mejores de su promoción."
+      "texto": "Lumi, qué bueno verte, y con compañía. Perdonen la cara: me llegó carta de mi sobrina **Alejandra**. Entró a Contabilidad este año y ya quiere dejarlo. Y cabeza no le faltaba, ¿ah? Era de las mejores de su promoción."
     },
     {
       "id": "b0-5-03",
@@ -120,11 +120,11 @@
           "tipo": "comparacion",
           "izquierda": {
             "titulo": "De ti",
-            "texto": "Quién eres y cómo te ves. Cómo actúas y decides. Lo que se te da bien y lo que te interesa. Lo que valoras."
+            "texto": "Lo que te interesa, lo que se te da bien, lo que valoras."
           },
           "derecha": {
             "titulo": "De afuera",
-            "texto": "Tu familia, tus amigos, tus profesores. Lo que se valora donde vives. Las ideas sobre qué es «de hombres» o «de mujeres». La información sobre el trabajo y sobre dónde estudiar."
+            "texto": "Tu familia y tus amigos, lo que se valora donde vives, la información sobre el trabajo y dónde estudiar."
           }
         },
         {
@@ -142,7 +142,7 @@
       "id": "b0-5-09",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Importa, claro. Pero cuando lo único que te mueve es lo que viene después, la carrera se suelta apenas el premio tarda. Y una decisión así deja señales. Mira la carta otra vez."
+      "texto": "Importa, claro. El problema no fue mirar el trabajo: fue mirar solo eso. Y una decisión así deja señales. Mira la carta otra vez."
     },
     {
       "id": "b0-5-10",
@@ -192,45 +192,7 @@
       "id": "b0-5-11",
       "tipo": "dialogo",
       "hablanteId": "mara",
-      "texto": "Por aquí pasó hace poco otra chica, Valeria. Era al revés que mi sobrina."
-    },
-    {
-      "id": "b0-5-12",
-      "tipo": "pregunta",
-      "hablanteId": "mara",
-      "formato": "opcion_unica",
-      "bloqueante": true,
-      "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Valeria ama dibujar y quiere estudiar Diseño Gráfico. Ya tiene su portafolio. Pero no sabe cuánto cuesta, dónde se estudia en su ciudad ni en qué trabaja un diseñador después. ¿Qué le faltó mirar?",
-      "opciones": [
-        {
-          "id": "a",
-          "texto": "Lo que viene de ella: no sabe si de verdad le gusta.",
-          "correcta": false,
-          "retroalimentacion": "Al revés: lo suyo lo tiene clarísimo. Dibuja, tiene portafolio, le gusta."
-        },
-        {
-          "id": "b",
-          "texto": "Lo que viene de afuera: dónde se estudia, cuánto cuesta y en qué se trabaja.",
-          "correcta": true,
-          "retroalimentacion": "Sí. Su decisión puede ser buena, pero todavía no está informada."
-        },
-        {
-          "id": "c",
-          "texto": "Nada: si le gusta, con eso basta.",
-          "correcta": false,
-          "retroalimentacion": "Que le guste es necesario, pero no suficiente. Sin saber costos, oferta y mercado, puede chocar en el primer ciclo con algo que pudo prever."
-        }
-      ],
-      "explicacion": "Valeria tiene claro lo que viene de ella y le falta lo de afuera. No tiene que cambiar de opción: tiene que completar la información.",
-      "pistas": [
-        {
-          "id": "b0-5-12p1",
-          "tipo": "dialogo",
-          "hablanteId": "companero",
-          "texto": "Fíjate en lo que sí sabe (de ella) y en lo que no sabe (del mundo)."
-        }
-      ]
+      "texto": "Por aquí pasó hace poco otra chica, Valeria. Al revés que mi sobrina: dibuja todo el día y quiere Diseño Gráfico, pero no sabe dónde se estudia ni cuánto cuesta. A ella le falta el otro lado."
     },
     {
       "id": "b0-5-13",

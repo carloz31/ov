@@ -12,7 +12,7 @@
     "b0-5"
   ],
   "ubicacion": "Bosque, donde empieza la subida al nevado",
-  "duracionEstimadaMin": 9,
+  "duracionEstimadaMin": 7,
   "personajeIds": [
     "nico",
     "companero"
@@ -23,14 +23,14 @@
       "id": "b0-6-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Antes de la subida al nevado hay un campamento. Es de Nico. Lleva… bastante tiempo aquí."
+      "texto": "Antes de la subida al nevado hay un campamento. Es de **Nico**. Lleva… bastante tiempo aquí."
     },
     {
       "id": "b0-6-02",
       "tipo": "dialogo",
       "hablanteId": "nico",
       "expresion": "neutral",
-      "texto": "¿Otro buscador del pergamino? Yo también subía. Pero me di cuenta de que todavía no sé qué quiero, así que decidí quedarme hasta saberlo. Van siete meses."
+      "texto": "¿Otro buscador del **pergamino**? Yo también subía. Pero me di cuenta de que todavía no sé qué quiero, así que decidí quedarme hasta saberlo. Van siete meses."
     },
     {
       "id": "b0-6-03",
@@ -109,7 +109,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Empecemos por la primera: “Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario fuera de vacunar perros, ni si hay trabajo en mi región.” ¿Qué le falta a Nico para resolverla?",
+      "enunciado": "Empecemos por la primera: “Me gustaría Veterinaria, pero no tengo idea de qué hace un veterinario…” ¿Qué le falta a Nico para resolverla?",
       "opciones": [
         {
           "id": "a",
@@ -136,7 +136,7 @@
           "id": "b0-6-07p1",
           "tipo": "dialogo",
           "hablanteId": "companero",
-          "texto": "Fíjate en cuántas veces dice “no tengo idea”. ¿Qué le falta: ganas, datos o acuerdo?"
+          "texto": "Fíjate en que dice “no tengo idea”. ¿Qué le falta: ganas, datos o acuerdo?"
         }
       ]
     },
@@ -147,7 +147,7 @@
       "formato": "opcion_unica",
       "bloqueante": true,
       "alAgotarPistas": "revelar_y_continuar",
-      "enunciado": "Ahora la segunda: “Mi papá dice que en esta familia se estudia Derecho, y no sé cómo decirle que no.” ¿Qué conviene hacer con esta?",
+      "enunciado": "Ahora la segunda: “Mi papá dice que en esta familia se estudia Derecho…” ¿Qué conviene hacer con esta?",
       "opciones": [
         {
           "id": "a",
@@ -188,23 +188,19 @@
           "tipo": "tabla",
           "columnas": [
             "De dónde viene",
-            "En la carpa de Nico",
             "Qué la resuelve"
           ],
           "filas": [
             [
               "Falta de preparación",
-              "“Si espero lo suficiente, algo me lo va a decir”",
-              "Entender cómo se decide y soltar la idea de que la respuesta llega sola"
+              "Entender que la respuesta no llega sola"
             ],
             [
               "Falta de información",
-              "“No sé qué hace un veterinario ni si hay trabajo”",
               "Averiguar datos concretos"
             ],
             [
               "Voces que chocan",
-              "“Mi papá dice Derecho y no sé cómo decirle que no”",
               "Ver qué pesa para cada uno y conversar"
             ]
           ]
@@ -212,7 +208,7 @@
         {
           "tipo": "destacado",
           "variante": "alerta",
-          "texto": "Si durante varias semanas la decisión te quita el sueño o el apetito, te cuesta concentrarte en clases o sientes que no puedes con nada, eso ya no es una duda sobre tu futuro: conversa con tu orientadora o con un psicólogo."
+          "texto": "Si por varias semanas la decisión te quita el sueño o el apetito, o sientes que no puedes con nada, eso ya no es una duda sobre tu futuro: conversa con tu orientadora o con un psicólogo."
         },
         {
           "tipo": "fuente",
@@ -227,13 +223,13 @@
       "hablanteId": "nico",
       "expresion": "dudoso",
       "nuevoMomento": true,
-      "texto": "O sea que llevo siete meses pensando algo que se resuelve preguntándole a un veterinario. Es que todos dicen “ya deberías saber”, y mientras más lo pienso, más me cansa."
+      "texto": "O sea que llevo siete meses pensando algo que se resuelve preguntándole a un veterinario. Es que todos dicen “ya deberías saber”."
     },
     {
       "id": "b0-6-11",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "No saber todavía es lo normal a tu edad: es la parte en la que uno explora. Un poco de presión hasta ayuda, te hace averiguar. Pero cuando se vuelve “ya deberías saber”, pensar cansa, lo evitas, y la duda crece sola."
+      "texto": "No saber todavía es lo normal a tu edad: es la parte en la que uno explora. Un poco de presión ayuda a moverse; cuando se vuelve “ya deberías saber”, pensar cansa y la duda crece sola."
     },
     {
       "id": "b0-6-12",
@@ -293,17 +289,11 @@
       ]
     },
     {
-      "id": "b0-6-13",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Fíjate en lo que acabas de hacer, Nico: les pusiste nombre, las escribiste, nos las contaste y sacaste un primer paso. No hay mucho más que se pueda hacer con una duda."
-    },
-    {
       "id": "b0-6-14",
       "tipo": "dialogo",
       "hablanteId": "nico",
       "expresion": "contento",
-      "texto": "Entonces mi primer paso no es «decidir». Es subir y buscar a alguien que trabaje con animales. Voy a desarmar la carpa. Y llévense la lona: ya le anoté al lado qué resuelve cada una."
+      "texto": "Entonces mi primer paso no es «decidir». Es subir y buscar a alguien que trabaje con animales. Voy a desarmar la carpa. Y llévense la **lona**: ya le anoté al lado qué resuelve cada una."
     },
     {
       "id": "b0-6-15",
@@ -332,24 +322,14 @@
         {
           "tipo": "lista",
           "items": [
-            "No mide si ya decidiste. Mide si te sientes capaz de dar el paso que sigue.",
-            "Va a subir y bajar. Eso es lo normal, no una falla.",
-            "Con los días se arma tu historial: ahí puedes ver qué te da seguridad y qué te la quita."
+            "No mide si ya decidiste: mide si te sientes capaz de dar el paso que sigue.",
+            "Va a subir y bajar. Eso es lo normal."
           ]
         },
         {
           "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Sentirse capaz de decidir cuenta tanto como tener la información. Y esa confianza no llega esperando: se arma con pasos pequeños que salen bien."
-        },
-        {
-          "tipo": "destacado",
           "variante": "dato",
-          "texto": "Tu orientadora ve esta señal y su tendencia, nunca el texto de tu diario."
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Taylor y Betz (1983), Applications of self-efficacy theory to the understanding and treatment of career indecision, Journal of Vocational Behavior."
+          "texto": "Tu orientadora ve esta **señal** y su tendencia, nunca el texto de tu diario."
         }
       ]
     },
@@ -357,7 +337,7 @@
       "id": "b0-6-18",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Y el día que marques bajo, escríbeme por qué. Para eso está tu diario: una señal dice cuánto; una carta dice qué pasó."
+      "texto": "Y el día que marques bajo, escríbeme por qué. Para eso está tu **diario**: una señal dice cuánto; una carta dice qué pasó."
     },
     {
       "id": "b0-6-19",

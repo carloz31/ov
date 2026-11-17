@@ -10,7 +10,7 @@
   "obligatoria": true,
   "requisitos": [],
   "ubicacion": "Muelle",
-  "duracionEstimadaMin": 5,
+  "duracionEstimadaMin": 4,
   "personajeIds": [
     "capitan",
     "companero"
@@ -28,7 +28,7 @@
       "id": "b0-1-02",
       "tipo": "dialogo",
       "hablanteId": "capitan",
-      "texto": "Mira ese tablón. Cada viajero escribe ahí a qué vino. Léelo antes de subir por el camino; te ahorra tiempo saber que no eres la primera persona que llega con esa idea."
+      "texto": "Mira ese tablón. Cada viajero escribe ahí a qué vino. Léelo antes de subir: no eres la primera persona que llega con esa idea."
     },
     {
       "id": "b0-1-03",
@@ -44,11 +44,6 @@
             "“Mis papás ya saben lo que debo estudiar. Yo vine a confirmarlo.”",
             "“No tengo idea de nada. Alguien me dijo que aquí se entiende.”"
           ]
-        },
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "Cuatro formas de buscar lo mismo. Ninguna está mal, pero todas suponen que la respuesta ya existe en algún lugar."
         }
       ]
     },
@@ -121,20 +116,14 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "¡No soy un farol! Soy Lumi. Vivo aquí desde hace… bastante. Te vi leer el tablón entero. Casi nadie lo lee entero."
+      "texto": "¡No soy un farol! Soy **Lumi**. Vivo aquí desde hace… bastante. Te vi leer el tablón entero. Casi nadie lo lee entero."
     },
     {
       "id": "b0-1-07",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Si vienes por el pergamino, te aviso: muchos lo buscaron y se rindieron. Algunos regresaron a casa, otros se quedaron a vivir en la isla y otros simplemente perdieron el interés."
-    },
-    {
-      "id": "b0-1-08",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "pensativo",
-      "texto": "Yo creo que se rindieron porque buscaban la «vocación» como una cosa escondida bajo una piedra. Mira, hay una frase en el tablón que lo deja ver. Léela conmigo."
+      "texto": "Si vienes por el **pergamino**, te aviso: muchos lo buscaron y se rindieron. Unos volvieron a casa y otros se quedaron a vivir en la isla. Yo creo que buscaban la «vocación» como una cosa escondida bajo una piedra. Mira, hay una frase en el tablón que lo deja ver.",
+      "expresion": "pensativo"
     },
     {
       "id": "b0-1-09",
@@ -184,31 +173,27 @@
           "tipo": "tabla",
           "columnas": [
             "Palabra",
-            "Qué es",
             "En la frase del viajero"
           ],
           "filas": [
             [
               "Vocación",
-              "Los motivos e intereses que te orientan hacia lo que quieres ser y hacer",
-              "Ayudar a que la gente se sienta mejor"
+              "Ayudar a que la gente se sienta mejor: lo que lo mueve"
             ],
             [
               "Carrera",
-              "Lo que se estudia para ejercer una profesión",
-              "Enfermería"
+              "Enfermería: lo que estudia"
             ],
             [
               "Ocupación",
-              "El trabajo concreto que hace una persona",
-              "Enfermero de emergencias"
+              "Enfermero de emergencias: el trabajo que hace"
             ]
           ]
         },
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Una misma vocación cabe en varias carreras, y una carrera lleva a muchas ocupaciones. Por eso “¿qué quiero estudiar?” viene después de “¿qué quiero hacer y por qué?”."
+          "texto": "Una misma vocación cabe en varias carreras, y una carrera lleva a muchas ocupaciones."
         }
       ]
     },
@@ -251,50 +236,18 @@
       ]
     },
     {
-      "id": "b0-1-13",
-      "tipo": "diapositiva",
-      "presentadorId": "companero",
-      "titulo": "La vocación se construye",
-      "bloques": [
-        {
-          "tipo": "destacado",
-          "variante": "idea_clave",
-          "texto": "La vocación no es innata ni se decide en un momento: se forma a lo largo de la vida, con lo que haces y lo que vas conociendo."
-        },
-        {
-          "tipo": "lista",
-          "titulo": "Tres consecuencias prácticas",
-          "items": [
-            "Nadie puede «no tener vocación». Lo que puede faltar es información sobre uno mismo o sobre las opciones.",
-            "Ningún test te la revela. Un test ordena información que ya tienes; no agrega lo que no has vivido.",
-            "Cambia con el tiempo. Lo que te atrae a los 17 puede ampliarse o girar a los 25, y eso no es un error."
-          ]
-        },
-        {
-          "tipo": "fuente",
-          "texto": "Ministerio de Educación (2013), Orientación vocacional: cartilla para tutores, parte 1."
-        }
-      ]
-    },
-    {
       "id": "b0-1-14",
       "nuevoMomento": true,
       "tipo": "dialogo",
       "hablanteId": "companero",
       "expresion": "animado",
-      "texto": "Listo. Si entiendes eso, ya no vas a buscar el pergamino como quien busca una llave perdida. Vas a construir tu respuesta mientras caminamos. Yo te acompaño."
+      "texto": "Listo. Con eso ya no vas a buscar el pergamino como quien busca una llave perdida. Nada te entrega la respuesta hecha, ni un pergamino ni un test: la vas armando mientras caminas. Yo te acompaño."
     },
     {
       "id": "b0-1-15",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Y por si en el camino se te vuelven a mezclar las palabras, te guardé algo en la mochila: una ficha con lo que acabamos de ver. Sácala cuando quieras."
-    },
-    {
-      "id": "b0-1-16",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Lo primero: hay alguien que recibe a todos los que llegan, en una cabaña subiendo por el bosque. Se llama Helena. Vamos."
+      "texto": "Te guardé una **ficha** en la mochila, por si se te vuelven a mezclar las palabras: trae más de lo que alcancé a contarte. Ahora vamos: en una cabaña, subiendo por el bosque, hay alguien que recibe a todos los que llegan. Se llama **Helena**."
     }
   ],
   "recompensa": {

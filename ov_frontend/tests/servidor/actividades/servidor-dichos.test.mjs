@@ -22,3 +22,12 @@ test('los dichos entre “…” van en cursiva; el resto, tal cual', () => {
   // Los nombres entre «» no cambian.
   assert.equal(pintar('Abre «Mis planes».'), '<p>Abre «Mis planes».</p>')
 })
+
+// Ajuste recorte-bloque0: lo que va entre **…** sale en negrita, sin asteriscos, también a medias.
+test('la negrita entre **…** va en <strong>; a medias, sin asteriscos; junto a un dicho', () => {
+  assert.equal(pintar('Soy **Lumi**.'), '<p>Soy <strong>Lumi</strong>.</p>')
+  assert.equal(pintar('Soy **Lu'), '<p>Soy <strong>Lu</strong></p>')
+  assert.equal(pintar('Soy *'), '<p>Soy </p>')
+  assert.equal(pintar('Soy **Lumi*'), '<p>Soy <strong>Lumi</strong></p>')
+  assert.equal(pintar('**Mara** dice: “Léanla”.'), '<p><strong>Mara</strong> dice: <em>“Léanla”</em>.</p>')
+})

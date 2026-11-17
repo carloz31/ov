@@ -23,7 +23,7 @@
       "id": "b0-3-01",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Llegamos. Helena recibe a todos los que vienen por el pergamino. Dicen que sabe de él más de lo que cuenta."
+      "texto": "Llegamos. **Helena** recibe a todos los que vienen por el **pergamino**. Dicen que sabe de él más de lo que cuenta."
     },
     {
       "id": "b0-3-02",
@@ -36,7 +36,7 @@
       "id": "b0-3-03",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Lo que sí puedo darte es esto: un libro. Está casi en blanco porque habla de ti, y todavía no has respondido nada. Mira cómo funciona. Sirve aunque dejes la búsqueda."
+      "texto": "Lo que sí puedo darte es esto: un **libro**. Está casi en blanco porque habla de ti, y todavía no has respondido nada. Mira cómo funciona. Sirve aunque dejes la búsqueda."
     },
     {
       "id": "b0-3-04",
@@ -53,15 +53,11 @@
             },
             {
               "titulo": "Se restaura respondiendo",
-              "texto": "Cada página tiene sus propias preguntas. Cuando las respondes todas, queda lista. Algunas se responden en varias visitas."
-            },
-            {
-              "titulo": "Tú rompes el sello",
-              "texto": "La página lista espera sellada hasta que decidas verla."
+              "texto": "Cada página tiene sus preguntas. Al responderlas todas queda lista, sellada hasta que decidas verla."
             },
             {
               "titulo": "Lo que vas a leer",
-              "texto": "Varios aspectos de ese tema: cuáles destacan hoy en ti y cuáles menos. Sale de tus propias respuestas, así que es cómo te ves tú hoy. No te define, y puede cambiar."
+              "texto": "Cómo te ves tú hoy en ese tema. No te define, y puede cambiar."
             }
           ]
         },
@@ -120,7 +116,7 @@
       "id": "b0-3-06",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Tengo unas preguntas cortas para ti: son frases sobre cómo ves hoy tu futuro. Marca qué tan de acuerdo estás con cada una, de «Nada de acuerdo» a «Muy de acuerdo». Con eso se restaura la primera página: la de cómo llegas. Si todavía no tienes nada claro, responde igual; eso también dice algo."
+      "texto": "Tengo unas frases sobre cómo ves hoy tu futuro. Marca qué tan de acuerdo estás con cada una. Con eso se restaura la primera página: la de cómo llegas. Si todavía no tienes nada claro, responde igual; eso también dice algo."
     },
     {
       "id": "b0-3-07",
@@ -135,19 +131,19 @@
       "tipo": "dialogo",
       "hablanteId": "helena",
       "nuevoMomento": true,
-      "texto": "Gracias. Tu primera página ya está lista. Mira cinco cosas: qué tan claro tienes lo que quieres, cuánto te conoces, cuánto conoces las opciones, qué tan tuya sientes la decisión y cuánta confianza te tienes. El libro queda en tu perfil: rompe el sello cuando quieras verla."
+      "texto": "Gracias. Tu primera página ya está lista. El libro queda en tu **perfil**: rompe el sello cuando quieras verla."
     },
     {
       "id": "b0-3-09",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Las demás páginas no las restauro yo. En la ciudad hay gente que guarda otras preguntas, de las buenas, y le gusta conversar con quien recién llega."
+      "texto": "Las demás páginas no las restauro yo. En la **ciudad** hay gente que guarda otras preguntas, de las buenas, y le gusta conversar con quien recién llega."
     },
     {
       "id": "b0-3-10",
       "tipo": "dialogo",
       "hablanteId": "helena",
-      "texto": "Y si de verdad vas a buscar ese pergamino, allá vive mi primo Iván. Anda con un aparato que, según él, ayuda a ubicarlo: puede estar en cualquier parte de la isla. El camino a la ciudad no es corto. Fíjate en lo que pase en él."
+      "texto": "Y si de verdad vas a buscar ese pergamino, allá vive mi primo **Iván**. Anda con un aparato que, según él, ayuda a ubicarlo: puede estar en cualquier parte de la isla. El camino a la ciudad no es corto. Fíjate en lo que pase en él."
     }
   ],
   "recompensa": {

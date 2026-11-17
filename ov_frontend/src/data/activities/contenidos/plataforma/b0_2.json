@@ -12,7 +12,7 @@
     "b0-1"
   ],
   "ubicacion": "Bosque, camino a la cabaña",
-  "duracionEstimadaMin": 6,
+  "duracionEstimadaMin": 5,
   "personajeIds": [
     "companero"
   ],
@@ -43,7 +43,7 @@
         {
           "tipo": "destacado",
           "variante": "idea_clave",
-          "texto": "Cinco personas distintas, cinco sentimientos distintos frente al mismo momento. Ninguno es el correcto ni el equivocado."
+          "texto": "El mismo momento, cinco sentimientos distintos. Ninguno es el correcto ni el equivocado."
         }
       ]
     },
@@ -135,13 +135,7 @@
       "hablanteId": "companero",
       "nuevoMomento": true,
       "expresion": "pensativo",
-      "texto": "Yo también tallé una frase, hace mucho. No te voy a decir cuál. Todavía."
-    },
-    {
-      "id": "b0-2-05",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "texto": "Lo que sí te cuento es que no se la dije a nadie. Me la guardé tanto tiempo que se me hizo un nudo, y con un nudo así cuesta decidir cualquier cosa."
+      "texto": "Yo también tallé una frase, hace mucho. No te voy a decir cuál. Todavía. Me la guardé tanto tiempo que se me hizo un nudo, y con un nudo así cuesta decidir cualquier cosa."
     },
     {
       "id": "b0-2-06",
@@ -205,7 +199,7 @@
       "id": "b0-2-07",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Toma. Es un diario. Lo tenía guardado para alguien que subiera por aquí con la misma cara que traía yo. Escribir ahí es escribirme a mí: son cartas."
+      "texto": "Toma. Es un **diario**. Lo tenía guardado para alguien que subiera por aquí con la misma cara que traía yo. Escribir ahí es escribirme a mí: son cartas."
     },
     {
       "id": "b0-2-08",
@@ -216,11 +210,7 @@
         {
           "tipo": "destacado",
           "variante": "dato",
-          "texto": "Ponerle nombre a lo que sientes lo vuelve más manejable: cuando nombras una emoción, la parte del cerebro que da la alarma se calma un poco."
-        },
-        {
-          "tipo": "parrafo",
-          "texto": "Escribirlo, además, ayuda a ordenarlo. En estudiantes de tu edad, escribir sobre lo que sienten trae mejoras pequeñas pero reales. No hace magia: ayuda un poco, y a algunos más que a otros."
+          "texto": "Ponerle nombre a lo que sientes lo vuelve más manejable: cuando nombras una emoción, la parte del cerebro que da la alarma se calma un poco. No hace magia, pero ayuda."
         },
         {
           "tipo": "destacado",
@@ -229,7 +219,7 @@
         },
         {
           "tipo": "fuente",
-          "texto": "Lieberman et al. (2007), Putting feelings into words, Psychological Science, 18(5). Travagin, Margola y Revenson (2015), How effective are expressive writing interventions for adolescents?, Clinical Psychology Review, 36."
+          "texto": "Lieberman et al. (2007), Putting feelings into words, Psychological Science, 18(5)."
         }
       ]
     },
@@ -237,7 +227,7 @@
       "id": "b0-2-09",
       "tipo": "dialogo",
       "hablanteId": "companero",
-      "texto": "Funciona así: de vez en cuando te voy a dejar una carta con una pregunta, y cada día hay una distinta esperándote. Respondes cuando quieras, o no respondes. Y si un día quieres escribir sin que yo pregunte, también se puede."
+      "texto": "Funciona así: de vez en cuando te voy a dejar una **carta** con una pregunta. Respondes cuando quieras, o no respondes."
     },
     {
       "id": "b0-2-10",
@@ -282,14 +272,8 @@
       "tipo": "dialogo",
       "hablanteId": "companero",
       "nuevoMomento": true,
-      "texto": "Cada carta que me escribas me ayuda a mí también: nos vamos conociendo. Y a cambio te iré contando mi historia en la isla, un pedazo a la vez."
-    },
-    {
-      "id": "b0-2-13",
-      "tipo": "dialogo",
-      "hablanteId": "companero",
-      "expresion": "animado",
-      "texto": "Ya te dejé la primera carta adentro. No hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca."
+      "texto": "Con cada carta que me escribas nos vamos conociendo, y a cambio te iré contando mi historia en la isla, un pedazo a la vez. Ya te dejé la primera adentro; no hace falta que sea larga. Ahora sí, sigamos: la cabaña de Helena está cerca.",
+      "expresion": "animado"
     }
   ],
   "recompensa": {
