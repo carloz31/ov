@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { PantallaCarga } from '@/components/student/PantallaCarga'
 import { BlockSign } from './BlockSign'
 import { useImagenMapa } from '../hooks/useImagenMapa'
@@ -19,6 +19,12 @@ import {
   type MapTransform,
   type MapSize,
 } from '../lib/geometry'
+
+// Ajuste mapa-celular: durante el arrastre solo cambia el transform del lienzo; nodos, líneas y letreros no se vuelven
+// a pintar si sus props no cambian. Se memoizan aquí para que sus exports sigan siendo funciones.
+const NodoMapa = memo(MapNode)
+const LineasMapa = memo(MapPath)
+const LetrerosMapa = memo(BlockSign)
 
 export type MapCanvasHandle = {
   centerMap: () => void
@@ -197,6 +203,20 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
   }, [setScale])
 
   const { dragging, pointerDown, pointerMove, stopDragging } = useArrastreMapa(apply, transformRef, locked)
+  // Callbacks estables para los nodos memoizados: leen lo último recibido desde una ref.
+  const ultimo = useRef({ points, panelOpen, panelInset, onSelect })
+  ultimo.current = { points, panelOpen, panelInset, onSelect }
+  const seleccionar = useCallback((id: string) => ultimo.current.onSelect(id), [])
+  const enfocar = useCallback(
+    (id: string) => {
+      const { points, panelOpen, panelInset } = ultimo.current
+      const point = points.find((item) => item.id === id)
+      const bounds = viewport.current?.getBoundingClientRect()
+      if (point && bounds)
+        apply(focusTransform(transformRef.current, point, bounds, panelOpen, mapSize, panelInset), true)
+    },
+    [apply, mapSize],
+  )
 
   return (
     <section
@@ -234,29 +254,21 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
           <>
             {variant === 'route' && (
               <>
-                <MapPath points={points} mapSize={mapSize} />
-                <BlockSign points={points} mapSize={mapSize} />
+                <LineasMapa points={points} mapSize={mapSize} />
+                <LetrerosMapa points={points} mapSize={mapSize} />
               </>
             )}
             {points
               .filter((p) => !p.revealQueued)
               .map((point) => (
-                <MapNode
+                <NodoMapa
                   key={point.id}
                   point={point}
                   mapSize={mapSize}
                   recommended={recommendedId === point.id}
                   selected={selectedId === point.id}
-                  onSelect={onSelect}
-                  onFocus={(id) => {
-                    const point = points.find((item) => item.id === id)
-                    const bounds = viewport.current?.getBoundingClientRect()
-                    if (point && bounds)
-                      apply(
-                        focusTransform(transformRef.current, point, bounds, panelOpen, mapSize, panelInset),
-                        true,
-                      )
-                  }}
+                  onSelect={seleccionar}
+                  onFocus={enfocar}
                 />
               ))}
           </>
