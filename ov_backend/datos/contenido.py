@@ -59,12 +59,12 @@ BLOQUES = (
 # (código, bloque, título, tipo, puntaje mínimo de un CASO, duración estimada en minutos). El orden es el de la
 # tupla dentro de cada bloque y el contenido es el código con guiones bajos.
 ACTIVIDADES = (
-    ('b0-1', 'B0', 'Bienvenida: la vocación se construye', 'INFORMATIVA', None, 5),
-    ('b0-2', 'B0', 'Lo que siento al terminar el colegio y mi diario', 'INFORMATIVA', None, 6),
+    ('b0-1', 'B0', 'Bienvenida: la vocación se construye', 'INFORMATIVA', None, 4),
+    ('b0-2', 'B0', 'Lo que siento al terminar el colegio y mi diario', 'INFORMATIVA', None, 5),
     ('b0-3', 'B0', 'Mi punto de partida', 'CUESTIONARIO', None, 10),
     ('b0-4', 'B0', '¿Tienes una opción en mente?', 'INFORMATIVA', None, 5),
-    ('b0-5', 'B0', 'Decidir con información: el caso de Alejandra', 'INFORMATIVA', None, 8),
-    ('b0-6', 'B0', 'Dudar también es avanzar', 'INFORMATIVA', None, 9),
+    ('b0-5', 'B0', 'Decidir con información: el caso de Alejandra', 'INFORMATIVA', None, 7),
+    ('b0-6', 'B0', 'Dudar también es avanzar', 'INFORMATIVA', None, 7),
     ('b1-1', 'B1', 'Mi historia personal', 'REGISTRO', None, 10),
     ('b1-2', 'B1', 'Mirar hacia adelante', 'INFORMATIVA', None, 6),
     ('b1-3', 'B1', 'Las voces y la mía', 'REGISTRO', None, 10),
