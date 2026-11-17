@@ -1,6 +1,8 @@
 import { mapPosition, canvasSize, type MapSize } from '../lib/geometry'
 import type { StudentMapPoint } from '../lib/mapPoints'
 
+const MARGEN_MASCARA = 10
+
 export function MapPath({ points, mapSize = canvasSize }: { points: StudentMapPoint[]; mapSize?: MapSize }) {
   const base = points.filter((p) => !p.additional)
   return (
@@ -38,13 +40,14 @@ export function MapPath({ points, mapSize = canvasSize }: { points: StudentMapPo
           return (
             <g key={point.id}>
               <defs>
+                {/* Ajuste mapa-celular: la máscara cubre solo la línea (con margen del trazo), no todo el lienzo. */}
                 <mask
                   id={`reveal-${point.id}`}
                   maskUnits="userSpaceOnUse"
-                  x={0}
-                  y={0}
-                  width={mapSize.width}
-                  height={mapSize.height}
+                  x={Math.min(start.x, end.x) - MARGEN_MASCARA}
+                  y={Math.min(start.y, end.y) - MARGEN_MASCARA}
+                  width={Math.abs(end.x - start.x) + 2 * MARGEN_MASCARA}
+                  height={Math.abs(end.y - start.y) + 2 * MARGEN_MASCARA}
                 >
                   <line
                     className={point.revealing ? 'sx-extra-path-reveal' : ''}

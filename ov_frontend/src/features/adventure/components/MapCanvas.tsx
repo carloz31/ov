@@ -128,11 +128,15 @@ export const MapCanvas = forwardRef<MapCanvasHandle, Props>(function MapCanvas(
         const minY = Math.min(...positions.map((p) => p.y)),
           maxY = Math.max(...positions.map((p) => p.y))
         const center = visibleCenter(bounds, panelOpen, panelInset)
-        const scale = Math.min(
-          transformRef.current.scale,
-          (bounds.width - panelInset - 64) / (maxX - minX + 240),
-          (bounds.height - 140) / (maxY - minY + 220),
-        )
+        // Ajuste mapa-celular: en pantallas táctiles solo se desplaza, sin zoom animado de toda la capa del mapa.
+        const tactil = window.matchMedia?.('(pointer: coarse)').matches
+        const scale = tactil
+          ? transformRef.current.scale
+          : Math.min(
+              transformRef.current.scale,
+              (bounds.width - panelInset - 64) / (maxX - minX + 240),
+              (bounds.height - 140) / (maxY - minY + 220),
+            )
         apply(
           { scale, x: center.x - ((minX + maxX) / 2) * scale, y: center.y - ((minY + maxY) / 2) * scale },
           !window.matchMedia('(prefers-reduced-motion: reduce)').matches,

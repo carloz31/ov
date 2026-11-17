@@ -471,3 +471,13 @@
     box-shadow: 0 0 0 5px color-mix(in srgb, var(--sx-gold) 22%, transparent);
   }
 }
+
+/* Ajuste mapa-celular: en pantallas táctiles el panel del mapa no desenfoca el mapa que se mueve debajo; su fondo
+   oscuro pasa a opaco. En computadora se ve igual. */
+@media (pointer: coarse) {
+  .sx-root .sx-adventure-panel,
+  .sx-root.sx-mobile-panel {
+    background: var(--sx-night);
+    backdrop-filter: none;
+  }
+}

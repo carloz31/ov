@@ -102,7 +102,13 @@
   font-size: 22px;
   color: #5a3b00;
 }
-.sx-node-additional.sx-node-available:not(.sx-extra-reveal) .sx-node-circle {
+/* Ajuste mapa-celular: el halo late con opacidad y escala de un pseudo-elemento con la sombra fija, para que lo
+   componga la tarjeta gráfica sin repintar la capa del mapa (antes animaba box-shadow en cada cuadro). */
+.sx-map-node.sx-node-additional.sx-node-available:not(.sx-extra-reveal):not([data-recommended]) .sx-node-circle::before {
+  inset: 0;
+  border: 0;
+  box-shadow: 0 0 0 14px #e5bc5633;
+  opacity: 0;
   animation: sx-extra-halo 2s infinite;
 }
 .sx-use-notice {
@@ -128,14 +134,23 @@
   animation: sx-extra-star 1s infinite alternate;
 }
 @keyframes sx-extra-halo {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
   50% {
-    box-shadow: 0 0 0 14px #e5bc5633;
+    opacity: 1;
+    transform: scale(1);
   }
 }
 .sx-extra-reveal .sx-node-circle {
   animation: sx-extra-pop 0.4s 0.5s both;
 }
-.sx-extra-reveal .sx-node-circle::before {
+/* Ajuste mapa-celular: el anillo crece con transform desde su tamaño final (antes animaba inset, que recalculaba el
+   layout en cada cuadro). 148/250 ≈ 0.592 es el inset de -4px sobre el de -55px. */
+.sx-map-node.sx-extra-reveal .sx-node-circle::before {
+  inset: -55px;
   border: 4px solid #e5bc56;
   animation: sx-extra-ring 0.5s 0.5s both;
 }
@@ -145,11 +160,11 @@
 }
 @keyframes sx-extra-ring {
   from {
-    inset: -4px;
+    transform: scale(0.592);
     opacity: 1;
   }
   to {
-    inset: -55px;
+    transform: scale(1);
     opacity: 0;
   }
 }
@@ -203,6 +218,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .sx-node-additional .sx-node-circle,
+  .sx-map-node.sx-node-additional .sx-node-circle::before,
   .sx-question-loading .sx-lumi-medallion,
   .sx-extra-reveal .sx-node-circle::before,
   .sx-extra-reveal .sx-node-circle,
