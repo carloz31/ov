@@ -22,7 +22,7 @@ Archivos de esta carpeta:
 | `../amplify.yml` | Build del front (monorepo, `appRoot: ov_frontend`, Node 22). |
 | `amplify/reescrituras.json` | Reglas de Amplify: `/api` → EC2 y la regla SPA de react-router. |
 | `ec2/instalar.sh` | Preparación única de la instancia. |
-| `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, migraciones y reinicio. Con `--recargar`, borra la base y carga `contenido` con los estudiantes de ejemplo del panel; con `--recargar --sin-ejemplos`, sin ellos. |
+| `ec2/actualizar.sh` | Cada nueva versión: pull de `deploy`, `uv sync`, respaldo de la base (`pg_dump`), migraciones y reinicio. Con `--recargar`, borra la base y carga `contenido` con los estudiantes de ejemplo del panel; con `--recargar --sin-ejemplos`, sin ellos. La recarga tiene candado (7.5). |
 | `ec2/ov-backend.service` | Servicio systemd (uvicorn, 2 workers). |
 | `ec2/nginx-ov.conf` | Proxy inverso de nginx hacia uvicorn, con gzip para el JSON. En una instancia ya instalada, el gzip se aplica a mano (paso 8.3). |
 | `ec2/env.produccion.example` | Plantilla del `.env` de producción. |
@@ -155,9 +155,13 @@ git checkout deploy && git merge main && git push
 
 El avance se ve en la pestaña **Actions** del repo. Para desplegar a mano sin Actions, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh`.
 
-Un push **conserva los datos**: solo migra la estructura. Si cambiaste datos que viven en la base (`datos/contenido.py`, reglas, ítems, fichas) o una migración exige la base vacía, recarga:
+Un push **conserva los datos**: respalda la base y solo migra la estructura. Si el respaldo falla, no se despliega nada (código 5). Los textos de las actividades viven en los JSON del front, así que corregirlos tampoco toca la base.
+
+Si cambiaste datos que viven en la base (`datos/contenido.py`, reglas, ítems, fichas) o una migración exige la base vacía, hace falta recargar; con cuentas reales, eso ya no se puede (ver «Durante el piloto»):
 
 ### 7.5 Recargar el contenido (borra la base)
+
+**Candado.** La recarga se niega (código 4, sin tocar nada: ni respaldo, ni migración, ni reinicio) si la base tiene alguna cuenta que no sea de las que la propia carga crea (`datos/contenido.py`, `usuarios_prueba.txt`, ejemplos del panel) ni E99, A99 u O99 (`ov_backend/scripts/comprobar_recarga.py`). En cuanto se crean las cuentas del piloto, la recarga queda bloqueada. `--forzar` se salta el candado, solo a mano en la EC2 y nunca desde Actions; úsalo solo cuando el piloto haya terminado y sus datos estén respaldados.
 
 Actions > **Pruebas y despliegue** > **Run workflow** > rama `deploy` > marca **recargar_contenido** > Run. Corre las pruebas y, si pasan, en la EC2: detiene el backend, elimina el esquema completo (cuentas, progreso y catálogo), crea las tablas con `alembic upgrade head`, carga `contenido` (con los usuarios de `datos/usuarios_prueba.txt` y los estudiantes de ejemplo del panel), reinicia y publica el front. Marca también **sin_ejemplos** para cargarla sin los estudiantes de ejemplo.
 
@@ -168,6 +172,12 @@ A mano, en la EC2: `sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar` (
 La siembra corre en un proceso aparte con `ENTORNO=desarrollo` solo para él (fija la fecha de cada acción) y con el cliente de prueba del LLM: no llama a Claude ni a la red, y el backend desplegado sigue en producción. Si falla, la base queda con `contenido` sin ejemplos, el backend se reinicia igual y el paso termina con error (código 3) después de comprobar la API.
 
 Úsalo solo mientras no haya datos reales de estudiantes ni apoderados.
+
+### 7.6 Durante el piloto
+
+- `datos/contenido.py` (reglas, ítems, fichas, batallas) queda **congelado**. Los JSON del front sí se pueden corregir: se publican con un push normal.
+- Un cambio de reglas inevitable va como **migración de datos** de Alembic (`op.execute` / `op.bulk_insert` sobre las tablas de definición, nunca sobre las de estado) y se publica con un push normal. Después del despliegue, el reinicio rehace la caché de definiciones.
+- Nunca se marca **recargar_contenido**; el candado lo rechazaría igual.
 
 ## 8. Una sesión con muchos estudiantes
 
@@ -198,7 +208,23 @@ sudo sysctl -p /etc/sysctl.d/99-swappiness.conf
 
 ### 8.2 Instantáneas de RDS
 
-RDS > Bases de datos > la base > Acciones > Tomar instantánea: antes de desplegar, después de crear las cuentas (8.4) y al terminar cada sesión.
+RDS > Bases de datos > la base > Acciones > Tomar instantánea: antes de desplegar, después de crear las cuentas (8.4) y al terminar cada sesión. Además, RDS guarda copias automáticas (7 días) y `actualizar.sh` deja un `pg_dump` en `/home/ov/respaldos/` antes de cada despliegue (los últimos 15).
+
+`pg_dump` debe ser de la misma versión mayor que el servidor o más nueva. Ubuntu 24.04 trae la 16; compáralas con `pg_dump --version` y `psql "$URL" -c 'show server_version;'`. Si RDS es más nueva (17), instala el cliente de PGDG una vez:
+
+```bash
+sudo apt-get install -y postgresql-common
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+sudo apt-get install -y postgresql-client-17
+```
+
+Para restaurar un respaldo (con el backend detenido; reemplaza todo lo que haya):
+
+```bash
+sudo systemctl stop ov-backend
+sudo -u ov pg_restore --clean --if-exists --no-owner --dbname="postgresql://…" /home/ov/respaldos/ov-AAAAMMDD-HHMMSS.dump
+sudo systemctl start ov-backend
+```
 
 ### 8.3 gzip en nginx (a mano)
 
@@ -234,6 +260,8 @@ sudo -u ov /home/ov/.local/bin/uv run --no-sync python scripts/crear_cuentas.py 
 ```
 
 Las contraseñas generadas quedan en `<csv>.resultado.csv`; el script nunca las imprime. Un estudiante cuyo apoderado no está en el CSV ve en Familia «Tu apoderado aún no se ha registrado en la plataforma.»: si quieres que tenga Familia aunque su apoderado no participe, crea igual la cuenta del apoderado.
+
+Con las cuentas del piloto creadas, la recarga queda bloqueada (7.5): solo E99, A99 y O99 (las de comprobación, con nombre «Prueba») no cuentan como reales. Toma una instantánea de RDS justo después (8.2) y borra el CSV de la EC2 (`shred -u /home/ov/cuentas-prueba.csv`): las contraseñas quedan solo como hash en la base.
 
 ### 8.5 Orden de ingreso
 

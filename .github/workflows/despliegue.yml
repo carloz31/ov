@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       recargar_contenido:
-        description: 'BORRA TODA LA BASE (cuentas, progreso y catálogo) y carga el conjunto contenido. Solo sin datos reales.'
+        description: 'BORRA TODA LA BASE (cuentas, progreso y catálogo) y carga el conjunto contenido. Se niega si hay cuentas reales (candado; salvo E99, A99, O99).'
         type: boolean
         default: false
       sin_ejemplos:
