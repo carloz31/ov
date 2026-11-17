@@ -2860,3 +2860,23 @@ body:has([data-student-experience] .sx-shell) {
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* Ajuste mapa-celular: en pantallas táctiles el mapa no usa desenfoques de fondo ni la sombra de las líneas, que
+   obligan a repintar la capa del mapa (5016×2823) al moverla o animar algo dentro. En computadora se ve igual. El panel
+   del mapa, que es oscuro, tiene su regla en student-logbook.css. */
+@media (pointer: coarse) {
+  .sx-root .sx-map-node .sx-node-label,
+  .sx-root .sx-map-header,
+  .sx-root .sx-panel-toggle,
+  .sx-root .sx-zoom-controls {
+    backdrop-filter: none;
+  }
+  .sx-root .sx-map-node:not(.sx-node-additional) .sx-node-label,
+  .sx-root .sx-map-header,
+  .sx-root .sx-zoom-controls {
+    background: var(--card);
+  }
+  .sx-root .sx-map-path {
+    filter: none;
+  }
+}
