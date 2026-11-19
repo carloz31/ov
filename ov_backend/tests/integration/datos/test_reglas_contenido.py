@@ -166,3 +166,15 @@ def test_las_fichas_de_una_batalla_se_obtienen_antes_de_abrirla(sesion_contenido
         previas = requisitos(batalla, set())
         for ficha in {f for a, f in preguntas if a == batalla}:
             assert ficha_de[ficha] & previas, (actividades[batalla].codigo, fichas[ficha])
+
+
+def test_las_cuatro_secciones_del_plan_se_abren_con_planes(sesion_contenido):
+    """Ajuste planes-desbloqueo-completo: en `contenido`, las secciones de la tarjeta se abren con b0-4, como PLANES."""
+    actividades = {a.id: a.codigo for a in sesion_contenido.scalars(select(m.Actividad))}
+    reglas = sesion_contenido.scalars(select(m.ReglaDesbloqueo).where(
+        m.ReglaDesbloqueo.codigo.in_(('R-SEC-PLANES', 'R-PLAN-POR_QUE', 'R-PLAN-CONOCIMIENTO', 'R-PLAN-REALIDAD',
+                                      'R-PLAN-PASOS')))).all()
+    assert len(reglas) == 5
+    assert {(r.codigo, tuple((c.tipo_evento.value, actividades[c.id_referencia]) for c in r.condiciones))
+            for r in reglas} == {(r.codigo, (('COMPLETA_ACTIVIDAD', 'b0-4'),)) for r in reglas}
+    assert {r.mensaje_bloqueo for r in reglas} == {'Completa la misión «¿Tienes una opción en mente?».'}
