@@ -82,8 +82,17 @@ export function resumirCierre(entrada: EntradaCierre): ResumenCierre {
   const secciones = de('SECCION').map((d) => d.objetivo)
   if (secciones.length)
     extras.push({ tipo: 'SECCIONES', codigo: 'secciones', texto: enumerar(secciones.map((s) => s.nombre)), secciones })
-  for (const { objetivo } of de('SECCION_PLAN'))
-    extras.push({ tipo: 'SECCION_PLAN', codigo: objetivo.codigo, texto: `Nueva sección en tus planes: ${objetivo.nombre}` })
+  // Ajuste planes-desbloqueo-completo: las secciones del plan que se abren juntas van en una sola fila.
+  const seccionesPlan = de('SECCION_PLAN').map((d) => d.objetivo)
+  if (seccionesPlan.length)
+    extras.push({
+      tipo: 'SECCION_PLAN',
+      codigo: seccionesPlan.length === 1 ? seccionesPlan[0].codigo : 'secciones-plan',
+      texto:
+        seccionesPlan.length === 1
+          ? `Nueva sección en tus planes: ${seccionesPlan[0].nombre}`
+          : `Nuevas secciones en tus planes: ${enumerar(seccionesPlan.map((s) => s.nombre))}`,
+    })
   for (const { objetivo } of de('BLOQUE'))
     extras.push({
       tipo: 'BLOQUE',

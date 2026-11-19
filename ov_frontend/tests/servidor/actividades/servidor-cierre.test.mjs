@@ -92,6 +92,24 @@ test('las secciones abiertas tienen su texto en el cierre, como al cerrar t-valo
   assert.equal(resumir([desbloqueo('SECCION', 'DIARIO', 'Diario')]).extras[0].texto, 'Diario')
 })
 
+test('las secciones del plan que se abren juntas van en una sola fila (ajuste planes-desbloqueo-completo)', () => {
+  const { resumir } = preparar()
+  const r = resumir([
+    desbloqueo('SECCION', 'PLANES', 'Planes'),
+    desbloqueo('SECCION_PLAN', 'POR_QUE', 'Por qué la elijo'),
+    desbloqueo('SECCION_PLAN', 'CONOCIMIENTO', 'Qué tanto la conozco'),
+    desbloqueo('SECCION_PLAN', 'REALIDAD', 'Cómo lo haría realidad'),
+    desbloqueo('SECCION_PLAN', 'PASOS', 'Mis próximos pasos'),
+  ])
+  assert.deepEqual(copia(r.extras.map((e) => [e.tipo, e.texto])), [
+    ['SECCIONES', 'Planes'],
+    [
+      'SECCION_PLAN',
+      'Nuevas secciones en tus planes: Por qué la elijo, Qué tanto la conozco, Cómo lo haría realidad y Mis próximos pasos',
+    ],
+  ])
+})
+
 test('agrupa dos actividades en un único extra', () => {
   const r = preparar().resumir([desbloqueo('ACTIVIDAD', 'a'), desbloqueo('ACTIVIDAD', 'b')])
   assert.equal(r.extras.length, 1)
