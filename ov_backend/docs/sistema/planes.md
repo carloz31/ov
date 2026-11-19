@@ -31,7 +31,7 @@ Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 
 
 ## Secciones y su estado
 
-Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_PLAN` (`motor.md`). Los medidores, la carrera y la prioridad no son secciones: siempre se pueden fijar.
+Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_PLAN` (`motor.md`). Los medidores, la carrera y la prioridad no son secciones: siempre se pueden fijar. En `contenido` las cuatro se abren con b0-4, junto con la sección PLANES (ajuste planes-desbloqueo-completo, migración 0061); en `ruta` se abren de a una (`t-inicio`, `t-valores`, `t-explorar`, `t-comparar`).
 
 | Estado | Cuándo |
 |---|---|
