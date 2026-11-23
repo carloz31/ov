@@ -1,8 +1,10 @@
 # Planes de carrera
 
-Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 a 099, 109 y 110). Cada plan es una tarjeta con cuatro secciones que se abren a medida que avanza el camino, más medidores y prioridad. Código: `app/models/planes.py`, `app/services/planes/` (`consultas.py`, `acciones.py`, `sugerencias.py`), `app/schemas/planes.py` y `app/api/planes.py`. Todo exige la sección PLANES abierta: si está cerrada, 409 con su mensaje; una cuenta que no es de estudiante recibe 404.
+## Qué hace
 
-## Modelo
+Describe los planes de carrera que el estudiante arma a partir de sus carreras favoritas. Cada plan se organiza en cuatro secciones que se abren con el motor de desbloqueos y reúne sus motivos, lo que sabe de la carrera, sus dudas, sus gastos y sus pasos de preparación. A partir de una duda o una complicación, el LLM sugiere pasos que el estudiante acepta o descarta.
+
+## Modelo de datos
 
 | Tabla | Qué guarda |
 |---|---|
@@ -29,9 +31,15 @@ Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 
 - `prioridad` tiene CHECK `>= 1`: ordenar pasa por prioridades temporales mayores que `MAXIMO_PLANES`, porque ni SQLite ni PostgreSQL difieren el único. El tope lo garantiza el servicio.
 - Las nueve tablas de la tarjeta son estado (`TABLAS_DE_ESTADO`); el reinicio de desarrollo también pone `cuenta.opcion_inicial_id` en nulo.
 
-## Secciones y su estado
+## Reglas de funcionamiento
 
-Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_PLAN` (`motor.md`). Los medidores, la carrera y la prioridad no son secciones: siempre se pueden fijar. En `contenido`, POR_QUE se abre con b0-4, junto con la sección PLANES; CONOCIMIENTO, con b3-2; REALIDAD, con b3-8, y PASOS, con b4-5. Durante parte del piloto las cuatro se abrieron con b0-4 (migración de datos 0061); la 0062 lo deshizo, y quien ya las tenía abiertas las conserva. En `ruta` se abren de a una (`t-inicio`, `t-valores`, `t-explorar`, `t-comparar`).
+### Acceso y tope
+
+Cada estudiante desarrolla hasta tres planes de carrera (`MAXIMO_PLANES`). Cada plan es una tarjeta con cuatro secciones, más medidores y prioridad. Todo exige la sección PLANES abierta: si está cerrada, 409 con su mensaje; una cuenta que no es de estudiante recibe 404.
+
+### Secciones y su estado
+
+Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_PLAN` (`motor.md`). Los medidores, la carrera y la prioridad no son secciones: siempre se pueden fijar. En `contenido`, POR_QUE se abre con b0-4, junto con la sección PLANES; CONOCIMIENTO, con b3-2; REALIDAD, con b3-8, y PASOS, con b4-5. Durante la prueba con usuarios las cuatro se abrieron con b0-4 (migración de datos 0061); la 0062 lo deshizo, y quien ya las tenía abiertas las conserva. En `ruta` se abren de a una (`t-inicio`, `t-valores`, `t-explorar`, `t-comparar`).
 
 | Estado | Cuándo |
 |---|---|
@@ -47,25 +55,19 @@ Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_
 
 Un plan está **listo para comparar** cuando todas sus secciones `para_comparar` están en LISTA.
 
-## Consulta
+### Motor y referencias
 
-`GET /cuentas/{c}/planes` → `PlanesCuenta`, con una lectura por tabla sea cual sea el número de planes:
-- `planes`, por prioridad (`A`, `B`, `C`): `carrera`, `institucion` (con `gestion` y `duracion_ciclos` de la carrera en ella, nula si no se conoce; F07b), `idea_origen`, `motivos`, `relato`, `conocimiento` (las cinco preguntas, nulas sin respuesta), `dudas` (con el `hallazgo` del paso que la cerró), `camino`, `gastos`, `totales_por_frecuencia`, `total_primer_anio`, `total_carrera`, `financiamiento`, `complicaciones`, `sugerencias` (con su `origen`: número de duda o complicación y su texto), `pasos` (con su `origen`), `medidores`, `secciones` (`codigo`, `nombre`, `estado`, `bloqueo`, `guardada_en`), `lista_para_comparar` y `actualizada_en`;
-- `avisos`: `MISMA_FAMILIA` con las prioridades de los planes de una misma familia de carreras (HU-098). Es un dato para el informe de la orientadora: el front no se lo muestra al estudiante (ajuste coherencia-bloque0);
-- `opcion_inicial` y `maximo_planes`;
-- `opciones`: las listas de la tarjeta (`valores`, `caminos` con `incluye_preparacion`, `rubros` con su referencia, `financiamiento`, `dificultades`, `pasos`, `dudas_sugeridas`) y las `preguntas` de conocimiento con su `texto` y el `texto_duda` que crean, ambos con `{carrera}`; y `ciclos_por_anio` (F07b).
-
-**Totales.** `total_primer_anio` = UNICA + 12·MENSUAL + `CICLOS_POR_ANIO`·POR_CICLO + ANUAL. Con la duración de la carrera en la institución elegida, `total_carrera` = UNICA + ciclos·(MENSUAL·12 / `CICLOS_POR_ANIO` + POR_CICLO) + ANUAL·ciclos / `CICLOS_POR_ANIO`, calculado exacto (7 ciclos son 3,5 años) y redondeado a entero solo al final; sin duración, nulo. El front repite la fórmula en vivo mientras se edita REALIDAD, con `opciones.ciclos_por_anio` y la `duracion_ciclos` de la institución elegida (la del plan o la de `InstitucionEnCarrera` del detalle de carrera, F07b); en lectura muestra los totales del servidor.
-
-**Gastos propuestos.** Los arma el front con `opciones` en cada edición: los rubros con `frecuencia_recomendada` (Preparación solo si el camino incluye prepararse; Alimentación y Vivienda nunca), con su frecuencia y el monto vacío; `monto_referencia` se muestra como pista, y sin él, «Consúltalo en su página». El único monto escrito de antemano es Pensión en 0 si la institución es pública. Una fila con el monto vacío no se envía. El backend no inserta gastos: solo valida lo que llega en REALIDAD.
+- Reglas `SECCION_PLAN` abren las secciones; los evaluadores `planes_listos_para_comparar` y `pasos_plan_a` son los requisitos de comparar (`t-comparar`, en `ruta`) y del proyecto (b5-1 en `contenido`, `t-proyecto` en `ruta`) (`motor.md`). Sus reglas se reevalúan con ACTUALIZA_PLAN.
+- `contar_listos_para_comparar` y `planes_completos` leen los planes de la caché de la petición (`ContextoConsultas.planes_de`), así que varios evaluadores de planes cargan una sola vez. `planes_completos` (un plan con sus cuatro secciones en LISTA, sin medidores) mira primero solo las tarjetas: una sección sin `guardada_*_en` está POR_EMPEZAR, y si los planes con las cuatro guardadas no alcanzan el parámetro, no carga las filas hijas. `DatosPlanes` y `cargar_planes` viven en `app/core/planes.py` y `consultas.py` los reexporta.
+- Referencias sin fuente PLANES, PLAN (con `cita`), PASOS_PLAN_A y OPCION_INICIAL (`referencias.md`).
 
 ## Acciones
 
-Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, registra un evento con la carrera del plan (`CREA_PLAN`, `ACTUALIZA_PLAN` o `ELIMINA_PLAN`) y responde `RespuestaAccion`. Ninguna actividad escribe en los planes.
+Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, registra un evento con la carrera del plan (`CREA_PLAN`, `ACTUALIZA_PLAN` o `ELIMINA_PLAN`) y responde `RespuestaAccion`. Ninguna actividad escribe en los planes. Cambiar el Plan A no tiene evento propio: `ordenar` deja ACTUALIZA_PLAN.
 
 | Ruta | Cuerpo | Errores |
 |---|---|---|
-| `crear` | `cuenta, carrera` (si la carrera tuvo un plan eliminado, lo recupera) | 409 si la carrera ya tiene plan activo, con tres planes activos o si la carrera no es favorita de la cuenta (F07a; desmarcarla después no toca el plan); 404 carrera inexistente |
+| `crear` | `cuenta, carrera` (si la carrera tuvo un plan eliminado, lo recupera) | 409 si la carrera ya tiene plan activo, con tres planes activos o si la carrera no es favorita de la cuenta (desmarcarla después no toca el plan); 404 carrera inexistente |
 | `guardar-seccion` | `cuenta, carrera, seccion, datos` | 409 sección bloqueada (mensaje y `progreso`, nada guardado) o sin plan; 422 validación |
 | `medidores` | `cuenta, carrera, entusiasmo?, capacidad?, recursos?` (1 a 3; lo enviado reemplaza) | 422 fuera de rango |
 | `paso-hecho` | `cuenta, carrera, paso, hallazgo?` | 409 si el paso no es suyo o ya está hecho |
@@ -82,7 +84,21 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 **Opción inicial.** Al crear un plan, si la cuenta no tiene opción inicial y no completó el bloque MISIONES_CAMPO del estudiante con número `NUMERO_BLOQUE_OPCION_INICIAL` (en `ruta`, T1), esa carrera queda como opción inicial. No cambia después, aunque se elimine el plan; recuperar un plan eliminado sigue la misma regla que crearlo.
 
-## Sugerencias de pasos (HU-110; ajuste llm-sugerencias)
+## Consultas
+
+`GET /cuentas/{c}/planes` → `PlanesCuenta`, con una lectura por tabla sea cual sea el número de planes:
+- `planes`, por prioridad (`A`, `B`, `C`): `carrera`, `institucion` (con `gestion` y `duracion_ciclos` de la carrera en ella, nula si no se conoce), `idea_origen`, `motivos`, `relato`, `conocimiento` (las cinco preguntas, nulas sin respuesta), `dudas` (con el `hallazgo` del paso que la cerró), `camino`, `gastos`, `totales_por_frecuencia`, `total_primer_anio`, `total_carrera`, `financiamiento`, `complicaciones`, `sugerencias` (con su `origen`: número de duda o complicación y su texto), `pasos` (con su `origen`), `medidores`, `secciones` (`codigo`, `nombre`, `estado`, `bloqueo`, `guardada_en`), `lista_para_comparar` y `actualizada_en`;
+- `avisos`: `MISMA_FAMILIA` con las prioridades de los planes de una misma familia de carreras. El front no lo muestra;
+- `opcion_inicial` y `maximo_planes`;
+- `opciones`: las listas de la tarjeta (`valores`, `caminos` con `incluye_preparacion`, `rubros` con su referencia, `financiamiento`, `dificultades`, `pasos`, `dudas_sugeridas`) y las `preguntas` de conocimiento con su `texto` y el `texto_duda` que crean, ambos con `{carrera}`; y `ciclos_por_anio`.
+
+**Totales.** `total_primer_anio` = UNICA + 12·MENSUAL + `CICLOS_POR_ANIO`·POR_CICLO + ANUAL. Con la duración de la carrera en la institución elegida, `total_carrera` = UNICA + ciclos·(MENSUAL·12 / `CICLOS_POR_ANIO` + POR_CICLO) + ANUAL·ciclos / `CICLOS_POR_ANIO`, calculado exacto (7 ciclos son 3,5 años) y redondeado a entero solo al final; sin duración, nulo. El front repite la fórmula en vivo mientras se edita REALIDAD, con `opciones.ciclos_por_anio` y la `duracion_ciclos` de la institución elegida (la del plan o la de `InstitucionEnCarrera` del detalle de carrera); en lectura muestra los totales del servidor.
+
+**Gastos propuestos.** Los arma el front con `opciones` en cada edición: los rubros con `frecuencia_recomendada` (Preparación solo si el camino incluye prepararse; Alimentación y Vivienda nunca), con su frecuencia y el monto vacío; `monto_referencia` se muestra como pista, y sin él, «Consúltalo en su página». El único monto escrito de antemano es Pensión en 0 si la institución es pública. Una fila con el monto vacío no se envía. El backend no inserta gastos: solo valida lo que llega en REALIDAD.
+
+## Uso del LLM
+
+### Sugerencias de pasos
 
 **Cuándo.** Al guardar CONOCIMIENTO con dudas nuevas o REALIDAD con complicaciones nuevas, una sola llamada al LLM con todas las novedades de ese guardado. Volver a guardar no regenera. Tope: `MAXIMO_LLAMADAS_SUGERENCIAS_POR_PLAN` (6) intentos por plan, contados en `llamadas_sugerencias` aunque fallen.
 
@@ -105,21 +121,15 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 **Respaldo fijo** (`generada_por = RESPALDO`, sin clase ni motivo), un paso por novedad, solo para las de lista (dudas de una pregunta de conocimiento o sugeridas, complicaciones de DIFICULTADES), cuando la llamada falló o no sirvió, se agotó el tope, o la novedad volvió sin ningún paso válido (o no volvió), salvo que su clase sea `no_aplica`. Dudas propias y complicaciones «Otro» no reciben nada. Los textos son dato cargado: tabla `respaldo_paso` (`opcion_id` de PREGUNTAS_CONOCIMIENTO, DUDAS_SUGERIDAS o DIFICULTADES; tipo; `texto` con `{carrera}` e `{institucion}`; `texto_sin_institucion`), desde `fijos.RESPALDOS_PASOS`. La carga exige exactamente uno por opción de esas tres listas.
 
-**Para revisar a mano** (la validación solo comprueba lo estructural): que nada de lo que «puede existir o no» (una persona de la carrera, charlas, talleres, una entrevista publicada) aparezca como si existiera; que no responda la duda, no opine ni dé cifras, fechas, puntajes o direcciones web; que no se le pregunte a una persona cuánto gana.
+**Lo que la validación no comprueba** (la validación solo comprueba lo estructural): que nada de lo que «puede existir o no» (una persona de la carrera, charlas, talleres, una entrevista publicada) aparezca como si existiera; que no responda la duda, no opine ni dé cifras, fechas, puntajes o direcciones web; que no se le pregunte a una persona cuánto gana.
 
-## Motor y referencias
+## Código y pruebas
 
-- Reglas `SECCION_PLAN` abren las secciones; los evaluadores `planes_listos_para_comparar` y `pasos_plan_a` son los requisitos de comparar (4.5) y del proyecto (5.1) (`motor.md`). Sus reglas se reevalúan con ACTUALIZA_PLAN.
-- Ajuste logros: `contar_listos_para_comparar` y `planes_completos` leen los planes de la caché de la petición (`ContextoConsultas.planes_de`), así que varios evaluadores de planes cargan una sola vez. `planes_completos` (un plan con sus cuatro secciones en LISTA, sin medidores) mira primero solo las tarjetas: una sección sin `guardada_*_en` está POR_EMPEZAR, y si los planes con las cuatro guardadas no alcanzan el parámetro, no carga las filas hijas. `DatosPlanes` y `cargar_planes` viven en `app/core/planes.py` y `consultas.py` los reexporta.
-- Referencias sin fuente PLANES, PLAN (con `cita`), PASOS_PLAN_A y OPCION_INICIAL (`referencias.md`).
+- Código: `app/models/planes.py`, `app/services/planes/` (`consultas.py`, `acciones.py`, `sugerencias.py`), `app/schemas/planes.py` y `app/api/planes.py`. El cliente de Claude vive en `services/registro/llm/`, y lo usan también el guion y los planes.
+- Pruebas: `tests/unit/planes` y `tests/integration/planes`.
 
-## Carga
+### Carga
 
-- `datos/fijos.py`: `SECCIONES_TARJETA`; las listas comunes VALORES (también la del registro 2.3), CAMINOS, RUBROS_GASTO, FINANCIAMIENTO, PASOS (sus códigos son los que recibe y devuelve el LLM), DUDAS_SUGERIDAS, PREGUNTAS_CONOCIMIENTO y DUDAS_CONOCIMIENTO (con los códigos de `PreguntaConocimiento`, que el cargador exige); `REFERENCIAS_RUBROS`, `CAMINOS_CON_PREPARACION` y `RESPALDOS_PASOS`. DIFICULTADES se reutiliza (también en `b1-7-freno`); desde el ajuste llm-sugerencias ya no tiene «Mi salud o la de alguien cercano».
+- `datos/fijos.py`: `SECCIONES_TARJETA`; las listas comunes VALORES (también la del registro b2-3), CAMINOS, RUBROS_GASTO, FINANCIAMIENTO, PASOS (sus códigos son los que recibe y devuelve el LLM), DUDAS_SUGERIDAS, PREGUNTAS_CONOCIMIENTO y DUDAS_CONOCIMIENTO (con los códigos de `PreguntaConocimiento`, que el cargador exige); `REFERENCIAS_RUBROS`, `CAMINOS_CON_PREPARACION` y `RESPALDOS_PASOS`. DIFICULTADES se reutiliza (también en `b1-7-freno`).
+- `datos/contenido.py`: reglas `R-SEC-PLANES` y `R-PLAN-*` (ver «Secciones y su estado»), `R-b4-1`, `R-b4-5` y `R-b5-1` con sus evaluadores, y las referencias de b4-5 y b5-1.
 - `datos/ruta.py`: reglas `R-PLAN-*`, `t-comparar` y `t-proyecto` con sus reglas y referencias, la gestión de las instituciones y `DURACIONES_CICLOS` (ver `integracion.md`).
-
-## Fuera de B11
-
-- HU-049: sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista.
-- Eventos propios de cambio de plan A (ordenar ya deja ACTUALIZA_PLAN).
-- El cliente de Claude vive en `services/registro/llm/` aunque ya lo usan el guion y los planes.

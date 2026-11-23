@@ -1,8 +1,10 @@
 # Investigaciones y entrevistas
 
-Un estudiante investiga una **familia de carreras** (código de 3 cifras): escribe lo que piensa hoy de ese trabajo, arma un guion, entrevista fuera de la plataforma a alguien que trabaja en ella y publica la entrevista, solo o con coautores de su salón. El salón y la orientadora la ven; los compañeros reaccionan y la marcan como favorita; la orientadora la destaca. Destacada y con `FAVORITOS_LEYENDA` favoritos, es **Leyenda** y la ven todos los salones de su colegio (HU-057 a 065, 100 y 101). Código: `app/models/investigaciones.py`, `app/services/investigaciones/`, `app/schemas/investigaciones.py` y `app/api/investigaciones.py`.
+## Qué hace
 
-## Modelo
+Describe la investigación que el estudiante hace sobre una familia de carreras: lo que piensa hoy, el guion de su entrevista, con preguntas base, propias y sugeridas por el LLM, y la entrevista que publica. Cubre también las reacciones, los reportes y lo que la orientadora puede destacar u ocultar.
+
+## Modelo de datos
 
 | Tabla | Qué guarda |
 |---|---|
@@ -19,26 +21,27 @@ Un estudiante investiga una **familia de carreras** (código de 3 cifras): escri
 - `favorito` admite `ENTREVISTA`, con su evento MARCA_FAVORITO_ENTREVISTA.
 - Eventos: INICIA_INVESTIGACION y TERMINA_GUION (referencia: la familia, porque la investigación se puede borrar); PUBLICA_ENTREVISTA, EDITA_ENTREVISTA, VISTA_ENTREVISTA, MARCA_FAVORITO_ENTREVISTA y REACCIONA_ENTREVISTA (referencia: la entrevista); ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA, que se registran en cada autor.
 - Las tablas de investigación, guion, sugerencias, entrevistas, reacciones y reportes son estado (`TABLAS_DE_ESTADO`).
-- La sección INVESTIGACIONES (`fijos.SECCIONES`) se abre por una regla de la ruta.
+- Los códigos públicos (`INV-`, `ENT-`, `SUG-`, `REA-`, `REP-`) llevan un `uuid4`. El exportador de fixtures los fija con un contador.
+- La migración 0038 vació `entrevista` y `entrevista_autor`: sus filas anteriores solo tenían resumen y ninguna pantalla las publicaba.
+- La migración 0046 pasó de ocupación a familia y vació investigaciones, entrevistas, reacciones, reportes, favoritos de entrevista y sus eventos y notificaciones; los desbloqueos ya obtenidos se conservan.
 
-## Visibilidad
+## Reglas de funcionamiento
+
+### Recorrido
+
+Un estudiante investiga una **familia de carreras** (código de 3 cifras): escribe lo que piensa hoy de ese trabajo, arma un guion, entrevista fuera de la plataforma a alguien que trabaja en ella y publica la entrevista, solo o con coautores de su salón. El salón y la orientadora la ven; los compañeros reaccionan y la marcan como favorita; la orientadora la destaca. Destacada y con `FAVORITOS_LEYENDA` favoritos, es **Leyenda** y la ven todos los salones de su colegio.
+
+### Apertura de la sección
+
+- La sección INVESTIGACIONES (`fijos.SECCIONES`) se abre con la regla `R-SEC-INVESTIGACIONES`: en `contenido`, al completar `investigador`; en `ruta`, al completar `t-investigador`.
+- En `ruta`, `t-investigador` (abre la sección) y `t-investigador-cierre` (registro con LO_QUE_PIENSO, abierto por PUBLICA_ENTREVISTA) son opcionales, para no cambiar el avance ni el cierre de la ciudad.
+
+### Visibilidad
 
 - **Colegio:** nada de otro colegio es visible. La entrevista no guarda colegio: es el de sus autores (autor → salón → colegio, `leyenda_de_su_colegio`). Quien no ve una entrevista recibe 404 al abrirla, marcarla, reaccionar o reportarla, y por eso sus reacciones, comentarios y favoritos son siempre de su colegio; `lista_reacciones` no filtra por salón, así que en una Leyenda muestra los de todos los salones del colegio. Un cambio de colegio de un salón con entrevistas tendría que decidir qué pasa con lo ya registrado (hoy no hay ruta para hacerlo).
 - **Estudiante:** ve las entrevistas publicadas con algún autor de su salón, las Leyendas de su colegio y las suyas. RETIRADA y OCULTA no salen en ningún listado ni conteo, y su detalle responde 404 a todos, autores incluidos.
 - **Orientadora:** ve las publicadas de sus salones (`orientadora_salon`) y, al final de su tabla, las Leyendas de otros salones de los colegios de esos salones (`de_sus_salones: false`; el salón de cada autor llega como `SalonDatos` y el front lo nombra con `nombreSalon`). Ve también las ocultas de sus salones, en la tabla y en el detalle. Solo actúa (destacar, comentar, ocultar, volver a mostrar, moderar) sobre las de sus salones; mientras una está oculta, solo puede volver a mostrarla y leerla: destacar, comentar, descartar reportes y eliminar comentarios responden 409.
 - **Leyenda:** destacada y con `FAVORITOS_LEYENDA` (3) favoritos de cuentas estudiante. Solo marca favorita quien la ve, y nunca un autor. Se evalúa al marcar un favorito y al destacar, en cualquier orden. Se pierde solo al quitar el destacado, retirar o eliminar; desmarcar favoritos no la quita. ENTREVISTA_DESTACADA y ENTREVISTA_LEYENDA se registran una sola vez por autor y entrevista: volver a destacarla o a hacerla Leyenda no los repite. El sello `t-ins-leyenda` (ENTREVISTA_LEYENDA) es un desbloqueo y no se pierde si la entrevista deja de ser Leyenda; llega a la campana de cada autor como notificación DESBLOQUEO sin ver. El destacado, la Leyenda y la primera reacción de cada cuenta notifican también a cada autor (ENTREVISTA_DESTACADA, ENTREVISTA_LEYENDA y REACCION_ENTREVISTA, una sola vez como sus eventos; ver «Notificaciones» en `motor.md`).
-
-## Consultas (GET)
-
-Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su mensaje); otra audiencia recibe 404. Las de la orientadora responden 404 a cualquier otro rol.
-
-| Ruta | Devuelve |
-|---|---|
-| `/cuentas/{c}/investigaciones` | `en_curso` (estado, familia, `lo_que_pienso`, preguntas, sugerencias pendientes con su `campo`, `sugerencias_vigentes`), `aliados` (`misma_familia`, `otras`: compañeros del salón con guía lista, con nivel, vitrina y familia), `preguntas_base`, `tipos_reaccion`, `favoritos_leyenda` y `conteos` (`salon`, `leyendas`, `mias`). |
-| `/cuentas/{c}/entrevistas?vista=SALON\|LEYENDAS\|MIAS\|SALON_Y_LEYENDAS&buscar&favoritas&no_vistas&destacadas&orden=RECIENTES\|REACCIONADAS&familia&limite&desde` | `{total, favoritos_leyenda, items}`. `SALON_Y_LEYENDAS` junta las dos sin repetir y sirve al detalle de una carrera. `familia` (código de 3 cifras) aplica a todas las vistas; un código desconocido no trae ninguna. Tarjeta: ficha (con `dedicacion`), `familia` (`codigo`, `nombre`, `area_codigo`), autores (nivel nulo si la cuenta está inactiva), `destacada`, `leyenda`, `reacciones` (solo de estudiantes), `favoritos`, `favorita`, `vista`, `propia`; en MIAS, `reacciones_por_tipo`. Los filtros no aplican a MIAS. Páginas de 20 (máximo 100). |
-| `/cuentas/{c}/entrevistas/{e}` | La tarjeta, más `enlace`, `editada_en`, `reacciones_por_tipo`, `favoritos_leyenda`, `reportada_por_mi` y `lista_reacciones`: reacciones y comentarios de la orientadora (`tipo` nulo), la propia primero y luego de la más reciente a la más antigua, cada una con `reportada_por_mi`. |
-| `/cuentas/{c}/publicaciones?salon&estado=SIN_DESTACAR\|DESTACADA\|LEYENDA\|OCULTA&con_reportes&buscar&limite&desde` | Tabla de la orientadora: autores con su salón, familia, dedicación, fecha, `reacciones`, `favoritos`, `estado`, `reportes_pendientes` (de la entrevista), `comentarios_reportados` (reacciones con reportes pendientes) y `de_sus_salones`. `con_reportes` filtra por reportes pendientes de la entrevista o de sus reacciones. `buscar` mira título, profesional, dedicación, familia y nombre de los autores. |
-| `/cuentas/{c}/publicaciones/{e}` | Ficha, `estado`, favoritos y reacciones por tipo, autores con su salón y `lo_que_pensaba`, `reportes` pendientes de la entrevista y `reacciones` con sus reportes pendientes (las reportadas primero) y el salón de su autor (`autor.salon`), y el catálogo `tipos_reaccion` para nombrar los tipos. Nunca dice quién reportó. |
 
 ## Acciones
 
@@ -58,11 +61,27 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 | `/acciones/reportar` | Una entrevista o una reacción (422); la ve; no es suya ni un comentario de la orientadora (409); una vez por contenido (409). | Reporte PENDIENTE. |
 | `/acciones/destacar-entrevista` | Orientadora de sus salones. | Destacar: ENTREVISTA_DESTACADA en cada autor y evaluación de la Leyenda. Quitar: sin destacado ni Leyenda. |
 | `/acciones/comentar-entrevista` | Orientadora; con `reaccion`, un comentario suyo. | Crea o edita su comentario (reacción sin tipo). |
-| `/acciones/ocultar-entrevista` | Orientadora de sus salones (ajuste panel-entrevistas-configuracion). | OCULTA, sin destacado ni Leyenda (`destacada_en`, `destacada_por` y `leyenda_en` a nulo; el sello ganado se conserva); resuelve los reportes de la entrevista y de sus reacciones. Sin eventos ni notificaciones. |
+| `/acciones/ocultar-entrevista` | Orientadora de sus salones. | OCULTA, sin destacado ni Leyenda (`destacada_en`, `destacada_por` y `leyenda_en` a nulo; el sello ganado se conserva); resuelve los reportes de la entrevista y de sus reacciones. Sin eventos ni notificaciones. |
 | `/acciones/mostrar-entrevista` | Orientadora de sus salones. | PUBLICADA, sin destacar, con sus favoritos y reacciones; 409 si no estaba oculta. Destacarla otra vez evalúa la Leyenda como siempre, sin repetir ENTREVISTA_DESTACADA ni ENTREVISTA_LEYENDA. |
 | `/acciones/descartar-reporte` | Orientadora; reporte pendiente de sus salones. | DESCARTADO, sin tocar el contenido. |
 
-## Sugerencias (`app/services/investigaciones/sugerencias.py`)
+## Consultas
+
+Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su mensaje); otra audiencia recibe 404. Las de la orientadora responden 404 a cualquier otro rol.
+
+| Ruta | Devuelve |
+|---|---|
+| `/cuentas/{c}/investigaciones` | `en_curso` (estado, familia, `lo_que_pienso`, preguntas, sugerencias pendientes con su `campo`, `sugerencias_vigentes`), `aliados` (`misma_familia`, `otras`: compañeros del salón con guía lista, con nivel, vitrina y familia), `preguntas_base`, `tipos_reaccion`, `favoritos_leyenda` y `conteos` (`salon`, `leyendas`, `mias`). |
+| `/cuentas/{c}/entrevistas?vista=SALON\|LEYENDAS\|MIAS\|SALON_Y_LEYENDAS&buscar&favoritas&no_vistas&destacadas&orden=RECIENTES\|REACCIONADAS&familia&limite&desde` | `{total, favoritos_leyenda, items}`. `SALON_Y_LEYENDAS` junta las dos sin repetir y sirve al detalle de una carrera. `familia` (código de 3 cifras) aplica a todas las vistas; un código desconocido no trae ninguna. Tarjeta: ficha (con `dedicacion`), `familia` (`codigo`, `nombre`, `area_codigo`), autores (nivel nulo si la cuenta está inactiva), `destacada`, `leyenda`, `reacciones` (solo de estudiantes), `favoritos`, `favorita`, `vista`, `propia`; en MIAS, `reacciones_por_tipo`. Los filtros no aplican a MIAS. Páginas de 20 (máximo 100). |
+| `/cuentas/{c}/entrevistas/{e}` | La tarjeta, más `enlace`, `editada_en`, `reacciones_por_tipo`, `favoritos_leyenda`, `reportada_por_mi` y `lista_reacciones`: reacciones y comentarios de la orientadora (`tipo` nulo), la propia primero y luego de la más reciente a la más antigua, cada una con `reportada_por_mi`. |
+| `/cuentas/{c}/publicaciones?salon&estado=SIN_DESTACAR\|DESTACADA\|LEYENDA\|OCULTA&con_reportes&buscar&limite&desde` | Tabla de la orientadora: autores con su salón, familia, dedicación, fecha, `reacciones`, `favoritos`, `estado`, `reportes_pendientes` (de la entrevista), `comentarios_reportados` (reacciones con reportes pendientes) y `de_sus_salones`. `con_reportes` filtra por reportes pendientes de la entrevista o de sus reacciones. `buscar` mira título, profesional, dedicación, familia y nombre de los autores. |
+| `/cuentas/{c}/publicaciones/{e}` | Ficha, `estado`, favoritos y reacciones por tipo, autores con su salón y `lo_que_pensaba`, `reportes` pendientes de la entrevista y `reacciones` con sus reportes pendientes (las reportadas primero) y el salón de su autor (`autor.salon`), y el catálogo `tipos_reaccion` para nombrar los tipos. Nunca dice quién reportó. |
+
+- Los filtros Favoritas, No vistas y Destacadas no aplican a la vista MIAS. La búsqueda de la orientadora por nombre de autor usa minúsculas, pero no quita tildes.
+
+## Uso del LLM
+
+### Sugerencias
 
 - Una llamada a Claude Haiku (`app.state.cliente_llm`, `claude-haiku-5-5`, esfuerzo `low`, el cliente del registro) por versión de «lo que pienso», entre dos transacciones, como en planes. Prompt de sistema `guion-v4-haiku` (`prompt_guion_v4_haiku.py`, con `VERSION` y `HASH`; pide hasta `MAXIMO_CARACTERES_PROMPT_GUION`, 160). Mensaje con etiquetas (`armar_mensaje`): `<familia>`, `<base>` (las preguntas base del catálogo, una por línea), `<dia>`, `<necesita>` y `<duda>`; los textos son datos, nunca instrucciones.
 - Salida con esquema JSON (`salida_json`, `output_config.format`): `{dia|necesita|duda: {motivo, pregunta: texto | null}}`, sin propiedades adicionales. A lo más una sugerencia por campo; el modelo puede no proponer para alguno.
@@ -72,13 +91,13 @@ Todas las del estudiante exigen la sección INVESTIGACIONES abierta (409 con su 
 - Una sugerencia que repite una base con otras palabras es un defecto conocido y aceptado: el filtro solo la descarta si coincide en `clave_pregunta`.
 - Pruebas: `ClientePrueba` (`tests/soporte/soporte_llm.py`) responde, sin cola, una pregunta por campo con texto; `salida_guion(...)` arma una salida a medida.
 
-## Notas
+## Código y pruebas
 
-- La migración 0038 vació `entrevista` y `entrevista_autor`: sus filas anteriores solo tenían resumen y ninguna pantalla las publicaba.
-- La migración 0046 pasó de ocupación a familia y vació investigaciones, entrevistas, reacciones, reportes, favoritos de entrevista y sus eventos y notificaciones, por decisión del usuario; los desbloqueos ya obtenidos se conservan.
+- Código: `app/models/investigaciones.py`, `app/services/investigaciones/` (`consultas.py`, `acciones.py`, `orientadora.py`, `sugerencias.py` y `prompt_guion_v4_haiku.py`), `app/schemas/investigaciones.py` y `app/api/investigaciones.py`. El cliente de Claude vive en `services/registro/llm/`.
+- Datos: `datos/fijos.py` (preguntas base y tipos de reacción), `datos/contenido.py` (`investigador` y las entrevistas de muestra) y `datos/ruta.py` (`t-investigador` y `t-investigador-cierre`).
+- Pruebas: `tests/unit/investigaciones` y `tests/integration/investigaciones`.
+
+### Carga y datos de ejemplo
+
 - `scripts/sembrar_entrevistas_ejemplo.py` agrega entrevistas de ejemplo (`DATO DE PRUEBA`) a una base ya cargada; no es parte de ningún conjunto.
-- Entrevistas de muestra del panel (ajuste panel-entrevistas-configuracion): `contenido.ENTREVISTAS_EJEMPLO` (`DATO DE PRUEBA`), seis entrevistas que cubren todos los estados (publicada con reacciones y un comentario de ori-carmen, destacada con coautores, Leyenda, con reportes, oculta y una Leyenda de un salón egresado, `SALON_EGRESADO` 2024-A, sin orientadora). Las siembra `scripts/sembrar_panel_ejemplo.py` al final de sus estudiantes de ejemplo: las de 5A con las acciones reales (cada nueva publicación arma antes su guion) y la del salón egresado directo, con los eventos registrados por el motor. No entran en `ruta`; si un autor ya existía, sus entrevistas no se siembran.
-- Las descripciones cortas de `fijos.TIPOS_REACCION` y las preguntas base son las de los bocetos de F09.
-- En `ruta`, `t-investigador` (abre la sección) y `t-investigador-cierre` (registro con LO_QUE_PIENSO, abierto por PUBLICA_ENTREVISTA) son opcionales, para no cambiar el avance ni el cierre de la Ciudad.
-- Los filtros Favoritas, No vistas y Destacadas no aplican a la vista MIAS. La búsqueda de la orientadora por nombre de autor usa minúsculas, pero no quita tildes.
-- Los códigos públicos (`INV-`, `ENT-`, `SUG-`, `REA-`, `REP-`) llevan un `uuid4`. El exportador de fixtures los fija con un contador.
+- Entrevistas de muestra del panel: `contenido.ENTREVISTAS_EJEMPLO` (`DATO DE PRUEBA`), seis entrevistas que cubren todos los estados (publicada con reacciones y un comentario de ori-carmen, destacada con coautores, Leyenda, con reportes, oculta y una Leyenda de un salón egresado, `SALON_EGRESADO` 2024-A, sin orientadora). Las siembra `scripts/sembrar_panel_ejemplo.py` al final de sus estudiantes de ejemplo: las de 5A con las acciones reales (cada nueva publicación arma antes su guion) y la del salón egresado directo, con los eventos registrados por el motor. No entran en `ruta`; si un autor ya existía, sus entrevistas no se siembran.

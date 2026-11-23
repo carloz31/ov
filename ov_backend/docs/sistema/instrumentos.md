@@ -1,8 +1,10 @@
 # Instrumentos, resultados y recomendación
 
-Cuestionarios repartidos en actividades, cálculo de resultados y recomendación de ocupaciones y carreras. Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar). Parámetros: `app/core/parametros.py`. Datos: `datos/fijos.py` (temáticas y los cuatro instrumentos), `datos/catalogo.py` (el catálogo real: carreras, instituciones, ingresos y ocupaciones) y, para unir ítems y actividades, `datos/ruta.py`.
+## Qué hace
 
-## Modelo
+Describe los cuestionarios de la plataforma: sus dimensiones, ítems y escalas, cómo se responden por partes y cómo se calcula el resultado cuando el estudiante lo revela. Cubre también la recomendación de ocupaciones y familias de carreras a partir del resultado de intereses, el catálogo de carreras, ocupaciones e instituciones, y los favoritos.
+
+## Modelo de datos
 
 | Tabla | Qué guarda |
 |---|---|
@@ -31,59 +33,31 @@ Dentro de una aplicación, cada ítem del instrumento se presenta en exactamente
 
 **Instrumentos cargados** (`datos/fijos.py`): `TEST-RIASEC` (O*NET Interest Profiler Short Form, 60 ítems, `ESC-LIKERT5`, COINCIDENCIAS), `TEST-INTELIGENCIAS` (Gardner, 35 ítems V/F, `ESC-VERDAD3`: Falso 0 · No estoy seguro 0,5 · Verdadero 1, siete dimensiones de 5), `TEST-HABILIDADES` («Mi comportamiento con los demás», Burga, 24 ítems, `ESC-CASI2`: Casi nunca 0 · Casi siempre 1, inversos 3, 5, 8 y 20; cinco dimensiones) y `TEST-PARTIDA-LLEGADA`. Solo el RIASEC recomienda ocupaciones y carreras; las dimensiones de los otros no llevan perfiles profesionales.
 
-**Principio de generalidad.** Un instrumento nuevo es datos: ítems, escala, dimensiones y textos, cargados con `_cargar_instrumento`. El puntaje por dimensión es siempre la suma de los puntajes de opción (con inverso = máx + mín − puntaje) y el 0–100 es la misma fórmula mín/máx para cualquier escala; `tipo_resultado` decide qué se calcula encima. Un instrumento con coincidencias necesita además puntajes de ocupación por dimensión (`puntaje_ocupacion`, por `dimension_id`). El código de interés de tres letras, el filtro `riasec` y los *high points* son del modelo de Holland, no del test, y los hereda cualquier instrumento con los seis tipos. Los umbrales de las ocupaciones afines y de las familias están en `parametros.py`; pasarán a ser datos del instrumento cuando haya un segundo instrumento de coincidencias. `calculo.py` recibe siempre el número de dimensiones del instrumento (`orden_canonico_riasec()` queda solo por compatibilidad).
-
-**Catálogo real.** `datos/catalogo.py` lee los CSV de `datos/archivos/catalogo/` solo al cargar la base (ver `integracion.md`); un archivo o columna que falta, o una fila inválida, detiene la carga con su número de fila. La aplicación nunca lee esos archivos. Las ocupaciones son las de `ocupaciones_curadas.csv` con `en_catalogo = 1` (no hay ocupaciones ocultas: toda ocupación que nombra un caso o un testimonio debe estar ahí), con los datos de `ocupaciones_mpp_completo.csv`; sus puntajes (1–7) son los que usa el test, y `high_point` sale de `riasec_perfil`. Las que no tienen perfil RIASEC (las militares, del grupo O*NET 55, «Fuerzas Armadas» en `grupos_ocupacionales.csv`) no tienen puntajes y no pueden estar `en_test`. `ocupacion_familia_v2.csv` da la familia principal y hasta dos secundarias: toda familia existe en el catálogo y toda ocupación del catálogo tiene fila. Al terminar, la carga registra ocupaciones por familia, familias sin ocupación principal, ocupaciones del test sin RIASEC, familias sin descripción y ocupaciones sin familia. El cálculo de coincidencias (Pearson) no depende de la escala.
-
-**Letras RIASEC del catálogo.** Al cargar, se valida que las posiciones de `high_point` y `tipo_carrera` sean consecutivas desde 1, sin letras repetidas. `codigo_riasec` se calcula con las letras en orden de posición («RIS»). `busqueda` es el nombre o título en minúsculas y sin tildes (`sin_tildes`, en `app/models/base.py`), y el modelo la calcula al insertar.
-
 **Escala RIASEC.** `ESC-LIKERT5`: la opción 1–5 que marca el estudiante vale 0–4 (transformación O*NET, aplicada solo al sembrar). El cálculo usa siempre los puntajes guardados en `opcion_escala`.
 
-## Responder ítems — `POST /acciones/responder-items`
+## Reglas de funcionamiento
 
-- Cuerpo: `cuenta`, `actividad`, `respuestas: [{item, opcion, tiempo_ms?}]` (opción por su `orden`; `tiempo_ms`, entero ≥ 0 o nulo).
-- La respuesta trae `aviso_velocidad`: `null`, 1 o 2 (ver «Aviso de velocidad»).
-- Lote no vacío, sin ítems repetidos, opciones enteras de la escala del ítem: si no, 422. Un ítem que la actividad no presenta: 409. Actividad no disponible: 409 con su progreso. Apoderado: 404.
-- Se valida todo el lote antes de escribir. La primera respuesta crea el progreso en EN_CURSO; reemplazar una respuesta conserva su fila y `creada_en`.
-- Las respuestas quedan **fijas** (409) si alguna aplicación de la actividad tiene resultado vigente (es decir, desde que se revela); en COMPARACION, cuando la actividad está COMPLETADA. Antes de revelar se pueden cambiar.
-- No registra eventos.
+### Principio de generalidad
 
-## Aviso de velocidad
+Un instrumento nuevo es datos: ítems, escala, dimensiones y textos, cargados con `_cargar_instrumento`. El puntaje por dimensión es siempre la suma de los puntajes de opción (con inverso = máx + mín − puntaje) y el 0–100 es la misma fórmula mín/máx para cualquier escala; `tipo_resultado` decide qué se calcula encima. Un instrumento con coincidencias necesita además puntajes de ocupación por dimensión (`puntaje_ocupacion`, por `dimension_id`). El código de interés de tres letras, el filtro `riasec` y los *high points* son del modelo de Holland, no del test, y los hereda cualquier instrumento con los seis tipos. Los umbrales de las ocupaciones afines y de las familias están en `parametros.py`; pasarán a ser datos del instrumento cuando haya un segundo instrumento de coincidencias. `calculo.py` recibe siempre el número de dimensiones del instrumento (`orden_canonico_riasec()` queda solo por compatibilidad).
 
-Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-096). No bloquea nada y no cambia el cálculo de resultados. El backend decide cuándo avisar, porque el estado debe sobrevivir entre misiones, recargas y dispositivos; el front mide `tiempo_ms` y el backend confía en él, porque no hay nada en juego. Regla pura: `evaluar_ritmo` en `calculo.py`.
-
-- **Umbral por ítem:** `palabras(enunciado) × ms_por_palabra + ms_respuesta`. Un ítem es rápido si `tiempo_ms` es menor que el umbral. `ms_por_palabra` es 150. `ms_respuesta` cubre decidir y los dos toques (la opción y «Continuar»): 800 con una escala de 2 opciones y 1200 con 3 o más; las opciones no se cuentan como lectura, porque son fijas en todo el instrumento.
-- **Intento:** cuenta + aplicación (`ritmo_aplicacion`). Partida y llegada son intentos distintos, y la racha cruza las actividades de una misma aplicación. El reinicio por perfil plano borra la fila, así que un intento anulado no conserva sus avisos.
-- **Qué cuenta:** solo la primera respuesta de cada ítem en el intento. Reenviar un ítem ya respondido no suma, no rompe la racha y conserva su `tiempo_ms`. Sin `tiempo_ms`, el ítem no cambia ningún contador.
-- **Disparo:** con `racha_rapida ≥ racha_aviso` (4), menos de `MAX_AVISOS_VELOCIDAD` (2) avisos y, desde el segundo, `items_desde_aviso ≥ ITEMS_ENTRE_AVISOS_VELOCIDAD` (10). Avisar deja racha e ítems en 0. Un lote da a lo más un aviso.
-- `avisos_velocidad` queda como registro del intento; hoy ninguna consulta lo entrega.
-
-## Completar y revelar — `POST /acciones/revelar-resultado`
-
-`completar-actividad` exige todos los ítems de la actividad respondidos (si no, 409 con `items_faltantes`) y **no calcula**. El resultado se calcula al revelarlo (HU-027): hasta entonces nadie lo ve.
-
-- Cuerpo: `cuenta`, `instrumento`, `aplicacion` (obligatoria si hay más de una: si falta, 422) y `fecha_hora` opcional.
-- 404 si la cuenta no es de estudiante o no existe el instrumento o la aplicación. 409 si el instrumento no tiene dimensiones, si falta completar alguna actividad de la aplicación (con `items_faltantes` = esas actividades) o si ya hay resultado vigente («Resultado ya revelado»).
-- En una transacción: calcula y guarda el resultado y registra REVELA_RESULTADO con la aplicación como referencia. Si el cálculo falla, se revierte todo.
-- Respuesta: `cuenta`, `instrumento`, `aplicacion`, `perfil_plano`, `eventos_registrados` y `nuevos_desbloqueos`.
-- Cada instrumento cierra con un registro de contraste que se abre con REVELA_RESULTADO y cita el resultado (referencias RESULTADO y COINCIDENCIAS, `referencias.md`).
-- Repetir una actividad con respuestas fijas registra COMPLETA_ACTIVIDAD y no recalcula.
-
-**Cálculo** (`calculo.py`):
+### Cálculo (`calculo.py`)
 
 - Puntaje del ítem: el de la opción; si es inverso, `máximo + mínimo − puntaje` de su escala.
 - Dimensión: suma de sus ítems; máximo = suma de los máximos.
 - **Puntaje visual** (`puntaje_visual(valor, mínimo, máximo)`): `(valor − mín) / (máx − mín) × 100`, entero con `ROUND_HALF_UP` (52,5 → 53). Solo presenta: se deriva al consultar y ningún cálculo lo usa. En la dimensión, mínimo = suma de los mínimos de las escalas de sus ítems y máximo = `puntaje_maximo`; en la ocupación, 1 y 7. En COMPARACION es nulo.
 - Entradas inválidas (puntaje fuera de escala, vectores incompletos, máximo no positivo): `ValueError`, nunca un valor inventado.
 
-**Coincidencias (COINCIDENCIAS):**
+### Coincidencias (COINCIDENCIAS)
 
 1. Vector del estudiante en el orden de `dimension.orden` (R, I, A, S, E, C).
 2. Si los seis puntajes son iguales: `perfil_plano`, sin coincidencias.
 3. Si no, Pearson (`statistics.correlation`) con cada ocupación `en_test` (la escala de la ocupación no importa). Se descartan las negativas.
 4. Se guardan todas, por r descendente, con `codigo_onet` ascendente como desempate, sin tope ni filtro por Job Zone. La correlación se guarda sin redondear y no sale del backend.
 
-**Derivados al consultar** (no se guardan):
+### Derivados al consultar
+
+No se guardan.
 
 - Código de interés: las 3 dimensiones de mayor puntaje, con el orden de las dimensiones como desempate. `hay_empate` si la tercera y la cuarta empatan.
 - Ocupaciones afines que se muestran (`seleccionar_afines`): r ≥ `UMBRAL_AFIN` (0,5), de mayor a menor, hasta `MAXIMO_OCUPACIONES_AFINES` (30). Si menos de `MINIMO_OCUPACIONES_AFINES` (10) pasan el umbral, se muestran las 10 mejores y `perfil_poco_marcado` es verdadero. Cada una lleva `parecido` (r × 100, ROUND_HALF_UP) y `banda`: MUY_AFIN si el parecido es ≥ 70, AFIN si es ≥ 50 y CERCANA si es menor (solo con el mínimo), además de su familia principal y `preparacion`: AMPLIA si su `job_zone` está en `ZONAS_PREPARACION_AMPLIA` (4–5), INTERMEDIA si está en `ZONAS_PREPARACION_INTERMEDIA` (2–3) y nula sin `job_zone` (`clasificar_preparacion`). La preparación no cambia el corte ni las familias: el front filtra con ella las ocupaciones ya devueltas.
@@ -92,7 +66,8 @@ Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-
 - El resultado no lleva favoritos ni planes.
 - Dimensiones destacadas (DESTACADAS): las de mayor proporción exacta `puntaje / máximo` (no el puntaje visual redondeado); si empatan, todas, en el orden del instrumento.
 
-**Partida y llegada (COMPARACION):**
+### Partida y llegada (COMPARACION)
+
 - Cada aplicación (ENTRADA = partida, SALIDA = llegada) se revela por separado y guarda sus dimensiones, sin perfil plano. El reinicio responde 409.
 - **Zona** de una dimensión: el promedio de sus ítems (puntaje ÷ número de ítems, con los inversos aplicados). La comparación es inclusiva (`app/core/parametros.py`):
 
@@ -106,42 +81,92 @@ Lumi avisa con un toast si se responde más rápido de lo que se puede leer (HU-
 - El estudiante recibe solo zonas y textos, nunca puntajes. La orientadora tampoco: en la pestaña Tests del perfil recibe zonas y las afirmaciones que marcó el estudiante (`app/services/panel/perfil_tests.py`).
 - Partida y llegada es `obligatorio` y el apoderado nunca lo ve (`NUNCA`); como requisito solo cuenta la partida (`motor.md`).
 
-## Reiniciar — `POST /acciones/reiniciar-instrumento`
+### Aviso de velocidad
 
-Volver a hacer el test cuando el resultado no distingue ningún tipo (HU-095). Recibe `cuenta`, `instrumento` y `aplicacion` (obligatoria si hay más de una: si falta, 422).
+Lumi avisa con un toast si se responde más rápido de lo que se puede leer. No bloquea nada y no cambia el cálculo de resultados. El backend decide cuándo avisar, porque el estado debe sobrevivir entre misiones, recargas y dispositivos; el front mide `tiempo_ms` y el backend confía en él, porque no hay nada en juego. Regla pura: `evaluar_ritmo` en `calculo.py`.
+
+- **Umbral por ítem:** `palabras(enunciado) × ms_por_palabra + ms_respuesta`. Un ítem es rápido si `tiempo_ms` es menor que el umbral. `ms_por_palabra` es 150. `ms_respuesta` cubre decidir y los dos toques (la opción y «Continuar»): 800 con una escala de 2 opciones y 1200 con 3 o más; las opciones no se cuentan como lectura, porque son fijas en todo el instrumento.
+- **Intento:** cuenta + aplicación (`ritmo_aplicacion`). Partida y llegada son intentos distintos, y la racha cruza las actividades de una misma aplicación. El reinicio por perfil plano borra la fila, así que un intento anulado no conserva sus avisos.
+- **Qué cuenta:** solo la primera respuesta de cada ítem en el intento. Reenviar un ítem ya respondido no suma, no rompe la racha y conserva su `tiempo_ms`. Sin `tiempo_ms`, el ítem no cambia ningún contador.
+- **Disparo:** con `racha_rapida ≥ racha_aviso` (4), menos de `MAX_AVISOS_VELOCIDAD` (2) avisos y, desde el segundo, `items_desde_aviso ≥ ITEMS_ENTRE_AVISOS_VELOCIDAD` (10). Avisar deja racha e ítems en 0. Un lote da a lo más un aviso.
+- `avisos_velocidad` queda como registro del intento; hoy ninguna consulta lo entrega.
+
+### Invariantes
+
+1. A lo sumo un resultado vigente por cuenta y aplicación, y solo con todas sus actividades COMPLETADA y revelado.
+2. Mientras hay resultado vigente, sus respuestas no cambian.
+3. Reiniciar solo anula; nunca borra resultados, eventos ni desbloqueos.
+4. Las respuestas de una cuenta nunca afectan a otra.
+5. Toda coincidencia guardada tiene 0 ≤ r ≤ 1.
+
+## Acciones
+
+### Responder ítems — `POST /acciones/responder-items`
+
+- Cuerpo: `cuenta`, `actividad`, `respuestas: [{item, opcion, tiempo_ms?}]` (opción por su `orden`; `tiempo_ms`, entero ≥ 0 o nulo).
+- La respuesta trae `aviso_velocidad`: `null`, 1 o 2 (ver «Aviso de velocidad»).
+- Lote no vacío, sin ítems repetidos, opciones enteras de la escala del ítem: si no, 422. Un ítem que la actividad no presenta: 409. Actividad no disponible: 409 con su progreso. Apoderado: 404.
+- Se valida todo el lote antes de escribir. La primera respuesta crea el progreso en EN_CURSO; reemplazar una respuesta conserva su fila y `creada_en`.
+- Las respuestas quedan **fijas** (409) si alguna aplicación de la actividad tiene resultado vigente (es decir, desde que se revela); en COMPARACION, cuando la actividad está COMPLETADA. Antes de revelar se pueden cambiar.
+- No registra eventos.
+
+### Completar y revelar — `POST /acciones/revelar-resultado`
+
+`completar-actividad` exige todos los ítems de la actividad respondidos (si no, 409 con `items_faltantes`) y **no calcula**. El resultado se calcula al revelarlo: hasta entonces nadie lo ve.
+
+- Cuerpo: `cuenta`, `instrumento`, `aplicacion` (obligatoria si hay más de una: si falta, 422) y `fecha_hora` opcional.
+- 404 si la cuenta no es de estudiante o no existe el instrumento o la aplicación. 409 si el instrumento no tiene dimensiones, si falta completar alguna actividad de la aplicación (con `items_faltantes` = esas actividades) o si ya hay resultado vigente («Resultado ya revelado»).
+- En una transacción: calcula y guarda el resultado y registra REVELA_RESULTADO con la aplicación como referencia. Si el cálculo falla, se revierte todo.
+- Respuesta: `cuenta`, `instrumento`, `aplicacion`, `perfil_plano`, `eventos_registrados` y `nuevos_desbloqueos`.
+- Cada instrumento cierra con un registro de contraste que se abre con REVELA_RESULTADO y cita el resultado (referencias RESULTADO y COINCIDENCIAS, `referencias.md`).
+- Repetir una actividad con respuestas fijas registra COMPLETA_ACTIVIDAD y no recalcula.
+
+### Reiniciar — `POST /acciones/reiniciar-instrumento`
+
+Volver a hacer el test cuando el resultado no distingue ningún tipo. Recibe `cuenta`, `instrumento` y `aplicacion` (obligatoria si hay más de una: si falta, 422).
 
 - Solo procede con un resultado vigente con `perfil_plano` (si no, 409) y si la cuenta no agotó `MAXIMO_REINICIOS_PERFIL_PLANO` en esa aplicación, contado con sus resultados anulados con perfil plano (si no, 409 «Ya usaste el reinicio de este cuestionario»).
 - En una transacción: anula el resultado vigente, borra las respuestas del instrumento en los progresos de la aplicación, pasa esos progresos a EN_CURSO y registra REINICIA_INSTRUMENTO. No revoca desbloqueos ni borra eventos ni resultados anteriores. Para tener un resultado nuevo hay que completar y revelar otra vez.
 
-## Consultas (GET)
+### Favoritos
+
+Exigen la sección CATALOGO, como el catálogo. Ninguna regla ni insignia depende de los favoritos.
+
+| Ruta | Qué hace |
+|---|---|
+| `POST /acciones/marcar-favorito` `{cuenta, tipo, codigo, fecha_hora?}` | `tipo` es CARRERA, OCUPACION o INSTITUCION (registra MARCA_FAVORITO, sin referencia) o FICHA o TESTIMONIO (ver `motor.md`). Si ya es favorito, 409; si el código no existe, 404. |
+| `POST /acciones/desmarcar-favorito` `{cuenta, tipo, codigo}` | Lo quita sin registrar eventos. Si no era favorito, 409. |
+| `GET /cuentas/{c}/favoritos` | `{carreras[], ocupaciones[], instituciones[]}` con los resúmenes del catálogo, del más reciente al más antiguo. |
+
+## Consultas
 
 | Ruta | Devuelve |
 |---|---|
 | `/instrumentos` | Instrumentos con `lectura`, dimensiones (con sus cuatro piezas), escalas, aplicaciones y actividades. |
 | `/actividades/{a}/items` | Ítems de la actividad en orden, con las opciones de su escala. No exige cuenta ni disponibilidad. |
-| `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. Ajuste color-partida-llegada: en una actividad de un instrumento COMPARACION, cada respuesta trae `baja` (`calculo.es_respuesta_baja` con `PANEL_OPCIONES_BAJAS`, la misma marca que ve la orientadora; una consulta más, 4 en vez de 3); en los demás, `baja` es nula y no se lee el parámetro. |
+| `/cuentas/{c}/actividades/{a}/respuestas` | Respuestas actuales de la cuenta en esa actividad. En una actividad de un instrumento COMPARACION, cada respuesta trae `baja` (`calculo.es_respuesta_baja` con `PANEL_OPCIONES_BAJAS`, la misma marca que ve la orientadora; una consulta más, 4 en vez de 3); en los demás, `baja` es nula y no se lee el parámetro. |
 | `/cuentas/{c}/instrumentos` | Por instrumento y aplicación: NO_INICIADO, EN_PROGRESO o COMPLETADO (todas sus actividades completadas, se haya revelado o no); actividades e ítems respondidos sobre el total; `hay_resultado_vigente` (revelado). COMPLETADO sin resultado vigente es «listo para revelar». |
-| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada, HU-022 y HU-023): `mensaje`, `lectura` y `guia_abierta` del instrumento para el estudiante, dimensiones (con `descripcion`, `ejemplos`, `fortalezas`, `desarrollo`, `puntaje`, `puntaje_maximo` y `puntaje_visual`; en COMPARACION, con `zona` y `tematica` y los números en `null`), y según el tipo, `codigo_interes`, `perfil_poco_marcado`, `ocupaciones`, `por_area` y `familias`, o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
+| `/cuentas/{c}/instrumentos/{i}/resultado?aplicacion=` | Resultado vigente (vistas resumida y explicada): `mensaje`, `lectura` y `guia_abierta` del instrumento para el estudiante, dimensiones (con `descripcion`, `ejemplos`, `fortalezas`, `desarrollo`, `puntaje`, `puntaje_maximo` y `puntaje_visual`; en COMPARACION, con `zona` y `tematica` y los números en `null`), y según el tipo, `codigo_interes`, `perfil_poco_marcado`, `ocupaciones`, `por_area` y `familias`, o `dimensiones_destacadas`. Sin vigente (no revelado o reiniciado): 409 con el avance. |
 | `/cuentas/{c}/instrumentos/{i}/historial` | Todos los resultados, incluidos los anulados, del más reciente al más antiguo. |
-| `/cuentas/{c}/instrumentos/{i}/comparacion` | HU-094. `{instrumento, lectura, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool) y, desde el ajuste color-partida-llegada, `direccion` (`SUBIO`, `BAJO` o nula si no cambió; por valor, con los inversos invertidos, `calculo.direccion_respuesta`, sin consultas nuevas). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
+| `/cuentas/{c}/instrumentos/{i}/comparacion` | `{instrumento, lectura, partida, llegada, dimensiones}`. Cada dimensión, en orden, trae `codigo`, `nombre`, `descripcion`, `tematica`, `zona_partida`, `zona_llegada`, `actividades_completadas` (cuántas actividades de su temática tiene COMPLETADA la cuenta) e `items`. Cada ítem trae `item`, `enunciado`, `partida` y `llegada` (la etiqueta elegida) y `cambio` (bool) y `direccion` (`SUBIO`, `BAJO` o nula si no cambió; por valor, con los inversos invertidos, `calculo.direccion_respuesta`, sin consultas nuevas). Sin números. La aplicación ENTRADA y la SALIDA se eligen por `momento`, nunca por código. Instrumento de otro tipo: 404. Sin las dos reveladas: 409 con el avance de ambas. |
 
 Las consultas con cuenta responden 404 a un apoderado. El resultado se arma con lo guardado, sin recalcular. El apoderado lee los resultados de su hijo por `GET /cuentas/{c}/familia/resultados`, con `mensaje` y `lectura` de apoderado (`{nombre}` = nombre de pila del hijo) y nunca Partida y llegada, aunque el salón la marque visible (la exclusión vive en `services/familia.py`).
 
-## Catálogo — `GET /cuentas/{c}/catalogo/...`
+### Catálogo — `GET /cuentas/{c}/catalogo/...`
 
-Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `selectinload` y un número fijo de consultas por petición. Todas las rutas, incluidas `ver-carrera`, `ver-ocupacion` y `ver-institucion`, exigen la sección CATALOGO: si está cerrada responden 409 con su mensaje, y una cuenta de otra audiencia recibe 404.
+Se lee de la base, no de la caché, con `selectinload` y un número fijo de consultas por petición. Todas las rutas, incluidas `ver-carrera`, `ver-ocupacion` y `ver-institucion`, exigen la sección CATALOGO: si está cerrada responden 409 con su mensaje, y una cuenta de otra audiencia recibe 404.
 
 | Ruta | Respuesta |
 |---|---|
 | `carreras?buscar=&tipo=&area=&familia=&riasec=` | Página de `{codigo, nombre, tipo, familia{codigo, nombre, area_codigo, area_nombre}, riasec[0–3]}`, por nombre. `area` es el campo específico (2 cifras). |
-| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones_de_la_familia{principales[], secundarias[]}` (las del catálogo con la familia de la carrera como principal o secundaria, por título, con `riasec` y, para el estudiante, `afinidad{parecido, banda}` si es una de sus afines), `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`, y `duracion_ciclos` de la carrera en ella, o `null`; F07b), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
+| `carreras/{codigo}` | Lo anterior más `descripcion`, `duracion`, `nombre_cine`, `ambito_laboral[]`, `ocupaciones_de_la_familia{principales[], secundarias[]}` (las del catálogo con la familia de la carrera como principal o secundaria, por título, con `riasec` y, para el estudiante, `afinidad{parecido, banda}` si es una de sus afines), `instituciones[]` (cada una con `ingreso`: el `Tramo` de esa institución en la familia, o `null`, y `duracion_ciclos` de la carrera en ella, o `null`), `ingreso{fuente, nacional, departamentos[]}` (o `null` sin fila nacional; cada fila con `ubicacion` y `Tramo` de `jovenes` y `adultos`) y `parecidas{total, carreras[≤3]}` (misma familia y tipo) |
 | `ocupaciones?buscar=&area=&familia=&riasec=` | Página de `{codigo, codigo_onet, titulo, resumen, grupo, riasec[0–3], familia_principal, via_familia}`, por título. `area` es la de su familia principal; `familia` trae las que la tienen como principal o secundaria, primero las principales, con `via_familia` PRINCIPAL o SECUNDARIA (nulo sin ese filtro). |
 | `ocupaciones/{codigo}` | Lo anterior más `descripcion`, `tambien_llamado[]`, `job_zone`, `tareas[]`, `personalidad`, `estilos_trabajo[{codigo, nombre}]`, `conocimientos[]`, `aptitudes[]`, `puntajes{R…C: 0–100}` (enteros, con `puntaje_visual` sobre 1–7), `familia_principal` (con `descripcion`, `tipos` y `total_carreras`), `programa_ejemplo` (la primera carrera de la familia principal con un `programas_cine` de la ocupación), `familias_secundarias[{codigo, nombre, total_carreras, programas[]}]`, `otras_ocupaciones_de_la_familia[]`, `total_ocupaciones_familia` y, para el estudiante, `afinidad` |
-| `ocupaciones-caso?codigos=a,b,…` | Las ocupaciones del directorio de un caso (ajuste carga-casos), en el orden pedido: `list[{codigo, titulo, descripcion, conocimientos[], aptitudes[]}]` (el título es el cargo; el resto, la hoja de vida). Misma guardia que el detalle; no registra vista. 422 sin `codigos`, con más de 30 o con alguno inexistente. |
+| `ocupaciones-caso?codigos=a,b,…` | Las ocupaciones del directorio de un caso, en el orden pedido: `list[{codigo, titulo, descripcion, conocimientos[], aptitudes[]}]` (el título es el cargo; el resto, la hoja de vida). Misma guardia que el detalle; no registra vista. 422 sin `codigos`, con más de 30 o con alguno inexistente. |
 | `familias/{codigo}` | Ficha de la familia: área, `descripcion`, `carreras_por_tipo`, `total_carreras`, `ocupaciones_principales` y `ocupaciones_secundarias` (del catálogo), `ingresos[{tipo, promedio_jovenes}]` (nacional), `vecinas[]` (otras familias del área con carreras) y `recomendada_posicion` (1–5 si está entre las familias recomendadas del estudiante; nula para otras cuentas) |
 | `instituciones?buscar=&tipo=&gestion=&ubicacion=` | Página de `{codigo, nombre, tipo, gestion, ubicacion{codigo, nombre}, distrito}`, por nombre |
 | `instituciones/{codigo}` | Lo anterior más `descripcion` (nula), `direccion`, `pagina_web` y `carreras[]` (cada una con `ingreso` de la institución en su familia, o `null`) |
-| `familias`, `ubicaciones`, `grupos` | Solo las familias con carreras (por área y nombre), los departamentos con instituciones y los grupos con ocupaciones del catálogo (por nombre; ya no filtran, solo nombran el grupo) |
+| `familias`, `ubicaciones`, `grupos` | Solo las familias con carreras (por área y nombre), los departamentos con instituciones y los grupos con ocupaciones del catálogo (por nombre; no filtran, solo nombran el grupo) |
 
 - `buscar`: subcadena sobre `busqueda`, sin mayúsculas ni tildes; `%`, `_` y `\` se buscan literalmente.
 - `riasec`: de 1 a 3 letras distintas (acepta minúsculas). Coincide si `codigo_riasec` las contiene seguidas y en ese orden: `RI` encuentra RI, RIS y ARI, pero no IR ni RSI. Una letra inválida, repetida o más de 3 → 422, y lo que no tiene código no coincide nunca.
@@ -150,20 +175,15 @@ Código: `app/services/catalogo.py`. Se lee de la base, no de la caché, con `se
 - `familia`, `area` y `ubicacion` filtran por código; un `tipo` fuera de `TipoInstitucion` o una `gestion` fuera de `GestionInstitucion` → 422. Un código inexistente en el detalle → 404.
 - Los ingresos son de la familia y el tipo (o de la institución en la familia), no de la carrera exacta; la fuente es `FUENTE_INGRESOS`.
 
-## Favoritos (HU-040)
+## Código y pruebas
 
-Código: `app/services/favoritos.py`. Exigen la sección CATALOGO, como el catálogo. Ninguna regla ni logro depende de los favoritos.
+- Código: `app/services/instrumentos/` (`calculo.py` es puro, sin base), `app/services/actividades.py` (responder, completar, reiniciar), `app/services/catalogo.py` y `app/services/favoritos.py`. Parámetros: `app/core/parametros.py`.
+- Pruebas: `tests/unit/instrumentos`, `tests/integration/instrumentos`, `tests/integration/catalogo` y `tests/integration/favoritos`.
 
-| Ruta | Qué hace |
-|---|---|
-| `POST /acciones/marcar-favorito` `{cuenta, tipo, codigo, fecha_hora?}` | `tipo` es CARRERA, OCUPACION o INSTITUCION (registra MARCA_FAVORITO, sin referencia) o, desde el ajuste mochila, FICHA o TESTIMONIO (ver `motor.md`). Si ya es favorito, 409; si el código no existe, 404. |
-| `POST /acciones/desmarcar-favorito` `{cuenta, tipo, codigo}` | Lo quita sin registrar eventos. Si no era favorito, 409. |
-| `GET /cuentas/{c}/favoritos` | `{carreras[], ocupaciones[], instituciones[]}` con los resúmenes del catálogo, del más reciente al más antiguo. |
+### Carga
 
-## Invariantes
+Datos: `datos/fijos.py` (temáticas y los cuatro instrumentos), `datos/catalogo.py` (el catálogo real: carreras, instituciones, ingresos y ocupaciones) y, para unir ítems y actividades, `datos/contenido.py` y `datos/ruta.py`.
 
-1. A lo sumo un resultado vigente por cuenta y aplicación, y solo con todas sus actividades COMPLETADA y revelado.
-2. Mientras hay resultado vigente, sus respuestas no cambian.
-3. Reiniciar solo anula; nunca borra resultados, eventos ni desbloqueos.
-4. Las respuestas de una cuenta nunca afectan a otra.
-5. Toda coincidencia guardada tiene 0 ≤ r ≤ 1.
+**Catálogo real.** `datos/catalogo.py` lee los CSV de `datos/archivos/catalogo/` solo al cargar la base (ver `integracion.md`); un archivo o columna que falta, o una fila inválida, detiene la carga con su número de fila. La aplicación nunca lee esos archivos. Las ocupaciones son las de `ocupaciones_curadas.csv` con `en_catalogo = 1` (no hay ocupaciones ocultas: toda ocupación que nombra un caso o un testimonio debe estar ahí), con los datos de `ocupaciones_mpp_completo.csv`; sus puntajes (1–7) son los que usa el test, y `high_point` sale de `riasec_perfil`. Las que no tienen perfil RIASEC (las militares, del grupo O*NET 55, «Fuerzas Armadas» en `grupos_ocupacionales.csv`) no tienen puntajes y no pueden estar `en_test`. `ocupacion_familia_v2.csv` da la familia principal y hasta dos secundarias: toda familia existe en el catálogo y toda ocupación del catálogo tiene fila. Al terminar, la carga registra ocupaciones por familia, familias sin ocupación principal, ocupaciones del test sin RIASEC, familias sin descripción y ocupaciones sin familia. El cálculo de coincidencias (Pearson) no depende de la escala.
+
+**Letras RIASEC del catálogo.** Al cargar, se valida que las posiciones de `high_point` y `tipo_carrera` sean consecutivas desde 1, sin letras repetidas. `codigo_riasec` se calcula con las letras en orden de posición («RIS»). `busqueda` es el nombre o título en minúsculas y sin tildes (`sin_tildes`, en `app/models/base.py`), y el modelo la calcula al insertar.

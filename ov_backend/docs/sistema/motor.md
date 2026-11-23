@@ -1,21 +1,23 @@
 # Motor de desbloqueos
 
-Cómo funciona hoy el núcleo de la plataforma: las acciones registran eventos, y las reglas convierten esos eventos en desbloqueos. Código: `app/services/motor/`, `app/services/actividades.py`, `app/services/cuentas.py` y servicios de cada dominio. Datos: `datos/ruta.py`.
+## Qué hace
 
-## Modelo
+Controla qué contenido está disponible para cada cuenta. Las acciones del usuario se registran como eventos; cada regla de desbloqueo exige condiciones sobre esos eventos y, cuando se cumplen, se registra un desbloqueo. Una regla puede abrir bloques, actividades, fichas, testimonios, cartas del diario, conversaciones, insignias, niveles y secciones. Este documento cubre también lo que depende directamente del motor: el diario, las conversaciones en familia, las notificaciones, el avance del estudiante, la ruta del apoderado y las batallas.
+
+## Modelo de datos
 
 | Grupo | Tablas |
 |---|---|
-| Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash` (Argon2id), `activa`, `intentos_fallidos` y `bloqueada_hasta` para el bloqueo temporal de ingreso, B17), `colegio` (`codigo`, `nombre`), `salon` (`colegio_id`, obligatorio; `promocion`, el año de egreso, y `seccion`, únicas juntas en su colegio; su `codigo` es solo el identificador, único en toda la base. No tiene nombre: el front lo arma según el año en curso con `nombreSalon`, «Quinto A» o «Promoción 2024 A»), `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
+| Cuentas | `cuenta` (rol ESTUDIANTE, APODERADO u ORIENTADORA; `salon_id`, `correo`, `contrasena_hash` (Argon2id), `activa`, `intentos_fallidos` y `bloqueada_hasta` para el bloqueo temporal de ingreso), `colegio` (`codigo`, `nombre`), `salon` (`colegio_id`, obligatorio; `promocion`, el año de egreso, y `seccion`, únicas juntas en su colegio; su `codigo` es solo el identificador, único en toda la base. No tiene nombre: el front lo arma según el año en curso con `nombreSalon`, «Quinto A» o «Promoción 2024 A»), `orientadora_salon` (`es_principal`), `vinculo_familiar` (estudiante, apoderado, `parentesco`, `es_activo` y sus cartas) |
 | Catálogo | `bloque` (espacio MISIONES_CAMPO, CIUDAD, PORTAL_FAMILIA o LUMI, este último para los recuerdos de Lumi: el mapa no lo pinta y sus actividades son opcionales, audiencia), `actividad` (tipo INFORMATIVA, REGISTRO, CUESTIONARIO, CASO o BATALLA; `orden`, `contenido`, `visibilidad`, `requerida`, `duracion_estimada_min`, `descripcion`, `puntaje_minimo` y `puntaje_maximo` solo en CASO, en puntos de satisfacción: el máximo es el total de necesidades del caso, y el cargador lo valida contra `CONFIGURACION_CASOS` de `ruta.py`), `seccion` (audiencia), `ficha` (audiencia), `testimonio` (`pista`, que se muestra mientras está bloqueado; `video_id`, `inicio` y `fin`, el tramo del video; `persona`, `ocupacion_id`, `contexto` y `cita`; su origen no es columna: se deduce de su regla, SUPERA_CASO si es de un caso o COMPLETA_ACTIVIDAD si es de una actividad, y la carga rechaza una voz sin ninguna de las dos), `pregunta_diario` (ver «Diario»), `conversacion` (`orden`, `titulo`, `tema` opcional (chip de la tarjeta), preguntas de cada rol, `preguntas_guia`, `mensaje_diferencias`, `algo_que_saben` opcional; ver «Conversaciones»), `presentacion` (presentación de primera visita de una vista del front: `codigo` es el id de la vista, audiencia; ver «Presentaciones»), `grupo_insignia` (página del pasaporte: `codigo`, `nombre`, `orden`), `insignia` (`es_oculta`, audiencia, `grupo_id`, `orden` dentro del grupo, `pista`, que se muestra mientras una oculta no se obtiene, `descripcion` (su historia), `requisito` (lo que pide), `frase` (la frase destacada) y `logro` (cómo se consiguió, en pasado)), `nivel` (`titulo`, `descripcion`, `cita_lumi`), `familia_carrera`, `carrera` |
-| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (B11; ver «Secciones de la tarjeta»), `insignia_vitrina` (hasta 3 insignias obtenidas que la cuenta muestra, con `orden` 1–3; ver «Vitrina»), `presentacion_vista` (presentaciones de primera visita que la cuenta ya cerró, con `vista_en`; ver «Presentaciones») |
+| Estado de la cuenta | `progreso_actividad` (EN_CURSO o COMPLETADA), `resultado_caso`, `resultado_batalla` y `respuesta_batalla` (cada intento y sus respuestas: `victoria`, `aciertos`, `preguntas`), `coleccion_ocupacion` (ocupaciones obtenidas al superar un caso, una vez por cuenta), `recomendacion`, `entrada_diario` y `contador_diario` (ver «Diario»), `check_in`, `entrevista`, `entrevista_autor`, `conversacion_vinculo`, las tablas de la tarjeta de carrera y `cuenta.opcion_inicial_id` (ver «Secciones de la tarjeta»), `insignia_vitrina` (hasta 3 insignias obtenidas que la cuenta muestra, con `orden` 1–3; ver «Vitrina»), `presentacion_vista` (presentaciones de primera visita que la cuenta ya cerró, con `vista_en`; ver «Presentaciones») |
 | Motor | `evento_uso`, `regla_desbloqueo` (`mensaje_bloqueo` obligatorio), `condicion_desbloqueo` (`texto`: lo que pide, para mostrarlo tal cual; nulo si no tiene), `desbloqueo` (único por cuenta y regla; `fecha_hora`, `visto`) |
 
 `id_objetivo` de una regla e `id_referencia` de un evento o condición son referencias polimórficas sin FK; los cargadores resuelven códigos a ids. `id_objetivo` nunca es nulo.
 
-**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES, FAMILIA, INVESTIGACIONES (B13) y LIBRO_HELENA (se abre con el punto de partida; solo guarda la entrada al libro: las lecturas y acciones de instrumentos no la exigen, porque el perfil las usa con ella cerrada) del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
+**Secciones.** Partes del perfil que se abren con reglas como cualquier objetivo (`SECCION`). Las fijas están en `datos/fijos.py`: DIARIO, CHECK_IN, CATALOGO, PLANES, FAMILIA, INVESTIGACIONES y LIBRO_HELENA (se abre con el punto de partida; solo guarda la entrada al libro: las lecturas y acciones de instrumentos no la exigen, porque el perfil las usa con ella cerrada) del estudiante, y CONVERSACIONES del apoderado. Cada ruta decide con sus reglas cuándo se abre cada una. La migración `0004` convirtió las reglas del antiguo objetivo CONVERSACIONES en reglas de esa sección.
 
-**Secciones de la tarjeta (B11).** Cada tarjeta de carrera tiene cuatro secciones, fijas en `seccion_tarjeta` (`datos/fijos.py`): POR_QUE, CONOCIMIENTO, REALIDAD y PASOS (`para_comparar` en POR_QUE y REALIDAD). Se abren por cuenta, para todas sus tarjetas, con reglas del objetivo `SECCION_PLAN`, solo del estudiante; cada ruta decide con qué actividad. Los medidores, la carrera y la prioridad no son secciones. Las tablas de la tarjeta (`tarjeta_carrera` y sus motivos, conocimiento, dudas, gastos, financiamiento, complicaciones, sugerencias y pasos) son estado y las vacía el reinicio, que además pone `cuenta.opcion_inicial_id` en nulo.
+**Secciones de la tarjeta.** Cada tarjeta de carrera tiene cuatro secciones, fijas en `seccion_tarjeta` (`datos/fijos.py`): POR_QUE, CONOCIMIENTO, REALIDAD y PASOS (`para_comparar` en POR_QUE y REALIDAD). Se abren por cuenta, para todas sus tarjetas, con reglas del objetivo `SECCION_PLAN`, solo del estudiante; cada ruta decide con qué actividad. Los medidores, la carrera y la prioridad no son secciones. Las tablas de la tarjeta (`tarjeta_carrera` y sus motivos, conocimiento, dudas, gastos, financiamiento, complicaciones, sugerencias y pasos) son estado y las vacía el reinicio, que además pone `cuenta.opcion_inicial_id` en nulo.
 
 El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La migración `0003` amplía el `CHECK` de `bloque.espacio` para admitirlo en SQLite y PostgreSQL; su downgrade falla si todavía existen bloques con ese espacio y conserva los datos.
 
@@ -23,7 +25,7 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 
 | Evento | Referencia |
 |---|---|
-| INGRESO, RESPUESTA_REFLEXIVA, INVITA_A_CREW, FORMA_CREW, VENCE_DESAFIO_INTACTO | nula |
+| INGRESO, RESPUESTA_REFLEXIVA, VENCE_DESAFIO_INTACTO | nula |
 | COMPLETA_ACTIVIDAD, SUPERA_CASO, SUPERA_BATALLA, REGISTRO_ADECUADO | actividad (REGISTRO_ADECUADO: el registro que se cerró sin ítems poco desarrollados; ver `registro.md`) |
 | COMPLETA_BLOQUE | bloque |
 | ESCRIBE_ENTRADA_DIARIO, ESCRIBE_ENTRADA_LIBRE | entrada de diario (se expone como `null`: no tiene código público) |
@@ -41,7 +43,11 @@ El espacio `PORTAL_FAMILIA` identifica los bloques del portal del apoderado. La 
 | MARCA_FAVORITO_TESTIMONIO | testimonio |
 | CREA_PLAN, ACTUALIZA_PLAN, ELIMINA_PLAN | carrera del plan (la tarjeta puede borrarse; la carrera no) |
 
-## Reglas
+`INVITA_A_CREW` y `FORMA_CREW` siguen en el enumerado `TipoEventoUso`, pero ninguna acción los registra ni ninguna regla los pide.
+
+## Reglas de funcionamiento
+
+### Reglas y condiciones
 
 Una regla se cumple cuando se cumplen **todas** sus condiciones y, si tiene `evaluador_especial`, el evaluador devuelve verdadero. Una alternativa (A **o** B) se expresa con dos reglas que apuntan al mismo objetivo.
 
@@ -52,57 +58,57 @@ Cada condición cuenta los eventos de la cuenta con su `tipo_evento` (y su `id_r
 | EVENTOS | eventos | «completó esta actividad» |
 | REFERENCIAS_DISTINTAS | referencias distintas, sin contar nulas | «8 actividades distintas»: repetir no suma |
 | DIAS_DISTINTOS | fechas calendario distintas de `fecha_hora`, sin convertir a UTC | «check-in en 3 días distintos» |
-| EVENTOS_TOPE_DIARIO | eventos por día, cada día hasta `TOPE_ENTRADAS_AMISTAD_DIA`: el mismo conteo que la amistad con Lumi (ajuste del diario de F05) | «el recuerdo n se abre al llegar a `UMBRALES_AMISTAD[n-1]` cartas» |
+| EVENTOS_TOPE_DIARIO | eventos por día, cada día hasta `TOPE_ENTRADAS_AMISTAD_DIA`: el mismo conteo que la amistad con Lumi | «el recuerdo n se abre al llegar a `UMBRALES_AMISTAD[n-1]` cartas» |
 
 **Evaluadores especiales** (`app/services/motor/evaluadores.py`, registro `EVALUADORES`). Reciben sesión y cuenta y leen su umbral de `regla_desbloqueo.parametro_evaluador`, no de `cantidad_minima`:
 
-- `vistas_diversas(clase, atributo)` (B10): cuenta los elementos **distintos** vistos (las referencias de sus eventos de vista, no los eventos) y los agrupa por atributo. Se cumple con al menos `parametro` grupos; con `parametro` nulo, exige todos los grupos disponibles en el catálogo cargado. Se registra con tres nombres:
+- `vistas_diversas(clase, atributo)`: cuenta los elementos **distintos** vistos (las referencias de sus eventos de vista, no los eventos) y los agrupa por atributo. Se cumple con al menos `parametro` grupos; con `parametro` nulo, exige todos los grupos disponibles en el catálogo cargado. Se registra con tres nombres:
   - `carreras_familias_distintas`: VISTA_CARRERA por familia (familias con al menos una carrera);
   - `ocupaciones_high_point_distinto`: VISTA_OCUPACION por la letra en posición 1 de `high_point`;
   - `instituciones_tipos_distintos`: VISTA_INSTITUCION por tipo (tipos con al menos una institución).
-- `vista_fuera_del_perfil` (sin parámetro, B10): mira el tipo principal (posición 1 de `tipo_carrera` o `high_point`) de las carreras y ocupaciones vistas; las que no tienen tipo no cuentan. Con un resultado RIASEC vigente y sin perfil plano, basta un tipo principal distinto de la primera letra del código de interés. Sin resultado o con perfil plano, hacen falta dos tipos principales distintos.
-- `misiones_camino_sin_inicio`: la cuenta completó al menos `parametro` actividades distintas del bloque CAMINO, sin contar la de orden 1.
-- `planes_listos_para_comparar` (B11): al menos `parametro` planes con todas sus secciones `para_comparar` (POR_QUE y REALIDAD) en LISTA (`planes.md`). Importa el dominio de planes dentro de la función, porque los planes usan el motor para saber qué secciones están abiertas.
-- `pasos_plan_a` (B11): el plan A (prioridad 1) tiene al menos `parametro` pasos, en cualquier estado.
-- `actividades_completas(tipo)` (ajuste logros): las actividades de los bloques del estudiante, sin el bloque LUMI y, con `tipo`, solo las de ese tipo, con un COMPLETA_ACTIVIDAD de la cuenta. Lee solo los conteos y las definiciones (sin consultas propias); una batalla y un caso solo emiten COMPLETA_ACTIVIDAD al superarse. El total sale del contenido cargado. Se registra con cuatro nombres: `todas_las_batallas`, `todos_los_casos`, `todos_los_registros` y `todas_las_actividades` (sin filtro).
-- `todas_las_conversaciones` (ajuste logros): todas las `conversacion` cargadas con un COMPLETA_CONVERSACION de la cuenta; también sin consultas propias.
-- `planes_completos` (ajuste logros): al menos `parametro` planes activos con sus cuatro secciones en LISTA (`planes.md`). Lee de la caché de planes y mira primero solo las tarjetas: si las que tienen todas sus secciones guardadas no alcanzan, no carga las filas hijas.
-- `instrumentos_prioritarios` (sin parámetro, B07): la cuenta debe tener resultado vigente (revelado) en las aplicaciones de los instrumentos `obligatorio`: de un COMPARACION, solo la ENTRADA (la partida; la llegada ocurre después); de los demás, todas. Hoy son la partida y el test de intereses, iguales para todos los salones. Lee `obligatorio` de la caché de definiciones y hace una consulta a los resultados vigentes.
+- `vista_fuera_del_perfil` (sin parámetro): mira el tipo principal (posición 1 de `tipo_carrera` o `high_point`) de las carreras y ocupaciones vistas; las que no tienen tipo no cuentan. Con un resultado RIASEC vigente y sin perfil plano, basta un tipo principal distinto de la primera letra del código de interés. Sin resultado o con perfil plano, hacen falta dos tipos principales distintos.
+- `misiones_camino_sin_inicio`: la cuenta completó al menos `parametro` actividades distintas del bloque CAMINO, sin contar la de orden 1. Está registrado, pero ninguna regla lo usa y ningún conjunto carga un bloque `CAMINO`.
+- `planes_listos_para_comparar`: al menos `parametro` planes con todas sus secciones `para_comparar` (POR_QUE y REALIDAD) en LISTA (`planes.md`). Importa el dominio de planes dentro de la función, porque los planes usan el motor para saber qué secciones están abiertas.
+- `pasos_plan_a`: el plan A (prioridad 1) tiene al menos `parametro` pasos, en cualquier estado.
+- `actividades_completas(tipo)`: las actividades de los bloques del estudiante, sin el bloque LUMI y, con `tipo`, solo las de ese tipo, con un COMPLETA_ACTIVIDAD de la cuenta. Lee solo los conteos y las definiciones (sin consultas propias); una batalla y un caso solo emiten COMPLETA_ACTIVIDAD al superarse. El total sale del contenido cargado. Se registra con cuatro nombres: `todas_las_batallas`, `todos_los_casos`, `todos_los_registros` y `todas_las_actividades` (sin filtro).
+- `todas_las_conversaciones`: todas las `conversacion` cargadas con un COMPLETA_CONVERSACION de la cuenta; también sin consultas propias.
+- `planes_completos`: al menos `parametro` planes activos con sus cuatro secciones en LISTA (`planes.md`). Lee de la caché de planes y mira primero solo las tarjetas: si las que tienen todas sus secciones guardadas no alcanzan, no carga las filas hijas.
+- `instrumentos_prioritarios` (sin parámetro): la cuenta debe tener resultado vigente (revelado) en las aplicaciones de los instrumentos `obligatorio`: de un COMPARACION, solo la ENTRADA (la partida; la llegada ocurre después); de los demás, todas. Hoy son la partida y el test de intereses, iguales para todos los salones. Lee `obligatorio` de la caché de definiciones y hace una consulta a los resultados vigentes.
 
-**Cuestionarios y configuración del colegio** (ajuste panel-entrevistas-configuracion):
+**Cuestionarios y configuración del colegio:**
 - `instrumento.obligatorio` y `instrumento.visibilidad_apoderado` (`VisibilidadApoderado`: SIEMPRE, NUNCA o SEGUN_COLEGIO) son definiciones de `fijos.CONFIGURACION_INSTRUMENTOS`: partida y llegada, obligatorio y NUNCA; intereses, obligatorio y SIEMPRE; inteligencias y habilidades sociales, opcionales y SEGUN_COLEGIO. La carga exige configurar todo instrumento y rechaza un SEGUN_COLEGIO obligatorio.
 - `colegio_instrumento_visible (colegio_id, instrumento_id)`: los SEGUN_COLEGIO que el apoderado ve. `colegio_actividad_destacada (colegio_id, actividad_id)`: los registros que la orientadora ve destacados en el perfil. Una sola configuración para todos los salones del colegio.
 - Las dos tablas las escribe la orientadora (`POST /acciones/configurar-colegio`, `panel.md`), así que **no están en la caché de definiciones**: se leen de la base, una consulta por tabla y por petición (`ContextoConsultas.cargar_configuracion`). Se conservan al reiniciar, como las cuentas. La carga rechaza un visible que no sea SEGUN_COLEGIO y un destacado que no sea de registro.
 
-**Avance** (ajuste logros): un evaluador puede devolver `Avance(actual, requerido)` en vez de un booleano; `evaluar_regla` lo convierte en `cumplido = actual >= requerido`, y un total de 0 no cumple. `ResultadoEvaluador` lleva entonces `actual` y `requerido`, que llegan en `GET progreso`, en los motivos de bloqueo y en `nuevos_desbloqueos`; sin avance no se serializan. Hoy dan avance los tres evaluadores de logros.
+**Avance:** un evaluador puede devolver `Avance(actual, requerido)` en vez de un booleano; `evaluar_regla` lo convierte en `cumplido = actual >= requerido`, y un total de 0 no cumple. `ResultadoEvaluador` lleva entonces `actual` y `requerido`, que llegan en `GET progreso`, en los motivos de bloqueo y en `nuevos_desbloqueos`; sin avance no se serializan. Hoy dan avance los tres evaluadores de logros.
 
-**Caché de planes** (ajuste logros): `ContextoConsultas.planes_de(cuenta, hijas)` guarda durante la petición los planes activos de la cuenta en dos niveles: las tarjetas (1 consulta) y, solo si se piden, sus filas hijas (8). `invalidar_eventos` los borra junto con los conteos, así que nunca se leen planes de antes de la escritura de la acción. La usan `planes_listos_para_comparar`, `por_que_en_planes` (por `contar_listos_para_comparar`) y `planes_completos`; `pasos_plan_a` y `GET planes` no. Costo: con varias reglas de planes pendientes, los planes se cargan una vez por evaluación; con las reglas de planes del camino ya obtenidas y las insignias de planes pendientes, una acción de planes hace a lo más dos lecturas más que sin ellas (los conteos de eventos y las tarjetas) y nunca carga las hijas mientras ningún plan tenga sus cuatro secciones guardadas (`tests/integration/motor/test_presupuesto_logros.py`).
+**Caché de planes:** `ContextoConsultas.planes_de(cuenta, hijas)` guarda durante la petición los planes activos de la cuenta en dos niveles: las tarjetas (1 consulta) y, solo si se piden, sus filas hijas (8). `invalidar_eventos` los borra junto con los conteos, así que nunca se leen planes de antes de la escritura de la acción. La usan `planes_listos_para_comparar`, `por_que_en_planes` (por `contar_listos_para_comparar`) y `planes_completos`; `pasos_plan_a` y `GET planes` no. Costo: con varias reglas de planes pendientes, los planes se cargan una vez por evaluación; con las reglas de planes del camino ya obtenidas y las insignias de planes pendientes, una acción de planes hace a lo más dos lecturas más que sin ellas (los conteos de eventos y las tarjetas) y nunca carga las hijas mientras ningún plan tenga sus cuatro secciones guardadas (`tests/integration/motor/test_presupuesto_logros.py`).
 
-Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: (evaluador, parámetro)}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
+Una regla con evaluador también tiene condiciones normales: definen con qué eventos se reevalúa. En `datos/contenido.py` y `datos/ruta.py`, el evaluador de una regla se declara en `EVALUADORES_REGLAS = {regla: (evaluador, parámetro)}`. Una regla sin condiciones o con un evaluador desconocido es un error de configuración (`ValueError`), nunca un desbloqueo.
 
 ### Reglas del contenido
 
-Las reglas de `datos/contenido.py` siguen estos principios (ajuste carga-actividades); `tests/integration/datos/test_reglas_contenido.py` comprueba los verificables:
+Las reglas de `datos/contenido.py` siguen estos principios; `tests/integration/datos/test_reglas_contenido.py` comprueba los verificables:
 
 - **Testimonios:** cada voz tiene una sola regla TESTIMONIO: SUPERA_CASO si la regala un caso (su ocupación es una necesidad de ese caso) o COMPLETA_ACTIVIDAD si la deja una actividad (`tb3-1`, `tb3-8`, `tb3-10`). De esa regla sale su origen en `GET testimonios`.
 
 1. **El tramo se abre con la última requerida del anterior.** Cada bloque del camino B1–B5 tiene una regla `BLOQUE` con `COMPLETA_BLOQUE` del anterior. COMPLETA_BLOQUE se registra al completar la última actividad requerida del bloque (las opcionales no cuentan), así que no hay que reescribir la regla si cambia cuál es la última. B0 no tiene regla. Única excepción, a propósito: B4 pide además el punto de partida y los instrumentos prioritarios revelados (`REVELA_RESULTADO` + `instrumentos_prioritarios`).
-   Dentro de los tramos, tres misiones piden además algo de otra sección, una sola vez (ajuste desbloqueos): `b1-4` la carta del estudiante (ESCRIBE_CARTA, sin referencia; exige un vínculo activo, así que todo estudiante de `contenido` tiene apoderado), `b1-7` un caso superado (SUPERA_CASO, cualquiera de los seis) y `b3-2` el guion listo (TERMINA_GUION, la primera vez que `guardar-guion` termina; cancelar la investigación después no la vuelve a cerrar). El evento puede llegar antes de la misión anterior. `b3-2` depende así de la misión opcional `investigador` (que abre Investigaciones y se abre con `b1-7`): es una excepción a propósito, como R-B4 con las de intereses, que la prueba de opcionales no detecta porque TERMINA_GUION no nombra actividad. Las tres condiciones se resuelven con los conteos que ya se cargan por petición; la única consulta de más es la carga de esos conteos en `guardar-guion` la primera vez que termina con `b3-2` pendiente (9 en lugar de 8), fijada en `test_presupuestos_desbloqueos.py`.
+   Dentro de los tramos, tres misiones piden además algo de otra sección, una sola vez: `b1-4` la carta del estudiante (ESCRIBE_CARTA, sin referencia; exige un vínculo activo, así que todo estudiante de `contenido` tiene apoderado), `b1-7` un caso superado (SUPERA_CASO, cualquiera de los seis) y `b3-2` el guion listo (TERMINA_GUION, la primera vez que `guardar-guion` termina; cancelar la investigación después no la vuelve a cerrar). El evento puede llegar antes de la misión anterior. `b3-2` depende así de la misión opcional `investigador` (que abre Investigaciones y se abre con `b1-7`): es una excepción a propósito, como R-B4 con las de intereses, que la prueba de opcionales no detecta porque TERMINA_GUION no nombra actividad. Las tres condiciones se resuelven con los conteos que ya se cargan por petición; la única consulta de más es la carga de esos conteos en `guardar-guion` la primera vez que termina con `b3-2` pendiente (9 en lugar de 8), fijada en `test_presupuestos_desbloqueos.py`.
 2. **La primera actividad de un tramo no lleva regla propia**: queda disponible al abrirse su bloque. Solo la lleva si pide algo más que el bloque: b5-1 (un paso en el Plan A) y b4-1 (el Plan A con «Por qué», `por_que_en_planes` con 1).
 3. **Dentro del tramo, cadena lineal**: cada requerida pide la requerida anterior (COMPLETA_ACTIVIDAD, o SUPERA_BATALLA si la anterior es una batalla).
 4. **Opcionales**: se abren con su disparador y nunca son requisito de una requerida (ni de su bloque). Las misiones adicionales, con `REGISTRO_ADECUADO` del registro que las premia.
 5. **Ciudad**: todo opcional; las misiones de Helena se encadenan parte por parte y la primera parte se abre con la informativa del camino que presenta el tema.
 6. **Evaluadores**: una regla con evaluador lleva también las condiciones cuyos eventos deben reevaluarla (`ACTUALIZA_PLAN` en las de planes); si no, no vuelve a evaluarse cuando cambian los planes.
-9. **Registros (ajuste registros)**: b3-a se abre con SUPERA_CASO de cualquier caso (sin referencia) y COMPLETA_ACTIVIDAD b3-3. Un registro completado emite REGISTRO_ADECUADO la primera vez que es adecuado: en los ítems obligatorios, ningún intento vigente `vacio`, `fuera_de_tema` ni SIN_EVALUAR y a lo más uno abierto; en una opcional, adecuado equivale a completado. Nunca se revoca (`registro/flujo.py`). `R-b4-1` pide el «por qué» del Plan A y `R-b4-5`, el del A y el del B (`por_que_en_planes`). Las cartas del diario son fijas o adaptadas (ver «Diario»).
 7. **Todo objetivo cargado tiene al menos una regla** (la de su bloque cuenta para la primera actividad de un tramo), salvo los abiertos desde el inicio a propósito: B0, b0-1, LUMI (sus actividades sí tienen regla), FAMILIA, p1 y el nivel 1 (el de partida). Las preguntas DIARIA no llevan regla: entran al sorteo del día. Un objetivo sin regla está disponible desde el principio.
 8. Varias reglas sobre el mismo objetivo son alternativas (basta una); las condiciones de una regla se suman.
-10. **Mensajes de bloqueo del estudiante (ajuste lumi-mensajes)**: dicen qué hacer en la plataforma, no una frase de la historia: «Completa la misión «{título}».», «Gana «{batalla}».», «… con respuestas desarrolladas» para un REGISTRO_ADECUADO, y para un COMPLETA_BLOQUE la última requerida del tramo con su nombre; «, en el camino» / «, en la ciudad» si la misión está en el otro mapa, y la sección de «Mis planes» que hay que llenar si la condición es de un plan. `tests/integration/datos/test_mensajes_reglas_contenido.py` exige que cada condición con referencia nombre su título entre «» (salvo `R-conv-1` y `R-conv-2`, que solo esperan la carta). Si cambia un título, cambia el mensaje. El mensaje es fijo: una regla con varias condiciones cuya primera suele estar ya cumplida al verse (`R-B4`, `R-b5-1`) dice primero lo que falta y la otra con «si aún no lo hiciste».
+9. **Registros**: b3-a se abre con SUPERA_CASO de cualquier caso (sin referencia) y COMPLETA_ACTIVIDAD b3-3. Un registro completado emite REGISTRO_ADECUADO la primera vez que es adecuado: en los ítems obligatorios, ningún intento vigente `vacio`, `fuera_de_tema` ni SIN_EVALUAR y a lo más uno abierto; en una opcional, adecuado equivale a completado. Nunca se revoca (`registro/flujo.py`). `R-b4-1` pide el «por qué» del Plan A y `R-b4-5`, el del A y el del B (`por_que_en_planes`). Las cartas del diario son fijas o adaptadas (ver «Diario»).
+10. **Mensajes de bloqueo del estudiante**: dicen qué hacer en la plataforma, no una frase de la historia: «Completa la misión «{título}».», «Gana «{batalla}».», «… con respuestas desarrolladas» para un REGISTRO_ADECUADO, y para un COMPLETA_BLOQUE la última requerida del tramo con su nombre; «, en el camino» / «, en la ciudad» si la misión está en el otro mapa, y la sección de «Mis planes» que hay que llenar si la condición es de un plan. `tests/integration/datos/test_mensajes_reglas_contenido.py` exige que cada condición con referencia nombre su título entre «» (salvo `R-conv-1` y `R-conv-2`, que solo esperan la carta). Si cambia un título, cambia el mensaje. El mensaje es fijo: una regla con varias condiciones cuya primera suele estar ya cumplida al verse (`R-B4`, `R-b5-1`) dice primero lo que falta y la otra con «si aún no lo hiciste».
 
-11. **Insignias y niveles (ajuste logros)**: 25 insignias del estudiante en cuatro páginas, una regla `R-<código>` cada una; las que llevan evaluador tienen la condición que las reevalúa. Ninguna premia velocidad, intentos ni favoritos, ni pide como requerida una actividad opcional. Su mensaje de bloqueo es el requisito, con el título de lo que nombra la condición. Son la única excepción a «los recuerdos de Lumi no desbloquean nada»: una regla INSIGNIA puede pedir los recuerdos (`lumi-1`…`lumi-5`), porque no abre contenido; ninguna regla, tampoco de insignia, depende del bloque LUMI (el cargador lo rechaza). Los niveles son 5, cada uno con una sola condición COMPLETA_BLOQUE (B0, B2, B3 y B5), sin evaluador; su mensaje nombra la última requerida del tramo, como los tramos. Criterios: los planes A, B y C se cuentan por carreras distintas creadas (`CREA_PLAN`, REFERENCIAS_DISTINTAS; eliminar un plan y crear otro de otra carrera también suma); un plan completo tiene sus cuatro secciones en LISTA, sin medidores; «La isla entera» no cuenta el bloque LUMI (los recuerdos tienen su propio logro); recrear un plan eliminado emite `CREA_PLAN` y no `ACTUALIZA_PLAN`, así que si con eso llega a tres planes completos, «Ningún cabo suelto» se obtiene en la siguiente acción sobre un plan. Los niveles dependen solo del cierre de tramos (el 3 no exige resultados de Helena, porque el tramo 4 ya pide el de intereses); conversaciones, entrevistas, planes y catálogo quedan en las insignias.
+11. **Insignias y niveles**: 25 insignias del estudiante en cuatro páginas, una regla `R-<código>` cada una; las que llevan evaluador tienen la condición que las reevalúa. Ninguna premia velocidad, intentos ni favoritos, ni pide como requerida una actividad opcional. Su mensaje de bloqueo es el requisito, con el título de lo que nombra la condición. Son la única excepción a «los recuerdos de Lumi no desbloquean nada»: una regla INSIGNIA puede pedir los recuerdos (`lumi-1`…`lumi-5`), porque no abre contenido; ninguna regla, tampoco de insignia, depende del bloque LUMI (el cargador lo rechaza). Los niveles son 5, cada uno con una sola condición COMPLETA_BLOQUE (B0, B2, B3 y B5), sin evaluador; su mensaje nombra la última requerida del tramo, como los tramos. Criterios: los planes A, B y C se cuentan por carreras distintas creadas (`CREA_PLAN`, REFERENCIAS_DISTINTAS; eliminar un plan y crear otro de otra carrera también suma); un plan completo tiene sus cuatro secciones en LISTA, sin medidores; «La isla entera» no cuenta el bloque LUMI (los recuerdos tienen su propia insignia); recrear un plan eliminado emite `CREA_PLAN` y no `ACTUALIZA_PLAN`, así que si con eso llega a tres planes completos, «Ningún cabo suelto» se obtiene en la siguiente acción sobre un plan. Los niveles dependen solo del cierre de tramos (el 3 no exige resultados de Helena, porque el tramo 4 ya pide el de intereses); conversaciones, entrevistas, planes y catálogo quedan en las insignias.
 
 Además: toda regla `CONVERSACION` lleva `ESCRIBE_CARTA`; ninguna regla nombra una actividad `t-` del camino; y toda ficha de la que sale una pregunta de batalla se obtiene con una actividad que está entre los requisitos de la batalla.
 
-## Evaluación
+### Evaluación
 
 Cuando una acción registra eventos (`registrar_eventos`), el motor, en la misma transacción:
 
@@ -113,7 +119,7 @@ Cuando una acción registra eventos (`registrar_eventos`), el motor, en la misma
 
 Si una acción registra eventos en varias cuentas (coautoría de entrevista, conversación familiar), cada cuenta se evalúa con sus propios eventos. Los desbloqueos no generan eventos: una pasada basta y no hay cascadas. Un desbloqueo es permanente.
 
-## Disponibilidad
+### Disponibilidad
 
 Un objetivo está disponible para una cuenta si:
 
@@ -127,7 +133,7 @@ Un objetivo está disponible para una cuenta si:
 | ACTIVIDAD | la de su bloque |
 | TESTIMONIO, PREGUNTA_DIARIO, NIVEL, CONVERSACION | solo ESTUDIANTE |
 
-Al desbloquearse un bloque, sus actividades sin regla propia quedan disponibles; las que tienen regla siguen bloqueadas hasta cumplirla. Un objetivo sin reglas está disponible desde el inicio: por eso todo logro que aún no se puede ganar necesita una regla.
+Al desbloquearse un bloque, sus actividades sin regla propia quedan disponibles; las que tienen regla siguen bloqueadas hasta cumplirla. Un objetivo sin reglas está disponible desde el inicio: por eso toda insignia que aún no se puede ganar necesita una regla.
 
 **Estado de una actividad:** BLOQUEADA si ella o su bloque no están disponibles (prevalece sobre cualquier progreso); si no, COMPLETADA, EN_CURSO o DISPONIBLE según su progreso.
 
@@ -145,54 +151,15 @@ Toda condición cuenta eventos de la cuenta evaluada: ningún objetivo del apode
 
 **Textos para mostrar.** El front muestra tal cual llegan el `texto` de cada condición, la `descripcion` y la `cita_lumi` del nivel, y la `frase`, la `descripcion` (historia), el `logro` y el `requisito` de una insignia: no redacta ninguno. En la semilla, ningún texto de insignia nombra códigos de actividad.
 
-**Vitrina** (ajuste pasaporte-perfil): `POST /acciones/vitrina` con `cuenta` y `codigos` reemplaza la lista completa, en el orden recibido; `[]` la vacía. Solo estudiante (409 si no). 422 con más de 3 códigos, repetidos o inexistentes; 409 si alguna no está obtenida. Sin eventos. Responde `{vitrina: [codigo]}`. Sin elección, la vitrina está vacía.
+### Vitrina
 
-**Presentaciones** (ajuste presentaciones-vistas): `presentacion` lista, en `datos/fijos.py`, las vistas del estudiante que tienen presentación de primera visita; el código es el id de la vista en el front (`journal`, `missions`, `resources`…) y el texto vive en el front. `GET /cuentas/{c}/presentaciones` responde `{vistas: [codigo]}` por código. `POST /acciones/presentacion-vista` con `cuenta` y `codigo` la marca como vista y responde lo mismo; es idempotente (conserva la primera `vista_en`). Solo estudiante (409 si no); 422 si el código no existe o es de otra audiencia. No mira si la sección está abierta: lo decide el front antes de mostrarla. Sin eventos. La migración `0032` no siembra el catálogo (lo llena el conjunto al recargarse, como el resto de `fijos`) y su downgrade se detiene si hay presentaciones vistas.
+`POST /acciones/vitrina` con `cuenta` y `codigos` reemplaza la lista completa, en el orden recibido; `[]` la vacía. Solo estudiante (409 si no). 422 con más de 3 códigos, repetidos o inexistentes; 409 si alguna no está obtenida. Sin eventos. Responde `{vitrina: [codigo]}`. Sin elección, la vitrina está vacía.
 
-## Acciones
+### Presentaciones
 
-Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados`, `nuevos_desbloqueos` y `nuevas_notificaciones` (las creadas en esa acción para la cuenta; ver «Notificaciones»). Las que afectan a varias cuentas devuelven `{"por_cuenta": {codigo: {...}}}`.
+`presentacion` lista, en `datos/fijos.py`, las vistas del estudiante que tienen presentación de primera visita; el código es el id de la vista en el front (`journal`, `missions`, `resources`…) y el texto vive en el front. `GET /cuentas/{c}/presentaciones` responde `{vistas: [codigo]}` por código. `POST /acciones/presentacion-vista` con `cuenta` y `codigo` la marca como vista y responde lo mismo; es idempotente (conserva la primera `vista_en`). Solo estudiante (409 si no); 422 si el código no existe o es de otra audiencia. No mira si la sección está abierta: lo decide el front antes de mostrarla. Sin eventos. La migración `0032` no siembra el catálogo (lo llena el conjunto al recargarse, como el resto de `fijos`) y su downgrade se detiene si hay presentaciones vistas.
 
-| Acción (POST) | Valida | Efecto y eventos |
-|---|---|---|
-| `/acciones/ingresar` | — | INGRESO |
-| `/acciones/completar-actividad` | Actividad disponible, no CASO ni BATALLA y sin ítems de registro (un registro se termina con `registro/entregar`, que aplica la regla de adecuado: `registro.md`; si no, 409). Si tiene ítems de instrumento, todos respondidos (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. No calcula resultados de instrumentos: eso ocurre al revelar. |
-| `/acciones/resolver-caso` | Actividad CASO disponible; puntaje entero entre 0 y el `puntaje_maximo` del caso (422 si lo supera); `ocupaciones` (códigos de las bien asignadas) existentes, si no 422 | Guarda el intento. Con puntaje ≥ `puntaje_minimo`: completa la actividad (COMPLETA_ACTIVIDAD), SUPERA_CASO la primera vez y agrega a `coleccion_ocupacion` las ocupaciones que la cuenta no tenía (`ocupaciones_nuevas` en la respuesta, con `codigo` y `titulo`). Con menos, queda EN_CURSO, sin eventos. Responde también `puntaje_minimo` y `puntaje_maximo`; el mejor puntaje se lee en `GET casos`. |
-| `/acciones/resolver-batalla` | Actividad BATALLA disponible; `respuestas` (`pregunta`, `opcion`: el índice de la opción), en el orden en que se dieron, al menos una, sin repetir, todas preguntas de esa batalla y con una opción existente; el intento debe terminar justo en la última respuesta (si no, 422) | El servidor recorre las respuestas con las vidas y los destellos de la batalla: cada acierto quita una vida al enemigo y cada error, un destello; gana si el enemigo queda sin vidas y pierde si se agotan los destellos (F04c). Guarda el intento en `resultado_batalla` (victoria, aciertos y preguntas) y cada respuesta en `respuesta_batalla`. La primera victoria completa la actividad (COMPLETA_ACTIVIDAD) y registra SUPERA_BATALLA, y VENCE_DESAFIO_INTACTO si terminó con todos los destellos. Perder deja la batalla EN_CURSO; los intentos posteriores a la victoria son práctica, sin eventos. Responde los campos de la acción más `victoria`, `practica` (ya estaba superada), `aciertos`, `preguntas`, `destellos_restantes` y `fichas_repaso` (F04d: `codigo` y `titulo` de las fichas de las preguntas falladas en el intento, sin repetir, de más a menos fallos; si empatan, la de la primera fallada; sin fallos, vacía). El primer intento es el que cuenta para la métrica de conocimiento. Las preguntas de cada intento las da `GET /cuentas/{c}/batallas/{a}/preguntas`. |
-| `/acciones/ver-testimonio` | Solo estudiante; testimonio disponible (si no, 409 con su mensaje) | VISTA_TESTIMONIO solo la primera vez. |
-| `/acciones/ver-ficha` | Ficha de la audiencia de la cuenta (si no, 404) y disponible (si no, 409 con su mensaje). La registra el modal de ficha al abrirse (ajuste mochila) | VISTA_FICHA solo la primera vez. |
-| `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
-| `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; `titulo` opcional y `texto`; `pregunta` (código) o `del_dia`, no ambos; sin ninguno es LIBRE. Con pregunta: su recomendación existe, ya tiene texto y no tiene entrada; la del día, además, vigente (si no, 409). | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
-| `/acciones/editar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404); sin límite de tiempo ni sección | Cambia `texto` y, si se envía, `titulo`; fija `actualizada_en`. Sin eventos. |
-| `/acciones/borrar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404) | Borrado físico. La recomendación que respondía queda archivada (carta) o cerrada (pregunta del día): no vuelve a quedar por responder. Sin eventos. |
-| `/acciones/diario/archivar-pregunta`, `/acciones/diario/desarchivar-pregunta` | Solo estudiante; sección DIARIO; `codigo` de una carta recibida (DESBLOQUEABLE; una del día responde 409). Archivar: sin responder y no archivada; desarchivar: archivada (si no, 409) | Fija o borra `archivada_en`; responde su `PreguntaDiarioEstado`. Sin eventos. |
-| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día, editable ese día (el segundo sobrescribe el nivel y no emite evento); nivel 1–5 | REGISTRA_CHECK_IN (solo el primero del día) |
-| `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta (estudiante). Una cuenta de apoderado u orientadora recibe 200 sin eventos ni desbloqueos: la exploración se mide solo en el estudiante (ajuste catalogo-apoderado) | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
-| `/acciones/marcar-favorito` | Carrera, ocupación o institución: sección CATALOGO abierta. Ficha o testimonio (ajuste mochila): de la audiencia de la cuenta (si no, 404) y desbloqueado (si no, 409), sin exigir el catálogo. En ambos casos, aún no es favorito | Catálogo: MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan). Ficha: MARCA_FAVORITO_FICHA; testimonio: MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia. Entrevista (B13): ver `investigaciones.md` |
-| `/acciones/publicar-entrevista` y las demás de investigaciones | Ver `investigaciones.md` (B13) | PUBLICA_ENTREVISTA en cada autor; el resto, en `investigaciones.md`. |
-| `/acciones/escribir-carta` | Sección de su rol (ver «Conversaciones») y vínculo activo; la carta aún no entregada | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
-| `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Si con ella están las dos, la conversación queda conversada y COMPLETA_CONVERSACION va a las dos cuentas, la primera vez (`RespuestaAgrupada`). |
-| `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |
-
-Las acciones de instrumentos (`responder-items`, `revelar-resultado`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
-
-Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo de su primera regla (por código; el del bloque si la actividad está bloqueada por él) y `detail.progreso`. Leer el contenido de una sección bloqueada también responde 409 con su mensaje.
-
-## Consultas del motor
-
-| GET | Devuelve |
-|---|---|
-| `/reglas` | Todas las reglas, legibles, por código, con su `mensaje_bloqueo`. No evalúa. |
-| `/cuentas` | Cuentas. |
-| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`, `texto`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
-| `/cuentas/{c}/eventos` | Línea de tiempo, del más reciente al más antiguo. |
-| `/cuentas/{c}/desbloqueos` | Desbloqueos con fecha y objetivo, del más reciente al más antiguo (línea de tiempo). Lo visto no vive aquí, sino en las notificaciones. |
-| `/cuentas/{c}/notificaciones?limite&desde` | La campana: `{total, no_vistas, items}`, ver «Notificaciones». |
-| POST `/cuentas/{c}/notificaciones/marcar-vistas` | `{codigos}`; ver «Notificaciones». |
-
-Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logros`…) están en `integracion.md`.
-
-## Invariantes
+### Invariantes
 
 1. Nunca hay dos desbloqueos para la misma cuenta y regla, y ninguno se elimina.
 2. Una actividad bloqueada no se puede completar: 409 sin eventos.
@@ -202,20 +169,20 @@ Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logro
 6. Un check-in por día (editable ese día) y una entrada por recomendación (desbloqueada o del día).
 7. El nivel actual nunca baja.
 
-## Diario
+### Diario
 
-El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora. El diario recoge lo que siente y es privado: solo lo lee, edita y borra su autor; otros roles, a lo sumo, verán conteos de entradas existentes. Ninguna actividad es de diario ni escribe en él: las actividades desbloquean preguntas. Va en **una sola dirección**: nada lee del diario (no hay tipo de referencia a entradas y no alimenta indicadores salvo conteos). **El diario no usa el LLM** (ajuste cartas-diario): todo texto del diario está escrito de antemano. Código: `app/services/diario/` (`cartas.py` arma las cartas).
+El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora. El diario recoge lo que siente y es privado: solo lo lee, edita y borra su autor; otros roles, a lo sumo, verán conteos de entradas existentes. Ninguna actividad es de diario ni escribe en él: las actividades desbloquean preguntas. Va en **una sola dirección**: nada lee del diario (no hay tipo de referencia a entradas y no alimenta indicadores salvo conteos). **El diario no usa el LLM**: todo texto del diario está escrito de antemano. Código: `app/services/diario/` (`cartas.py` arma las cartas).
 
 | Tabla | Qué guarda |
 |---|---|
 | `pregunta_diario` (catálogo) | `codigo`, `nombre` (corto: el del buzón y el cuaderno), `pregunta` (el texto de una fija; el respaldo de una adaptada), `uso` DESBLOQUEABLE (la abre una regla `PREGUNTA_DIARIO`) o DIARIA (entra al sorteo de la pregunta del día), `dimension_id` (dimensión de partida y llegada; solo DIARIA, CHECK `dimension_solo_diaria`; no se muestra), `variantes` (nula = carta fija; ver «Cartas adaptadas»). |
-| `recomendacion` | Pregunta recibida por una cuenta: `tipo` DESBLOQUEADA o DIARIA, `texto` (obligatorio: el texto ya armado al crearla; no cambia), `variante` (código de la variante de una adaptada que tocó; nulo si fue fija o respaldo; no se expone, sirve al análisis del piloto), `fecha` (solo DIARIA), `creada_en`, `archivada_en` (carta archivada o pregunta del día cerrada) y `actividad_id` (remitente: la actividad que completó la acción que la abrió; nula si la abrió otra cosa). Única por cuenta y pregunta (DESBLOQUEADA) o por cuenta y fecha (DIARIA), con índices parciales. |
+| `recomendacion` | Pregunta recibida por una cuenta: `tipo` DESBLOQUEADA o DIARIA, `texto` (obligatorio: el texto ya armado al crearla; no cambia), `variante` (código de la variante de una adaptada que tocó; nulo si fue fija o respaldo; no se expone, sirve al análisis de la prueba con usuarios), `fecha` (solo DIARIA), `creada_en`, `archivada_en` (carta archivada o pregunta del día cerrada) y `actividad_id` (remitente: la actividad que completó la acción que la abrió; nula si la abrió otra cosa). Única por cuenta y pregunta (DESBLOQUEADA) o por cuenta y fecha (DIARIA), con índices parciales. |
 | `entrada_diario` | `origen` LIBRE, GUIADA (responde una desbloqueada) o RECOMENDACION_DIA; `recomendacion_id` (única; nula solo en LIBRE), `numero` y `numero_libre` (solo LIBRE), `titulo`, `texto`, `fecha_hora`, `actualizada_en`. |
 | `contador_diario` | Últimos `numero` y `numero_libre` de la cuenta: borrar no libera números. |
 
 **Desbloqueadas.** Cuando una regla desbloquea una pregunta, en la misma transacción se crea su recomendación con el texto ya armado (`crear_desbloqueadas` → `armar_carta`): la fija, con su `pregunta`; la adaptada, con su variante. La carta se guarda armada: si después el estudiante edita el registro o mueve sus planes, no cambia. Ocurre en `registrar_eventos`, así que también la deja un evento crudo de `/eventos`. La respuesta de la acción trae `entradas_desbloqueadas` (`codigo`, `nombre`, `texto`) solo si hay alguna; las respuestas que amplían `RespuestaAccion` la heredan con `campos()`. El objetivo legible de una PREGUNTA_DIARIO es su `nombre`. Nada del front decide ni nombra una carta.
 
-**Cartas adaptadas (ajuste cartas-diario).** `variantes = {huecos, variantes}`; cada variante tiene `codigo`, `condiciones` (deben cumplirse todas) y `texto`. Se evalúan en orden y gana la primera que cumple; su texto se guarda con los huecos llenos. La variante depende de datos, nunca de textos: opciones marcadas, marcadores, el Plan A y la opción inicial.
+**Cartas adaptadas.** `variantes = {huecos, variantes}`; cada variante tiene `codigo`, `condiciones` (deben cumplirse todas) y `texto`. Se evalúan en orden y gana la primera que cumple; su texto se guarda con los huecos llenos. La variante depende de datos, nunca de textos: opciones marcadas, marcadores, el Plan A y la opción inicial.
 
 | Condición | Se cumple cuando |
 |---|---|
@@ -232,34 +199,34 @@ El registro recoge lo que el estudiante piensa o decide, y lo ve la orientadora.
 
 Va el respaldo (`pregunta`, con `variante` nula) si ninguna variante cumple, si falta el valor de un hueco o si algún ítem que la carta lee (condiciones, `item` y `origen` de los huecos) tiene su intento vigente `sensible` o con `tipo_final = 'emocional'` (la regla de los ecos: de un ítem así no se referencia nada). Un ítem SIN_EVALUAR o ABIERTO no lleva al respaldo. El cargador valida que los ítems y opciones existan, que los marcadores salgan de los textos del ítem, que todo hueco de un texto esté declarado y que el respaldo no tenga huecos.
 
-**Archivo y remitente (ajuste del diario de F05).** Una carta está en la bandeja RESPONDIDA si tiene entrada; si no, ARCHIVADA con `archivada_en` y PENDIENTE sin él. Escribir sobre una archivada responde 409 («Desarchiva la carta…»). Borrar la respuesta de una carta la archiva, y la de una pregunta del día la cierra: `pregunta-del-dia` la sigue devolviendo con `cerrada` (no se sortea otra ese día) y escribirle responde 409. El remitente se guarda al crear la carta: la actividad del `COMPLETA_ACTIVIDAD` de la misma acción.
+**Archivo y remitente.** Una carta está en la bandeja RESPONDIDA si tiene entrada; si no, ARCHIVADA con `archivada_en` y PENDIENTE sin él. Escribir sobre una archivada responde 409 («Desarchiva la carta…»). Borrar la respuesta de una carta la archiva, y la de una pregunta del día la cierra: `pregunta-del-dia` la sigue devolviendo con `cerrada` (no se sortea otra ese día) y escribirle responde 409. El remitente se guarda al crear la carta: la actividad del `COMPLETA_ACTIVIDAD` de la misma acción.
 
 **Pregunta del día.** `POST /acciones/diario/pregunta-del-dia` devuelve la vigente (`fecha + VIGENCIA_PREGUNTA_DIA_DIAS > hoy`) o crea una: sortea una dimensión con peso `(máximo de la escala − promedio) + PESO_BASE_DIMENSION`, según el resultado vigente más reciente de partida o llegada (sin resultado, pesos iguales; las DIARIA sin dimensión pesan la base), y dentro de ella una DIARIA fuera de las últimas `N_SIN_REPETIR_DIARIA` (11); si la dimensión no tiene ninguna, sortea entre las demás. Si con esas exclusiones no queda ninguna, se sortea sin la de «no repetir»; si tampoco, 409. Semilla `(cuenta, fecha)`. Se guarda el texto de la pregunta, sin redacción ni evaluador. Las doce de `contenido` van sin dimensión: pesan igual y no se repiten hasta agotarlas; cuando una vuelve a salir llega en blanco, como una pregunta nueva, y lo respondido la vez anterior sigue en el cuaderno. Sin tareas programadas; las vencidas quedan en la base y no se muestran ni se responden.
 
 **Lecturas.** Preguntas, entradas y amistad exigen la sección DIARIO (409 con su mensaje); editar y borrar, no. Otros roles reciben listas vacías.
 
-**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`, hoy `(1, 2, 3, 4, 5)` (ajuste coherencia-lumi: un nivel por carta; con el tope de 3 por día, los cinco recuerdos se abren en dos días). Se calcula con el conteo EVENTOS_TOPE_DIARIO del motor, el mismo que abre los recuerdos del bloque LUMI. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
+**Amistad con el asistente.** Puntos = por cada día, las escrituras (eventos ESCRIBE_ENTRADA_DIARIO) hasta `TOPE_ENTRADAS_AMISTAD_DIA`; nivel según `UMBRALES_AMISTAD`, hoy `(1, 2, 3, 4, 5)` (un nivel por carta; con el tope de 3 por día, los cinco recuerdos se abren en dos días). Se calcula con el conteo EVENTOS_TOPE_DIARIO del motor, el mismo que abre los recuerdos del bloque LUMI. Se cuenta sobre eventos, no sobre entradas: editar o borrar no la bajan.
 
 **Invariantes del diario.** Solo el autor lee, edita y borra sus entradas; ningún tipo de referencia lee `entrada_diario`; el diario no llama a ningún modelo; una carta guardada no cambia; la amistad nunca baja; `numero` y `numero_libre` no cambian ni se reutilizan.
 
-## Conversaciones
+### Conversaciones
 
-Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada uno (B12, F08). Código: `app/services/conversaciones.py`. El estado es del vínculo de la cuenta (`conversacion_vinculo` y las cartas de `vinculo_familiar`).
+Conversaciones guiadas entre el estudiante y su apoderado, con una carta de cada uno. Código: `app/services/conversaciones.py`. El estado es del vínculo de la cuenta (`conversacion_vinculo` y las cartas de `vinculo_familiar`).
 
 - **Acceso:** el estudiante, con la sección FAMILIA; el apoderado, con CONVERSACIONES (en `contenido`, al completar p4, «Lo que no se dice en casa»; el diploma y los resultados del hijo siguen pidiendo la ruta completa). Sin la sección, 409 con su mensaje; sin vínculo activo, 409; la orientadora, 404.
 - **Vínculo:** el del estudiante. El apoderado elige el hijo con `estudiante` (parámetro del GET y campo opcional de `escribir-carta` y `responder-conversacion`); sin él, su primer vínculo activo por código. Un estudiante que no es su hijo, 404. Carta y conversaciones son por vínculo.
 - **Carta:** cada uno escribe la suya y la puede editar hasta la entrega (todas las conversaciones del catálogo conversadas, `cartas_disponibles`); después, 409. La carta del otro (`carta_recibida`) solo viaja entregada; `otro` (`codigo`, `nombre`, `parentesco` del vínculo) da su remitente.
 - **Disponibilidad:** sin carta propia, ninguna. Con ella, el apoderado tiene todas; el estudiante, las que le abren sus reglas `CONVERSACION` (cada una pide ESCRIBE_CARTA y su condición). En `contenido`, esa condición es siempre una actividad requerida del camino: si colgara de una opcional, las cartas podrían no entregarse nunca.
 - **Responder** (`responder-conversacion`, texto libre, sin LLM): solo una conversación disponible para quien responde (si no, 409 con su mensaje). El apoderado puede responder aunque el hijo aún no la tenga. La propia respuesta se edita mientras el otro no haya respondido; después, 409.
-- **Conversada** (F08): al responder el segundo, sin marca aparte. Se fijan `conversada_en` y `conversada_por` (quien respondió segundo) y COMPLETA_CONVERSACION va a las dos cuentas; en el estudiante abre su pregunta del diario, si la conversación tiene una.
+- **Conversada:** al responder el segundo, sin marca aparte. Se fijan `conversada_en` y `conversada_por` (quien respondió segundo) y COMPLETA_CONVERSACION va a las dos cuentas; en el estudiante abre su pregunta del diario, si la conversación tiene una.
  No existe `completar-conversacion`.
 - **Lista:** siempre todas, por `orden`, con `titulo`, `tema` (el chip de su tarjeta, columna propia de la conversación; nulo, sin chip) y `estado` para quien consulta: `bloqueada` (sin carta propia o, para el estudiante, sin su regla; `bloqueo_mensaje` dice por qué), `sin_responder`, `esperando_al_otro` (solo yo respondí; también si el hijo aún no la habilitó), `te_toca` o `conversada`. El apoderado ve además `abierta_para_hijo`. Con las dos respuestas se ven la pregunta y la respuesta del otro (`pregunta_otro`, `respuesta_otro`), `preguntas_guia`, `mensaje_diferencias` (el puente) y `algo_que_saben`; el estudiante, además, `entrada_diario` (`codigo`, `nombre`, `pregunta`) si la pregunta del diario que abre conversarla ya está desbloqueada (en `contenido`, solo conv-6 y conv-10 abren una).
 - **Pregunta:** cada rol ve la suya; con `pregunta_apoderado` nula, el apoderado responde la del estudiante.
-- **Avisos:** la primera respuesta de cada uno a una conversación notifica al otro del vínculo (RESPUESTA_CONVERSACION, ver «Notificaciones»). El apoderado no recibe aviso cuando el hijo habilita una conversación (HU-067), y el estudiante ve su nueva pregunta del diario al consultarlo.
+- **Avisos:** la primera respuesta de cada uno a una conversación notifica al otro del vínculo (RESPUESTA_CONVERSACION, ver «Notificaciones»). El apoderado no recibe aviso cuando el hijo habilita una conversación, y el estudiante ve su nueva pregunta del diario al consultarlo.
 
-## Notificaciones
+### Notificaciones
 
-Lo que lista la campana (ajuste notificaciones). Código: `app/services/notificaciones.py`; tabla de estado `notificacion` (se vacía con el reinicio). Es la única verdad de «visto»: `desbloqueo.visto` ya no se usa.
+Lo que lista la campana. Código: `app/services/notificaciones.py`; tabla de estado `notificacion` (se vacía con el reinicio). Es la única verdad de «visto»: `desbloqueo.visto` ya no se usa.
 
 - **Criterio:** un logro se anuncia una sola vez, en su lugar más ceremonial; la campana es el historial. Se crean en la transacción de la acción que las origina, y la respuesta de esa acción trae las de la cuenta que actúa en `nuevas_notificaciones` (en `RespuestaAgrupada`, por cuenta). En una acción de varias cuentas se insertan en un solo lote.
 - **Tipos** (`TipoNotificacion`; `nombre` es una foto del nombre al crearla):
@@ -277,28 +244,76 @@ Lo que lista la campana (ajuste notificaciones). Código: `app/services/notifica
 - **Marcado:** `POST /cuentas/{c}/notificaciones/marcar-vistas` con `{codigos: [...]}`; sin códigos, todas las pendientes. Responde `{marcadas}`. Idempotente: las ya vistas, ajenas o inexistentes se ignoran. Sin eventos.
 - Solo la cuenta propia (guardia por defecto).
 
-## Avance del estudiante
+### Avance del estudiante
 
-Código: `app/services/avance.py` (`GET /cuentas/{c}/avance`, ajuste del panel de F05). Solo estudiante; otros roles, 404.
+Código: `app/services/avance.py` (`GET /cuentas/{c}/avance`). Solo estudiante; otros roles, 404.
 
 - **Camino:** todas las actividades (requeridas y opcionales) de los bloques `MISIONES_CAMPO` de audiencia ESTUDIANTE, con total fijo leído de las definiciones, nunca de lo visible o desbloqueado. Terminar las requeridas no es llegar al 100 %.
 - **Tramo actual:** el primer bloque de `MISIONES_CAMPO` por `numero` con una requerida sin completar; cuenta solo sus requeridas. `null` y `camino_completo` cuando no queda ninguna, sea cual sea el porcentaje.
-- **Tramos** (ajuste pasaporte-perfil): cada bloque de `MISIONES_CAMPO` por `numero`, con sus requeridas completadas y su total fijo, y `estado` COMPLETO (todas sus requeridas), ACTUAL (el tramo actual) o PENDIENTE. `requeridas` suma las de todos los tramos.
+- **Tramos:** cada bloque de `MISIONES_CAMPO` por `numero`, con sus requeridas completadas y su total fijo, y `estado` COMPLETO (todas sus requeridas), ACTUAL (el tramo actual) o PENDIENTE. `requeridas` suma las de todos los tramos.
 - **Ciudad:** todas las actividades del bloque `CIUDAD`, total fijo. Su porcentaje es la afinidad de `/logros` (`logros.afinidad` delega en `avance_ciudad`).
 - LUMI y PORTAL_FAMILIA no cuentan. Porcentajes con `porcentaje()` de `services/tematicas.py`.
 
-## Ruta del apoderado
+### Ruta del apoderado
 
 Código: `app/services/familia.py`. Solo para cuentas APODERADO; otras, 404.
 
 - **Avance** (`avance_ruta`, común a ambos roles): actividades requeridas COMPLETADAS sobre las requeridas de los bloques de la audiencia de la cuenta; las opcionales no cuentan. Es el avance que ve la familia; el del panel del estudiante es otro (ver «Avance del estudiante»).
 - **Diploma:** se obtiene al completar todos los bloques de su audiencia (COMPLETA_BLOQUE de cada uno); `obtenido_en` es la fecha del último.
-- **Hijos:** los estudiantes de sus vínculos activos, por código de vínculo, cada uno con su avance, su nivel actual y sus cuestionarios: los SIEMPRE y los SEGUN_COLEGIO que el colegio del hijo hace visibles (un NUNCA jamás), con cada aplicación (partida antes que llegada) y la fecha de su resultado vigente (`calculado_en`, nulo sin él). Los cuestionarios y su estado se entregan sin diploma; los puntajes no (ajuste inicio-apoderado).
+- **Hijos:** los estudiantes de sus vínculos activos, por código de vínculo, cada uno con su avance, su nivel actual y sus cuestionarios: los SIEMPRE y los SEGUN_COLEGIO que el colegio del hijo hace visibles (un NUNCA jamás), con cada aplicación (partida antes que llegada) y la fecha de su resultado vigente (`calculado_en`, nulo sin él). Los cuestionarios y su estado se entregan sin diploma; los puntajes no.
 - **Resultados del hijo:** solo con el diploma (si no, 409, antes de mirar el hijo); del hijo elegido (`estudiante`; uno ajeno, 404) o del primer vínculo activo (sin vínculo, 409); los resultados vigentes del hijo en esos cuestionarios, en el mismo orden, con la misma forma que la consulta de resultado del estudiante.
 
-## Preguntas de batalla (F04b)
+### Preguntas de batalla
 
 - Cada BATALLA tiene un pool en `pregunta_batalla`: enunciado, opciones (al menos tres), índice de la correcta, explicación y la ficha de la que sale (obligatoria, del estudiante). `actividad.preguntas_por_intento` dice cuántas salen en cada intento; el cargador exige que el pool tenga al menos el doble.
 - `GET /cuentas/{c}/batallas/{a}/preguntas` toma ese número al azar del pool y mezcla las opciones; cada opción conserva su `indice`, que es lo que se responde. Entrega la correcta y la explicación para la retroalimentación del front. No escribe nada; 409 con el mensaje de bloqueo si la batalla no está disponible y 404 si no existe o no es BATALLA.
 - Las fichas de una batalla se derivan de sus preguntas (sin tabla aparte): `BatallaCuenta.fichas`, en el orden de su primera pregunta, con su estado para la cuenta.
-- Vidas del enemigo y destellos también son de la batalla (`actividad.vidas_enemigo` y `actividad.destellos`, F04c); el servidor decide la victoria. `preguntas_por_intento` debe alcanzar para terminar (vidas + destellos − 1) y el pool debe tener al menos el doble. Del desafío del front solo se usa la presentación (personaje, ilustración, narrativa).
+- Vidas del enemigo y destellos también son de la batalla (`actividad.vidas_enemigo` y `actividad.destellos`); el servidor decide la victoria. `preguntas_por_intento` debe alcanzar para terminar (vidas + destellos − 1) y el pool debe tener al menos el doble. Del desafío del front solo se usa la presentación (personaje, ilustración, narrativa).
+
+## Acciones
+
+Todas reciben `cuenta` y `fecha_hora` opcional, y devuelven `eventos_registrados`, `nuevos_desbloqueos` y `nuevas_notificaciones` (las creadas en esa acción para la cuenta; ver «Notificaciones»). Las que afectan a varias cuentas devuelven `{"por_cuenta": {codigo: {...}}}`.
+
+| Acción (POST) | Valida | Efecto y eventos |
+|---|---|---|
+| `/acciones/ingresar` | — | INGRESO |
+| `/acciones/completar-actividad` | Actividad disponible, no CASO ni BATALLA y sin ítems de registro (un registro se termina con `registro/entregar`, que aplica la regla de adecuado: `registro.md`; si no, 409). Si tiene ítems de instrumento, todos respondidos (si no, 409 con `items_faltantes`, sin eventos). | Progreso a COMPLETADA. COMPLETA_ACTIVIDAD en **cada** finalización, también al repetir. COMPLETA_BLOQUE la primera vez que se completan todas las actividades del bloque. No calcula resultados de instrumentos: eso ocurre al revelar. |
+| `/acciones/resolver-caso` | Actividad CASO disponible; puntaje entero entre 0 y el `puntaje_maximo` del caso (422 si lo supera); `ocupaciones` (códigos de las bien asignadas) existentes, si no 422 | Guarda el intento. Con puntaje ≥ `puntaje_minimo`: completa la actividad (COMPLETA_ACTIVIDAD), SUPERA_CASO la primera vez y agrega a `coleccion_ocupacion` las ocupaciones que la cuenta no tenía (`ocupaciones_nuevas` en la respuesta, con `codigo` y `titulo`). Con menos, queda EN_CURSO, sin eventos. Responde también `puntaje_minimo` y `puntaje_maximo`; el mejor puntaje se lee en `GET casos`. |
+| `/acciones/resolver-batalla` | Actividad BATALLA disponible; `respuestas` (`pregunta`, `opcion`: el índice de la opción), en el orden en que se dieron, al menos una, sin repetir, todas preguntas de esa batalla y con una opción existente; el intento debe terminar justo en la última respuesta (si no, 422) | El servidor recorre las respuestas con las vidas y los destellos de la batalla: cada acierto quita una vida al enemigo y cada error, un destello; gana si el enemigo queda sin vidas y pierde si se agotan los destellos. Guarda el intento en `resultado_batalla` (victoria, aciertos y preguntas) y cada respuesta en `respuesta_batalla`. La primera victoria completa la actividad (COMPLETA_ACTIVIDAD) y registra SUPERA_BATALLA, y VENCE_DESAFIO_INTACTO si terminó con todos los destellos. Perder deja la batalla EN_CURSO; los intentos posteriores a la victoria son práctica, sin eventos. Responde los campos de la acción más `victoria`, `practica` (ya estaba superada), `aciertos`, `preguntas`, `destellos_restantes` y `fichas_repaso` (`codigo` y `titulo` de las fichas de las preguntas falladas en el intento, sin repetir, de más a menos fallos; si empatan, la de la primera fallada; sin fallos, vacía). El primer intento es el que cuenta para la métrica de conocimiento. Las preguntas de cada intento las da `GET /cuentas/{c}/batallas/{a}/preguntas`. |
+| `/acciones/ver-testimonio` | Solo estudiante; testimonio disponible (si no, 409 con su mensaje) | VISTA_TESTIMONIO solo la primera vez. |
+| `/acciones/ver-ficha` | Ficha de la audiencia de la cuenta (si no, 404) y disponible (si no, 409 con su mensaje). La registra el modal de ficha al abrirse | VISTA_FICHA solo la primera vez. |
+| `/acciones/responder-registro` | Clasificación ADECUADA o POCO_DESARROLLADA | RESPUESTA_REFLEXIVA si es ADECUADA o `ampliada`. (Acción simple; el registro con evaluador está en `registro.md`.) |
+| `/acciones/escribir-entrada` | Solo estudiante; sección DIARIO; `titulo` opcional y `texto`; `pregunta` (código) o `del_dia`, no ambos; sin ninguno es LIBRE. Con pregunta: su recomendación existe, ya tiene texto y no tiene entrada; la del día, además, vigente (si no, 409). | ESCRIBE_ENTRADA_DIARIO y, si es LIBRE, ESCRIBE_ENTRADA_LIBRE. |
+| `/acciones/editar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404); sin límite de tiempo ni sección | Cambia `texto` y, si se envía, `titulo`; fija `actualizada_en`. Sin eventos. |
+| `/acciones/borrar-entrada` | Solo estudiante; `numero` de la cuenta (si no, 404) | Borrado físico. La recomendación que respondía queda archivada (carta) o cerrada (pregunta del día): no vuelve a quedar por responder. Sin eventos. |
+| `/acciones/diario/archivar-pregunta`, `/acciones/diario/desarchivar-pregunta` | Solo estudiante; sección DIARIO; `codigo` de una carta recibida (DESBLOQUEABLE; una del día responde 409). Archivar: sin responder y no archivada; desarchivar: archivada (si no, 409) | Fija o borra `archivada_en`; responde su `PreguntaDiarioEstado`. Sin eventos. |
+| `/acciones/check-in` | Solo estudiante; sección CHECK_IN; uno por día, editable ese día (el segundo sobrescribe el nivel y no emite evento); nivel 1–5 | REGISTRA_CHECK_IN (solo el primero del día) |
+| `/acciones/ver-carrera`, `/acciones/ver-ocupacion`, `/acciones/ver-institucion` | Sección CATALOGO abierta (estudiante). Una cuenta de apoderado u orientadora recibe 200 sin eventos ni desbloqueos: la exploración se mide solo en el estudiante | VISTA_CARRERA, VISTA_OCUPACION, VISTA_INSTITUCION (con el elemento visto como referencia) |
+| `/acciones/marcar-favorito` | Carrera, ocupación o institución: sección CATALOGO abierta. Ficha o testimonio: de la audiencia de la cuenta (si no, 404) y desbloqueado (si no, 409), sin exigir el catálogo. En ambos casos, aún no es favorito | Catálogo: MARCA_FAVORITO (sin referencia: los ids de carreras, ocupaciones e instituciones se cruzan). Ficha: MARCA_FAVORITO_FICHA; testimonio: MARCA_FAVORITO_TESTIMONIO, con la ficha o el testimonio como referencia. Entrevista: ver `investigaciones.md` |
+| `/acciones/publicar-entrevista` y las demás de investigaciones | Ver `investigaciones.md` | PUBLICA_ENTREVISTA en cada autor; el resto, en `investigaciones.md`. |
+| `/acciones/escribir-carta` | Sección de su rol (ver «Conversaciones») y vínculo activo; la carta aún no entregada | Guarda la carta de su rol; ESCRIBE_CARTA solo la primera vez. |
+| `/acciones/responder-conversacion` | Ver «Conversaciones» | Guarda la respuesta de su rol. Si con ella están las dos, la conversación queda conversada y COMPLETA_CONVERSACION va a las dos cuentas, la primera vez (`RespuestaAgrupada`). |
+| `/eventos` (depuración) | Solo que existan cuenta y referencia | Registra un evento crudo y evalúa reglas, sin validaciones de dominio ni cambios de estado. |
+
+Las acciones de instrumentos (`responder-items`, `revelar-resultado`, `reiniciar-instrumento`) están en `instrumentos.md`, y las de registro, en `registro.md`.
+
+Un objetivo bloqueado responde 409 con `detail.mensaje` = el mensaje de bloqueo de su primera regla (por código; el del bloque si la actividad está bloqueada por él) y `detail.progreso`. Leer el contenido de una sección bloqueada también responde 409 con su mensaje.
+
+## Consultas
+
+| GET | Devuelve |
+|---|---|
+| `/reglas` | Todas las reglas, legibles, por código, con su `mensaje_bloqueo`. No evalúa. |
+| `/cuentas` | Cuentas. |
+| `/cuentas/{c}/progreso/{tipo}/{codigo}` | Cada regla del objetivo con su `mensaje_bloqueo` y el avance de cada condición (`actual`, `requerido`, `cumplida`, `texto`) y del evaluador. Niveles con código `N1`…`N5`. Insignia oculta no obtenida: 403. Tipo inválido: 422. |
+| `/cuentas/{c}/eventos` | Línea de tiempo, del más reciente al más antiguo. |
+| `/cuentas/{c}/desbloqueos` | Desbloqueos con fecha y objetivo, del más reciente al más antiguo (línea de tiempo). Lo visto no vive aquí, sino en las notificaciones. |
+| `/cuentas/{c}/notificaciones?limite&desde` | La campana: `{total, no_vistas, items}`, ver «Notificaciones». |
+| POST `/cuentas/{c}/notificaciones/marcar-vistas` | `{codigos}`; ver «Notificaciones». |
+
+Las consultas de lectura por dominio (`resumen`, `actividades`, `fichas`, `logros`…) están en `integracion.md`.
+
+## Código y pruebas
+
+- Código: `app/services/motor/`, `app/services/actividades.py`, `app/services/cuentas.py` y servicios de cada dominio; las rutas de cada tema están en su subsección. Datos: `datos/fijos.py`, `datos/contenido.py` y `datos/ruta.py`.
+- Pruebas: `tests/unit/motor`, `tests/integration/motor`, `tests/integration/actividades`, `tests/unit/diario`, `tests/integration/diario`, `tests/integration/conversaciones`, `tests/integration/notificaciones`, `tests/integration/avance`, `tests/integration/familia`, `tests/integration/batallas`, `tests/integration/logros` y `tests/integration/presentaciones`.
