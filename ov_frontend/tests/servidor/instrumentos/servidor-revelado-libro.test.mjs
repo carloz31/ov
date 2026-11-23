@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { MemoryRouter } from 'react-router'
 import { escenarioRuta, fixtureServidor, jsonServidor, libroServidor } from '../../soporte/servidor-ayudas.mjs'
 
-// Ajuste de F03 (docs/specs/F03-revelado-libro.md): tarjeta común de revelado del libro de Helena, llegada a
+// Ajuste de F03: tarjeta común de revelado del libro de Helena, llegada a
 // tarjeta completa, sello accesible por teclado y chips de alcance.
 const html = (Component, props) =>
   renderToStaticMarkup(React.createElement(MemoryRouter, null, React.createElement(Component, props)))

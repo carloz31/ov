@@ -1,11 +1,10 @@
-"""Valores aprobados en la spec de la iteración 1 (§4.3.7 y §4.3.8), copiados literalmente.
+"""Enunciados aprobados del test de intereses (RIASEC), copiados literalmente.
 
-La spec está archivada en docs/historico/iteracion-1/. Si un cambio de datos aprobado
-modifica estos valores, se actualizan aquí en la misma tarea.
+Si un cambio de datos aprobado modifica estos valores, se actualizan aquí en la misma tarea.
 """
 
 # Ajuste carga-instrumentos: O*NET Interest Profiler Short Form por dimensión, en el orden del formulario
-# (k = 1..10), con los cuatro ajustes de comprensión de la spec.
+# (k = 1..10), con cuatro ajustes de comprensión.
 ENUNCIADOS_RIASEC = {
     'R': [
         'Construir gabinetes de cocina',

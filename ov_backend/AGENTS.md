@@ -16,8 +16,6 @@ Documentos vigentes (lee los que toque la tarea):
 | `docs/sistema/investigaciones.md` | Investigaciones, guion con sugerencias del LLM, entrevistas, reacciones, reportes y Leyenda. |
 | `docs/sistema/integracion.md` | Contrato con el front, conjuntos de datos, fixtures y reinicio. |
 | `docs/sistema/panel.md` | Panel del salón de la orientadora: alertas y parámetros configurables, evaluadores y lecturas. |
-| `docs/specs/` | La spec en curso. |
-| `docs/decisiones.md` | Decisiones de la spec en curso. |
 
 ## Estructura
 
@@ -44,7 +42,7 @@ datos/                  lo que llena la base: fijos.py, contenido.py, ruta.py, c
 migrations/             migraciones de Alembic
 scripts/                herramientas manuales (exportador de fixtures, coherencia de `contenido` con el front, entrevistas de ejemplo, estudiantes y entrevistas de ejemplo del panel con `--desarrollo` (que `datos.cargar contenido` corre por defecto), lo que tres misiones de `contenido` piden fuera del camino en `prerrequisitos_contenido.py` (lo usan la siembra y `tests/soporte/soporte_contenido.py`, que lo importa de `scripts`), cuentas de una prueba desde un CSV con `crear_cuentas.py`, donde un salón nuevo se escribe como `AAAA-S`, promoción y sección, y el candado de la recarga del despliegue en `comprobar_recarga.py`: bloquea si hay cuentas que no crea la carga de `contenido` ni son E99, A99 u O99)
 tests/                  pruebas (ver «Pruebas»)
-docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, historico/
+docs/                   sistema/: cómo funciona cada parte del sistema
 ```
 
 ### Dónde va cada cosa
@@ -85,8 +83,8 @@ docs/                   sistema/, specs/, decisiones.md, plan-iteraciones.md, hi
 
 | Conjunto | Para qué |
 |---|---|
-| `contenido` (`datos/contenido.py` + `datos/fijos.py`) | El contenido real de la plataforma: el que se despliega y con el que se hace la prueba manual. Actividades del estudiante (B0–B5, ciudad, misiones adicionales) y del apoderado, las 32 fichas, las batallas y sus reglas definitivas. Lo que aún no tiene contenido real se toma de `ruta` y se lista en `PROVISIONALES` (qué, de dónde, qué ajuste lo reemplaza); ninguna regla de `contenido` nombra una actividad `t-` del camino. |
-| `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Banco de pruebas de mecánicas, congelado: lo justo para demostrar cada mecánica (`docs/plan-iteraciones.md`, «Ruta mínima de prueba»). Todo lo de `ruta.py` es `DATO DE PRUEBA`; las pruebas existentes corren contra él. `fijos.py` se carga en todo conjunto. |
+| `contenido` (`datos/contenido.py` + `datos/fijos.py`) | El contenido real de la plataforma: el que se despliega y con el que se hace la prueba manual. Actividades del estudiante (B0–B5, ciudad, misiones adicionales) y del apoderado, las 32 fichas, las batallas y sus reglas definitivas. Lo que toma de `ruta` (las cuentas, el colegio y los salones) se lista en `PROVISIONALES` (qué, de dónde, con qué se reemplaza); ninguna regla de `contenido` nombra una actividad `t-` del camino. |
+| `ruta` (`datos/ruta.py` + `datos/fijos.py`) | Banco de pruebas de mecánicas, congelado: lo justo para demostrar cada mecánica. Todo lo de `ruta.py` es `DATO DE PRUEBA`; las pruebas existentes corren contra él. `fijos.py` se carga en todo conjunto. |
 
 - `ruta.py` y `contenido.py` son datos puros con la misma forma; el cargador común (`datos/cargador.py`) los interpreta, y una tupla que un conjunto no declara es vacía. `CONJUNTOS` (`datos/cargar.py`) los registra.
 - Las pruebas de `contenido` usan la plantilla `aplicacion_contenido` / `cliente_contenido` / `sesion_contenido` (`tests/integration/datos/` y `tests/integration/escenarios/contenido/`). La coherencia con los JSON del front se revisa con `uv run python scripts/verificar_contenido_front.py`.

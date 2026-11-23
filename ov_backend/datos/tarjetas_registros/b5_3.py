@@ -1,4 +1,4 @@
-"""Tarjetas de b5-3. Solo datos: el texto de cada tarjeta es el de `claude/tarjetas-registros*.md`,
+"""Tarjetas de b5-3. Solo datos: el texto de cada tarjeta es el aprobado,
 copiado carácter por carácter. `bases` repite, separadas, las líneas `BASE:` de la tarjeta (sin reemplazar los
 marcadores); la prueba `test_llm_tarjetas.py` comprueba que están dentro del texto.
 """

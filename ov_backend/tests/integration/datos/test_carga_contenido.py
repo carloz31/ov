@@ -1,4 +1,4 @@
-"""Ajuste carga-actividades: el conjunto `contenido` carga el contenido real y lo provisional de `ruta`."""
+"""Ajuste carga-actividades: el conjunto `contenido` carga el contenido real y lo que toma de `ruta`."""
 
 import pytest
 from sqlalchemy import select
@@ -26,7 +26,7 @@ def test_carga_conteos(base):
     assert conteos['cuenta'] == 12
     # Ajuste registros (adaptación autorizada para `contenido`): salen b2-6, ma6, b4-a y ma9. Ajuste registros llm
     # (lote 2): los 19 registros tienen 29 ítems (22 de los requeridos y 7 de los opcionales).
-    assert conteos['actividad'] == 83 + 5  # 77 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi provisionales
+    assert conteos['actividad'] == 83 + 5  # 77 reales y los seis casos (ajuste carga-casos) + recuerdos de Lumi
     assert conteos['item_registro'] == 29
 
 

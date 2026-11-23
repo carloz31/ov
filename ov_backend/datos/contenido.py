@@ -1,4 +1,4 @@
-"""Contenido real de la plataforma. Lo provisional está en `PROVISIONALES`.
+"""Contenido real de la plataforma. Lo que toma de `ruta` está en `PROVISIONALES`.
 
 Mismo formato de tuplas que `datos/ruta.py`; lo interpreta el cargador común (`datos/cargador.py`). Los ítems y las
 referencias de los registros salen de los JSON de `ov_frontend/src/data/activities/contenidos/plataforma/`; la
@@ -18,7 +18,7 @@ from datos import cargador, ruta, tarjetas_registros
 from datos.fijos import validar_distribucion_items
 
 
-# Lo que `contenido` toma de `ruta` mientras no tenga contenido real: (qué, de dónde, qué ajuste lo reemplaza).
+# Lo que `contenido` toma de `ruta`: (qué, de dónde, con qué se reemplaza).
 # Sus reglas apuntan a actividades de `contenido`; ninguna nombra una actividad `t-` del camino.
 PROVISIONALES = (
     ('Cuentas, colegios, salones, vínculos y orientadoras', 'ruta.CUENTAS, COLEGIOS, SALONES, VINCULOS, ORIENTADORAS_SALONES', 'carga de cuentas del piloto'),

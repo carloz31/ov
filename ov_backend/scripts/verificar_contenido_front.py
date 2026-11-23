@@ -1,7 +1,7 @@
 """Coherencia entre los conjuntos `contenido` y `ruta` y los JSON del front (ajustes carga-actividades y carga-casos).
 
 Carga cada conjunto en una base temporal y comprueba, sin servicios externos:
-- en `contenido`: que cada actividad tiene su JSON (`plataforma/`, o `ruta/` para lo provisional); que cada `desafio`
+- en `contenido`: que cada actividad tiene su JSON (`plataforma/`, o `ruta/` para lo que toma de `ruta`); que cada `desafio`
   de un JSON es una batalla cargada y existe en `challenges.ts`; que cada `item` de un JSON es un ítem cargado de esa
   actividad y que cada ítem de un registro tiene su nodo, en el orden de los ítems; que un nodo de ítem de
   `plataforma/` solo trae lo que el backend no entrega (`errores_presentacion`) y que ningún registro trae destinos; que

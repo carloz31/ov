@@ -232,7 +232,7 @@ def _recorrer(cliente):
     fixtures['responder-t-exp-ruta'] = pasos['t-exp-ruta']
     fixtures['registro-t-expectativas-cerrado'] = _pedir(
         cliente, 'GET', '/cuentas/est-ana/actividades/t-expectativas/registro')
-    # B05: t-eco retoma la elección; el texto, sin texto citable en la entrega provisional, queda sin dato.
+    # B05: t-eco retoma la elección; el texto, sin texto citable (ítem sin LLM), queda sin dato.
     fixtures['items-registro-t-eco'] = _pedir(cliente, 'GET', '/actividades/t-eco/items-registro')
     fixtures['referencias-t-eco'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades/t-eco/referencias')
     fixtures['actividades-ciudad'] = _pedir(cliente, 'GET', '/cuentas/est-ana/actividades')

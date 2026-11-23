@@ -40,7 +40,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 | Tipo | DISPONIBLE | POR_DESARROLLAR | SIN_DATO |
 |---|---|---|---|
 | ELECCION | Con intento vigente del ítem fuente, sea cual sea su estado. `opciones`: `[{codigo, texto}]` en el orden guardado, con el texto tal como se mostró (en una «Otra», lo escrito). | — | Sin intento vigente, o el ítem quedó **sensible** o con tipo final `emocional` (§3.4 del lote 2: no se referencia nada de él). |
-| TEXTO | El intento vigente tiene `texto_citable` (lo que calcula la capa del LLM: la primera respuesta si quedó `propio` o `general`, más la línea del seguimiento si mejoró) y no es sensible ni `emocional`. `texto`: sus líneas unidas con « / »; `lineas`: las mismas por separado (lote 3). | — | Sin intento vigente, sin texto citable (un ítem u opción sin LLM, un ítem `sin_evaluar` o la entrega provisional) o sensible o `emocional`. |
+| TEXTO | El intento vigente tiene `texto_citable` (lo que calcula la capa del LLM: la primera respuesta si quedó `propio` o `general`, más la línea del seguimiento si mejoró) y no es sensible ni `emocional`. `texto`: sus líneas unidas con « / »; `lineas`: las mismas por separado (lote 3). | — | Sin intento vigente, sin texto citable (un ítem u opción sin LLM o un ítem `sin_evaluar`) o sensible o `emocional`. |
 | RESULTADO | Con resultado vigente (revelado) de la aplicación fuente. `opciones`: `[{codigo, texto}]` de las dimensiones del código de interés (COINCIDENCIAS) o de las destacadas (DESTACADAS), con el nombre de la dimensión. Con perfil plano, `[]`. | — | Sin revelar, o tras reiniciar. |
 | COINCIDENCIAS | Igual que RESULTADO. `opciones`: las ocupaciones por posición, con `codigo` (o `codigo_onet` si no tiene) y su título. Con perfil plano, `[]`. | — | Igual que RESULTADO. |
 | RESPUESTA_CUESTIONARIO | La actividad de la aplicación fuente que presenta el ítem está COMPLETADA (la respuesta ya no cambia). `texto`: la etiqueta de la opción, sin puntaje. | — | Sin respuesta o con la actividad sin completar. |
@@ -70,7 +70,7 @@ Ningún tipo lee el diario (`entrada_diario`): el diario va en una sola direcci�
 |---|---|
 | `/cuentas/{c}/actividades/{a}/referencias` | `{"referencias": [{codigo, tipo, estado, actividad?, texto?, opciones?, cita?}]}`, ordenadas por código; `cita` solo en PLAN. `actividad` (F02) solo en ELECCION y TEXTO, en todo estado: el código de la actividad del ítem fuente, para que el front nombre de dónde sale la cita. No exige que la actividad esté disponible. Cuenta que no es de estudiante, actividad inexistente o de otra audiencia: 404. |
 
-**Aislamiento:** la consulta solo lee datos de `{c}`. Todavía no hay autenticación (llega en B17). Cuando exista, deberá exigir que `{c}` sea la cuenta autenticada, con su prueba.
+**Aislamiento:** la consulta solo lee datos de `{c}`, y el guardia de acceso exige que `{c}` sea la cuenta del token (404 si es otra; `tests/integration/acceso/test_cobertura_rutas.py`).
 
 ## Carga (`datos/ruta.py`)
 

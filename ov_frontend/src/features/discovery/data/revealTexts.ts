@@ -21,7 +21,6 @@ export const TEXTOS_REVELADO: Record<InstrumentPageId | 'llegada', TextosRevelad
     descubrir: 'tus inteligencias más desarrolladas',
     adentro: 'tus formas de ser inteligente más desarrolladas.',
   },
-  // TEXTO PROVISIONAL: el usuario redactará el de habilidades sociales.
   habilidades: {
     descubrir: 'tus habilidades sociales',
     adentro: 'cómo te relacionas y trabajas con los demás.',

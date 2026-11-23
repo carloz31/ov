@@ -39,5 +39,3 @@ uv run python scripts/exportar_fixtures_front.py --destino "<ruta de ov_frontend
 
 - [AGENTS.md](AGENTS.md): estructura, reglas y convenciones.
 - [docs/sistema/](docs/sistema/): cómo funcionan hoy el motor, los instrumentos, el registro y la integración con el front.
-- [docs/plan-iteraciones.md](docs/plan-iteraciones.md) y [docs/specs/](docs/specs/): plan y spec en curso.
-- [docs/historico/](docs/historico/): specs, decisiones y validaciones de trabajos terminados.

@@ -41,7 +41,7 @@ OPCION_ONET_MINIMA = 1
 OPCION_ONET_MAXIMA = 5
 PUNTAJE_ONET_MINIMO = 0
 
-# Respaldo por longitud de los asistentes (guion) y del relato de un plan. Provisional (B02). Ajuste registros llm
+# Respaldo por longitud de los asistentes (guion) y del relato de un plan (B02). Ajuste registros llm
 # (lote 3): el registro ya no tiene mínimo de caracteres.
 MIN_CARACTERES_RESPALDO = 40
 # Ajuste registros llm (lote 3): intentos guardados por ítem de registro; con este número, la edición se rechaza.
@@ -97,7 +97,7 @@ PIEZAS_SOLO_ORIGEN_LLM = ('INT', 'OTRA-PERFIL', 'OTRA-INICIO')
 GRUPOS_PIEZAS = ('INTERESES', 'TESTS', 'ANTES', 'CUESTA')
 
 # B09 · Diario (ajuste cartas-diario: sin LLM).
-# Días que una pregunta del día sigue vigente desde su fecha (provisional).
+# Días que una pregunta del día sigue vigente desde su fecha.
 VIGENCIA_PREGUNTA_DIA_DIAS = 1
 # Sorteo de la pregunta del día: peso = (máximo de la escala − promedio) + base; las DIARIA sin dimensión pesan la base.
 PESO_BASE_DIMENSION = 0.5
@@ -148,8 +148,7 @@ MAXIMO_PASOS_POR_DUDA = 2
 MAXIMO_PASOS_POR_COMPLICACION = 2
 MAXIMO_CARACTERES_PROMPT_PASO = 180
 MAXIMO_CARACTERES_PASO = 220
-# Topes propios de la llamada de pasos (todas las novedades de un guardado en una llamada). PROVISIONALES: se fijan con
-# la medición de la fase 4 del ajuste llm-sugerencias (1, 3, 5, 8 y 10 dudas).
+# Topes propios de la llamada de pasos (todas las novedades de un guardado en una llamada).
 MAXIMO_TOKENS_SALIDA_PASOS = 6000
 TIEMPO_MAXIMO_PASOS_SEGUNDOS = 30
 

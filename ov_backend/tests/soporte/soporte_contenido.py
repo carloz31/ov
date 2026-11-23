@@ -1,5 +1,4 @@
-"""Ayudas para recorrer el conjunto `contenido` con las peticiones del front (entrega provisional de registros,
-ajuste registros llm, lote 2).
+"""Ayudas para recorrer el conjunto `contenido` con las peticiones del front.
 
 Las comparten el recorrido de punta a punta (`escenarios/contenido`) y las pruebas de los registros definitivos
 (`registros/`, ajuste registros). Los textos son DATO DE PRUEBA.

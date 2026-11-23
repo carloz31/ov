@@ -38,7 +38,7 @@ function leerGuardada(): SesionAcceso | null {
 
 let sesion = leerGuardada()
 let aviso: string | null = null
-// GET /sesion: llegan al almacén pero ninguna vista los pinta todavía (docs/pendientes-interfaz.md).
+// GET /sesion: los hijos del apoderado y los salones de la orientadora; las vistas los leen con `useDatosSesion()`.
 let datos: { hijos: HijoSesion[]; salones: SalonSesion[] } = { hijos: [], salones: [] }
 const oyentes = new Set<() => void>()
 

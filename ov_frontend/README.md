@@ -38,5 +38,3 @@ Pruebas por grupo: `npm run test:local`, `npm run test:servidor`, `npm run test:
 - [AGENTS.md](AGENTS.md): estructura, reglas, dónde va cada cosa y tabla de impacto de pruebas.
 - [docs/origen-de-datos.md](docs/origen-de-datos.md): qué viene del servidor y qué es local.
 - [docs/contenidos-actividades.md](docs/contenidos-actividades.md): formato de los JSON de actividades.
-- [docs/pendientes-interfaz.md](docs/pendientes-interfaz.md): datos sin vista que esperan decisión.
-- [docs/historico/](docs/historico/): specs de vistas, planes e informes de trabajos terminados.

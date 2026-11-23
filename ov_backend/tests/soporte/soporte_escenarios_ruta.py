@@ -52,7 +52,7 @@ def verificar_p07_llegada_a_la_ciudad(cliente):
     respuesta = avanzar(cliente)
     assert [(e['tipo'], e['referencia']) for e in respuesta['eventos_registrados']] == [
         ('COMPLETA_ACTIVIDAD', 't-expectativas'), ('COMPLETA_BLOQUE', 'T1'),
-        # La entrega provisional (lote 2) completa el registro y emite REGISTRO_ADECUADO.
+        # Entregar completa el registro y emite REGISTRO_ADECUADO.
         ('REGISTRO_ADECUADO', 't-expectativas'),
     ]
     # La Ciudad se abre a mitad de T1: la opcional t-opcional sigue pendiente y no impide cerrar el bloque.

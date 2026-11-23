@@ -1,6 +1,6 @@
 """HU-009 y RNF-20: referencias resueltas por cuenta: ELECCION y TEXTO (B05), RESULTADO y COINCIDENCIAS (B06).
 
-Los textos son DATO DE PRUEBA. Ajuste registros llm (lote 2): siempre se lee el intento vigente; la entrega provisional
+Los textos son DATO DE PRUEBA. Ajuste registros llm (lote 2): siempre se lee el intento vigente; un ítem sin LLM
 no deja texto citable, así que un TEXTO citable se escribe directamente en el intento vigente (`citar`).
 """
 

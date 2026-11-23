@@ -208,7 +208,7 @@ export function isCityUnlocked(value: AdventureState) {
   )
 }
 export function isFamilyUnlocked(value: AdventureState) {
-  if (cuentaServidor) return false // Conversaciones: iteración 4.
+  if (cuentaServidor) return false // En api, Familia la abre el servidor (sección FAMILIA).
   return isCityUnlocked(value)
 }
 export function canAccessCity(value: AdventureState) {

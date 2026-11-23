@@ -121,7 +121,6 @@ TEXTOS_FIJOS = (
 CODIGO_OTRA = 'OTRA'
 
 # (código, nombre, ((código, texto), ...)). Listas comunes: se comparan entre actividades y tarjetas.
-# Textos provisionales hasta la carga real (B02).
 LISTAS_COMUNES = (
     ('RUTAS_DESPUES_COLEGIO', 'Rutas después del colegio',
      (('UNIVERSIDAD', 'Estudiar en una universidad'), ('INSTITUTO', 'Estudiar en un instituto'),
@@ -157,7 +156,7 @@ LISTAS_COMUNES = (
       ('CURSOS_DIFICILES', '¿Qué cursos son los más difíciles?'),
       ('SUELDO_INICIAL', '¿Cuánto gana alguien que recién termina?'))),
     # Las cinco preguntas de conocimiento (códigos de `PreguntaConocimiento`) y la duda que crea cada una al
-    # responder «más o menos» o «no»; `{carrera}` se reemplaza por el nombre. Textos de las preguntas provisionales.
+    # responder «más o menos» o «no»; `{carrera}` se reemplaza por el nombre.
     ('PREGUNTAS_CONOCIMIENTO', 'Qué tanto conozco la carrera',
      (('DIA_NORMAL', '¿Sabes cómo es un día normal de alguien de {carrera}?'),
       ('DONDE_TRABAJAR', '¿Sabes dónde podrías trabajar si estudias {carrera}?'),
@@ -291,7 +290,7 @@ TEMATICAS = (
 )
 
 # Cuestionario de punto de partida (ENTRADA) y de llegada (SALIDA): las mismas afirmaciones en cinco
-# dimensiones, una por temática. Provisional hasta la carga real (B07): (temática, enunciado, inverso).
+# dimensiones, una por temática (B07): (temática, enunciado, inverso).
 OPCIONES_ACUERDO = ('Nada de acuerdo', 'Poco de acuerdo', 'Bastante de acuerdo', 'Muy de acuerdo')
 ENUNCIADOS_PARTIDA_LLEGADA = (
     ('A', 'Sé qué quiero hacer cuando termine el colegio.', False),

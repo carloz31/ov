@@ -6,7 +6,7 @@ import type { InstitucionEnCarrera } from '@/types/servidor'
 import { useModoCatalogo } from '../hooks/useModoCatalogo'
 
 const VISIBLES = 5
-// Departamento con que arrancan los chips: el perfil del estudiante aún no lo tiene (pendientes-interfaz.md).
+// Departamento con que arrancan los chips: el perfil del estudiante no lo trae.
 const DEPARTAMENTO_INICIAL = { codigo: 'dep-15', nombre: 'Lima' }
 
 // Ajuste catalogo-datos-reales (F6b): las instituciones que dictan la carrera, acotadas en memoria (el detalle
