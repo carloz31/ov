@@ -14,7 +14,8 @@ export function getHelenaPageState(complete: boolean, revealed: boolean): Helena
   return !complete ? 'sealed' : revealed ? 'revealed' : 'ready'
 }
 
-// Demostraciones: se reemplazan cuando existan las 14 interacciones y los instrumentos completos.
+// Ejemplos del modo local: el libro de Helena muestra intereses de ejemplo mientras la cuenta local no tiene
+// resultado propio, e inteligencias de ejemplo siempre.
 // DATO DE PRUEBA: Intereses de ejemplo de Helena; los reemplazarán resultados del servidor.
 export const demoInterests: HelenaResult = {
   source: 'demo',

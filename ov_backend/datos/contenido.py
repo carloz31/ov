@@ -160,8 +160,8 @@ PROPIEDADES = {
     # Ajuste recorte-volcan: las dos informativas que presentan tests opcionales salen de la ruta requerida.
     'b2-1': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b2-2': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
-    # Ajuste recorte-puerto, para la prueba con usuarios (en la versión final vuelven a ser requeridas): la
-    # institución y las batallas del Feriante y de Clotilde salen de la ruta requerida del puerto.
+    # Ajuste recorte-puerto, para la prueba con usuarios: la institución y las batallas del Feriante y de Clotilde
+    # son opcionales en la ruta del puerto.
     'b3-6': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b3-7': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
     'b3-9': {'requerida': False, 'visibilidad': 'AL_DESBLOQUEAR'},
