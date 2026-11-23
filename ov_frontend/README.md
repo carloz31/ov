@@ -4,12 +4,14 @@ Interfaz en React, TypeScript y Vite de una plataforma de orientación vocaciona
 
 ## Ejecutar
 
+Requisitos: Node.js 22 y npm.
+
 ```powershell
 npm ci
 npm run dev
 ```
 
-El acceso es de demostración: acepta un usuario y contraseña de prueba y permite elegir un perfil.
+Se ingresa con el correo y la contraseña de una cuenta de prueba, y el rol de la cuenta decide el portal. En modo local solo sirven las tres de `src/data/demo/usuariosPrueba.ts` (Ana, Rosa y Carmen).
 
 ### Con el backend
 
@@ -20,7 +22,7 @@ VITE_DATOS=api
 VITE_API_URL=/api
 ```
 
-Levanta `ov_backend` (ver su README) en `http://127.0.0.1:8000` y reinicia Vite. El proxy de desarrollo envía `/api` al backend; en producción, el entorno que sirva `dist` debe resolver `/api`. Ingresa con `est-ana` o `est-luis`. En desarrollo, el menú del estudiante permite reiniciar los datos de prueba.
+Levanta `ov_backend` (ver su README) en `http://127.0.0.1:8000` y reinicia Vite. El proxy de desarrollo envía `/api` al backend; en producción, el entorno que sirva `dist` debe resolver `/api`. Ingresa con el correo y la contraseña de una cuenta de prueba (sección «Cuentas de prueba» del [README de la raíz](../README.md)). En desarrollo, el menú del estudiante permite reiniciar los datos de prueba.
 
 ## Verificar
 
