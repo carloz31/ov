@@ -6,7 +6,7 @@ import re
 from datos.tarjetas_registros import HASHES, TARJETAS
 
 _TIPO = '(?:general|no_sabe|vacio|fuera_de_tema)'
-# La regex con que el runner leía las bases del texto (`evaluar_tarjetas.BASE_DE`, v7.12c).
+# La regex con que se leen las bases del texto de una tarjeta (v7.12c).
 BASE_DE = re.compile(rf'^[ \t]*({_TIPO}(?: / {_TIPO})*) ·(?:.*\n){{0,3}}?.*?BASE: «(.+?)»', re.M)
 
 

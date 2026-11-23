@@ -134,7 +134,7 @@ Python 3.14, FastAPI, Pydantic v2, SQLAlchemy 2.0, Alembic, SQLite (desarrollo y
 ```text
 tests/
   conftest.py        solo autouse sin base (sin clave del LLM real)
-  soporte/           ayudas compartidas; ninguna prueba importa un test_*.py
+  soporte/           ayudas compartidas; ninguna prueba importa un test_*.py. `casos_registro/`: los casos de registro con que `soporte_casos_registro.py` arma la `Entrada` del LLM para compararla con la del backend
   unit/              acceso, arquitectura, configuracion, diario, instrumentos, motor, planes, registro
   integration/
     conftest.py      plantillas SQLite por sesión y proceso; cada prueba copia la suya
@@ -144,13 +144,12 @@ tests/
     escenarios/ruta/  test_ruta_corta.py: la ruta con las peticiones del front, sin /eventos
     escenarios/contenido/  test_recorrido_contenido.py: el camino y la ruta del apoderado del conjunto `contenido`
     registros/        los registros definitivos de `contenido` recorridos ítem por ítem con el cliente de prueba del LLM (ajuste registros)
-  llm/               validación del LLM contra el modelo real: registros y, con `--guion` y `--pasos`, el guion y los pasos del plan (primera corrida pendiente, ver su README) (`evaluar_tarjetas.py`, v7 sobre `app/services/registro/llm`, con la presentación de `datos/contenido.py`), casos y resultados versionados; no es pytest, se corre a mano (ver su README)
 ```
 
 - `unit/` no usa TestClient ni bases sembradas (permite falsos y SQLite en memoria sin conjunto). Lo que use una base sembrada, migraciones, PostgreSQL o TestClient va en `integration/`; ante la duda, también.
 - Las pruebas nuevas usan los fixtures de plantilla (`aplicacion` con `ruta`, `cliente`, `sesion`, `base_aislada`) y las ayudas de `soporte_ruta.py`. Solo las pruebas de carga, migraciones y atomicidad de la carga preparan bases propias.
 - `cliente` es un `ClienteConToken` (`soporte_acceso.py`): firma con `emitir_token` el token de la cuenta que nombra la petición (la ruta o `cuenta`; est-ana si no nombra ninguna o si no existe), así que el guardia real corre en todas las pruebas. Las pruebas de rechazo usan `cliente_sin_token`. Quien cree su propio cliente usa `ClienteConToken` en vez de `TestClient`. `tests/integration/acceso/test_cobertura_rutas.py` recorre todas las rutas publicadas (401 sin token, 404 sobre otra cuenta).
-- Solo se crean carpetas con pruebas (salvo `tests/llm/`, que no tiene `test_*.py` y pytest no recoge). Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
+- Solo se crean carpetas con pruebas. Los nombres `test_*.py` son únicos en todo `tests/` (`--import-mode=importlib`).
 
 | Si cambias… | Corre primero |
 |---|---|

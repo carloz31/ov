@@ -1,4 +1,4 @@
-"""Tarjetas del LLM de registros (esquema v7): fuente única para el runner de `tests/llm` y, desde el lote 2, para la carga.
+"""Tarjetas del LLM de registros (esquema v7): fuente única para la carga.
 
 Una tarjeta es de un ítem (`TARJETAS[codigo]`) o de una opción de ese ítem (`TARJETAS[codigo]['por_opcion'][opcion]`).
 `HASHES` guarda el sha256 del texto de cada tarjeta (`codigo` o `codigo#OPCION`): cambiar una tarjeta exige cambiar su hash.

@@ -1,8 +1,7 @@
 """Prompt de sistema de los pasos sugeridos del plan de carrera, con Claude Haiku (ajuste llm-sugerencias, §3.2).
 
 Es el texto de las observaciones del ajuste, probado a mano en el playground, con `{maximo_caracteres}` reemplazado por
-`MAXIMO_CARACTERES_PROMPT_PASO`. Cambiar el texto exige cambiar `VERSION`; `HASH` va en el informe de cada corrida
-(`tests/llm`).
+`MAXIMO_CARACTERES_PROMPT_PASO`. Cambiar el texto exige cambiar `VERSION`; `HASH` identifica el texto exacto.
 """
 
 import hashlib

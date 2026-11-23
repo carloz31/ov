@@ -1,9 +1,9 @@
 """Prompt del LLM de registros, esquema v7 con Claude Haiku (lote 1 del ajuste registros llm).
 
-Es `tests/llm/prompts/v7-haiku.md` (piloto-claude-3) más el bloque ARRANQUE del texto de observaciones (§7), tal cual
+Es el prompt v7-haiku validado con el modelo real (piloto-claude-3) más el bloque ARRANQUE del texto de observaciones (§7), tal cual
 salvo la línea de las dos cosas unidas con «o» (pedida por el usuario tras F4; v7-haiku-arranque.2),
 antes de la última línea, que suma `"arranque"` porque el esquema cambia. Cambiar el texto exige cambiar
-`VERSION_PROMPT_LLM`; `HASH_PROMPT` va en el informe de cada corrida.
+`VERSION_PROMPT_LLM`; `HASH_PROMPT` identifica el texto exacto.
 """
 
 import hashlib

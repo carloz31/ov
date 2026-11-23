@@ -1,8 +1,7 @@
 """Prompt de sistema de las preguntas sugeridas del guion, con Claude Haiku (ajuste llm-sugerencias, §2.2).
 
 Es el texto de las observaciones del ajuste, probado a mano en el playground, con `{maximo_caracteres}` reemplazado por
-`MAXIMO_CARACTERES_PROMPT_GUION`. Cambiar el texto exige cambiar `VERSION`; `HASH` va en el informe de cada corrida
-(`tests/llm`).
+`MAXIMO_CARACTERES_PROMPT_GUION`. Cambiar el texto exige cambiar `VERSION`; `HASH` identifica el texto exacto.
 """
 
 import hashlib

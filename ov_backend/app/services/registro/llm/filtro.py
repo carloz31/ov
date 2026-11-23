@@ -1,4 +1,4 @@
-"""Filtro de la repregunta: el del runner de `tests/llm` (v7.12c, piloto-claude-3) más tres cuidados del lote 1.
+"""Filtro de la repregunta: el validado con el modelo real (v7.12c, piloto-claude-3) más tres cuidados del lote 1.
 
 El léxico es_ES (LibreOffice, `lexico/`) lo lee `spylls`: es la excepción aprobada a «app no lee archivos de datos».
 """

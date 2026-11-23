@@ -88,7 +88,7 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 **Dos transacciones.** Como el registro: la primera guarda la sección, sus novedades y el evento; la llamada va fuera de toda transacción, y la segunda guarda las sugerencias de las novedades que siguen existiendo sin sugerencias. Si la segunda falla, la sección queda guardada sin sugerencias. El estudiante espera la llamada con el botón de guardar en carga.
 
-**Cliente.** Claude Haiku (`app.state.cliente_llm`, `claude-haiku-5-5`, esfuerzo `low`), el mismo cliente del registro, con topes propios para esta llamada: `MAXIMO_TOKENS_SALIDA_PASOS` (6000) y `TIEMPO_MAXIMO_PASOS_SEGUNDOS` (30), **provisionales** hasta decidirlos con la medición de `tests/llm` (1, 3, 5, 8 y 10 dudas). Las pruebas usan `ClientePrueba` (`tests/soporte/soporte_llm.py`): sin cola, un paso por novedad; `salida_pasos(...)` arma una salida a medida y `fallar_pasos` hace fallar todas las llamadas de pasos.
+**Cliente.** Claude Haiku (`app.state.cliente_llm`, `claude-haiku-5-5`, esfuerzo `low`), el mismo cliente del registro, con topes propios para esta llamada: `MAXIMO_TOKENS_SALIDA_PASOS` (6000) y `TIEMPO_MAXIMO_PASOS_SEGUNDOS` (30). Las pruebas usan `ClientePrueba` (`tests/soporte/soporte_llm.py`): sin cola, un paso por novedad; `salida_pasos(...)` arma una salida a medida y `fallar_pasos` hace fallar todas las llamadas de pasos.
 
 **Prompt** `pasos-v5-haiku` (`services/planes/prompt_pasos_v5_haiku.py`, con `VERSION` y `HASH`; pide pasos de hasta `MAXIMO_CARACTERES_PROMPT_PASO`, 180). El modelo clasifica cada novedad (`clase`: dato, experiencia, sobre_mi, lo_que_dicen, lista, no_aplica) antes de proponer, escribe los pasos en infinitivo y primera persona y pone la pregunta de una conversación dentro del paso.
 
@@ -105,7 +105,7 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 **Respaldo fijo** (`generada_por = RESPALDO`, sin clase ni motivo), un paso por novedad, solo para las de lista (dudas de una pregunta de conocimiento o sugeridas, complicaciones de DIFICULTADES), cuando la llamada falló o no sirvió, se agotó el tope, o la novedad volvió sin ningún paso válido (o no volvió), salvo que su clase sea `no_aplica`. Dudas propias y complicaciones «Otro» no reciben nada. Los textos son dato cargado: tabla `respaldo_paso` (`opcion_id` de PREGUNTAS_CONOCIMIENTO, DUDAS_SUGERIDAS o DIFICULTADES; tipo; `texto` con `{carrera}` e `{institucion}`; `texto_sin_institucion`), desde `fijos.RESPALDOS_PASOS`. La carga exige exactamente uno por opción de esas tres listas.
 
-**Para revisar a mano** (la validación solo comprueba lo estructural): que nada de lo que «puede existir o no» (una persona de la carrera, charlas, talleres, una entrevista publicada) aparezca como si existiera; que no responda la duda, no opine ni dé cifras, fechas, puntajes o direcciones web; que no se le pregunte a una persona cuánto gana. La corrida con el modelo real está en `tests/llm` (modo `--pasos`).
+**Para revisar a mano** (la validación solo comprueba lo estructural): que nada de lo que «puede existir o no» (una persona de la carrera, charlas, talleres, una entrevista publicada) aparezca como si existiera; que no responda la duda, no opine ni dé cifras, fechas, puntajes o direcciones web; que no se le pregunte a una persona cuánto gana.
 
 ## Motor y referencias
 

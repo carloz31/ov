@@ -1,6 +1,6 @@
 """Capa del LLM de registros (esquema v7, método B, Claude Haiku). Lote 1 del ajuste registros llm.
 
-Sin base de datos ni endpoints: quien llama (el runner de `tests/llm` hoy, el flujo de registros desde el lote 3) le pasa
+Sin base de datos ni endpoints: quien llama (el flujo de registros, desde el lote 3) le pasa
 la tarjeta, la pregunta mostrada, la opción marcada, los ecos y las respuestas ya resueltos. Tres funciones:
 `evaluar_primera`, `evaluar_seguimiento` y `estado_final` (pura).
 """

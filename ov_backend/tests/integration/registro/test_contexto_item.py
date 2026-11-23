@@ -6,14 +6,12 @@ inicial y su check-in. DATO DE PRUEBA: todos los textos.
 """
 
 import dataclasses
-import importlib.util
 import json
 import re
-import sys
 from datetime import date, datetime
-from pathlib import Path
 
 import pytest
+import soporte_casos_registro as casos_registro
 from sqlalchemy import select
 
 from app import models as m
@@ -25,7 +23,6 @@ from app.services.registro.llm.mensaje import armar
 
 
 AHORA = datetime(2026, 11, 10, 10, 0)
-RAIZ = Path(__file__).resolve().parents[3]
 
 
 class Estudiante:
@@ -488,25 +485,17 @@ def test_entrada_usa_la_tarjeta_de_la_opcion_y_rechaza_lo_que_va_sin_llm(ana):
 
 # --- La Entrada coincide con la del runner, sin tocar sus casos ---------------------------------
 #
-# Cada caso se usa tal como está en `tests/llm/casos`. Lo que trae (las piezas con su origen, los planes, los ecos y
-# los marcadores) se reproduce en la base: se siembran los intentos, los resultados y los planes, y se renombran una
-# carrera y una institución de la copia de prueba con los nombres del caso. Luego se compara el mensaje armado.
-
-def _runner():
-    ruta = RAIZ / 'tests' / 'llm' / 'evaluar_tarjetas.py'
-    if 'evaluar_tarjetas_contexto' not in sys.modules:
-        especificacion = importlib.util.spec_from_file_location('evaluar_tarjetas_contexto', ruta)
-        modulo = importlib.util.module_from_spec(especificacion)
-        especificacion.loader.exec_module(modulo)
-        sys.modules['evaluar_tarjetas_contexto'] = modulo
-    return sys.modules['evaluar_tarjetas_contexto']
+# Cada caso se usa tal como está en `tests/soporte/casos_registro` (`soporte_casos_registro`, que arma su `Entrada`
+# como lo hacía el runner). Lo que trae (las piezas con su origen, los planes, los ecos y los marcadores) se reproduce en
+# la base: se siembran los intentos, los resultados y los planes, y se renombran una carrera y una institución de la
+# copia de prueba con los nombres del caso. Luego se compara el mensaje armado.
 
 
 ORIGEN_DE = re.compile(r'^(.*) \(([^()]*)\)$')
 
 
 def _casos(archivo, item=None):
-    return [c for c in _runner().casos_del_archivo(archivo) if item is None or c['item'] == item]
+    return [c for c in casos_registro.casos_del_archivo(archivo) if item is None or c['item'] == item]
 
 
 def _unicos(casos):
@@ -639,7 +628,7 @@ def _elegidas(contexto, caso):
 @pytest.mark.parametrize('caso', CASOS_RUNNER, ids=[c['id'] for c in CASOS_RUNNER])
 def test_la_entrada_coincide_con_la_del_runner(ana, caso):
     _sembrar_para(ana, caso)
-    esperado = armar(_runner().entrada_de(caso, caso['texto']))
+    esperado = armar(casos_registro.entrada_de(caso, caso['texto']))
     contexto = ana.contexto(caso['item'])
     assert armar(entrada_llm(contexto, _elegidas(contexto, caso), caso['texto'])) == esperado
 
@@ -685,5 +674,5 @@ def test_el_dialogo_y_la_pregunta_de_eleccion_no_cambian_el_mensaje(ana, caso):
     elegidas = _elegidas(contexto, caso)
     mensaje = armar(entrada_llm(contexto, elegidas, caso['texto']))
     assert mensaje == armar(entrada_llm(sin_consigna, elegidas, caso['texto']))
-    assert mensaje == armar(_runner().entrada_de(caso, caso['texto']))
+    assert mensaje == armar(casos_registro.entrada_de(caso, caso['texto']))
     assert contexto.dialogo not in mensaje
