@@ -1433,11 +1433,12 @@ REGLAS = (
     ('R-SEC-CHECK_IN', 'SECCION', 'CHECK_IN', 'Completa la misión «Dudar también es avanzar».', (('COMPLETA_ACTIVIDAD', 'b0-6', 'EVENTOS', 1),)),
     ('R-SEC-FAMILIA', 'SECCION', 'FAMILIA', 'Completa la misión «Las voces y la mía».', (('COMPLETA_ACTIVIDAD', 'b1-3', 'EVENTOS', 1),)),
     ('R-SEC-INVESTIGACIONES', 'SECCION', 'INVESTIGACIONES', 'Completa la misión «Una entrevista para Anselmo», en la ciudad.', (('COMPLETA_ACTIVIDAD', 'investigador', 'EVENTOS', 1),)),
-    # Ajuste planes-desbloqueo-completo: las cuatro secciones de la tarjeta se abren con PLANES (b0-4); migración 0061.
+    # Ajuste planes-desbloqueo-original: cada sección de la tarjeta se abre con su actividad (migración 0062, que deshace
+    # la 0061 del ajuste planes-desbloqueo-completo).
     ('R-PLAN-POR_QUE', 'SECCION_PLAN', 'POR_QUE', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-PLAN-CONOCIMIENTO', 'SECCION_PLAN', 'CONOCIMIENTO', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-PLAN-REALIDAD', 'SECCION_PLAN', 'REALIDAD', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
-    ('R-PLAN-PASOS', 'SECCION_PLAN', 'PASOS', 'Completa la misión «¿Tienes una opción en mente?».', (('COMPLETA_ACTIVIDAD', 'b0-4', 'EVENTOS', 1),)),
+    ('R-PLAN-CONOCIMIENTO', 'SECCION_PLAN', 'CONOCIMIENTO', 'Completa la misión «Mis intereses en el catálogo».', (('COMPLETA_ACTIVIDAD', 'b3-2', 'EVENTOS', 1),)),
+    ('R-PLAN-REALIDAD', 'SECCION_PLAN', 'REALIDAD', 'Completa la misión «Cuánto cuesta estudiar».', (('COMPLETA_ACTIVIDAD', 'b3-8', 'EVENTOS', 1),)),
+    ('R-PLAN-PASOS', 'SECCION_PLAN', 'PASOS', 'Completa la misión «Pongo a prueba mi orden».', (('COMPLETA_ACTIVIDAD', 'b4-5', 'EVENTOS', 1),)),
     # Fichas: una regla por ficha.
     ('R-F01', 'FICHA', 'F01', 'Conoce a Lumi en el muelle.', (('COMPLETA_ACTIVIDAD', 'b0-1', 'EVENTOS', 1),)),
     ('R-F02', 'FICHA', 'F02', 'Escucha el caso de Alejandra en el molino.', (('COMPLETA_ACTIVIDAD', 'b0-5', 'EVENTOS', 1),)),

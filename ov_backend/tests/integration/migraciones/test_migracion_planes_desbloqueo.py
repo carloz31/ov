@@ -1,7 +1,10 @@
-"""Ajuste planes-desbloqueo-completo: la migración 0061 sobre una base `contenido` con cuentas que ya avanzaron.
+"""Migraciones de datos de las reglas de planes sobre una base `contenido` con cuentas que ya avanzaron.
 
-La base se arma con la plantilla de `contenido` (que ya trae las reglas nuevas), se estampa en head y se baja a 0060:
-así queda como la base desplegada antes del ajuste. Las cuentas avanzan con las reglas viejas y después se sube.
+- 0061 (ajuste planes-desbloqueo-completo): las cuatro secciones se abren con b0-4. La base se arma con la plantilla de
+  `contenido`, se estampa en head y se baja a 0060: queda como la base desplegada antes de ese ajuste. Las cuentas
+  avanzan con las reglas originales y después se sube a 0061.
+- 0062 (ajuste planes-desbloqueo-original): deshace la 0061. La base se baja a 0061, como la desplegada antes de este
+  ajuste; las cuentas avanzan con las cuatro secciones en b0-4 y después se sube a head.
 """
 
 from contextlib import contextmanager
@@ -23,6 +26,7 @@ from sqlalchemy import text
 from app.database import crear_motor_bd
 from app.main import crear_aplicacion
 from app.services.desarrollo import TABLAS_DE_ESTADO
+from datos import contenido
 
 
 RUTA_CONFIGURACION = Path(__file__).resolve().parents[3] / 'alembic.ini'
@@ -36,13 +40,17 @@ SIGUIENTE = 'b0-5'
 TODAS_ABIERTAS = {'POR_QUE': 'LISTA', 'CONOCIMIENTO': 'POR_EMPEZAR', 'REALIDAD': 'POR_EMPEZAR', 'PASOS': 'POR_EMPEZAR'}
 
 
-def _base_en_0060(plantilla, destino, monkeypatch):
+def _base_en(revision, plantilla, destino, monkeypatch):
     url = copiar_plantilla(plantilla, destino)
     monkeypatch.setenv('DATABASE_URL', url)
     configuracion = Config(str(RUTA_CONFIGURACION))
     command.stamp(configuracion, 'head')
-    command.downgrade(configuracion, '0060')
+    command.downgrade(configuracion, revision)
     return url, configuracion
+
+
+def _base_en_0060(plantilla, destino, monkeypatch):
+    return _base_en('0060', plantilla, destino, monkeypatch)
 
 
 @contextmanager
@@ -133,7 +141,7 @@ def test_bajar_a_0060_deja_las_reglas_viejas(piloto):
 
 def test_quien_ya_completo_b04_recibe_las_secciones_con_su_siguiente_actividad(piloto):
     url, configuracion, antes = piloto
-    command.upgrade(configuracion, 'head')
+    command.upgrade(configuracion, '0061')
     assert _condiciones(url) == dict.fromkeys(('R-PLAN-POR_QUE', *REGLAS), 'b0-4')
     assert _mensajes(url) == dict.fromkeys(('R-PLAN-POR_QUE', *REGLAS), MENSAJE_PLANES)
     with _cliente(url) as cliente:
@@ -149,7 +157,7 @@ def test_quien_ya_completo_b04_recibe_las_secciones_con_su_siguiente_actividad(p
 
 def test_quien_no_completo_b04_abre_planes_y_las_cuatro_secciones_con_ella(piloto):
     url, configuracion, _ = piloto
-    command.upgrade(configuracion, 'head')
+    command.upgrade(configuracion, '0061')
     with _cliente(url) as cliente:
         planes(cliente, 'est-beto', esperado=409)
         _hasta_b04(cliente, 'est-beto')
@@ -159,7 +167,7 @@ def test_quien_no_completo_b04_abre_planes_y_las_cuatro_secciones_con_ella(pilot
 
 def test_quien_ya_tenia_una_seccion_abierta_la_conserva_sin_duplicados(piloto):
     url, configuracion, _ = piloto
-    command.upgrade(configuracion, 'head')
+    command.upgrade(configuracion, '0061')
     with _cliente(url) as cliente:
         assert estados(plan(cliente, PSICOLOGIA, 'est-luis'))['CONOCIMIENTO'] == 'POR_EMPEZAR'
         completar(cliente, 'b0-1', 'est-luis')
@@ -175,12 +183,12 @@ def test_quien_ya_tenia_una_seccion_abierta_la_conserva_sin_duplicados(piloto):
 def test_la_migracion_no_toca_tablas_de_estado_y_es_idempotente(piloto):
     url, configuracion, _ = piloto
     conteos = _conteos_estado(url)
-    command.upgrade(configuracion, 'head')
+    command.upgrade(configuracion, '0061')
     assert _conteos_estado(url) == conteos
     migradas = _definiciones(url)
     # Volver a correr el upgrade sobre lo ya migrado no cambia nada.
     command.stamp(configuracion, '0060')
-    command.upgrade(configuracion, 'head')
+    command.upgrade(configuracion, '0061')
     assert _definiciones(url) == migradas
     command.downgrade(configuracion, '0060')
     assert _conteos_estado(url) == conteos
@@ -198,7 +206,7 @@ def test_la_migracion_no_agrega_consultas(plantilla_contenido, tmp_path, monkeyp
             _hasta_b04(cliente, 'est-ana')
             crear(cliente, PSICOLOGIA)
         if subir:
-            command.upgrade(configuracion, 'head')
+            command.upgrade(configuracion, '0061')
         with _cliente(url) as cliente:
             motor = cliente.app.state.motor_bd
             with ContadorConsultas(motor) as completar_siguiente:
@@ -213,6 +221,98 @@ def test_la_migracion_no_agrega_consultas(plantilla_contenido, tmp_path, monkeyp
 
 def test_en_ruta_la_migracion_no_hace_nada(plantillas_bd, tmp_path, monkeypatch):
     url, configuracion = _base_en_0060(plantillas_bd['ruta'], tmp_path / 'ruta.db', monkeypatch)
+    definiciones = _definiciones(url)
+    command.upgrade(configuracion, '0061')
+    assert _definiciones(url) == definiciones
+
+
+# --- 0062 · ajuste planes-desbloqueo-original -------------------------------------------------------------------------
+
+# Los mensajes originales nombran el título de cada actividad en `datos/contenido.py`, no solo lo que bajaba la 0061.
+TITULOS = {codigo: titulo for codigo, _, titulo, *_ in contenido.ACTIVIDADES}
+MENSAJES_ORIGINALES = {regla: f'Completa la misión «{TITULOS[actividad]}».' for regla, actividad in REGLAS.items()}
+BLOQUEADAS_SALVO_POR_QUE = {'POR_QUE': 'POR_EMPEZAR', 'CONOCIMIENTO': 'BLOQUEADA', 'REALIDAD': 'BLOQUEADA',
+                            'PASOS': 'BLOQUEADA'}
+
+
+@pytest.fixture
+def desplegada(plantilla_contenido, tmp_path, monkeypatch):
+    """Base en 0061 (las cuatro secciones en b0-4), como la desplegada antes del ajuste:
+    - est-ana completó b0-4, abrió las cuatro secciones y tiene un plan con «Por qué la elijo» guardado;
+    - est-beto todavía no completó b0-4."""
+    url, configuracion = _base_en('0061', plantilla_contenido, tmp_path / 'desplegada.db', monkeypatch)
+    with _cliente(url) as cliente:
+        _hasta_b04(cliente, 'est-ana')
+        crear(cliente, PSICOLOGIA)
+        guardar(cliente, PSICOLOGIA, 'POR_QUE', por_que_lista())
+        assert estados(plan(cliente, PSICOLOGIA)) == TODAS_ABIERTAS
+        planes(cliente, 'est-beto', esperado=409)
+        antes = planes(cliente)
+    return url, configuracion, antes
+
+
+def test_0062_los_mensajes_originales_son_los_titulos_de_contenido():
+    assert MENSAJES_ORIGINALES == MENSAJES_ANTERIORES
+    reglas = {regla[0]: (regla[3], regla[4][0][1]) for regla in contenido.REGLAS if regla[0] in REGLAS}
+    assert reglas == {regla: (MENSAJES_ORIGINALES[regla], actividad) for regla, actividad in REGLAS.items()}
+
+
+def test_bajar_a_0061_deja_las_cuatro_secciones_en_b04(desplegada):
+    url, _, _ = desplegada
+    assert _condiciones(url) == dict.fromkeys(('R-PLAN-POR_QUE', *REGLAS), 'b0-4')
+    assert _mensajes(url) == dict.fromkeys(('R-PLAN-POR_QUE', *REGLAS), MENSAJE_PLANES)
+
+
+def test_0062_vuelve_a_las_reglas_originales(desplegada):
+    url, configuracion, _ = desplegada
+    command.upgrade(configuracion, 'head')
+    assert _condiciones(url) == {'R-PLAN-POR_QUE': 'b0-4', **REGLAS}
+    assert _mensajes(url) == {'R-PLAN-POR_QUE': MENSAJE_PLANES, **MENSAJES_ORIGINALES}
+
+
+def test_0062_quien_ya_abrio_las_secciones_las_conserva(desplegada):
+    url, configuracion, antes = desplegada
+    command.upgrade(configuracion, 'head')
+    with _cliente(url) as cliente:
+        despues = planes(cliente)
+        assert estados(despues['planes'][0]) == TODAS_ABIERTAS
+        assert despues == antes
+        # Avanzar no le cierra nada.
+        completar(cliente, SIGUIENTE)
+        assert estados(plan(cliente, PSICOLOGIA)) == TODAS_ABIERTAS
+
+
+def test_0062_quien_no_completo_b04_abre_cada_seccion_con_su_actividad(desplegada):
+    url, configuracion, _ = desplegada
+    command.upgrade(configuracion, 'head')
+    with _cliente(url) as cliente:
+        _hasta_b04(cliente, 'est-beto')
+        crear(cliente, PSICOLOGIA, cuenta='est-beto')
+        plan_ = plan(cliente, PSICOLOGIA, 'est-beto')
+        assert estados(plan_) == BLOQUEADAS_SALVO_POR_QUE
+        assert plan_['secciones'][1]['bloqueo'][0]['mensaje'] == MENSAJES_ORIGINALES['R-PLAN-CONOCIMIENTO']
+        _evento(cliente, 'est-beto', 'b3-2')
+        assert estados(plan(cliente, PSICOLOGIA, 'est-beto')) == dict(BLOQUEADAS_SALVO_POR_QUE,
+                                                                       CONOCIMIENTO='POR_EMPEZAR')
+
+
+def test_0062_no_toca_tablas_de_estado_y_es_idempotente(desplegada):
+    url, configuracion, _ = desplegada
+    conteos = _conteos_estado(url)
+    command.upgrade(configuracion, 'head')
+    assert _conteos_estado(url) == conteos
+    migradas = _definiciones(url)
+    command.stamp(configuracion, '0061')
+    command.upgrade(configuracion, 'head')
+    assert _definiciones(url) == migradas
+    command.downgrade(configuracion, '0061')
+    assert _conteos_estado(url) == conteos
+    assert _condiciones(url) == dict.fromkeys(('R-PLAN-POR_QUE', *REGLAS), 'b0-4')
+    assert _mensajes(url) == dict.fromkeys(('R-PLAN-POR_QUE', *REGLAS), MENSAJE_PLANES)
+
+
+def test_0062_en_ruta_no_hace_nada(plantillas_bd, tmp_path, monkeypatch):
+    url, configuracion = _base_en('0061', plantillas_bd['ruta'], tmp_path / 'ruta-0062.db', monkeypatch)
     definiciones = _definiciones(url)
     command.upgrade(configuracion, 'head')
     assert _definiciones(url) == definiciones

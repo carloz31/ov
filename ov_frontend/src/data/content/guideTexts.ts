@@ -254,7 +254,7 @@ export const parentGuides = {
 export const planesGuideSteps = [
   'Tus planes son las carreras que estás considerando. Puedes tener hasta tres: A, B y C.',
   'Un plan se crea desde una carrera que guardaste en favoritos: usa «Desde mis favoritos», o «Buscar en el catálogo» si todavía no guardaste ninguna.',
-  'Cada tarjeta tiene cuatro secciones: «Por qué la elijo», «Qué tanto la conozco», «Cómo lo haría realidad» y «Mis próximos pasos».',
+  'Cada tarjeta tiene cuatro secciones que se abren mientras avanzas en el camino: «Por qué la elijo», «Qué tanto la conozco», «Cómo lo haría realidad» y «Mis próximos pasos».',
   'Con «Subir prioridad» cambias cuál va primero, y puedes eliminar un plan cuando quieras: si lo vuelves a crear, recuperas lo que escribiste.',
 ]
 export const passportGuideSteps = [

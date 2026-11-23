@@ -31,7 +31,7 @@ Cada estudiante desarrolla hasta tres planes de carrera (HU-043 a 048, 050, 097 
 
 ## Secciones y su estado
 
-Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_PLAN` (`motor.md`). Los medidores, la carrera y la prioridad no son secciones: siempre se pueden fijar. En `contenido` las cuatro se abren con b0-4, junto con la sección PLANES (ajuste planes-desbloqueo-completo, migración 0061); en `ruta` se abren de a una (`t-inicio`, `t-valores`, `t-explorar`, `t-comparar`).
+Las secciones se abren por cuenta, para todas sus tarjetas, con reglas `SECCION_PLAN` (`motor.md`). Los medidores, la carrera y la prioridad no son secciones: siempre se pueden fijar. En `contenido`, POR_QUE se abre con b0-4, junto con la sección PLANES; CONOCIMIENTO, con b3-2; REALIDAD, con b3-8, y PASOS, con b4-5. Durante parte del piloto las cuatro se abrieron con b0-4 (migración de datos 0061); la 0062 lo deshizo, y quien ya las tenía abiertas las conserva. En `ruta` se abren de a una (`t-inicio`, `t-valores`, `t-explorar`, `t-comparar`).
 
 | Estado | Cuándo |
 |---|---|
@@ -122,5 +122,4 @@ Bajo `/acciones/planes/`. Cada una exige PLANES, valida todo antes de escribir, 
 
 - HU-049: sugerir revisar los planes al completar un cuestionario, un caso o una comprobación, o al publicar una entrevista.
 - Eventos propios de cambio de plan A (ordenar ya deja ACTUALIZA_PLAN).
-- Lo que ve la orientadora de las tarjetas (HU-086, B14) y los temas para conversar.
 - El cliente de Claude vive en `services/registro/llm/` aunque ya lo usan el guion y los planes.

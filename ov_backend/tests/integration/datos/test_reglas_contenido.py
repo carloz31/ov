@@ -168,13 +168,16 @@ def test_las_fichas_de_una_batalla_se_obtienen_antes_de_abrirla(sesion_contenido
             assert ficha_de[ficha] & previas, (actividades[batalla].codigo, fichas[ficha])
 
 
-def test_las_cuatro_secciones_del_plan_se_abren_con_planes(sesion_contenido):
-    """Ajuste planes-desbloqueo-completo: en `contenido`, las secciones de la tarjeta se abren con b0-4, como PLANES."""
+def test_cada_seccion_del_plan_se_abre_con_su_actividad(sesion_contenido):
+    """Ajuste planes-desbloqueo-original: en `contenido`, POR_QUE se abre con b0-4 (como PLANES), CONOCIMIENTO con b3-2,
+    REALIDAD con b3-8 y PASOS con b4-5, y cada mensaje nombra el título de su actividad en `ACTIVIDADES`."""
+    esperadas = {'R-SEC-PLANES': 'b0-4', 'R-PLAN-POR_QUE': 'b0-4', 'R-PLAN-CONOCIMIENTO': 'b3-2',
+                 'R-PLAN-REALIDAD': 'b3-8', 'R-PLAN-PASOS': 'b4-5'}
+    titulos = {codigo: titulo for codigo, _, titulo, *_ in contenido.ACTIVIDADES}
     actividades = {a.id: a.codigo for a in sesion_contenido.scalars(select(m.Actividad))}
     reglas = sesion_contenido.scalars(select(m.ReglaDesbloqueo).where(
-        m.ReglaDesbloqueo.codigo.in_(('R-SEC-PLANES', 'R-PLAN-POR_QUE', 'R-PLAN-CONOCIMIENTO', 'R-PLAN-REALIDAD',
-                                      'R-PLAN-PASOS')))).all()
-    assert len(reglas) == 5
-    assert {(r.codigo, tuple((c.tipo_evento.value, actividades[c.id_referencia]) for c in r.condiciones))
-            for r in reglas} == {(r.codigo, (('COMPLETA_ACTIVIDAD', 'b0-4'),)) for r in reglas}
-    assert {r.mensaje_bloqueo for r in reglas} == {'Completa la misión «¿Tienes una opción en mente?».'}
+        m.ReglaDesbloqueo.codigo.in_(tuple(esperadas)))).all()
+    assert {r.codigo: tuple((c.tipo_evento.value, actividades[c.id_referencia]) for c in r.condiciones)
+            for r in reglas} == {regla: (('COMPLETA_ACTIVIDAD', actividad),) for regla, actividad in esperadas.items()}
+    assert {r.codigo: r.mensaje_bloqueo for r in reglas} == {
+        regla: f'Completa la misión «{titulos[actividad]}».' for regla, actividad in esperadas.items()}

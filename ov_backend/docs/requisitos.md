@@ -1,6 +1,8 @@
 # Catálogo de requisitos
 
-Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), para que cada lote lea el texto de sus HU. Si cambia el Excel, se regenera este archivo. Lee solo las filas de las HU del lote y los RNF o términos que nombre.
+Copia del `Catálogo de requisitos 1.xlsx` (HU-072 retirada), para que cada lote lea el texto de sus HU. Si cambia el Excel, se regenera este archivo.
+
+Decisiones posteriores al Excel (23 nov 2026): HU-102, HU-103 y HU-106 están retiradas, porque no hay bitácora ni informe de viaje del estudiante. HU-104 la cubre el Resumen del perfil del estudiante en el portal de la orientadora. HU-105 queda solo para la orientadora. En HU-089, la orientadora no marca cuestionarios prioritarios: los obligatorios son fijos, y los registros destacados y la visibilidad para el apoderado se configuran por colegio. Lee solo las filas de las HU del lote y los RNF o términos que nombre.
 
 ## Historias de usuario
 
@@ -215,9 +217,8 @@ Copia del `Catálogo de requisitos 1.xlsx` (107 HU vigentes; HU-072 retirada), p
 | Avance por temática | Proporción de actividades completadas entre las actividades asociadas a cada temática. |
 | Diploma | Reconocimiento que obtiene el apoderado al completar su ruta. |
 | Alerta | Aviso que el sistema genera para la orientadora en cuanto un estudiante cumple una condición predefinida: sin ingresar en varios días, familia sin registrar o sin ruta, seguridad baja sostenida, avance bajo el del salón, sin favoritos o carrera del plan principal fuera de las recomendadas por su test de intereses. |
-| Prioritario | Actividad de registro o cuestionario que la orientadora marca para su salón para verlo destacado en el perfil de sus estudiantes. Los cuestionarios prioritarios son además requisito del Bloque 4. |
-| Configuración del salón | Registros y cuestionarios prioritarios del salón y cuestionarios que puede ver el apoderado, definidos por su orientadora. |
-| Bitácora de viaje | Página del estudiante que reúne, a medida que recorre la ruta, quién es, sus planes, de dónde partió y qué exploró, sus respuestas de registro y los temas para conversar. |
-| Informe de viaje | La bitácora entregada al terminar el camino (5.4). Es la base de la conversación con la orientadora; se puede imprimir o exportar a PDF. |
-| Tema para conversar | Situación detectada por una regla sobre los datos del estudiante, con una redacción explícita para la orientadora y otra tranquila para el estudiante. |
-| Perfil del estudiante (orientadora) | Vista de la orientadora con el informe de viaje de un estudiante, que destaca los cuestionarios y las actividades de registro que ella marcó como prioritarios. |
+| Cuestionario obligatorio | Cuestionario que es requisito del camino para todos los salones: partida y llegada, e intereses. Es fijo; la orientadora no lo cambia. |
+| Configuración del colegio | Registros destacados y cuestionarios opcionales que puede ver el apoderado, definidos por la orientadora para todo su colegio. |
+| Informe de viaje | El Resumen del perfil del estudiante en el portal de la orientadora. Es la base de la conversación con el estudiante. El estudiante no tiene bitácora ni informe propio. |
+| Tema para conversar | Situación detectada por una regla sobre los datos del estudiante, redactada para la orientadora en el Resumen de su perfil. |
+| Perfil del estudiante (orientadora) | Vista de la orientadora con el Resumen (el informe de viaje) y las pestañas Tests, Planes, Respuestas y Avance y familia, que destaca los registros que ella marcó como destacados. |

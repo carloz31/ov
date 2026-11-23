@@ -78,11 +78,11 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 | B11 | Planes de carrera · **Implementado** | 043–048, 050, 097–099, 109, 110 | M | B07, B08, B10 | Secciones que se habilitan, presupuesto, dudas con pasos sugeridos y requisitos de comparar y proyecto |
 | B12 | Familia: ruta del apoderado, conversaciones y cartas · **Implementado** | 066–071, 078–080 | M | B09, B11 | Conversaciones que se abren una por una; cartas al completar todas |
 | B13 | Investigaciones y entrevistas · **Implementado** | 057–065, 100, 101 | M | B10 | Investigación completa, con aliados, reacciones y Leyenda |
-| B14 | Orientadora: seguimiento y configuración | 081–089 (108 si entra) | M | B07, B11, B12 | Sus estudiantes, sus registros, la configuración y las seis alertas |
-| B15 | Informe de viaje y temas para conversar | 034, 102–105 | — | B11–B13 | Bitácora desde el primer día; las siete reglas de temas; endgame |
-| B16 | Orientadora: vista del salón | 090–093, 107 | — | B14 | Capa 1 del panel |
+| B14 | Orientadora: seguimiento y configuración · **Implementado** (ajustes panel-salon, panel-estudiantes y panel-entrevistas-configuracion) | 081–089, 108 | M | B07, B11, B12 | Sus estudiantes, sus registros, la configuración y las seis alertas |
+| B15 | Informe de viaje y temas para conversar · **Cerrado por decisión** (el informe es el Resumen de la orientadora) | 034, 102–105 | — | B11–B13 | Bitácora desde el primer día; las siete reglas de temas; endgame |
+| B16 | Orientadora: vista del salón · **Implementado** salvo 091 y 093 (ajuste panel-salon) | 090–093, 107 | — | B14 | Capa 1 del panel |
 | B17 | Acceso · **Implementado** | 001 | M | B01 | Inicio y cierre de sesión con credenciales precargadas |
-| B18 | Prioritario visible al estudiante (pendiente del ajuste de F03) | — | — | B07 | `AvanceInstrumento` (o `/instrumentos`) trae `prioritario` por instrumento según el salón de la cuenta (`SalonInstrumento.es_prioritario`); partida y llegada, siempre prioritario. El front lo refleja en `ScopeChip` en lugar del valor fijo actual |
+| B18 | Prioritario visible al estudiante · **Cerrado por decisión** (los obligatorios son fijos: `CONFIGURACION_INSTRUMENTOS` de `fijos.py`) | — | — | B07 | `AvanceInstrumento` (o `/instrumentos`) trae `prioritario` por instrumento según el salón de la cuenta (`SalonInstrumento.es_prioritario`); partida y llegada, siempre prioritario. El front lo refleja en `ScopeChip` en lugar del valor fijo actual |
 
 ### Qué hace cada lote
 
@@ -268,7 +268,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Diploma y avances.
 - **Comprueba:** sección 9.
 
-**B13 · Investigaciones y entrevistas (M)**
+**B13 · Investigaciones y entrevistas (M) · Implementado**
 - **Modelo:**
   - `Investigacion`;
   - campos de `Entrevista`;
@@ -281,7 +281,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Leyenda con `FAVORITOS_LEYENDA` favoritos y el destacado de la orientadora.
 - **Comprueba:** investigaciones (sección 8).
 
-**B14 · Orientadora: seguimiento y configuración (M)**
+**B14 · Orientadora: seguimiento y configuración (M) · Implementado**
 - **Modelo:** `TipoAlerta`; `NotaOrientadora`, si se decide incluir HU-108.
 - **Pruebas:**
   - Solo ve sus salones.
@@ -292,9 +292,11 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
   - Nunca ve el contenido del diario.
 - **Comprueba:** sección 13 (capas 2 y 3; alertas separadas de los temas para conversar).
 - **Cubierto por el ajuste panel-salon:** las alertas (tablas `grupo_alerta` y `alerta`, evaluadores en `app/services/panel/alertas.py`; `docs/sistema/panel.md`) en lugar de `TipoAlerta`, y su vista en el Inicio de la orientadora. Siguen pendientes de B14 la lista y el perfil del estudiante, los registros y la configuración del salón.
-- **Cubierto por el ajuste panel-estudiantes:** B14/F10 (HU-081 a 088 y HU-108: lista de estudiantes, perfil con sus cinco pestañas, registros en lectura y notas de la orientadora), salvo la configuración del salón (destacados, cuestionarios requisito y visibilidad al apoderado), que sigue pendiente.
+- **Cubierto por el ajuste panel-estudiantes:** B14/F10 (HU-081 a 088 y HU-108: lista de estudiantes, perfil con sus cinco pestañas, registros en lectura y notas de la orientadora), salvo la configuración del salón (destacados, cuestionarios requisito y visibilidad al apoderado).
+- **Cubierto por el ajuste panel-entrevistas-configuracion:** la configuración, que es por colegio y no por salón: registros destacados y cuestionarios opcionales visibles para el apoderado. Los cuestionarios obligatorios (partida y llegada, intereses) son fijos (`CONFIGURACION_INSTRUMENTOS` de `fijos.py`); la orientadora no marca prioritarios. Con esto B14 queda cerrado.
 
-**B15 · Informe de viaje y temas para conversar**
+**B15 · Informe de viaje y temas para conversar · Cerrado por decisión**
+- **Decisión del usuario:** no hay informe ni bitácora del estudiante (HU-102, 103 y 106 retiradas). El informe de viaje es el Resumen del perfil del estudiante en el portal de la orientadora (HU-104), y los temas «Para conversar» existen solo de su lado (`app/services/panel/temas.py`, ajustes panel-estudiantes y pendientes-orientadora; HU-105). La bitácora se da por cubierta con las vistas que ya existen. Lo que sigue era el plan original.
 - **Pruebas:**
   - La bitácora crece desde el primer día, con sus cinco secciones en orden.
   - Cada tema aparece solo con su dato y tiene sus dos redacciones.
@@ -306,7 +308,7 @@ Cada lote cabe en una sesión de Claude Code y se integra a `main` al terminar. 
 **B16 · Orientadora: vista del salón**
 - **Pruebas:** agregados del salón, cambio entre partida y llegada, seguridad promedio y alertas más frecuentes.
 - **Comprueba:** sección 13 (capa 1).
-- **Cubierto por el ajuste panel-salon** (backend y, en F11, el front del panel): pestañas Seguimiento e Intereses del salón y sus listas completas. Queda fuera el cambio entre partida y llegada con resultados agregados.
+- **Cubierto por el ajuste panel-salon** (backend y, en F11, el front del panel): pestañas Seguimiento e Intereses del salón y sus listas completas, con la seguridad en bandas y los avisos con su cantidad (HU-090, 092 y 107). Quedan pendientes HU-091 (entradas de diario del salón por tipo) y HU-093 (resultados agregados de cada cuestionario y la variación entre partida y llegada).
 
 **B17 · Acceso** (Implementado)
 - **Pruebas:**
@@ -353,8 +355,8 @@ Parte del estado al 20 oct 2026: B00–B12 y B17 implementados; B13–B16 pendie
 | F07b | Planes: realidad, pasos y actividades que los citan (M) · **Implementado** | 045, 046, 097, 110 | F07a | B11 | REALIDAD con presupuesto, PASOS con sugerencias, medidores |
 | F08 | Familia: estudiante y apoderado (M) · **Implementado** | 066–071, 078–080 | F05, F07b | B12, B17 hijos, AP-F3 (×4), B01 fichas apoderado, B2 conversaciones | Familia del estudiante; portal del apoderado |
 | F09 | Investigaciones y entrevistas · **Implementado** | 057–065, 100, 101 | B13 | B13 | Investigaciones, Leyendas, publicaciones de la orientadora |
-| F10 | Orientadora: seguimiento y configuración | 081–089 | B14 | B17 salones | Mis estudiantes, perfil, prioritarios, alertas |
-| F11 | Informe de viaje, temas y vista del salón | 034, 090–093, 102–105, 107 | B15, B16 | — | Informe; panel del salón (el panel ya lo conectó el ajuste panel-salon) |
+| F10 | Orientadora: seguimiento y configuración · **Implementado** (ajustes panel-estudiantes y panel-entrevistas-configuracion) | 081–089 | B14 | B17 salones | Mis estudiantes, perfil, configuración, alertas |
+| F11 | Informe de viaje, temas y vista del salón · **Implementado** salvo 091 y 093 (ajuste panel-salon; informe y temas, ver B15) | 034, 090–093, 102–105, 107 | B15, B16 | — | Panel del salón |
 
 **Orden (decidido):** F00 → F01 → F02 → F03 → F04 → F05 → F06 → F07a → F07b → F08; después B13 → F09 → B14 → F10 → B15 → B16 → F11.
 Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambian esas tablas, conviene que ocurra antes de construir el panel de la orientadora encima.
@@ -444,7 +446,7 @@ Razón: B14–B16 leen registros, planes, diario y familia. Si los lotes F cambi
 - **Quedó:** ajustes al backend sin modelo: filtro `ocupacion` en `/entrevistas` («Entrevistas de tu salón» del detalle de ocupación), salón del autor y catálogo de reacciones en el detalle de la orientadora, y `guardar-guion` acepta una sugerida ya agregada sin código; textos de reacciones y preguntas base de los bocetos en `fijos.py`. `/student/community` sigue solo en local. Pendientes nuevos: aviso a los autores cuando la orientadora elimina e íconos de la vitrina de los aliados.
 
 #### F10 y F11
-Se detallan al cerrar sus lotes B (B14, B15–B16), con la misma estructura. Sus vistas ya existen en el prototipo (investigaciones, comunidad, panel de la orientadora), así que serán sobre todo conexión, con los ajustes que dejen sus lotes B en `pendientes-interfaz.md`.
+No se trabajaron como lotes: los cubrieron los ajustes panel-salon, panel-estudiantes y panel-entrevistas-configuracion (detalle en `docs/sistema/panel.md`). Lo que no se hará y lo que falta está en B14, B15 y B16.
 
 ## Constantes provisionales
 
@@ -465,11 +467,11 @@ La alerta «sin favoritos» se evalúa solo después de completar la actividad q
 
 ## Después de la versión funcional
 
-- **Solo front:** 005, 096 y 106.
+- **Solo front:** 005 y 096.
 - **Ayuda y avisos:** 012, 018, 019 y 020.
-- **Extras de catálogo y planes:** 042 y 049.
+- **Extras de planes:** 049.
 - **Perfil social:** 076 y 077, con `InsigniaExhibida`.
-- **108:** decisión de alcance.
+- **Indicadores del salón:** 091 y 093 (ver B16).
 - **Rendimiento pendiente:** que el ingreso espere su turno de Argon2 sin ocupar un hilo (un endpoint asíncrono con un semáforo de asyncio por orden de llegada, que recién entonces verifique en el pool de hilos); hoy lo mitiga `HILOS_POR_WORKER`. Y que los casos de la Central se compartan entre vistas como las batallas.
 - **Mecánicas sin lote:** señales anónimas del salón (sin HU ni modelo), «requiere atención», MA6 con `OCUPACIONES_DE_TIPO` y el contexto de los sellos de 4.5.
 - **Carga del contenido real de la ruta:**
