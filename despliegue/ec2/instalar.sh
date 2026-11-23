@@ -3,11 +3,11 @@
 # Uso (como usuario ubuntu):
 #   sudo bash instalar.sh <url-ssh-del-repo> <dominio-api> <correo-para-certbot>
 # Ejemplo:
-#   sudo bash instalar.sh git@github.com:carloz31/ov.git 3-91-20-15.sslip.io tu@correo.com
+#   sudo bash instalar.sh git@github.com:carloz31/ov.git 1-2-3-4.sslip.io tu@correo.com
 set -euo pipefail
 
 REPO_URL="${1:?Falta la URL SSH del repositorio}"
-DOMINIO_API="${2:?Falta el dominio de la API (p. ej. 3-91-20-15.sslip.io)}"
+DOMINIO_API="${2:?Falta el dominio de la API (p. ej. 1-2-3-4.sslip.io)}"
 CORREO="${3:?Falta un correo para el certificado}"
 RAMA="deploy"
 DESTINO="/opt/ov"

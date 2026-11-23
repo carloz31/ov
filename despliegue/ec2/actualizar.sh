@@ -5,8 +5,9 @@
 #   sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar   # BORRA TODA LA BASE y carga `contenido`
 #   sudo bash /opt/ov/despliegue/ec2/actualizar.sh --recargar --sin-ejemplos   # igual, sin los estudiantes de ejemplo
 # --recargar elimina el esquema completo (cuentas, progreso y catálogo), crea las tablas desde cero con las
-# migraciones y carga el conjunto `contenido` (con los usuarios de datos/usuarios_prueba.txt). Úsalo solo mientras
-# no haya datos reales de estudiantes ni apoderados.
+# migraciones y carga el conjunto `contenido` (con los usuarios de datos/usuarios_prueba.txt, los apoderados de
+# prueba y, salvo --sin-ejemplos, los ejemplos del panel). Úsalo solo mientras no haya datos reales de estudiantes
+# ni apoderados.
 # Con `contenido` se siembran también los estudiantes de ejemplo del panel de la orientadora (cuentas inventadas con
 # credenciales en el repositorio); --sin-ejemplos los omite, como antes de una prueba con usuarios. Si la siembra
 # falla, la base queda con `contenido` sin ejemplos, el backend se reinicia igual y el script termina con error.
@@ -75,7 +76,7 @@ case "$URL_BD" in
     if ! sudo -u ov env URL_RESPALDO="$URL_BD" ARCHIVO="$ARCHIVO_RESPALDO" \
         bash -c 'umask 077 && pg_dump --format=custom --no-owner --file="$ARCHIVO" --dbname="$URL_RESPALDO"'; then
       rm -f "$ARCHIVO_RESPALDO"
-      echo "No se pudo respaldar la base (¿pg_dump más antiguo que el servidor? ver despliegue/README.md, 8.2)."
+      echo "No se pudo respaldar la base (¿pg_dump más antiguo que el servidor? ver despliegue/operacion.md, paso 2)."
       echo "No se migra ni se recarga nada. El backend sigue como estaba."
       exit 5
     fi

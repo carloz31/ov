@@ -1,7 +1,7 @@
 """reglas de planes: cada sección de la tarjeta vuelve a abrirse con su actividad
 
 Ajuste planes-desbloqueo-original. Migración solo de datos, sobre las tablas de definición (`regla_desbloqueo` y
-`condicion_desbloqueo`), para la base desplegada del piloto (despliegue/README.md, 7.6). Deshace la 0061:
+`condicion_desbloqueo`), para la base desplegada de la prueba con usuarios (despliegue/operacion.md, paso 8). Deshace la 0061:
 R-PLAN-CONOCIMIENTO, R-PLAN-REALIDAD y R-PLAN-PASOS vuelven a pedir COMPLETA_ACTIVIDAD de b3-2, b3-8 y b4-5, con su
 mensaje; R-PLAN-POR_QUE sigue con b0-4. Solo actúa en una base `contenido` (existen b0-4, b3-2, b3-8 y b4-5); en
 `ruta` o vacía no hace nada. Es idempotente: cada UPDATE filtra por la referencia de partida. No toca tablas de estado:

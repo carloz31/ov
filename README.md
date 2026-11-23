@@ -47,7 +47,7 @@ Estas tres y los otros cinco estudiantes de prueba (Luis, Beto, Mía, Teo y Sol)
 
 La misma carga siembra once estudiantes de ejemplo en el salón 5A (`est-panel-1` a `est-panel-11`), cada uno en una situación distinta: uno que nunca ingresó, uno que recién empieza, uno con un cuestionario respondido con prisa, uno que terminó el camino, entre otros. Sirven para ver el panel de la orientadora con datos: avance del salón, avisos, respuestas de los registros, planes y entrevistas publicadas. Sus credenciales, y las de sus apoderados, están en `CREDENCIALES` de `ov_backend/scripts/sembrar_panel_ejemplo.py`. Para cargar sin ellos: `uv run python -m datos.cargar contenido --sin-ejemplos`.
 
-Estas cuentas son para una instalación local. En un despliegue con usuarios reales se desactivan, como indica `despliegue/README.md`.
+Estas cuentas son para una instalación local. En un despliegue con usuarios reales se desactivan, como indica [despliegue/operacion.md](despliegue/operacion.md) (paso 6).
 
 ## Pruebas
 
@@ -60,4 +60,5 @@ El flujo de GitHub Actions las ejecuta antes de cada despliegue.
 
 - [ov_backend/docs/sistema/](ov_backend/docs/sistema/): cómo funcionan el motor de desbloqueo, los registros, los instrumentos, los planes, las investigaciones y el panel.
 - [ov_frontend/docs/](ov_frontend/docs/): origen de los datos y formato de los contenidos de las actividades.
-- [despliegue/README.md](despliegue/README.md): despliegue y operación.
+- [despliegue/README.md](despliegue/README.md): despliegue en AWS.
+- [despliegue/operacion.md](despliegue/operacion.md): operación con usuarios.

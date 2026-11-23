@@ -1,7 +1,7 @@
 """reglas de planes: las cuatro secciones de la tarjeta se abren con PLANES
 
 Ajuste planes-desbloqueo-completo. Migración solo de datos, sobre las tablas de definición (`regla_desbloqueo` y
-`condicion_desbloqueo`), para la base desplegada del piloto (despliegue/README.md, 7.6). R-PLAN-CONOCIMIENTO,
+`condicion_desbloqueo`), para la base desplegada de la prueba con usuarios (despliegue/operacion.md, paso 8). R-PLAN-CONOCIMIENTO,
 R-PLAN-REALIDAD y R-PLAN-PASOS pasan a pedir COMPLETA_ACTIVIDAD de b0-4, como R-SEC-PLANES y R-PLAN-POR_QUE, con su
 mensaje. Solo actúa en una base `contenido` (existen b0-4, b3-2, b3-8 y b4-5); en `ruta` o vacía no hace nada. Es
 idempotente: cada UPDATE filtra por la referencia de partida. No toca tablas de estado: quien ya completó b0-4 recibe
